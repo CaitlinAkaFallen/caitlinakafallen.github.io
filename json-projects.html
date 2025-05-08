@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS Widget Downloads</title>
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #2b0488, #230477);
+        background-size: 200% 200%;
+        animation: gradientAnimation 10s ease infinite;
+        color: #fff;
+        }
+
+        .container {
+        padding: 2rem;
+        }
+
+        h2 {
+        text-align: center;
+        }
+
+        .navbar {
+        display: flex;
+        justify-content: center;
+        background: #2c2c3e;
+        padding: 0.5rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        }
+
+        .tab-btn {
+        background: #444;
+        border: none;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        color: white;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.3s ease;
+        border-radius: 8px;
+        height: 40px;  /* Consistent button height */
+        display: flex;
+        align-items: center;  /* Vertically center the text */
+        }
+
+        .tab-btn:hover {
+        background: #666;
+        transform: scale(1.05);
+        }
+
+        .tab-btn.active {
+        background: #007acc;
+        }
+
+        button,
+        .tab-btn,
+        .download-button,
+        .return-button button {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s ease;
+        box-shadow: 0 0 12px rgba(0, 123, 255, 0.7);
+        height: 40px;  /* Consistent height */
+        display: flex;
+        align-items: center;
+        }
+
+        button:hover,
+        .tab-btn:hover,
+        .download-button:hover,
+        .return-button button:hover {
+        background: linear-gradient(135deg, #4b06cc, #0535b9);
+        box-shadow: 0 0 20px rgba(0, 123, 255, 1);
+        transform: scale(1.05);
+        }
+
+        .tab-btn.active {
+        background: #00d9ff;
+        color: #000;
+        }
+
+        /* Tab Content */
+        .tab-content {
+        display: none;
+        padding: 1.5rem;
+        background: #2c2c3e;
+        margin-top: 1rem;
+        border-radius: 10px;
+        animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+        display: block;
+        }
+        a {
+        color: #66d9ef;
+        }
+
+        @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        }
+    </style>
+ </head>
+ <body>
+    <nav class="navbar">
+        <!-- New Return to Coding Button -->
+        <button class="tab-btn return-button" onclick="window.location.href='coding.html'">Back to Code </button>
+        <button class="tab-btn" onclick="showTab('instructions')">Instructions</button>
+        <button class="tab-btn active" onclick="showTab('game-quiz')">Game Quiz</button>
+        <button class="tab-btn" onclick="showTab('dnd')">DND</button>
+        <button class="tab-btn" onclick="showTab('twitch-question')">Twitch Q&A</button>
+        <button class="tab-btn" onclick="showTab('photo-border')">Photo Border</button>
+        <button class="tab-btn" onclick="showTab('photo-widget')">Photo Widget</button>
+        
+        
+    </nav>
+    
+    <div class="container">
+        <h2>OBS Widgets</h2>
+    
+        <div id="game-quiz" class="tab-content active">
+          <h3>Game Quiz Widget</h3>
+          <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
+          <button onclick="downloadWidget('Game Quiz Widget.json', 'Game Quiz Widget.json')">Download</button>
+        </div>
+    
+        <div id="dnd" class="tab-content">
+          <h3>DND Widget</h3>
+          <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
+          <button onclick="downloadWidget('DND Widget.json', 'DND Widget.json')">Download</button>
+        </div>
+    
+        <div id="twitch-question" class="tab-content">
+          <h3>Twitch Question Popup</h3>
+          <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
+          <button onclick="downloadWidget('Twitch Question Popup.json', 'Twitch Question Popup.json')">Download</button>
+        </div>
+    
+        <div id="photo-border" class="tab-content">
+          <h3>Photo Booth Border</h3>
+          <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
+          <button onclick="downloadWidget('Photo Booth Border.json', 'Photo Booth Border.json')">Download</button>
+        </div>
+    
+        <div id="photo-widget" class="tab-content">
+          <h3>Photo Booth Widget</h3>
+          <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
+          <button onclick="downloadWidget('Photo Booth Widget.json', 'Photo Booth Widget.json')">Download</button>
+        </div>
+    
+        <div id="instructions" class="tab-content">
+          <h3>Installation Instructions</h3>
+          <ol>
+            <li>Download the Source Copy plugin from the 
+              <a href="https://obsproject.com/forum/resources/source-copy.1261/" target="_blank">OBS Plugin site</a>.
+            </li>
+            <li>Close OBS before installing the plugin.</li>
+            <li>Follow installation steps on the website.</li>
+            <li>Restart OBS and import the widget JSON.</li>
+          </ol>
+        </div>
+    </div>
+    
+    
+    
+</body>
+<script>
+    // Show tab content when tab button is clicked
+    function showTab(tabId, event) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+        // Remove active state from all tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+        // Show selected tab and highlight the button
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // Trigger download of widget JSON with local file path
+    function downloadWidget(widgetName, jsonFileName) {
+        const jsonContent = {
+            "widgetName": widgetName,
+            "filePath": "C:\\Users\\caitl\\OneDrive\\Desktop\\Coding\\OBS Profile\\" + jsonFileName
+        };
+
+        const blob = new Blob([JSON.stringify(jsonContent, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = jsonFileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</html>
