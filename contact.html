@@ -12,72 +12,87 @@
        
 </head>
 <body>
-    <nav class="fancy-navbar">
-        <div class="navbar-content">
-            
-    
-            <div class="tabs-container">
-                <button class="return-button" onclick="window.location.href='index.html';">Home</button>
-                <button class="tab-button" data-tab="social">Social</button>
-                <button class="tab-button" data-tab="streaming">Streaming</button>
-            </div>
+   <nav class="fancy-navbar">
+    <div class="navbar-content">
+        <div class="tabs-container">
+            <button class="return-button" onclick="window.location.href='index.html';">Home</button>
+            <button class="tab-button" data-tab="social-content">Social</button>
+            <button class="tab-button" data-tab="streaming-content">Streaming</button>
         </div>
-    </nav>
-    
-    <section id="contact">
-        <h2>Contact Me</h2>
-        <ul>
-            <li>Have questions, comments, or project inquiries?</li>
-            <li>DM me on my Social Media, and I’ll get back to you as soon as possible. I look forward to hearing from you!</li>
-        </ul>
-    </section>
+    </div>
+</nav>
 
-    <section id="contacts">
-        <div id="social-content" class="tab-content active-tab">
-            <header>
-                <h3>Social Media</h3>
-            </header>
-            <div id="social-sidebar" class="socials">
-                <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" class="social-link">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
-                <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" class="social-link">
-                    <i class="fa-solid fa-cloud"></i>
-                </a>
-                <a href="https://x.com/CaitlinAkFallen" target="_blank" class="social-link x-link">
-                    <i class="fa-brands fa-x"></i>
-                </a>
-                <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" class="social-link">
-                    <i class="fa-brands fa-patreon"></i>
-                </a>
-                <a href="https://github.com/CaitlinAkFallen" target="_blank" class="social-link">
-                    <i class="fa-brands fa-github"></i>
-                </a>
-            </div>
+<section id="contact">
+    <h2>Contact Me</h2>
+    <ul>
+        <li>Have questions, comments, or project inquiries?</li>
+        <li>DM me on my Social Media, and I’ll get back to you as soon as possible. I look forward to hearing from you!</li>
+    </ul>
+</section>
+
+<section id="contacts">
+    <div id="social-content" class="tab-content active-tab">
+        <header>
+            <h3>Social Media</h3>
+        </header>
+        <div id="social-sidebar" class="socials">
+            <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" class="social-link">
+                <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" class="social-link">
+                <i class="fa-solid fa-cloud"></i>
+            </a>
+            <a href="https://x.com/CaitlinAkFallen" target="_blank" class="social-link x-link">
+                <i class="fa-brands fa-x"></i>
+            </a>
+            <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" class="social-link">
+                <i class="fa-brands fa-patreon"></i>
+            </a>
+            <a href="https://github.com/CaitlinAkFallen" target="_blank" class="social-link">
+                <i class="fa-brands fa-github"></i>
+            </a>
         </div>
-    
-        <div id="streaming-content" class="tab-content">
-            <header>
-                <h3>Streaming Platforms</h3>
-            </header>
-            <div class="streaming-platforms">
-                <a href="https://www.twitch.tv/fallenoneart" target="_blank" class="social-link">
-                    <i class="fa-brands fa-twitch"></i>
-                </a>
-                <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" class="social-link">
-                    <i class="fa-brands fa-youtube"></i>
-                </a>
-                <a href="https://kick.com/caitlinakafallen" target="_blank" class="social-link kick-link">
-                    <i class="fa-brands fa-kickstarter"></i> 
-                </a>
-            </div>
+    </div>
+
+    <div id="streaming-content" class="tab-content">
+        <header>
+            <h3>Streaming Platforms</h3>
+        </header>
+        <div class="streaming-platforms">
+            <a href="https://www.twitch.tv/fallenoneart" target="_blank" class="social-link">
+                <i class="fa-brands fa-twitch"></i>
+            </a>
+            <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" class="social-link">
+                <i class="fa-brands fa-youtube"></i>
+            </a>
+            <a href="https://kick.com/caitlinakafallen" target="_blank" class="social-link kick-link">
+                <i class="fa-brands fa-kickstarter"></i> 
+            </a>
         </div>
-    </section>
+    </div>
+</section>
+
+<script>
+    // JavaScript for tab switching
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const targetTab = button.getAttribute('data-tab');
+            
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active-tab');
+            });
+            
+            // Show the selected tab content
+            document.getElementById(targetTab).classList.add('active-tab');
+        });
+    });
+</script>
+
 
     <footer>
         <p>© 2025 Caitlin's Creative Space | All Rights Reserved</p> 
     </footer>
-    <script src="about.js"></script>
 
 </body>
 </html>
