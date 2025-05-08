@@ -168,7 +168,7 @@
     
           /* Header */
           header {
-            background-image: url("file:///C:/Users/caitl/OneDrive/Pictures/Saved%20Pictures/ap_71E6F97A-96AA-4638-A4D0-5AAC3C04193D.JPG");
+            background-image: url('images/main-page.JPG'));
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
