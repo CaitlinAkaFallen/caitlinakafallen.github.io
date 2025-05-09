@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Conventions</title>
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+        <style>
+            /* 🌟 Variables */
+            :root {
+            --bg-color: #f4f4f9;
+            --text-color: #030303;
+            --accent-color: #424242;
+            --sidebar-bg: rgba(48, 47, 47, 0.9);
+            --sidebar-text: #ffffff;
+            --sidebar-hover: #15e4d9;
+            --button-bg: linear-gradient(#ffcc00, #ff8800);
+            --button-hover: linear-gradient(#ffaa00, #ff6600);
+            --dark-bg: #222;
+            --dark-text: #f3f2f2;
+            --shadow-light: 0px 6px 20px rgba(0, 0, 0, 0.1);
+            --shadow-dark: 0px 6px 20px rgba(70, 223, 250, 0.733);
+            }
+
+            /* 🌙 Dark Mode Adjustments */
+            .dark-mode {
+            --bg-color: var(--dark-bg);
+            --text-color: var(--dark-text);
+            }
+
+            /* 🏠 Base Styles */
+            * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            }
+
+            body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+            }
+
+            /* 🧢 Header */
+            .main-header {
+            text-align: center;
+            padding: 50px 20px;
+            background: var(--accent-color);
+            color: #fff;
+            border-bottom: 6px solid #3ce7cb;
+            box-shadow: var(--shadow-dark);
+            }
+
+            .main-header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            }
+
+            .main-header p {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            font-weight: 500;
+            }
+
+            /* 📚 Sidebar */
+            .sidebar {
+            position: fixed;
+            top: 70px; /* Sidebar starts below the header */
+            left: -250px; /* Initially hidden */
+            width: 250px;
+            max-width: 80%;
+            height: calc( 30vh - 70px); /* Full screen height minus the top 70px */
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            transition: left 0.5s ease-in-out, transform 0.3s ease; /* Smooth transition */
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            z-index: 9999;
+            box-shadow: var(--shadow-dark);
+            }
+
+            /* Open Sidebar */
+            .sidebar.open {
+            left: 0; /* Move to visible position */
+            transform: translateX(0); /* Slide in */
+            }
+
+            /* 📚 Sidebar List */
+            .sidebar-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            }
+
+            .sidebar-list li {
+            padding: 15px;
+            border-bottom: 1px solid #444;
+            transition: background 0.3s ease, transform 0.3s ease;
+            }
+
+            .sidebar-list li:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+            }
+
+            .sidebar-list a {
+            text-decoration: none;
+            color: var(--sidebar-text);
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            padding: 10px;
+            }
+
+            .sidebar-list a:hover {
+            color: var(--sidebar-hover);
+            }
+
+            .home-icon {
+            margin-right: 15px;
+            }
+
+            /* 🍔 Sidebar Toggle Button Animation */
+            .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 10000;
+            background: var(--accent-color);
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            box-shadow: var(--shadow-light);
+            transition: transform 0.3s ease, left 0.3s ease, opacity 0.3s ease;
+            }
+
+            /* Open Sidebar - Toggle Animation */
+            .sidebar.open ~ .sidebar-toggle {
+            transform: rotate(180deg); /* Rotate the toggle button */
+            left: 270px; /* Sidebar width (250px) + 20px margin */
+            opacity: 0.7; /* Button slightly faded */
+            }
+
+            /* 🍔 Hide toggle when sidebar is open */
+            .sidebar.open ~ .sidebar-toggle {
+            pointer-events: none; /* Prevent interaction while open */
+            opacity: 0;
+            transition: opacity 0.3s ease; /* Smooth fade-out */
+            }
+
+
+            /* 🌑 Dark Mode Button */
+            .dark-mode-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--button-bg);
+            color: #000;
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-light);
+            transition: background 0.3s ease, transform 0.3s ease;
+            }
+
+            .dark-mode-btn:hover {
+            background: var(--button-hover);
+            }
+
+
+            /* 📋 Convention List */
+            .conventions-list {
+            list-style: none;
+            padding: 0;
+            margin: 40px auto;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background-color: var(--bg-color);
+            box-shadow: var(--shadow-light);
+            border-radius: 15px;
+            }
+
+            /* Convention List Heading */
+            .convention-contention h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            width: 100%; /* Ensure it takes full width for centering */
+            }
+
+            /* Convention List Items */
+            .conventions-list li {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 20px;
+            background: rgba(151, 150, 150, 0.815);
+            border-radius: 15px;
+            transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: var(--shadow-light);
+            }
+
+            .conventions-list li:hover {
+            transform: scale(1.05);
+            background: rgba(196, 206, 152, 0.61);
+            box-shadow: var(--shadow-dark);
+            }
+
+            /* Event Name */
+            .event-name {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #000;
+            }
+
+            /* Event Date, Location, and Description */
+            .event-date,
+            .event-location,
+            .event-description {
+            font-size: 1.1rem;
+            margin-top: 5px;
+            color: var(--accent-color);
+            }
+
+            /* ➕ Add Event Button */
+            .add-event-btn {
+            background: var(--button-bg);
+            color: #000;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 30px;
+            margin: 20px auto;
+            display: block;
+            cursor: pointer;
+            box-shadow: var(--shadow-light);
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .add-event-btn:hover {
+            background: var(--button-hover);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-dark);
+            }
+
+            /* 📱 Responsive */
+            @media (max-width: 768px) {
+            .sidebar {
+                width: 220px;
+            }
+
+            .conventions-list {
+                max-width: 100%;
+                padding: 10px;
+            }
+
+            .conventions-list li {
+                text-align: center;
+                padding: 15px;
+                margin: 10px 0;
+            }
+
+            .event-name {
+                font-size: 1.2rem;
+            }
+
+            .event-date,
+            .event-location,
+            .event-description {
+                font-size: 1rem;
+            }
+
+            .add-event-btn {
+                width: 100%;
+                padding: 12px;
+                font-size: 14px;
+            }
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <!-- Optional: Add a logo or title -->
+            </div>
+            <ul class="sidebar-list">
+                <li>
+                    <a href="index.html" class="home-link">
+                        <img src="https://th.bing.com/th/id/R.19ed7c8b456956b57d48630777fa9198?rik=gw7I7o0tcu7vJQ&pid=ImgRaw&r=0" alt="Home" class="home-icon" width="24">
+                        <span class="sidebar-text">HOME</span>
+                    </a>
+                </li>
+                <li><a href="#" onclick="showCategory('conventions')">Conventions</a></li>
+            </ul>
+        </div>
+    
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="main-header">
+                <h1>Conventions</h1>
+                <p>Explore various conventions and their dates. Edit the list below as needed.</p>
+                <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+                <button id="darkModeToggle" class="dark-mode-btn" onclick="toggleDarkMode()">
+                    🔦 Light Mode
+                </button>
+            </header>
+    
+            <!-- Convention List and Schedule -->
+            <div class="convention-contention">
+                <h1>Convention Schedule</h1>
+                <ul class="conventions-list" id="conventionList">
+                    <li>
+                        <span class="event-name" contenteditable="true">Game On Expo</span>
+                        <span class="event-date" contenteditable="true">April 4th-6th, 2025</span>
+                        <span class="event-location" contenteditable="true">Phoenix, AZ</span>
+                        <span class="event-description" contenteditable="true">A celebration of gaming culture.</span>
+                    </li>
+                    <li>
+                        <span class="event-name" contenteditable="true">Phoenix Fan Fusion</span>
+                        <span class="event-date" contenteditable="true">June 6th-8th, 2025</span>
+                        <span class="event-location" contenteditable="true">Phoenix, AZ</span>
+                        <span class="event-description" contenteditable="true">Description</span>
+                    </li>
+                </ul>
+            </div>
+
+
+            <!-- Add Button OUTSIDE of the UL -->
+            <button id="addEventButton" class="add-event-btn">➕ Add New Event</button>
+
+        </div>
+    
+        <!-- JavaScript -->
+        <script>
+         
+document.addEventListener('DOMContentLoaded', function () {
+    removePastConventions(); // Remove old ones before anything loads
+    loadConventions();
+    makeListEditable();
+    setupAddEventButton();
+});
+
+// Removes past conventions based on end date
+function removePastConventions() {
+    const savedConventions = localStorage.getItem('conventionsList');
+    if (!savedConventions) return;
+
+    const tempContainer = document.createElement('ul');
+    tempContainer.innerHTML = savedConventions;
+
+    const today = new Date();
+
+    const parseDateRange = (dateStr) => {
+        const regex = /([A-Za-z]+) (\d+)[a-z]{2}?-(\d+)[a-z]{2}?, (\d{4})/;
+        const match = dateStr.match(regex);
+        if (match) {
+            const [_, month, startDay, endDay, year] = match;
+            const endDate = new Date(`${month} ${endDay}, ${year}`);
+            return endDate;
+        }
+        return null;
+    };
+
+    const items = tempContainer.querySelectorAll('li');
+    items.forEach(item => {
+        const dateSpan = item.querySelector('.event-date');
+        const dateText = dateSpan?.innerText.trim();
+        const endDate = parseDateRange(dateText);
+
+        if (endDate && endDate < today) {
+            item.remove();
+        }
+    });
+
+    localStorage.setItem('conventionsList', tempContainer.innerHTML);
+}
+
+function loadConventions() {
+    const savedConventions = localStorage.getItem('conventionsList');
+    const conventionsList = document.getElementById('conventionList');
+    if (savedConventions && conventionsList) {
+        conventionsList.innerHTML = savedConventions;
+    }
+}
+
+function saveConventions() {
+    const conventionsList = document.getElementById('conventionList');
+    if (conventionsList) {
+        localStorage.setItem('conventionsList', conventionsList.innerHTML);
+    }
+}
+
+function makeListEditable() {
+    const spans = document.querySelectorAll('.conventions-list li span');
+    spans.forEach(span => {
+        span.contentEditable = true;
+
+        span.addEventListener('blur', () => {
+            saveConventions();
+        });
+    });
+}
+
+function setupAddEventButton() {
+    const addButton = document.getElementById('addEventButton');
+    if (addButton) {
+        addButton.addEventListener('click', function () {
+            const conventionsList = document.getElementById('conventionList');
+
+            const newEvent = document.createElement('li');
+            newEvent.innerHTML = `
+                <span class="event-name" contenteditable="true">New Event Name</span>
+                <span class="event-date" contenteditable="true">New Event Date</span>
+                <span class="event-location" contenteditable="true">New Event Location</span>
+                <span class="event-description" contenteditable="true">New Event Description</span>
+            `;
+
+            conventionsList.appendChild(newEvent);
+            saveConventions();
+            makeListEditable();
+        });
+    }
+}
+
+function toggleSidebar() {
+    const sidebar = document.querySelector(".sidebar");
+    const toggleBtn = document.querySelector(".sidebar-toggle");
+
+    sidebar.classList.toggle("open");
+    toggleBtn.classList.toggle("open");
+}
+
+function toggleDarkMode() {
+    const body = document.body;
+    const darkModeButton = document.getElementById("darkModeToggle");
+    body.classList.toggle("dark-mode");
+
+    darkModeButton.innerHTML = body.classList.contains("dark-mode")
+        ? "☀️ Dark Mode"
+        : "🔦 Light Mode";
+}
+
+function showCategory(categoryName) {
+    if (categoryName === 'conventions') {
+        document.querySelector('.main-content').scrollIntoView({ behavior: 'smooth' });
+    }
+}
+</script>
+
+        
+        
+    </body>
+    
+</html>
