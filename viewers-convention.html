@@ -330,36 +330,76 @@
       </ul>
     </div>
 
-      <script>
-        function toggleSidebar() {
-          const sidebar = document.querySelector(".sidebar");
-          const toggleBtn = document.querySelector(".sidebar-toggle");
+     <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const conventionsList = document.querySelector('.conventions-list');
+    const today = new Date();
 
-          sidebar.classList.toggle("open");
-          toggleBtn.classList.toggle("open");
-        }
+    // Parse the event date and return a Date object
+    const parseDateRange = (dateStr) => {
+      const regex = /([A-Za-z]+) (\d+)[a-z]{2}?[–-](\d+)[a-z]{2}?, (\d{4})/;
+      const match = dateStr.match(regex);
+      if (match) {
+        const [_, month, startDay, endDay, year] = match;
+        const endDate = new Date(`${month} ${endDay}, ${year}`);
+        return endDate;
+      }
+      return null;
+    };
 
+    // Load saved conventions from localStorage
+    const savedConventions = localStorage.getItem('conventionsList');
+    if (savedConventions) {
+      conventionsList.innerHTML = savedConventions;
+    }
 
-        // Dark Mode Toggle
-        function toggleDarkMode() {
-          document.body.classList.toggle('dark-mode');
-          const toggleButton = document.getElementById('darkModeToggle');
-          if (document.body.classList.contains('dark-mode')) {
-            toggleButton.innerHTML = "☀️ Dark Mode";
-          } else {
-            toggleButton.innerHTML = "🔦 Light Mode";
-          }
-        }
+    // Remove passed events
+    const items = conventionsList.querySelectorAll("li");
+    items.forEach(item => {
+      const dateSpan = item.querySelector(".event-date");
+      const dateText = dateSpan?.innerText.trim();
+      const endDate = parseDateRange(dateText);
 
-        // Load saved conventions from localStorage
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedConventions = localStorage.getItem('conventionsList');
-            const conventionsList = document.querySelector('.conventions-list');
-            if (savedConventions) {
-                conventionsList.innerHTML = savedConventions;
-            }
-        });
-    </script>
+      // If the event has passed, remove it
+      if (endDate && endDate < today) {
+        item.remove();
+      }
+    });
+
+    // Save updated conventions to localStorage after removal
+    localStorage.setItem('conventionsList', conventionsList.innerHTML);
+  });
+
+  // Sidebar toggle function
+  function toggleSidebar() {
+    const sidebar = document.querySelector(".sidebar");
+    const toggleBtn = document.querySelector(".sidebar-toggle");
+
+    sidebar.classList.toggle("open");
+    toggleBtn.classList.toggle("open");
+  }
+
+  // Dark Mode Toggle
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const toggleButton = document.getElementById('darkModeToggle');
+    if (document.body.classList.contains('dark-mode')) {
+      toggleButton.innerHTML = "☀️ Dark Mode";
+    } else {
+      toggleButton.innerHTML = "🔦 Light Mode";
+    }
+  }
+
+  // Load saved conventions from localStorage (again for safety)
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedConventions = localStorage.getItem('conventionsList');
+    const conventionsList = document.querySelector('.conventions-list');
+    if (savedConventions) {
+      conventionsList.innerHTML = savedConventions;
+    }
+  });
+</script>
+
 
   </body>
 </html>
