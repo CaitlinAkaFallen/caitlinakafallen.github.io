@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Conventions</title>
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="conventions.css">
+    </head>
+
+    <body>
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <!-- Optional: Add a logo or title -->
+            </div>
+            <ul class="sidebar-list">
+                <li>
+                    <a href="index.html" class="home-link">
+                        <img src="https://th.bing.com/th/id/R.19ed7c8b456956b57d48630777fa9198?rik=gw7I7o0tcu7vJQ&pid=ImgRaw&r=0" alt="Home" class="home-icon" width="24">
+                        <span class="sidebar-text">HOME</span>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="main-header">
+                <h1>Conventions</h1>
+                <p>Explore various conventions and their dates. Edit the list below as needed.</p>
+                <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+                <button id="darkModeToggle" class="dark-mode-btn" onclick="toggleDarkMode()">
+                    🔦 Light Mode
+                </button>
+            </header>
+    
+            <!-- Convention List and Schedule -->
+            <div class="convention-contention">
+                <h1>Convention Schedule</h1>
+                <ul class="conventions-list" id="conventionList">
+                    <li>
+                        <span class="event-name" contenteditable="true">Game On Expo</span>
+                        <span class="event-date" contenteditable="true">April 4th-6th, 2025</span>
+                        <span class="event-location" contenteditable="true">Phoenix, AZ</span>
+                        <span class="event-description" contenteditable="true">A celebration of gaming culture.</span>
+                    </li>
+                    <li>
+                        <span class="event-name" contenteditable="true">Phoenix Fan Fusion</span>
+                        <span class="event-date" contenteditable="true">June 6th-8th, 2025</span>
+                        <span class="event-location" contenteditable="true">Phoenix, AZ</span>
+                        <span class="event-description" contenteditable="true">Description</span>
+                    </li>
+                </ul>
+            </div>
+
+
+            <!-- Add Button OUTSIDE of the UL -->
+            <button id="addEventButton" class="add-event-btn">➕ Add New Event</button>
+
+        </div>
+    
+        <!-- JavaScript -->
+        <script>
+         
+            document.addEventListener('DOMContentLoaded', function () {
+                removePastConventions(); // Remove old ones before anything loads
+                loadConventions();
+                makeListEditable();
+                setupAddEventButton();
+            });
+
+            // Removes past conventions based on end date
+            function removePastConventions() {
+                const savedConventions = localStorage.getItem('conventionsList');
+                if (!savedConventions) return;
+
+                const tempContainer = document.createElement('ul');
+                tempContainer.innerHTML = savedConventions;
+
+                const today = new Date();
+
+                const parseDateRange = (dateStr) => {
+                    const regex = /([A-Za-z]+) (\d+)[a-z]{2}?-(\d+)[a-z]{2}?, (\d{4})/;
+                    const match = dateStr.match(regex);
+                    if (match) {
+                        const [_, month, startDay, endDay, year] = match;
+                        const endDate = new Date(`${month} ${endDay}, ${year}`);
+                        return endDate;
+                    }
+                    return null;
+                };
+
+                const items = tempContainer.querySelectorAll('li');
+                items.forEach(item => {
+                    const dateSpan = item.querySelector('.event-date');
+                    const dateText = dateSpan?.innerText.trim();
+                    const endDate = parseDateRange(dateText);
+
+                    if (endDate && endDate < today) {
+                        item.remove();
+                    }
+                });
+
+                localStorage.setItem('conventionsList', tempContainer.innerHTML);
+            }
+
+            function loadConventions() {
+                const savedConventions = localStorage.getItem('conventionsList');
+                const conventionsList = document.getElementById('conventionList');
+                if (savedConventions && conventionsList) {
+                    conventionsList.innerHTML = savedConventions;
+                }
+            }
+
+            function saveConventions() {
+                const conventionsList = document.getElementById('conventionList');
+                if (conventionsList) {
+                    localStorage.setItem('conventionsList', conventionsList.innerHTML);
+                }
+            }
+
+            function makeListEditable() {
+                const spans = document.querySelectorAll('.conventions-list li span');
+                spans.forEach(span => {
+                    span.contentEditable = true;
+
+                    span.addEventListener('blur', () => {
+                        saveConventions();
+                    });
+                });
+            }
+
+            function setupAddEventButton() {
+                const addButton = document.getElementById('addEventButton');
+                if (addButton) {
+                    addButton.addEventListener('click', function () {
+                        const conventionsList = document.getElementById('conventionList');
+
+                        const newEvent = document.createElement('li');
+                        newEvent.innerHTML = `
+                            <span class="event-name" contenteditable="true">New Event Name</span>
+                            <span class="event-date" contenteditable="true">New Event Date</span>
+                            <span class="event-location" contenteditable="true">New Event Location</span>
+                            <span class="event-description" contenteditable="true">New Event Description</span>
+                        `;
+
+                        conventionsList.appendChild(newEvent);
+                        saveConventions();
+                        makeListEditable();
+                    });
+                }
+            }
+
+            function toggleSidebar() {
+                const sidebar = document.querySelector(".sidebar");
+                const toggleBtn = document.querySelector(".sidebar-toggle");
+
+                sidebar.classList.toggle("open");
+                toggleBtn.classList.toggle("open");
+            }
+
+            function toggleDarkMode() {
+                const body = document.body;
+                const darkModeButton = document.getElementById("darkModeToggle");
+                body.classList.toggle("dark-mode");
+
+                darkModeButton.innerHTML = body.classList.contains("dark-mode")
+                    ? "☀️ Dark Mode"
+                    : "🔦 Light Mode";
+            }
+
+            function showCategory(categoryName) {
+                if (categoryName === 'conventions') {
+                    document.querySelector('.main-content').scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        </script>
+
+        
+        
+    </body>
+    
+</html>
