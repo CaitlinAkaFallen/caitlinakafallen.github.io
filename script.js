@@ -36,6 +36,7 @@
                 "Code": "coding.html",
                 "About": "about.html",
                 "Contact": "contact.html",
+                "Conventions": "viewer-convention.html",
                 "Stream Platforms": "streaming.html"
             };
 
