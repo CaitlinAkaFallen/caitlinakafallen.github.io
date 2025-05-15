@@ -1,0 +1,23 @@
+# 🔒 Sensitive files
+secret.json
+conventions.js
+
+# 🧹 System files
+.DS_Store
+Thumbs.db
+
+# 📜 Logs
+*.log
+
+# 🌱 Environment/config files
+.env
+
+# 🧩 Node.js (if ever used)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 🛠️ VS Code settings (optional)
+.vscode/
+
