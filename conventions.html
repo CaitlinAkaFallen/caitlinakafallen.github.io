@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Conventions</title>
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="conventions.css">
+    </head>
+
+    <body>
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <!-- Optional: Add a logo or title -->
+            </div>
+            <ul class="sidebar-list">
+                <li>
+                    <a href="index.html" class="home-link">
+                        <img src="https://th.bing.com/th/id/R.19ed7c8b456956b57d48630777fa9198?rik=gw7I7o0tcu7vJQ&pid=ImgRaw&r=0" alt="Home" class="home-icon" width="24">
+                        <span class="sidebar-text">HOME</span>
+                    </a>
+                </li>
+              <button class="logout-btn" onclick="logout()">Logout</button>
+
+            </ul>
+        </div>
+    
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="main-header">
+                <h1>Conventions</h1>
+                <p>Explore various conventions and their dates. Edit the list below as needed.</p>
+                <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
+                <button id="darkModeToggle" class="dark-mode-btn" onclick="toggleDarkMode()">
+                    🔦 Light Mode
+                </button>
+            </header>
+    
+            <!-- Convention List and Schedule -->
+            <div class="convention-contention">
+                <h1>Convention Schedule</h1>
+                <ul class="conventions-list" id="conventionList">
+                    <li>
+                        <span class="event-name" contenteditable="true">Game On Expo</span>
+                        <span class="event-date" contenteditable="true">April 4th-6th, 2025</span>
+                        <span class="event-location" contenteditable="true">Phoenix, AZ</span>
+                        <span class="event-description" contenteditable="true">A celebration of gaming culture.</span>
+                    </li>
+                    <li>
+                        <span class="event-name" contenteditable="true">Phoenix Fan Fusion</span>
+                        <span class="event-date" contenteditable="true">June 6th-8th, 2025</span>
+                        <span class="event-location" contenteditable="true">Phoenix, AZ</span>
+                        <span class="event-description" contenteditable="true">Description</span>
+                    </li>
+                </ul>
+            </div>
+
+
+            <!-- Add Button OUTSIDE of the UL -->
+            <button id="addEventButton" class="add-event-btn">➕ Add New Event</button>
+
+        </div>
+    
+       <script src="conventions.js"></script>
+    
+
+        
+        
+    </body>
+    
+</html>

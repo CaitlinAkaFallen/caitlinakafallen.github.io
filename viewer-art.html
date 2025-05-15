@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Caitlins's Gallery</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+        <style>
+        /* General Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(#40f1fd, #9f51f8);
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        /* Global Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Container with responsive width */
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            transition: margin-left 0.3s ease-in-out;
+            padding-top: 60px;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background-color: rgba(51, 51, 51, 0.8);
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(30px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+
+        /* Navbar menu responsive */
+        .navbar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .navbar li {
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin: 0 5px;
+        }
+
+        .navbar li:hover {
+            background-color: #575757;
+        }
+
+        .navbar img {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        /* HOME Icon styling */
+        .home-icon {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .home-icon img {
+            margin-right: 10px;
+        }
+
+        /* Grid 1 (Main Grid) */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Grid setup for responsive layout */
+            gap: 20px; /* Adds spacing between items */
+            justify-items: center; /* Centers items horizontally */
+            align-items: center; /* Centers items vertically */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* Grid 2 (Second Set of Images) */
+        .grid2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Same responsive grid as Grid 1 */
+            gap: 20px; /* Adds spacing between items */
+            justify-items: center; /* Centers items horizontally */
+            align-items: center; /* Centers items vertically */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* Image Item Styling */
+        .image-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            max-width: 100%; /* Prevents the item from overflowing */
+        }
+
+        .image-item img {
+            width: 100%; /* Full width for responsive layout */
+            height: auto;
+            border-radius: 10px;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .image-item img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Caption Styling */
+        .caption {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 5px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* Size Variations */
+        .image-item.large img {
+            width: 300px;
+        }
+
+        .image-item.medium img {
+            width: 250px;
+        }
+
+        .image-item.small img {
+            width: 200px;
+        }
+
+        /* Responsive Grid for Large Images */
+        .grids2 {
+            display: flex;
+            gap: 15px;
+            overflow-x: hidden;
+            white-space: nowrap;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .large-image-item {
+            flex: 0 1 auto;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 250px;
+        }
+
+        .large-image-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        .large-image-item img:hover {
+            transform: scale(1.05);
+        }
+
+        #welcome {
+            background: rgba(249, 249, 249, 0.7);  /* A light grey background with transparency */
+            backdrop-filter: blur(10px);             /* Apply a 10px blur effect on the background */
+            -webkit-backdrop-filter: blur(10px);     /* Safari support */
+            padding: 40px;                           /* Internal spacing around the content */
+            margin: 30px auto;                       /* Centered section with vertical spacing */
+            max-width: 800px;                        /* Maximum width for readability */
+            border-radius: 10px;                     /* Rounded corners for a soft look */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* A subtle shadow to lift the section */
+            text-align: center;                      /* Center the text within the section */
+        }
+
+
+        /* Styling the header within the welcome section */
+        #welcome h1 {
+            font-family: 'Georgia', serif;    /* Elegant, classic font for titles */
+            font-size: 2.5rem;                  /* Large font size for the main header */
+            margin-bottom: 20px;                /* Space below the header */
+            color: #36a9b1;                     /* Accent color for the header text */
+            position: relative;                 /* Needed for the pseudo-element positioning */
+        }
+
+        /* Adding a fancy underline using a pseudo-element */
+        #welcome h1::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -10px;                         /* Adjust this value for vertical position */
+            transform: translateX(-50%);          /* Center the underline */
+            width: 260px;                         /* Length of the underline */
+            height: 4px;                         /* Thickness of the underline */
+            background-color: #36a9b1;        /* Matching the header color */
+            border-radius: 2px;                /* Gives a subtle rounded effect */
+            overflow: hidden;                 /*Ensures no overflow from the parent */
+        }
+
+        /* Styling the paragraphs inside the welcome section */
+        #welcome p {
+            font-family: 'Arial', sans-serif; /* Clean, modern font for body text */
+            font-size: 1.1rem;                /* A bit larger for readability */
+            line-height: 1.6;                 /* Improved line spacing for clarity */
+            color: #7c0b86;                      /* A slightly softer dark color for text */
+            margin-bottom: 20px;              /* Consistent spacing between paragraphs */
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            position: relative;
+        }
+
+        footer h3 {
+            color: rgb(241, 243, 247);
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Social Links in Navbar */
+        .social-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .social-links a {
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .social-links a i {
+            font-size: 24px;
+            color: #333;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .social-links a:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Social Sidebar inside Footer */
+        .socials {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            font-size: 24px;
+            color: #333;
+            text-decoration: none;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: scale(1.2);
+        }
+
+        /* Combined Instagram (both Instagram links) */
+        .social-link:nth-child(1):hover,
+        .social-link:nth-child(3):hover {
+            color: #E4405F; /* Instagram color */
+        }
+
+        /* Patreon */
+        .social-link:nth-child(2):hover {
+            color: #9146FF;
+        }
+
+        /* Bluesky */
+        .social-link:nth-child(4):hover {
+            color: #1DA1F2;
+        }
+
+        /* X (formerly Twitter) */
+        .social-link.x-link:hover {
+            color: #000; /* Correct hover color for X */
+        }
+
+        /* GitHub */
+        .social-link:nth-child(6):hover {
+            color: #615f5f;
+        }
+
+        /* RESPONSIVENESS */
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 10px;
+                max-width: 100%;
+            }
+
+            /* Grid Styling */
+            .grid,
+            .grid2 {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust grid for smaller screens */
+            }
+
+            .large-image-item {
+                width: 200px;
+            }
+
+            /* Keep navbar horizontal on mobile */
+            .navbar {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+            }
+
+            .navbar ul {
+                flex-direction: row;
+                width: auto;
+                text-align: left;
+            }
+
+            .navbar li {
+                display: inline-block;
+                width: auto;
+                text-align: left;
+                padding: 8px 12px;
+            }
+
+            .navbar .social-links {
+                flex-wrap: nowrap;
+                justify-content: flex-end;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+
+            /* Grid Styling */
+            .grid,
+            .grid2 {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Adjust grid for even smaller screens */
+            }
+
+            .large-image-item {
+                width: 180px;
+            }
+
+            /* Keep navbar horizontal on smaller mobiles */
+            .navbar {
+                padding: 5px;
+            }
+
+            .navbar ul {
+                width: auto;
+            }
+
+            .navbar li {
+                padding: 5px 8px;
+            }
+        }
+
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar">
+            <ul>
+              <li>
+                    <a href="index.html" class="home-icon">
+                    <img src="https://th.bing.com/th/id/R.19ed7c8b456956b57d48630777fa9198?rik=gw7I7o0tcu7vJQ&pid=ImgRaw&r=0" alt="Home">
+                    </a>
+              </li>
+              <li onclick="switchCategory('welcome')" 
+                    style="cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;"
+                    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0px 4px 8px rgba(0,0,0,0.3)';"
+                    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
+                    <i class="fas fa-smile-beam" 
+                    style="font-size: 24px; margin-right: 10px;
+                        background: linear-gradient(45deg, #00BCD4, #9964fa);
+                        background-clip: text;
+                        color: transparent;
+                        text-shadow: 1px 1px 2px rgba(0,0,0,0.4);">
+                    </i>
+                    <span style="font-size: 20px; font-weight: bold;
+                        background: linear-gradient(45deg, #00BCD4, #9964fa);
+                        background-clip: text;
+                        color: transparent;
+                        text-shadow: 2px 2px 5px rgba(0,0,0,0.3);">
+                    </span>
+              </li>
+              <li onclick="window.location.href='customer-view.html'" 
+                    style="cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;"
+                    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0px 4px 8px rgba(0,0,0,0.3)';"
+                    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
+                    <i class="fas fa-chalkboard-teacher" 
+                        style="font-size: 24px; margin-right: 10px; 
+                            background: linear-gradient(45deg, #FF5722, #FFC107);
+                            background-clip: text;
+                            color: transparent;
+                            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);">
+                    </i>
+                    <span style="font-size: 20px; font-weight: bold; 
+                        background: linear-gradient(45deg, #FF5722, #FFC107);
+                        background-clip: text;
+                        color: transparent;
+                        text-shadow: 2px 2px 5px rgba(0,0,0,0.3);">
+                    </span>
+                </li>
+                <li onclick="switchCategory('procreate')">
+                    <img src="images/procreate.png" alt="Procreate Icon">
+                </li>
+                <li onclick="switchCategory('photoshop')">
+                    <img src="images/photoshop.png" alt="Photoshop Icon">
+                </li>
+                <li onclick="switchCategory('indesign')">
+                    <img src="images/indesign.png" alt="InDesign Icon">
+                </li>
+                <li onclick="switchCategory('illustrator')">
+                    <img src="images/illustrator.png" alt="Illustrator Icon">
+                </li>
+                
+            </ul>
+                <div class="socials">
+                <a href="https://x.com/CaitlinAkFallen" target="_blank" class="social-link x-link">
+                    <i class="fa-brands fa-x"></i>
+                </a>
+                <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" class="social-link">
+                    <i class="fa-brands fa-patreon"></i>
+                </a>
+                <a href="https://www.instagram.com/caitlinakafallen" target="_blank" class="social-link">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+                <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" class="social-link">
+                    <i class="fa-solid fa-cloud"></i>
+                </a>
+                <a href="https://github.com/CaitlinAkaFallen" target="_blank" class="social-link">
+                    <i class="fa-brands fa-github"></i>
+                </a>
+                </div>
+        </nav>
+            
+        <div id="content">
+    
+            <div id="containerContent" class="container">
+
+                <div id="innerContent"></div>
+           </div>
+           
+        </div>
+
+    </body>
+    <script>
+        // Data for each category's images
+        const categories = {
+        welcome: `
+         <section id="welcome"> 
+            <h1>Welcome to Caitlin's Art Brain</h1>
+            <p>Welcome to the creative space where imagination comes to life! Explore a collection of artwork, time-lapse videos, and creative processes from my art journey.</p>
+            <p>Before you dive in, please note that I am currently limited on certain products. However, I am constantly updating and expanding the collection, so be sure to check back for new additions!</p>
+            <p>If you have any questions or want to learn more about the creative process behind the artwork, feel free to explore and get in touch. I appreciate your support and love for creativity!</p>
+         </section>
+        `,
+        procreate: `
+            <h2>Procreate</h2>
+            <p>Check out my digital art creations, including character designs and illustrations.</p>
+            <div class="grid">
+                <div class="image-item">
+                    <a href="Procreate/pangwippo.png" target="_blank">
+                        <img src="Procreate/pangwippo.png" alt="Procreate Art" />
+                    </a>
+                    <div class="caption">Pangwippo</div>
+                </div>
+                <div class="image-item">
+                    <a href="Procreate/hippotroll.png" target="_blank">
+                        <img src="Procreate/hippotroll.png" alt="Procreate Art" />
+                    </a>
+                    <div class="caption">HippoTroll</div>
+                </div>
+                <div class="image-item">
+                    <a href="Procreate/gangartroll.png" target="_blank">
+                        <img src="Procreate/gangartroll.png" alt="Procreate Art" />
+                    </a>
+                    <div class="caption">GangarTroll</div>
+                </div>
+                <div class="image-item">
+                    <a href="Procreate/Brookie.png" target="_blank">
+                        <img src="Procreate/Brookie.png" alt="Procreate Art" />
+                    </a>
+                    <div class="caption">Brookie</div>
+                </div>
+            </div>
+        `,
+
+        photoshop: `
+            <h2>Photoshop</h2>
+            <p>Check out my digital art creations, including character designs and illustrations.</p>
+            <h2>Baldur's Gate 3</h2>
+            <div class="grid">
+                <div class="image-item large">
+                    <a href="Photoshop/orin-11x17.jpg" target="_blank">
+                        <img src="Photoshop/orin-11x17.jpg" alt="Orin 11x17" />
+                    </a>
+                    <div class="caption">Orin 11x17</div>
+                </div>
+                <div class="image-item medium">
+                    <a href="Photoshop/orin-12x17.jpg" target="_blank">
+                        <img src="Photoshop/orin-12x17.jpg" alt="Orin 12x17" />
+                    </a>
+                    <div class="caption">Orin 12x17</div>
+                </div>
+                <div class="image-item large">
+                    <a href="Photoshop/orin-13x19.jpg" target="_blank">
+                        <img src="Photoshop/orin-13x19.jpg" alt="Orin 13x19" />
+                    </a>
+                    <div class="caption">Orin 13x19</div>
+                </div>
+                <div class="image-item large">
+                    <a href="Photoshop/orin-the-red.jpg" target="_blank">
+                        <img src="Photoshop/orin-the-red.jpg" alt="Orin The Red" class="full-hd" />
+                    </a>
+                    <div class="caption">Orin The Red</div>
+                </div>
+            </div>
+
+            <h2>Resident Evil</h2>
+            <div class="grid2">
+                <div class="image-item large">
+                    <a href="Photoshop/angry-lady-d.jpg" target="_blank">
+                        <img src="Photoshop/angry-lady-d.jpg" alt="Angry Lady D" />
+                    </a>
+                    <div class="caption">Angry Lady D</div>
+                </div>
+                <div class="image-item medium">
+                    <a href="Photoshop/bela-with-bugs.jpg" target="_blank">
+                        <img src="Photoshop/bela-with-bugs.jpg" alt="Bela and her bugs" />
+                    </a>
+                    <div class="caption">Bela and her bugs</div>
+                </div>
+                <div class="image-item large">
+                    <a href="Photoshop/donna-tundra.jpg" target="_blank">
+                        <img src="Photoshop/donna-tundra.jpg" alt="Donna and Tundra" />
+                    </a>
+                    <div class="caption">Donna and Tundra</div>
+                </div>
+                <div class="image-item large">
+                    <a href="Photoshop/heisenberg-mutated.jpg" target="_blank">
+                        <img src="Photoshop/heisenberg-mutated.jpg" alt="Heisenberg and his mutated self" class="full-hd" />
+                    </a>
+                    <div class="caption">Heisenberg and his mutated self</div>
+                </div>
+                <div class="image-item large">
+                    <a href="Photoshop/lady-d-mutated.jpg" target="_blank">
+                        <img src="Photoshop/lady-d-mutated.jpg" alt="Lady D and her mutated self" class="full-hd" />
+                    </a>
+                    <div class="caption">Lady D and her mutated self</div>
+                </div>
+            </div>
+        `,
+
+        indesign: `
+            <h2>Indesign</h2>
+            <p>Check out my digital art creations, including character designs and illustrations.</p>
+            <div class="grid">
+                <div class="image-item">
+                    <a href="Indesign/Broken.png" target="_blank">
+                        <img src="Indesign/Broken.png" alt="Indesign Art" />
+                    </a>
+                    <div class="caption">Mental Aware Month</div>
+                </div>
+                <div class="image-item">
+                    <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
+                        <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
+                    </a>
+                    <div class="caption">Indesign Project</div>
+                </div>
+                <div class="image-item">
+                    <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
+                        <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
+                    </a>
+                    <div class="caption">Indesign Project</div>
+                </div>
+                <div class="image-item">
+                    <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
+                        <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
+                    </a>
+                    <div class="caption">Indesign Project</div>
+                </div>
+            </div>
+        `,
+
+        illustrator: `
+            <h2>Illustrator</h2>
+            <p>Check out my digital art creations, including character designs and illustrations.</p>
+
+            <h2>Twitch/Kick/Trovo Panels</h2>
+            <div class="grid">
+                 <div class="image-item">
+                    <a href="Illustrator/about-me.png" target="_blank">
+                        <img src="Illustrator/about-me.png" alt="Illustrator Art" />
+                    </a>
+                  </div>
+                  <div class="image-item">
+                    <a href="Illustrator/donations.png" target="_blank">
+                        <img src="Illustrator/donations.png" alt="Illustrator Art" />
+                    </a>
+                 </div> 
+                  <div class="image-item">
+                    <a href="Illustrator/about-me.png" target="_blank">
+                        <img src="Illustrator/about-me.png" alt="Illustrator Art" />
+                    </a>
+                 </div> 
+                  <div class="image-item">
+                    <a href="Illustrator/about-me.png" target="_blank">
+                        <img src="Illustrator/about-me.png" alt="Illustrator Art" />
+                    </a>
+                 </div>          
+                 <div class="image-item">
+                    <a href="Illustrator/commands.png" target="_blank">
+                        <img src="Illustrator/commands.png" alt="Illustrator Art" />
+                    </a>
+                 </div>
+                 <div class="image-item">
+                    <a href="Illustrator/subscribe.png" target="_blank">
+                        <img src="Illustrator/subscribe.png" alt="Illustrator Art" />
+                    </a>
+                 </div> 
+                 <div class="image-item">
+                    <a href="Illustrator/social-media.png" target="_blank">
+                        <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                    </a>
+                 </div>   
+                 <div class="image-item">
+                    <a href="Illustrator/pc-specs.png" target="_blank">
+                        <img src="Illustrator/pc-specs.png" alt="Illustrator Art" />
+                    </a>
+                 </div>
+                  <div class="image-item">
+                    <a href="Illustrator/schedule.png" target="_blank">
+                        <img src="Illustrator/schedule.png" alt="Illustrator Art" />
+                    </a>
+                 </div>      
+                  <div class="image-item">
+                    <a href="Illustrator/chat-rules.png" target="_blank">
+                        <img src="Illustrator/chat-rules.png" alt="Illustrator Art" />
+                    </a>
+                 </div>
+                 <div class="image-item">
+                    <a href="Illustrator/social-media.png" target="_blank">
+                        <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                    </a>
+                 </div>
+                 <div class="image-item">
+                    <a href="Illustrator/social-media.png" target="_blank">
+                        <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                    </a>
+                 </div>   
+                 <div class="image-item">
+                    <a href="Illustrator/social-media.png" target="_blank">
+                        <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                    </a>
+                 </div>    
+            </div>
+
+
+            <h2>Fun Designs</h2>
+            <div class="grids2">
+                <div class="large-image-item">
+                    <a href="Illustrator/monsterdoodle.png" target="_blank">
+                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                    </a>
+                </div>
+                <div class="large-image-item">
+                    <a href="Illustrator/Google-Doodle.png" target="_blank">
+                        <img src="Illustrator/Google-Doodle.png" alt="Illustrator Art" />
+                    </a>
+                </div>
+                <div class="large-image-item">
+                    <a href="Illustrator/monsterdoodle.png" target="_blank">
+                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                    </a>
+                </div>
+                <div class="large-image-item">
+                    <a href="Illustrator/monsterdoodle.png" target="_blank">
+                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                    </a>
+                </div>
+                <div class="large-image-item">
+                    <a href="Illustrator/monsterdoodle.png" target="_blank">
+                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                    </a>
+                </div>
+                <div class="large-image-item">
+                    <a href="Illustrator/monsterdoodle.png" target="_blank">
+                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                    </a>
+                </div>
+                <div class="large-image-item">
+                    <a href="Illustrator/monsterdoodle.png" target="_blank">
+                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                    </a>
+                </div>
+                <div class="large-image-item">
+                    <a href="Illustrator/monsterdoodle.png" target="_blank">
+                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                    </a>
+                </div>
+            </div>
+
+        `,
+        };
+    
+
+        // Function to handle category switching
+        function switchCategory(category) {
+            const contentDiv = document.getElementById("content");
+            contentDiv.innerHTML = categories[category] || "<p>Category not found.</p>";
+        }
+
+        // Set the default content (welcome) when the page loads
+        window.onload = function() {
+            switchCategory('welcome');
+        };
+    </script>
+
+</html>
