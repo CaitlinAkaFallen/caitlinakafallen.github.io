@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Streaming</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    a {
+      color: #ff0000;
+      text-decoration: none;
+      transition: color 0.3s ease, text-shadow 0.3s ease;
+    }
+
+    a:hover {
+      color: #ffffff;
+      text-shadow: 0 0 8px #ff0000;
+    }
+
+    .stream-container {
+      margin: 40px auto;
+      padding: 20px;
+      max-width: 900px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 0, 0, 0.2);
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .stream-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .stream-header img {
+      width: 48px;
+      height: auto;
+    }
+
+    .stream-header a {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .tagline {
+      font-size: 16px;
+      color: #ccc;
+      margin-top: -8px;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    iframe {
+      width: 100%;
+      max-width: 800px;
+      height: 450px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+      transition: transform 0.3s ease;
+    }
+
+    iframe:hover {
+      transform: scale(1.01);
+    }
+  </style>
+</head>
+<body>
+  <div class="stream-container" id="youtube-container">
+    <div class="stream-header">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png" alt="YouTube Logo">
+      <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener noreferrer">
+        YouTube: Caitlin aka Fallen
+      </a>
+    </div>
+    <div class="tagline">Live content, art, and creativity. Streaming now!</div>
+    <iframe
+      id="yt-iframe"
+      src="https://www.youtube.com/embed/live_stream?channel=UCvbVbJh3CWljgXGSBuT1wAQ"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <script src="streaming.js"></script>
+</body>
+</html>
