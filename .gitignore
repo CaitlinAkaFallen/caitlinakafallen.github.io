@@ -1,23 +1,53 @@
-# 🔒 Sensitive files
-secret.json
+# 🔒 Sensitive or Private Files
+streaming.js
 conventions.js
+secret*.json
+.env
+.env.*
+*.key
+*.pem
+*.crt
+*.p12
 
-# 🧹 System files
+# 📁 Credential/Config Folders (Keep out of Git)
+config/
+secrets/
+credentials/
+
+# 🧹 System Files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# 📜 Logs
+# 📜 Log Files
 *.log
+*.log.*
 
-# 🌱 Environment/config files
-.env
+# 🌱 Build and Environment Artifacts
+*.local
+build/
+dist/
+cache/
+coverage/
 
-# 🧩 Node.js (if ever used)
+# 🧩 Node.js Files and Folders
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
+yarn.lock
 
-# 🛠️ VS Code settings (optional)
+# 🛠️ VS Code Settings (Optional)
 .vscode/
+
+# 🔄 Git Backup Files (from merge/rebase/conflict resolution)
+*.orig
+*.swp
+*.swo
+
+# 📸 Media Project Caches (Optional)
+*.psd
+*.xcf
+*.blend1
 

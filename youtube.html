@@ -7,7 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
   <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
+    /* Base Styling */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
@@ -17,84 +19,201 @@
       text-align: center;
     }
 
-    a {
-      color: #ff0000;
+    /* Header & Navigation */
+    header {
+      background: #1f1f1f;
+      padding: 12px 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* center horizontally */
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .nav-link {
+      color: #fff;
+      font-weight: 600;
       text-decoration: none;
-      transition: color 0.3s ease, text-shadow 0.3s ease;
+      padding: 10px 24px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    a:hover {
-      color: #ffffff;
-      text-shadow: 0 0 8px #ff0000;
+    .nav-link:hover {
+      background-color: #9147ff; /* Default hover: Twitch purple */
+      color: #fff;
     }
 
+    /* YouTube specific hover */
+    .youtube-link:hover {
+      background-color: #cc0000; /* YouTube red hover */
+      box-shadow: 0 0 12px #cc0000;
+    }
+    .kick-link:hover {
+      background-color: #09d82c;
+      box-shadow: 0 0 12px #eff0f0;
+      color: #000;
+    }
+
+    /* Tab Buttons */
+    .tab-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .tab-buttons button {
+      background-color: #ff0000;
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
+    }
+
+
+    .stream-commands-link:hover {
+      background: linear-gradient(45deg, #00bfae, #9147ff); /* teal to purple gradient */
+      color: #fff;
+      box-shadow: 0 0 12px #00bfae, 0 0 12px #9147ff;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Stream Container */
     .stream-container {
-      margin: 40px auto;
-      padding: 20px;
+      margin: 0 auto;
+      padding: 30px 20px;
       max-width: 900px;
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 0, 0, 0.2);
+      border: 1px solid rgba(255, 0, 0, 0.25);
       border-radius: 16px;
       backdrop-filter: blur(8px);
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+      text-align: left;
     }
 
+    /* Stream Header */
     .stream-header {
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 16px;
+      gap: 18px;
       margin-bottom: 12px;
     }
 
     .stream-header img {
       width: 48px;
-      height: auto;
+      height: 48px;
+      border-radius: 8px;
     }
 
     .stream-header a {
       font-size: 28px;
       font-weight: bold;
+      color: #ff0000;
+      text-decoration: none;
+      transition: color 0.3s ease, text-shadow 0.3s ease;
     }
 
+    .stream-header a:hover,
+    .stream-header a:focus {
+      color: #fff;
+      text-shadow: 0 0 10px #ff0000;
+      outline: none;
+    }
+
+    /* Tagline */
     .tagline {
       font-size: 16px;
       color: #ccc;
-      margin-top: -8px;
-      margin-bottom: 20px;
       font-style: italic;
+      margin-bottom: 24px;
     }
 
+    /* Embedded YouTube Video */
     iframe {
       width: 100%;
-      max-width: 800px;
-      height: 450px;
+      max-width: 860px;
+      height: 480px;
       border: none;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
       transition: transform 0.3s ease;
+      display: block;
+      margin: 0 auto;
     }
 
     iframe:hover {
-      transform: scale(1.01);
+      transform: scale(1.02);
     }
+
+    /* Responsive Tweaks */
+    @media (max-width: 960px) {
+      .stream-container {
+        padding: 20px 15px;
+        max-width: 100%;
+      }
+
+      iframe {
+        height: 360px;
+      }
+    }
+
   </style>
 </head>
 <body>
+
+<header>
+  <nav>
+   <nav>
+      <a href="schedule.html" class="nav-link home-link">Schedule</a>
+      <a href="stream-commands.html" class="nav-link stream-commands-link">Stream Commands</a>
+      <a href="twitch.html" class="nav-link">Twitch</a>
+      <a href="youtube.html" class="nav-link youtube-link active-tab">YouTube</a>
+      <a href="kick.html" class="nav-link kick-link">Kick</a>
+    </nav>
+  </nav>
+</header>
+
+
+
+  
+
   <div class="stream-container" id="youtube-container">
     <div class="stream-header">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png" alt="YouTube Logo">
-      <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener noreferrer">
-        YouTube: Caitlin aka Fallen
+      <a 
+        href="https://www.youtube.com/@caitlinakafallen" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="social-link"
+       ><i class="fa-brands fa-youtube"></i> YouTube: Caitlin aka Fallen
       </a>
     </div>
+    
     <div class="tagline">Live content, art, and creativity. Streaming now!</div>
     <iframe
       id="yt-iframe"
       src="https://www.youtube.com/embed/live_stream?channel=UCvbVbJh3CWljgXGSBuT1wAQ"
-      allowfullscreen>
-    </iframe>
+      allowfullscreen
+      title="YouTube Live Stream"
+    ></iframe>
   </div>
+
+
+<iframe
+    src="https://www.youtube.com/live_chat?v=DyGme6ZORmw&embed_domain=caitlinakafallen.github.io"
+    width="350"
+    height="520"
+    frameborder="0"
+    allowfullscreen
+  ></iframe>
 
   <script src="streaming.js"></script>
 </body>

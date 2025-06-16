@@ -168,7 +168,7 @@
     
           /* Header */
           header {
-            background-image: url('images/main-page.JPG');
+            background-image: url('images/main-page.JPG'));
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -252,40 +252,46 @@
             color: rgb(50, 50, 50);
           }
     
-            /* About Me Section */
             #about-me {
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin: 20px auto;
-            font-family: "Arial", sans-serif;
-            width: 90%;
-            max-width: 1000px;
-            text-align: center;
-            overflow: hidden;
-          }
+          padding: 20px;
+          background-color: rgba(255, 255, 255, 0.3); /* translucent white */
+          border-radius: 10px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+          margin: 20px auto;
+          font-family: "Arial", sans-serif;
+          width: 90%;
+          max-width: 1000px;
+          text-align: center;
+          overflow: hidden;
+
+          /* Frosted glass blur */
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px); /* for Safari */
+          border: 1px solid rgba(255, 255, 255, 0.2); /* subtle border */
+        }
+
 
           /* About Me Text */
           #about-me p {
             font-size: 18px;
-            color: #333;
+            color: #111010;
             line-height: 1.8;
             text-align: center;
           }
 
-          /* Decorative Symbols */
+         /* Decorative Symbols */
           #about-me p::before {
             content: "✧ ";
-            color: #7e39ff;
+            color: #c2a2fc;
             font-size: 24px;
           }
 
           #about-me p::after {
             content: " ✧";
-            color: #7e39ff;
+            color: #4fd6ee;
             font-size: 24px;
           }
+
 
           /* Center the image and make it responsive */
           #about-me img {

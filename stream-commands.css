@@ -12,7 +12,94 @@
           justify-content: center;
           min-height: 100vh;
         }
+        
+        header {
+          background: #1f1f1f;
+          padding: 12px 24px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
 
+        nav {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 40px;
+          flex-wrap: wrap;
+        }
+
+        .nav-link {
+          color: #fff;
+          font-weight: 600;
+          text-decoration: none;
+          padding: 10px 24px;
+          border-radius: 8px;
+          transition: background-color 0.3s ease, box-shadow 0.3s ease;
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .nav-link:hover {
+          background-color: #9147ff;
+          color: #fff;
+        }
+
+        .youtube-link:hover {
+          background-color: #cc0000;
+          box-shadow: 0 0 12px #cc0000;
+        }
+
+        .tab-buttons {
+          display: flex;
+          gap: 12px;
+        }
+
+        .stream-commands-link:hover {
+          background: linear-gradient(45deg, #00bfae, #9147ff);
+          color: #fff;
+          box-shadow: 0 0 12px #00bfae, 0 0 12px #9147ff;
+          transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .twitch-button {
+          background-color: #9147ff;
+          color: #fff;
+          border: none;
+          padding: 8px 18px;
+          font-size: 1rem;
+          border-radius: 6px;
+          cursor: pointer;
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+          transition: background-color 0.3s ease, box-shadow 0.3s ease;
+          box-shadow: 0 0 8px 2px rgba(145, 71, 255, 0.6);
+        }
+
+        .twitch-button:hover {
+          background-color: #9b4fff;
+          box-shadow: 0 0 24px 8px rgba(155, 79, 255, 0.7);
+        }
+
+        .twitch-button.active {
+          background-color: #7f39fb;
+          box-shadow: 0 0 20px 6px rgba(127, 57, 251, 0.8);
+        }
+
+        /* Responsive nav */
+        @media (max-width: 600px) {
+          nav {
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+          }
+
+          .tab-buttons {
+            margin-top: 10px;
+          }
+        }
+        
+        .kick-link:hover {
+          background-color: #09d82c;
+          box-shadow: 0 0 12px #eff0f0;
+          color: #000;
+        }
         /* Header Styles */
         h1 {
           color: #f1eeee;

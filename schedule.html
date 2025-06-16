@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>FallenOneArt Streaming</title>
+      <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+      <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+      <style>
+        /* Base Styling */
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
+          color: #fff;
+          margin: 0;
+          padding: 20px;
+          text-align: center;
+        }
+
+        /* Header & Navigation */
+        header {
+          background: #1f1f1f;
+          padding: 12px 24px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        nav {
+          display: flex;
+          align-items: center;
+          justify-content: center; /* center horizontally */
+          gap: 40px;
+          flex-wrap: wrap;
+        }
+
+        .nav-link {
+          color: #fff;
+          font-weight: 600;
+          text-decoration: none;
+          padding: 10px 24px;
+          border-radius: 8px;
+          transition: background-color 0.3s ease, box-shadow 0.3s ease;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .nav-link:hover {
+          background-color: #9147ff; /* Default hover: Twitch purple */
+          color: #fff;
+        }
+        
+        /* YouTube specific hover */
+        .youtube-link:hover {
+          background-color: #cc0000; /* YouTube red hover */
+          box-shadow: 0 0 12px #cc0000;
+        }
+
+
+        .stream-commands-link:hover {
+          background: linear-gradient(45deg, #00bfae, #9147ff); /* teal to purple gradient */
+          color: #fff;
+          box-shadow: 0 0 12px #00bfae, 0 0 12px #9147ff;
+          transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+
+        /* Tab Buttons */
+        .tab-buttons {
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+          margin-bottom: 40px;
+        }
+
+        .tab-buttons button {
+          background-color: #ff0000;
+          color: #fff;
+          border: none;
+          padding: 10px 24px;
+          font-size: 1.1rem;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: background-color 0.3s ease, box-shadow 0.3s ease;
+          box-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
+        }
+
+        .twitch-text {
+          color: #9147ff; /* Twitch Purple */
+          font-weight: bold;
+        }
+
+        .youtube-text {
+          color: #ff0000; /* YouTube Red */
+          font-weight: bold;
+        }
+          
+        .kick-text {
+          color: #09d82c; /* Kick Green */
+          font-weight: bold;
+        }
+        .kick-link:hover {
+          background-color: #09d82c;
+          box-shadow: 0 0 12px #eff0f0;
+          color: #000;
+        }
+
+        .stream-schedule {
+          max-width: 700px;
+          margin: 40px auto;
+          padding: 20px;
+          background: rgba(145, 71, 255, 0.1);
+          border: 1px solid rgba(145, 71, 255, 0.35);
+          border-radius: 12px;
+          box-shadow: 0 0 15px rgba(145, 71, 255, 0.2);
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          color: #eee;
+          text-align: center;
+        }
+
+      .stream-schedule h2 {
+        margin-bottom: 20px;
+        color: #9147ff;
+        font-size: 28px;
+      }
+
+      .stream-schedule table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .stream-schedule th,
+      .stream-schedule td {
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(145, 71, 255, 0.3);
+      }
+
+      .stream-schedule th {
+        background-color: #9147ff;
+        color: white;
+        font-weight: 600;
+      }
+
+      .stream-schedule tbody tr:hover {
+        background-color: rgba(145, 71, 255, 0.15);
+        transition: background-color 0.3s ease;
+      }
+      
+      .schedule-note {
+        margin-top: 20px;
+        font-size: 1.1rem;
+        color: #ddd;
+        text-align: center;
+      }
+
+      .schedule-note .platform {
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 8px;
+        color: #fff;
+      }
+
+      .schedule-note .twitch {
+        background-color: #9147ff;
+        box-shadow: 0 0 8px rgba(145, 71, 255, 0.7);
+      }
+
+      .schedule-note .youtube {
+        background-color: #ff0000;
+        box-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
+      }
+          
+      .schedule-note .kick {
+        background-color: #09d82c;
+        box-shadow: 0 0 8px rgba(9, 216, 44, 0.7);
+      }
+      .twitch-sub-goals-container {
+        max-width: 800px;
+        margin: 60px auto;
+        padding: 30px;
+        background: rgba(145, 71, 255, 0.1);
+        border: 1px solid rgba(145, 71, 255, 0.35);
+        border-radius: 16px;
+        box-shadow: 0 0 20px rgba(145, 71, 255, 0.25);
+        backdrop-filter: blur(10px);
+        color: #eee;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
+      }
+
+      .twitch-sub-goals h2 {
+        color: #9147ff;
+        font-size: 28px;
+        margin-bottom: 15px;
+      }
+
+      .twitch-sub-goals p {
+        margin-bottom: 25px;
+        font-size: 16px;
+      }
+
+      .sub-goals-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      .sub-goals-table th,
+      .sub-goals-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(145, 71, 255, 0.3);
+      }
+
+      .sub-goals-table th {
+        background-color: #9147ff;
+        color: white;
+        font-weight: 600;
+      }
+
+      .sub-goals-table tbody tr:hover {
+        background-color: rgba(145, 71, 255, 0.1);
+        transition: background-color 0.3s ease;
+      }
+          
+      .twitch-cheer-section {
+          max-width: 800px;
+          margin: 60px auto;
+          padding: 30px;
+          background: rgba(145, 71, 255, 0.1);
+          border: 1px solid rgba(145, 71, 255, 0.35);
+          border-radius: 16px;
+          box-shadow: 0 0 20px rgba(145, 71, 255, 0.25);
+          backdrop-filter: blur(10px);
+          color: #eee;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          text-align: center;
+        }
+
+        .twitch-cheer-section h2 {
+          color: #8e77b1;
+          font-size: 28px;
+          margin-bottom: 15px;
+        }
+
+        .twitch-cheer-section p {
+          margin-bottom: 25px;
+          font-size: 16px;
+        }
+
+        /* Cheer table styled like sub-goal table */
+        .cheer-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 0 auto;
+          font-family: inherit;
+          background-color: transparent;
+          color: #fff;
+          border-radius: 12px;
+          overflow: hidden;
+          font-size: 15px;
+        }
+
+        .cheer-table th,
+        .cheer-table td {
+          padding: 12px 15px;
+          text-align: left;
+          border-bottom: 1px solid rgba(145, 71, 255, 0.3);
+        }
+
+        .cheer-table th {
+          background-color: #9147ff;
+          color: white;
+          font-weight: 600;
+        }
+
+        .cheer-table tbody tr:hover {
+          background-color: rgba(145, 71, 255, 0.1);
+          transition: background-color 0.3s ease;
+        }
+
+        .cheer-table tr:last-child td {
+          border-bottom: none;
+        }
+
+        .cheer-icon {
+          width: 18px;
+          height: 18px;
+          vertical-align: middle;
+          margin-right: 6px;
+        }
+
+        /* Mobile Responsive */
+        @media screen and (max-width: 480px) {
+          .twitch-cheer-section {
+            padding: 20px;
+          }
+
+          .twitch-cheer-section h2 {
+            font-size: 22px;
+          }
+
+          .twitch-cheer-section p {
+            font-size: 14px;
+          }
+
+          .cheer-table th,
+          .cheer-table td {
+            padding: 8px 10px;
+            font-size: 13px;
+          }
+
+          .cheer-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+          }
+        }
+
+      </style>
+    </head>
+    <body>
+
+          <header>
+          <nav>
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="stream-commands.html" class="nav-link stream-commands-link">Stream Commands</a>
+            <a href="twitch.html" class="nav-link">Twitch</a>
+            <a href="youtube.html" class="nav-link youtube-link active-tab">YouTube</a>
+            <a href="kick.html" class="nav-link kick-link">Kick</a>
+          </nav>
+        </header>
+
+        <!-- Stream Schedule Section -->
+        <section class="stream-schedule">
+          <h2>
+            <span style="color: white;">Stream Schedule (</span>
+            <span class="twitch-text">Twitch</span>
+            <span style="color: white;">/</span>
+            <span class="youtube-text">YouTube</span>
+            <span style="color: white;">/</span>
+            <span class="kick-text">Kick</span>
+            <span style="color: white;">)</span>
+          </h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Stream Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Monday</td>
+                <td>OFF</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>Tuesday</td>
+                <td>OFF</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>Wednesday</td>
+                <td>7:00PM - 9:30PM</td>
+                <td>Creative  Stream (Variety)</td>
+              </tr>
+              <tr>
+                <td>Thursday</td>
+                <td>OFF</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>Friday</td>
+                <td>7:00PM - 9:30PM </td>
+                <td>Gaming Day/8-Bit Friday</td>
+              </tr>
+              <tr>
+                <td>Saturday</td>
+                <td>7:00PM - 9:30PM</td>
+                <td>Lofi Stream Day[Viewers Chooses]</td>
+              </tr>
+              <tr>
+                <td>Sunday</td>
+                <td>OFF</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="schedule-note">
+            <strong>Note:</strong> These times apply to <span class="platform twitch">Twitch</span> ,<span class="platform youtube">YouTube</span> and <span class="platform kick">Kick</span>streams.
+          </p>
+        </section>
+      <section class="stream-schedule twitch-affiliate-announcement">
+      <h2>Twitch Affiliate</h2>
+      <p>FallenOneArt is now a Twitch Affiliate! 🎉</p>
+      <p>Join the community and support the channel by subscribing or cheering with bits!</p>
+      <p>Check out the sub goals and cheer rewards below!</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Time</th>
+            <th>Stream Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Friday – June 20th</td>
+            <td>12 PM – 12 AM</td>
+            <td>Twitch Affiliate Anniversary Part 1</td>
+          </tr>
+          <tr>
+            <td>Saturday – June 21st</td>
+            <td>2 PM – 8 PM</td>
+            <td>Twitch Affiliate Anniversary Part 2</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+      <!-- Twitch Sub Goals Section -->
+      <section class="twitch-sub-goals-container">
+        <div class="twitch-sub-goals">
+          <h2>🎯 Twitch Sub Goals/Rewards</h2>
+          <p>Here are the goals and what you unlock as we grow together!</p>
+          <div class="sub-goals-image"></div>
+
+          <table class="sub-goals-table">
+            <thead>
+              <tr>
+                <th>Sub Goals</th>
+                <th>Reward</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>65 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>75 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>85 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>95 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>100 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>150 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>250 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>350 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>400 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>450 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>500 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>550 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>650 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>750 Subs</td>
+                <td>TBD</td>
+              </tr>
+              <tr>
+                <td>850 Subs</td>
+                <td>TBD</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+         <!-- Twitch Cheer Bits Section -->
+      <section class="twitch-cheer-section">
+        <h2 style="color: #9146FF;">✨ Twitch Cheer Rewards</h2>
+        <p style="color: white;">Show your support with bits and unlock fun titles along the way!</p>
+
+        <table class="cheer-table">
+          <thead>
+            <tr>
+              <th>Bits</th>
+              <th>Reward</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><img src="images/twitch-icon.png" class="cheer-icon">10</td><td>TBA</td>
+            </tr>
+            <tr>
+              <td><img src="images/twitch-icon.png" class="cheer-icon">50</td><td>TBA</td>
+            </tr>
+            <tr>
+              <td><img src="images/twitch-icon.png" class="cheer-icon">100</td><td>TBA</td>
+            </tr>
+            <tr>
+              <td><img src="images/twitch-icon.png" class="cheer-icon">250</td><td>TBA</td>
+            </tr>
+            <tr>
+              <td><img src="images/twitch-icon.png" class="cheer-icon">500</td><td>TBA</td>
+            </tr>
+            <tr>
+              <td><img src="images/twitch-icon.png" class="cheer-icon">750</td><td>TBA</td>
+            </tr>
+            <tr>
+              <td><img src="images/twitch-icon.png" class="cheer-icon">1000</td><td>TBA</td>
+            </tr>
+            <tr>
+              <td><img src="images/twitch-icon.png" class="cheer-icon">1500</td><td>TBA</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      </section>
+      </section>
+        
+
+      <script>
+         function switchTab(tab) {
+            const twitch = document.getElementById('twitch-tab');
+            const youtube = document.getElementById('youtube-tab');
+
+            if (tab === 'twitch') {
+                twitch.classList.add('active');
+                youtube.classList.remove('active');
+            } else {
+                youtube.classList.add('active');
+                twitch.classList.remove('active');
+            }
+          }
+      </script>
+    </body>
+</html>

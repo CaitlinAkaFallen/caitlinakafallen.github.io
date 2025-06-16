@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>FallenOneArt Streaming</title>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap"
+        rel="stylesheet"
+      />
+      <link
+        rel="shortcut icon"
+        href="images/favicon.ico"
+        type="image/x-icon"
+      />
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      />
+      <script src="https://player.twitch.tv/js/embed/v1.js"></script>
+
+        <style>
+   /* Common styles */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #111;
+        color: #eee;
+        margin: 0;
+        padding: 20px;
+        text-align: center;
+        overflow-x: hidden;
+      }
+
+      h1 {
+        margin-top: 60px;
+        font-family: "Bubblegum Sans", cursive;
+      }
+
+      header {
+        background: #1f1f1f;
+        padding: 12px 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+
+      .nav-link {
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 10px 24px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .nav-link:hover {
+        background-color: #9147ff;
+        color: #fff;
+      }
+
+      .youtube-link:hover {
+        background-color: #cc0000;
+        box-shadow: 0 0 12px #cc0000;
+      }
+
+      .tab-buttons {
+        display: flex;
+        gap: 12px;
+      }
+
+      .stream-commands-link:hover {
+        background: linear-gradient(45deg, #00bfae, #9147ff);
+        color: #fff;
+        box-shadow: 0 0 12px #00bfae, 0 0 12px #9147ff;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .twitch-button {
+        background-color: #9147ff;
+        color: #fff;
+        border: none;
+        padding: 8px 18px;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 0 8px 2px rgba(145, 71, 255, 0.6);
+      }
+
+      .twitch-button:hover {
+        background-color: #9b4fff;
+        box-shadow: 0 0 24px 8px rgba(155, 79, 255, 0.7);
+      }
+
+      .twitch-button.active {
+        background-color: #7f39fb;
+        box-shadow: 0 0 20px 6px rgba(127, 57, 251, 0.8);
+      }
+
+      /* Responsive nav */
+      @media (max-width: 600px) {
+        nav {
+          flex-direction: column;
+          gap: 20px;
+          align-items: center;
+        }
+
+        .tab-buttons {
+          margin-top: 10px;
+        }
+      }
+      
+      .kick-link:hover {
+        background-color: #09d82c;
+        box-shadow: 0 0 12px #eff0f0;
+        color: #000;
+      }
+
+     .stream-container {
+        margin: 40px auto 0;
+        padding: 60px 50px 80px; /* top: 60px, sides: 50px, bottom: 80px */
+        max-width: 1400px;
+        min-height: 300px; /* increased for a bit more space */
+        background: linear-gradient(135deg, rgba(145, 71, 255, 0.1), rgba(40, 0, 80, 0.2));
+        border: 1px solid rgba(145, 71, 255, 0.35);
+        border-radius: 16px;
+        box-shadow: 0 0 25px rgba(145, 71, 255, 0.3), 0 0 5px rgba(255, 255, 255, 0.05);
+        text-align: left;
+        box-sizing: border-box;
+        overflow: hidden;
+        position: relative;
+      }
+      .stream-container h2 {
+        text-align: center;
+      }
+
+      .stream-container h2 a {
+        font-size: 30px;
+        font-weight: bold;
+        color: #9147ff;
+        text-decoration: none;
+        transition: color 0.3s ease, text-shadow 0.3s ease;
+      }
+
+      .stream-container h2 a:hover,
+      .stream-container h2 a:focus {
+        color: #fff;
+        text-shadow: 0 0 12px #9147ff;
+        outline: none;
+      }
+
+      .twitch-columns {
+        display: flex;
+        flex-wrap: wrap; /* allow wrapping on small screens */
+        gap: 20px;
+        align-items: flex-start;
+        justify-content: center; /* center everything horizontally */
+      }
+
+
+      #twitch-player {
+        width: 100%;
+        max-width: 1020px;
+        height: 520px;
+        background-color: #000;
+        border-radius: 8px;
+        flex-shrink: 1;
+      }
+
+
+      .stream-wrapper {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 15px;
+        box-sizing: border-box;
+      }
+
+
+      #twitch-chat-embed {
+        width: 350px;
+        height: 520px;
+        border: none;
+        background-color: transparent !important;
+        z-index: 999999 !important;
+        pointer-events: auto !important;
+        position: relative !important;
+      }
+
+      .twitch-columns2 {
+        margin-top: 15px;
+        width: 100%;
+        max-width: 100%; /* NEW: prevent horizontal overflow */
+        background: rgba(20, 20, 20, 0.6);
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 0 8px rgba(145, 71, 255, 0.5);
+        color: white;
+        box-sizing: border-box; /* NEW: ensure padding doesn’t push it out */
+        overflow-x: hidden;      /* NEW: hide horizontal overflow */
+      }
+      @media (max-width: 600px) {
+        .twitch-columns2 {
+          padding: 8px;
+          font-size: 0.95rem;
+        }
+      }
+
+      .twitch-columns2 h3 {
+        text-align: center; /* or left, or right */
+      }
+      .twitch-columns2 ul {
+        text-align: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .stream-wrapper {
+        max-width: 1400px;
+        margin: 40px auto 0;
+      }
+
+      .stream-container.active {
+        padding: 0;
+      }
+
+      .stream-container2.active {
+        margin-top: 0;
+      }
+
+      /* Responsive stacking */
+      @media (max-width: 1300px) {
+        .twitch-columns {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        #twitch-player {
+          width: 100%;
+          max-width: 920px;
+          height: 520px;
+          margin-bottom: 20px;
+        }
+
+        /* Fix chat overflow on window resize or movement */
+      .twitch-chat-wrapper {
+        max-width: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+
+      #twitch-chat-embed {
+        max-width: 100%;
+        width: 100%;
+        display: block;
+      }
+
+
+        .twitch-columns2 {
+          width: 100%;
+          max-width: 1300px;
+          margin: 0 auto;
+        }
+      }
+
+      @media (max-width: 400px) {
+        #twitch-chat-embed {
+          height: 250px;
+        }
+
+        #twitch-player {
+          height: 250px;
+        }
+      }
+
+      #streamInfo {
+        color: white;
+        font-family: "Segoe UI", sans-serif;
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      #streamInfo span {
+        margin: 2px 0;
+        font-size: 16px;
+      }
+
+      #streamTitle {
+        font-weight: bold;
+      }
+
+      #streamGame {
+        font-style: italic;
+        color: #ccc;
+      }
+
+
+      .clips-section h2 {
+        text-align: center;
+        margin-bottom: 16px;
+        font-size: 1.8rem;
+        color: #f8f8f8;
+      }
+
+      #streamTimer {
+        display: none;
+      }
+
+      .clips-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+
+      .clips-row iframe {
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(145, 71, 255, 0.4);
+        width: 320px;
+        height: 180px;
+      }
+
+      .stream-info span {
+        margin-right: 10px;
+      }
+
+       #viewerCount {
+        color: red; /* Sets the color of the icon and number to red */
+        font-size: 1.2em; /* Adjust the size of the icon and number */
+        text-shadow: 1px 1px 2px #000; /* Add a subtle shadow for better visibility */
+        /* You might need to adjust the alignment depending on your surrounding elements */
+        /* display: inline-flex; */
+        /* align-items: center; */
+      }
+
+      .stream-info span:last-child {
+        margin-right: 0;
+      }
+
+      </style>
+    </head>
+    <body>
+      <header>
+        <nav>
+          <a href="schedule.html" class="nav-link home-link">Schedule</a>
+          <a href="stream-commands.html" class="nav-link stream-commands-link">Stream Commands</a>
+          <a href="twitch.html" class="nav-link">Twitch</a>
+          <a href="youtube.html" class="nav-link youtube-link active-tab">YouTube</a>
+          <a href="kick.html" class="nav-link kick-link">Kick</a>
+        </nav>
+      </header>
+
+      <div class="stream-wrapper">
+        <!-- Twitch Player + Chat + Info -->
+        <div class="stream-container active" id="twitch-tab">
+          <h2>
+            <a
+              href="https://www.twitch.tv/fallenoneart"
+              target="_blank"
+              rel="noopener noreferrer"
+              ><i class="fab fa-twitch"></i> Twitch: fallenoneart</a>
+          </h2>
+
+          <div class="twitch-columns">
+            <div class="twitch-player-container">
+              <div id="twitch-player"></div>
+              <div id="twitch-live" class="indicator"></div>
+              <div id="streamInfo">
+                <span id="streamTitle"></span>
+                <span id="streamGame"></span>
+              </div>
+
+              <div class="stream-info">
+                <span id="viewerCount">👤 0</span>
+                <span id="streamTimer"> 00:00:00</span>
+                
+              </div>
+              
+            </div>
+            
+
+
+            <div class="twitch-chat-wrapper">
+              <iframe
+                id="twitch-chat-embed"
+                src="https://www.twitch.tv/embed/fallenoneart/chat?parent=caitlinakafallen.github.io&theme=dark"
+                title="Twitch Chat"
+                frameborder="0"
+                allowfullscreen
+              ></iframe>
+
+              <div class="twitch-columns2">
+                <h3>Stream Info</h3>
+                <ul>
+                  <li>Be kind and respectful</li>
+                  <li>No spoilers or spam</li>
+                  <li>Enjoy the stream!</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clips Section -->
+        <div class="clips-section">
+          <h2>Recent Clips</h2>
+          <div class="clips-row">
+            <iframe
+              src="https://clips.twitch.tv/embed?clip=ArbitraryFrigidDiscBabyRage-Y5h_dBp0jr3J373d&parent=caitlinakafallen.github.io"
+              frameborder="0"
+              scrolling="no"
+              allowfullscreen="true"
+              title="Twitch Clip 1: Arbitrary Frigid Disc"
+            ></iframe>
+
+            <iframe
+              src="https://clips.twitch.tv/embed?clip=EndearingInspiringStinkbugYouWHY-7-ukExW7FN-dX_dk&parent=caitlinakafallen.github.io"
+              frameborder="0"
+              scrolling="no"
+              allowfullscreen="true"
+              title="Twitch Clip 2: Indignant Good Brigadier"
+            ></iframe>
+
+            <iframe
+              src="https://clips.twitch.tv/embed?clip=ThirstyOptimisticTrollFeelsBadMan-VCPPKHW3DaUw9xtT&parent=caitlinakafallen.github.io"
+              frameborder="0"
+              scrolling="no"
+              allowfullscreen="true"
+              title="Twitch Clip 3: Savvy Fearless Condor"
+            ></iframe>
+            <iframe
+              src="https://clips.twitch.tv/embed?clip=SlipperySquareKumquatPoooound-gFEPFF5mTYtRKa-i&parent=caitlinakafallen.github.io"
+              frameborder="0"
+              allowfullscreen="true"
+              scrolling="no"
+              height="378"
+              width="620"
+              title="Twitch Clip 4: Slippery Square Kumquat"
+            ></iframe>
+          </div>
+        </div>
+      </div> <!-- Closing stream-wrapper -->
+      
+          <script>
+     // Allowed domains for Twitch embed parent paramMore actions
+      const allowedParents = ['localhost', 'caitlinscreativespace.com', 'caitlinakafallen.github.io'];
+
+        // Detect current domain or fallback
+        const domain = window.location.hostname;
+        const parentDomain = allowedParents.includes(domain) ? domain : 'localhost';
+
+        console.log('Current domain:', domain);
+        console.log('Using Twitch embed parent:', parentDomain);
+
+        // Twitch Embed player setup with proper parent param
+        const twitchPlayer = new Twitch.Player("twitch-player", {
+          channel: "fallenoneart",
+          width: 800,
+          height: 450,
+          parent: allowedParents,
+          autoplay: false,
+        });
+        twitchPlayer.setVolume(0.5);
+
+        // Dynamically set Twitch Chat iframe src with correct parent
+        (function () {
+          const iframe = document.getElementById('twitch-chat-embed');
+          if (iframe) {
+            iframe.src = `https://www.twitch.tv/embed/fallenoneart/chat?parent=${parentDomain}&theme=dark`;
+          }
+      })();
+
+        // Twitch API credentials
+        const clientId = '08nkuo02qic2pa729foara0287b49x';
+        const oauthToken = 'puk4c4jle2hdkakbm6zmxpadjwhwu1';
+        const username = 'fallenoneart';
+
+        // Title & Game display elements
+        const titleEl = document.getElementById("streamTitle");
+        const gameEl = document.getElementById("streamGame");
+
+        // Twitch Live Check using OAuth token and client ID
+        async function checkTwitchLive() {
+          try {
+            const resp = await fetch(`https://api.twitch.tv/helix/streams?user_login=${username}`, {
+              headers: {
+                "Client-ID": clientId,
+                "Authorization": `Bearer ${oauthToken}`
+              }
+            });
+            const { data } = await resp.json();
+            const isLive = data && data.length > 0;
+
+            const liveEl = document.getElementById("twitch-live");
+            if (liveEl) liveEl.classList.toggle("live", isLive);
+
+            if (isLive) {
+              const stream = data[0];
+              updateViewerCount(stream.viewer_count || 0);
+
+              // Set title & game
+              if (titleEl) titleEl.textContent = ` ${stream.title}`;
+              if (gameEl) gameEl.textContent = ` ${stream.game_name}`;
+
+              // Calculate seconds since stream started
+              const startedAt = new Date(stream.started_at);
+              streamSeconds = Math.floor((Date.now() - startedAt.getTime()) / 1000);
+              startStreamTimer();
+            } else {
+              stopStreamTimer();
+              updateViewerCount(0);
+
+              // Not live fallback text
+              if (titleEl) titleEl.textContent = "Not Live";
+              if (gameEl) gameEl.textContent = "";
+            }
+
+          } catch (e) {
+            console.error("Error checking Twitch live status:", e);
+            stopStreamTimer();
+            updateViewerCount(0);
+            if (titleEl) titleEl.textContent = "Not Live";
+            if (gameEl) gameEl.textContent = "";
+          }
+        }
+
+        // YouTube Live Check (unchanged)
+        async function checkYouTubeLive() {
+          try {
+            const apiKey = "109546453641-rppq2bcferlo9or60730io15lk34vg03.apps.googleusercontent.com";
+            const channelId = "UCvbVbJh3CWljgXGSBuT1wAQ";
+
+            const resp = await fetch(
+              `https://www.googleapis.com/youtube/v3/search?part=id&channelId=${channelId}&eventType=live&type=video&key=${apiKey}`
+            );
+            const { items } = await resp.json();
+
+            document.getElementById("youtube-live")
+              ?.classList.toggle("live", items && items.length > 0);
+          } catch (e) {
+            console.error("Error checking YouTube live status:", e);
+          }
+        }
+
+        // Stream Timer Logic
+        let streamSeconds = 0;
+        let streamInterval = null;
+        const streamTimerEl = document.getElementById("streamTimer");
+
+        function startStreamTimer() {
+          if (streamInterval) return; // prevent multiple intervals
+          streamTimerEl.style.display = "inline"; // show timer when live
+          streamInterval = setInterval(() => {
+            streamSeconds++;
+            const hrs = String(Math.floor(streamSeconds / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((streamSeconds % 3600) / 60)).padStart(2, '0');
+            const secs = String(streamSeconds % 60).padStart(2, '0');
+            if (streamTimerEl) {
+              streamTimerEl.textContent = ` ${hrs}:${mins}:${secs}`;
+            }
+          }, 1000);
+        }
+
+
+        function stopStreamTimer() {
+          if (streamInterval) clearInterval(streamInterval);
+          streamInterval = null;
+          streamSeconds = 0;
+          if (streamTimerEl) {
+            streamTimerEl.textContent = ` 00:00:00`;
+            streamTimerEl.style.display = "none"; // hide timer when not live
+          }
+        }
+
+
+        // Viewer Count Logic
+        const viewerCountEl = document.getElementById("viewerCount");
+
+        function updateViewerCount(count) {
+          if (viewerCountEl) {
+            viewerCountEl.textContent = `👤 ${count}`;
+          }
+        }
+
+        // Initial check + refresh every 15s
+        checkTwitchLive();
+        checkYouTubeLive();
+        setInterval(checkTwitchLive, 15000);
+        setInterval(checkYouTubeLive, 15000);
+
+    </script>
+  </body>
+</html>
