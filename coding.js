@@ -1,183 +1,126 @@
- // Add the Language Grid dynamically (if needed in the future)
-            const languageGridHTML = `<!-- Language Grid HTML content here -->`;
+document.addEventListener('DOMContentLoaded', () => {
+    /* ===== 1. URL & INITIAL STATE ===== */
+    (function hideHtmlInURL() {
+        const pathname = window.location.pathname;
+        if (pathname.endsWith(".html")) {
+            window.history.replaceState({}, "", pathname.replace(".html", ""));
+        }
+    })();
 
-            const mainContent = document.querySelector('.main-content');
-            if (mainContent && !mainContent.innerHTML.includes(languageGridHTML)) {
-                mainContent.innerHTML += languageGridHTML;
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) mainContent.classList.add('hidden'); // Kept from script 1
+
+    /* ===== 2. MODAL LOGIC ===== */
+    const tosModal = document.getElementById('tos-modal');
+    const privacyModal = document.getElementById('privacy-modal');
+    const openTos = document.getElementById('open-tos');
+    const openPrivacy = document.getElementById('open-privacy');
+    const closeButtons = document.querySelectorAll('.modal .close');
+
+    function openModal(modal) { if (modal) modal.classList.add('show'); }
+    function closeModal(modal) { if (modal) modal.classList.remove('show'); }
+
+    if (openTos) openTos.addEventListener('click', e => { e.preventDefault(); openModal(tosModal); });
+    if (openPrivacy) openPrivacy.addEventListener('click', e => { e.preventDefault(); openModal(privacyModal); });
+    
+    closeButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeModal(btn.closest('.modal'));
+        });
+    });
+
+    window.addEventListener('click', e => { if (e.target.classList.contains('modal')) closeModal(e.target); });
+    window.addEventListener('keydown', e => { 
+        if (e.key === 'Escape') { closeModal(tosModal); closeModal(privacyModal); } 
+    });
+
+    /* ===== 3. ANNOUNCEMENTS: FETCH & RENDER ===== */
+    const normalBtn = document.getElementById('normal-announcements-btn');
+    const releaseBtn = document.getElementById('release-announcements-btn');
+    const normalList = document.getElementById('normal-announcements-list');
+    const releaseList = document.getElementById('release-announcements-list');
+    const announcementHeading = document.getElementById('announcement-heading');
+
+    async function loadAnnouncements() {
+        try {
+            // Fetch with cache-busting
+            const response = await fetch(`/announcements.json?t=${Date.now()}`);
+            if (!response.ok) throw new Error('File not found');
+            const data = await response.json();
+
+            if (normalList) normalList.innerHTML = '';
+            if (releaseList) releaseList.innerHTML = '';
+
+            const normalItems = data.filter(item => item.type === 'normal');
+            const releaseItems = data.filter(item => item.type === 'release');
+
+            // Handle empty states
+            if (normalItems.length === 0 && normalList) {
+                normalList.innerHTML = '<li class="empty">No announcements available.</li>';
+            }
+            if (releaseItems.length === 0 && releaseList) {
+                releaseList.innerHTML = '<li class="empty">No release notes available.</li>';
             }
 
-            // Navbar Dropdown Animation
-            const dropdowns = document.querySelectorAll('.dropdown-btn');
-            dropdowns.forEach(dropdown => {
-                dropdown.addEventListener('mouseenter', function () {
-                    const content = this.nextElementSibling;
-                    content.classList.add('active');
-                });
-
-                dropdown.addEventListener('mouseleave', function () {
-                    const content = this.nextElementSibling;
-                    content.classList.remove('active');
-                });
-            });
-
-            let editingIndex = null;
-
-            // Function to add an announcement
-            function addAnnouncement(title, link, version = '', notes = '') {
-                const announcementList = document.getElementById('announcement-list');
+            // Render combined items
+            data.forEach((item, index) => {
                 const li = document.createElement('li');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.classList.add('announcement-checkbox');
-                checkbox.setAttribute('data-title', title);
-                checkbox.setAttribute('data-link', link);
-                checkbox.setAttribute('data-version', version);
-                checkbox.setAttribute('data-notes', notes);
+                li.className = 'announcement-card';
+                
+                const titleHtml = item.link && item.link.trim() !== '' 
+                    ? `<a href="${item.link}" class="announcement-title is-bold-white" target="_blank">${item.title || 'Untitled'}</a>`
+                    : `<span class="announcement-title is-bold-white">${item.title || 'Untitled'}</span>`;
 
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Edit';
-                editButton.addEventListener('click', function() {
-                    editAnnouncement(title, link, version, notes, li);
-                });
+                li.innerHTML = `
+                    <div>
+                        ${titleHtml}
+                        <div class="announcement-details">
+                            ${item.version ? `<span class="announcement-version">Version: ${item.version}</span>` : ''}
+                            <span class="announcement-notes">Notes: ${item.notes || 'N/A'}</span>
+                            ${item.date ? `<small class="announcement-date" style="display:block; opacity:0.6;">${item.date}</small>` : ''}
+                        </div>
+                    </div>
+                `;
 
-                li.appendChild(checkbox);
-                li.innerHTML += `<a href="${link}">${title}</a><br><small>Version: ${version}</small><br><small>Notes: ${notes}</small>`;
-                li.appendChild(editButton);
-                announcementList.appendChild(li);
-
-                // Store the announcement in localStorage
-                let announcements = JSON.parse(localStorage.getItem('announcements')) || [];
-                if (editingIndex !== null) {
-                    announcements[editingIndex] = { title, link, version, notes };
-                    editingIndex = null; // Reset editing index
-                } else {
-                    announcements.push({ title, link, version, notes });
+                if (item.type === 'normal' && normalList) {
+                    normalList.appendChild(li);
+                } else if (item.type === 'release' && releaseList) {
+                    releaseList.appendChild(li);
                 }
-                localStorage.setItem('announcements', JSON.stringify(announcements));
 
-                // Automatically remove the "new" class after 5 seconds
-                setTimeout(() => {
-                    checkbox.classList.remove('new');
-                }, 5000);
+                // Animation
+                setTimeout(() => li.classList.add('is-visible'), index * 50);
+            });
+        } catch (err) {
+            console.warn("Announcement Fetch Error:", err);
+        }
+    }
 
-                updateAnnouncementSelect();  // Update checkbox options
-            }
+    /* ===== 4. TOGGLE VIEW LOGIC ===== */
+    function switchAnnouncements(type) {
+        if (normalBtn) normalBtn.classList.toggle('active-toggle', type === 'normal');
+        if (releaseBtn) releaseBtn.classList.toggle('active-toggle', type === 'release');
 
-            // Function to load announcements from localStorage on page load
-            function loadAnnouncements() {
-                // Clear existing announcements
-                const announcementList = document.getElementById('announcement-list');
-                announcementList.innerHTML = '';
+        // Update heading if it exists (from script 1)
+        if (announcementHeading) {
+            announcementHeading.textContent = type === 'normal' ? 'Normal Announcements' : 'Release Announcements';
+        }
 
-                const announcements = JSON.parse(localStorage.getItem('announcements')) || [];
+        const nContainer = document.querySelector('.normal-announcements-container');
+        const rContainer = document.querySelector('.release-announcements-container');
+        
+        if (nContainer) nContainer.style.display = (type === 'normal') ? 'block' : 'none';
+        if (rContainer) rContainer.style.display = (type === 'release') ? 'block' : 'none';
+    }
 
-                announcements.forEach(announcement => {
-                    const li = document.createElement('li');
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.classList.add('announcement-checkbox');
-                    checkbox.setAttribute('data-title', announcement.title);
-                    checkbox.setAttribute('data-link', announcement.link);
-                    checkbox.setAttribute('data-version', announcement.version || '');
-                    checkbox.setAttribute('data-notes', announcement.notes || '');
+    if (normalBtn) normalBtn.addEventListener('click', (e) => { e.preventDefault(); switchAnnouncements('normal'); });
+    if (releaseBtn) releaseBtn.addEventListener('click', (e) => { e.preventDefault(); switchAnnouncements('release'); });
 
-                    const editButton = document.createElement('button');
-                    editButton.textContent = 'Edit';
-                    editButton.addEventListener('click', function() {
-                        editAnnouncement(announcement.title, announcement.link, announcement.version, announcement.notes, li);
-                    });
-
-                    li.appendChild(checkbox);
-                    li.innerHTML += `<a href="${announcement.link}">${announcement.title}</a><br><small>Version: ${announcement.version}</small><br><small>Notes: ${announcement.notes}</small>`;
-                    li.appendChild(editButton);
-                    announcementList.appendChild(li);
-                });
-
-                updateAnnouncementSelect();  // Update checkbox options
-            }
-
-            // Function to update checkbox list with the current announcements
-            function updateAnnouncementSelect() {
-                const checkboxes = document.querySelectorAll('.announcement-checkbox');
-                checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', function () {
-                        // Show the delete button only if any checkbox is selected
-                        const deleteButton = document.getElementById('delete-announcement');
-                        const selectedCheckboxes = document.querySelectorAll('.announcement-checkbox:checked');
-                        deleteButton.style.display = selectedCheckboxes.length > 0 ? 'block' : 'none';
-                    });
-                });
-            }
-
-            // Function to delete selected announcements
-            function deleteSelectedAnnouncements() {
-                const selectedCheckboxes = document.querySelectorAll('.announcement-checkbox:checked');
-                
-                // Get all announcements from localStorage
-                let announcements = JSON.parse(localStorage.getItem('announcements')) || [];
-                
-                selectedCheckboxes.forEach(checkbox => {
-                    const title = checkbox.getAttribute('data-title');
-                    const link = checkbox.getAttribute('data-link');
-                    const version = checkbox.getAttribute('data-version');
-                    const notes = checkbox.getAttribute('data-notes');
-
-                    // Remove from the list on the page
-                    checkbox.parentElement.remove();
-
-                    // Remove from localStorage
-                    announcements = announcements.filter(announcement => !(announcement.title === title && announcement.link === link && announcement.version === version && announcement.notes === notes));
-                });
-                
-                // Save the updated announcements array back to localStorage
-                localStorage.setItem('announcements', JSON.stringify(announcements));
-
-                // Hide delete button again
-                document.getElementById('delete-announcement').style.display = 'none';
-            }
-
-            // Function to edit an announcement
-            function editAnnouncement(title, link, version, notes, li) {
-                document.getElementById('announcement-title').value = title;
-                document.getElementById('announcement-link').value = link;
-                document.getElementById('announcement-version').value = version;
-                document.getElementById('announcement-notes').value = notes;
-                
-                // Store the index of the announcement being edited
-                const announcementList = JSON.parse(localStorage.getItem('announcements')) || [];
-                editingIndex = announcementList.findIndex(announcement => 
-                    announcement.title === title && 
-                    announcement.link === link && 
-                    announcement.version === version && 
-                    announcement.notes === notes
-                );
-
-                // Optionally, highlight the item being edited (for better UX)
-                li.classList.add('editing');
-            }
-
-            // Load saved announcements when the page is loaded
-            window.onload = loadAnnouncements;
-
-            // Function to add a custom announcement from the form
-            function addCustomAnnouncement() {
-                const title = document.getElementById('announcement-title').value;
-                const link = document.getElementById('announcement-link').value;
-                const version = document.getElementById('announcement-version').value;
-                const notes = document.getElementById('announcement-notes').value;
-
-                if (title && link) {
-                    addAnnouncement(title, link, version, notes);
-
-                    // Clear the form fields after adding the announcement
-                    document.getElementById('announcement-title').value = '';
-                    document.getElementById('announcement-link').value = '';
-                    document.getElementById('announcement-version').value = '';
-                    document.getElementById('announcement-notes').value = '';
-                } else {
-                    alert('Please fill in both the title and link!');
-                }
-            }
-
-            // Event listener for the delete button
-            document.getElementById('delete-announcement').addEventListener('click', deleteSelectedAnnouncements);
+    /* ===== 5. INITIALIZE ===== */
+    loadAnnouncements();
+    switchAnnouncements('normal');
+    
+    // Auto-refresh every 60 seconds
+    setInterval(loadAnnouncements, 60000);
+});

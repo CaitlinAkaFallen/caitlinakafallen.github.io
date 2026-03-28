@@ -5,471 +5,705 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Caitlins's Gallery</title>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
         <link rel="icon" href="images/favicon.ico" type="image/x-icon">
         <style>
-        /* General Body Styling */
-        body {
-            font-family: Arial, sans-serif;
+
+             /* =========================
+            Global Styles
+            ========================= */
+            body {
+            font-family: "Poppins", Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            background: linear-gradient(#40f1fd, #9f51f8);
-            color: #333;
-            line-height: 1.6;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-        }
-        
-        /* Global Styling */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        /* Container with responsive width */
-        .container {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            transition: margin-left 0.3s ease-in-out;
-            padding-top: 60px;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
-
-        /* Navbar Styling */
-        .navbar {
-            background-color: rgba(51, 51, 51, 0.8);
+            background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #000000);
+            overflow-x: hidden;
             color: #fff;
-            padding: 10px 20px;
+            }
+            
+            /* main container */
+            .container {
+            max-width:1200px;
+            margin: 0 auto;
+            padding: calc(var(--glass-padding) * 2);
+            width:100%;
+            transition: all var(--transition);
+            }
+
+            /* =========================
+            Navigation Bar
+            ========================= */
+            .horizontal-nav {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(30px);
-            position: sticky;
+            position: fixed;
             top: 0;
-            z-index: 100;
-            flex-wrap: wrap;
-        }
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+            scrollbar-width: none;
+            }
 
-        /* Navbar menu responsive */
-        .navbar ul {
-            list-style-type: none;
+            .horizontal-nav::-webkit-scrollbar { display: none; }
+
+            /* Nav List */
+            .nav-list {
+            list-style: none;
+            display: flex;
+            gap: 15px;
             padding: 0;
             margin: 0;
+            }
+
+            .nav-list li { display: flex; align-items: center; }
+
+            /* Nav Links */
+            .nav-list a {
             display: flex;
-            flex-wrap: wrap;
-        }
+            align-items: center;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease-in-out;
+            color: #f0f0f0;
+            }
 
-        .navbar li {
-            padding: 8px 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin: 0 5px;
-        }
-
-        .navbar li:hover {
-            background-color: #575757;
-        }
-
-        .navbar img {
-            width: 24px;
-            height: 24px;
-            vertical-align: middle;
+            .nav-list a i {
             margin-right: 8px;
-        }
+            font-size: 20px;
+            color: #f0f0f0;
+            transition: color 0.3s ease;
+            }
 
-        /* HOME Icon styling */
-        .home-icon {
-            text-decoration: none;
+            /* Gradient text & icon hover */
+            .nav-list a:hover {
+            -webkit-text-fill-color: transparent;
+            background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+            background-clip: text;
+            box-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
+            }
+
+            .nav-list a:hover i {
+            color: #32f2f8;
+            }
+
+            /* App Icons (Procreate, Photoshop, etc.) */
+            .nav-list img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            border-radius: 6px;
+            transition: transform 0.3s ease;
+            }
+
+            .nav-list img:hover {
+            transform: scale(1.1);
+            }
+
+            /* =========================
+            Social Icons (Right Side)
+            ========================= */
+            .socials {
             display: flex;
+            gap: 10px;
             align-items: center;
-        }
-
-        .home-icon img {
-            margin-right: 10px;
-        }
-
-        /* Grid 1 (Main Grid) */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Grid setup for responsive layout */
-            gap: 20px; /* Adds spacing between items */
-            justify-items: center; /* Centers items horizontally */
-            align-items: center; /* Centers items vertically */
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        /* Grid 2 (Second Set of Images) */
-        .grid2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Same responsive grid as Grid 1 */
-            gap: 20px; /* Adds spacing between items */
-            justify-items: center; /* Centers items horizontally */
-            align-items: center; /* Centers items vertically */
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        /* Image Item Styling */
-        .image-item {
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-            cursor: pointer;
-            max-width: 100%; /* Prevents the item from overflowing */
-        }
-
-        .image-item img {
-            width: 100%; /* Full width for responsive layout */
-            height: auto;
-            border-radius: 10px;
-            object-fit: cover;
-            display: block;
-            margin: 0 auto;
-        }
-
-        .image-item img:hover {
-            transform: scale(1.05);
-        }
-
-        /* Caption Styling */
-        .caption {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 5px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        /* Size Variations */
-        .image-item.large img {
-            width: 300px;
-        }
-
-        .image-item.medium img {
-            width: 250px;
-        }
-
-        .image-item.small img {
-            width: 200px;
-        }
-
-        /* Responsive Grid for Large Images */
-        .grids2 {
-            display: flex;
-            gap: 15px;
-            overflow-x: hidden;
-            white-space: nowrap;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .large-image-item {
-            flex: 0 1 auto;
-            border-radius: 10px;
-            overflow: hidden;
-            width: 250px;
-        }
-
-        .large-image-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.3s;
-        }
-
-        .large-image-item img:hover {
-            transform: scale(1.05);
-        }
-
-        #welcome {
-            background: rgba(249, 249, 249, 0.7);  /* A light grey background with transparency */
-            backdrop-filter: blur(10px);             /* Apply a 10px blur effect on the background */
-            -webkit-backdrop-filter: blur(10px);     /* Safari support */
-            padding: 40px;                           /* Internal spacing around the content */
-            margin: 30px auto;                       /* Centered section with vertical spacing */
-            max-width: 800px;                        /* Maximum width for readability */
-            border-radius: 10px;                     /* Rounded corners for a soft look */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* A subtle shadow to lift the section */
-            text-align: center;                      /* Center the text within the section */
-        }
+            margin-right: 30px; /* Increased margin to move icons further left */
+            }
 
 
-        /* Styling the header within the welcome section */
-        #welcome h1 {
-            font-family: 'Georgia', serif;    /* Elegant, classic font for titles */
-            font-size: 2.5rem;                  /* Large font size for the main header */
-            margin-bottom: 20px;                /* Space below the header */
-            color: #36a9b1;                     /* Accent color for the header text */
-            position: relative;                 /* Needed for the pseudo-element positioning */
-        }
-
-        /* Adding a fancy underline using a pseudo-element */
-        #welcome h1::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            bottom: -10px;                         /* Adjust this value for vertical position */
-            transform: translateX(-50%);          /* Center the underline */
-            width: 260px;                         /* Length of the underline */
-            height: 4px;                         /* Thickness of the underline */
-            background-color: #36a9b1;        /* Matching the header color */
-            border-radius: 2px;                /* Gives a subtle rounded effect */
-            overflow: hidden;                 /*Ensures no overflow from the parent */
-        }
-
-        /* Styling the paragraphs inside the welcome section */
-        #welcome p {
-            font-family: 'Arial', sans-serif; /* Clean, modern font for body text */
-            font-size: 1.1rem;                /* A bit larger for readability */
-            line-height: 1.6;                 /* Improved line spacing for clarity */
-            color: #7c0b86;                      /* A slightly softer dark color for text */
-            margin-bottom: 20px;              /* Consistent spacing between paragraphs */
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            position: relative;
-        }
-
-        footer h3 {
-            color: rgb(241, 243, 247);
-            font-size: 25px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        /* Social Links in Navbar */
-        .social-links {
-            display: flex;
+            .social-link {
+            display: inline-flex;
             align-items: center;
-            gap: 15px;
-        }
-
-        .social-links a {
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .social-links a i {
-            font-size: 24px;
-            color: #333;
-            transition: transform 0.3s ease, color 0.3s ease;
-        }
-
-        .social-links a:hover i {
-            transform: scale(1.2);
-        }
-
-        /* Social Sidebar inside Footer */
-        .socials {
-            display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .social-link {
-            font-size: 24px;
-            color: #333;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            color: #bbb;
             text-decoration: none;
-            transition: transform 0.3s ease, color 0.3s ease;
-        }
-
-        .social-link:hover {
-            transform: scale(1.2);
-        }
-
-        /* Combined Instagram (both Instagram links) */
-        .social-link:nth-child(1):hover,
-        .social-link:nth-child(3):hover {
-            color: #E4405F; /* Instagram color */
-        }
-
-        /* Patreon */
-        .social-link:nth-child(2):hover {
-            color: #9146FF;
-        }
-
-        /* Bluesky */
-        .social-link:nth-child(4):hover {
-            color: #1DA1F2;
-        }
-
-        /* X (formerly Twitter) */
-        .social-link.x-link:hover {
-            color: #000; /* Correct hover color for X */
-        }
-
-        /* GitHub */
-        .social-link:nth-child(6):hover {
-            color: #615f5f;
-        }
-
-        /* RESPONSIVENESS */
-        @media screen and (max-width: 768px) {
-            .container {
-                padding: 10px;
-                max-width: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
             }
 
-            /* Grid Styling */
-            .grid,
-            .grid2 {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust grid for smaller screens */
+            .social-link:hover {
+            transform: translateY(-6px) scale(1.06);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
             }
 
-            .large-image-item {
-                width: 200px;
+            /* Brand Hover Colors — clean, no glow */
+            .socials .social-link:nth-child(1):hover { color: #f96854; } /* Patreon */
+            .socials .social-link:nth-child(2):hover { color: #E4405F; } /* Instagram */
+            .socials .social-link:nth-child(3):hover { color: #0285FF; } /* Bluesky */
+            .socials .social-link:nth-child(4):hover { color: #fafbfc; } /* GitHub */
+                    /* ---------- CONTENT / GLASS SECTIONS ---------- */
+                        #content{ width:100%; padding: 12px; }
+                        .container .container-inner{
+                        background: var(--card-bg);
+                        border-radius: var(--glass-radius);
+                        padding: 18px;
+                        border: 1px solid var(--glass-border);
+                        -webkit-backdrop-filter: blur(8px) saturate(140%);
+                        backdrop-filter: blur(8px) saturate(140%);
+                        box-shadow: var(--glass-shadow);
+                        }
+
+                        /* welcome card */
+                        #welcome{
+                        background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.42));
+                        background: var(--card-bg);
+                        border-radius: 14px;
+                        padding: 34px;
+                        max-width:900px;
+                        margin: 28px auto;
+                        text-align:center;
+                        border: 1px solid var(--glass-border);
+                        -webkit-backdrop-filter: blur(6px);
+                        backdrop-filter: blur(6px);
+                        box-shadow: 0 18px 40px rgba(2,6,10,0.08);
+                        }
+
+                        /* welcome heading gradient + stroke */
+                        #welcome h1 {
+                        display: inline-block;
+                        font-size: 3rem;
+                        font-weight: bold;
+                        background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+                        -webkit-background-clip: text;
+                        background-clip: text;
+                        -webkit-text-fill-color: transparent; /* makes gradient visible */
+                        -webkit-text-stroke: 2px #130f40; /* stroke outline */
+                        text-align: center;
+                        }
+
+
+                        /* use gradient fill on H1 with subtle outline */
+                        #welcome h1.grad-stroke,
+                        #welcome h1 span {
+                        background: linear-gradient(90deg, #8be9d6 0%, #7b5cff 60%, #ffd36b 100%);
+                        -webkit-background-clip:text;
+                        background-clip: text;
+                        -webkit-text-fill-color:transparent;
+                        -webkit-text-stroke: 1.2px rgba(0,0,0,0.12);
+                        letter-spacing: -0.02em;
+                        }
+
+                        /* welcome paragraph */
+                        #welcome p {
+                        margin-top: 12px;
+                        font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+                        max-width: 78ch;
+                        margin-left: auto;
+                        margin-right: auto;
+
+                        /* gradient stroke effect */
+                        display: inline-block;
+                        background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+                        -webkit-background-clip:text;
+                        background-clip: text;
+                        color: transparent;
+                        -webkit-text-stroke: 1px transparent;
+                        }
+
+
+                        /* ---------- IMAGES & GRIDS ---------- */
+                        .grid, .grid2 {
+                        display:grid;
+                        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                        gap:18px;
+                        align-items:center;
+                        padding: 8px 0;
+                        }
+
+                        .image-item{
+                        border-radius:12px;
+                        overflow:hidden;
+                        transition: transform var(--transition), box-shadow var(--transition);
+                        border:1px solid rgba(255,255,255,0.04);
+                        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+                        }
+
+                        .image-item img{
+                        display:block;
+                        width:100%;
+                        height:auto;
+                        object-fit:cover;
+                        transition: transform var(--transition);
+                        }
+
+                        .image-item:hover{
+                        transform: translateY(-6px);
+                        box-shadow: 0 12px 34px rgba(2,6,10,0.12);
+                        }
+
+                        .image-item img:hover{
+                        transform: scale(1.04);
+                        }
+
+                        /* captions */
+                        .caption{
+                        position:absolute;
+                        bottom:10px;
+                        left:10px;
+                        background: rgba(0,0,0,0.45);
+                        color:#fff;
+                        padding:6px 10px;
+                        border-radius:8px;
+                        font-size:0.85rem;
+                        backdrop-filter: blur(4px);
+                        }
+            /* Announcement Sections (Glassy Look) */
+            .privacy-policy-section,
+            .terms-of-service-section {
+                background: rgba(0, 0, 0, 0.75); /* dark glassy base */
+                -webkit-backdrop-filter: blur(12px) saturate(160%);
+                backdrop-filter: blur(12px) saturate(160%);
+                padding: 25px 30px;
+                border-radius: 12px;
+                box-shadow: 0 0 20px rgba(0, 255, 255, 0.15); /* subtle glow */
+                color: #eaeaea;
+                font-family: 'Segoe UI', sans-serif;
+                line-height: 1.6;
+                transition: background 0.3s ease;
             }
 
-            /* Keep navbar horizontal on mobile */
-            .navbar {
-                flex-direction: row;
+            /* Headings inside sections */
+            .privacy-policy-section h2,
+            .terms-of-service-section h2,
+            .privacy-policy-section h3,
+            .terms-of-service-section h3,
+            .privacy-policy-section h4,
+            .terms-of-service-section h4 {
+                color: #00bfff;
+                margin-top: 20px;
+                font-weight: 600;
+            }
+
+            /* Lists */
+            .privacy-policy-section ul,
+            .terms-of-service-section ul {
+                padding-left: 20px;
+            }
+
+            .privacy-policy-section ul li,
+            .terms-of-service-section ul li {
+                margin-bottom: 10px;
+            }
+            /* =========================
+            Neon Text for Terms & Privacy Modals (Subtle Glow)
+            ========================= */
+            #tos-modal h2,
+            #privacy-modal h2 {
+                color: #00ffff; /* Neon Cyan */
+                text-shadow: 
+                    0 0 2px #00ffff,
+                    0 0 5px #00ffff,
+                    0 0 10px #00ffff;
+                font-weight: 700;
+                margin-bottom: 15px;
+            }
+
+            #tos-modal h3,
+            #privacy-modal h3 {
+                color: #ff00ff; /* Neon Magenta */
+                text-shadow: 
+                    0 0 1px #ff00ff,
+                    0 0 3px #ff00ff,
+                    0 0 6px #ff00ff;
+                font-weight: 600;
+                margin-top: 25px;
+                margin-bottom: 8px;
+            }
+
+            #privacy-modal h4 {
+                color: #00ff00; /* Neon Green */
+                text-shadow: 
+                    0 0 1px #00ff00,
+                    0 0 2px #00ff00,
+                    0 0 4px #00ff00;
+                font-weight: 600;
+                margin-top: 18px;
+                margin-bottom: 6px;
+            }
+
+            /* Optional: Neon effect on strong text inside modals */
+            #tos-modal p strong,
+            #privacy-modal p strong {
+                color: #fffc00; /* Neon Yellow */
+                text-shadow: 
+                    0 0 1px #fffc00,
+                    0 0 3px #fffc00,
+                    0 0 6px #fffc00;
+            }
+
+            /* Optional subtle hover glow for links inside modals */
+            #tos-modal a:hover,
+            #privacy-modal a:hover {
+                color: #ff0099;
+                text-shadow: 0 0 4px #ff0099, 0 0 8px #ff0099;
+            }
+
+            /* =========================
+            Sleek Glassy Footer (Refined)
+            ========================= */
+            .site-footer {
+                background: rgba(20, 20, 20, 0.164);
+                -webkit-backdrop-filter: blur(14px) saturate(160%);
+                backdrop-filter: blur(14px) saturate(160%);
+                border-top: 1px solid rgba(255, 255, 255, 0.15);
+                color: #eaeaea;
+                font-weight: 500;
+                text-align: center;
+                padding: 8px 10px;
+                position: fixed;
+                bottom: 0; /* always visible */
+                left: 0;
+                right: 0;
+                width: 100%;
+                max-height: 115px;
+                box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.35);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                transition: background 0.4s ease;
+                z-index: 9999;
+                border-radius: 12px 12px 0 0;
+            }
+
+            .site-footer:hover {
+                background: rgba(30, 30, 30, 0.7); /* optional hover effect */
+            }
+
+
+            /* Footer Container */
+            .footer-content {
+                width: 100%;
+                max-width: 550px;
+                display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 10px;
+                flex-direction: column; /* stacked for better mobile layout */
+                gap: 6px;
+                margin: 0 auto;
+                position: relative;
+                font-size: 0.9rem;
+                color: #ccc;
             }
 
-            .navbar ul {
-                flex-direction: row;
-                width: auto;
-                text-align: left;
+            .footer-content p {
+                margin: 0;
+                font-weight: 300;
+                font-size: 12px;
+                color: #cfcfcf;
+                opacity: 0.85;
             }
 
-            .navbar li {
-                display: inline-block;
-                width: auto;
-                text-align: left;
-                padding: 8px 12px;
+            .footer-links {
+                display: flex;
+                gap: 20px;
+                flex-wrap: wrap;
             }
 
-            .navbar .social-links {
-                flex-wrap: nowrap;
-                justify-content: flex-end;
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            .container {
-                padding: 5px;
+            .footer-links a {
+                color: var(--secondary-color, #ccc);
+                text-decoration: none;
+                transition: color 0.3s ease, text-shadow 0.3s ease;
             }
 
-            /* Grid Styling */
-            .grid,
-            .grid2 {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Adjust grid for even smaller screens */
+            .footer-links a:hover {
+                color: var(--accent-color, #54eec7);
+                text-shadow: 0 0 8px rgba(84, 238, 199, 0.6);
             }
 
-            .large-image-item {
-                width: 180px;
+            /* --- Responsive Design for Footer --- */
+            @media (max-width: 768px) {
+                .footer-content {
+                    flex-direction: column;
+                    text-align: center;
+                    gap: 15px;
+                }
             }
 
-            /* Keep navbar horizontal on smaller mobiles */
-            .navbar {
-                padding: 5px;
+
+            /* Landscape-only fixes for mobile devices */
+            @media screen and (max-width: 768px) and (orientation: landscape) {
+            body {
+                overflow-x: hidden; /* Prevent sideways scroll in landscape */
             }
 
-            .navbar ul {
-                width: auto;
+            /* Header adjustments for landscape (to save vertical space) */
+            .site-header {
+                padding: 20px 10px;
+            }
+            .site-header h1 {
+                font-size: clamp(1.4rem, 4vw, 2rem);
+            }
+            .site-header p {
+                font-size: clamp(0.75rem, 3vw, 0.9rem);
             }
 
-            .navbar li {
-                padding: 5px 8px;
+            /* Fix for the announcement cards in landscape */
+            .announcement-list-container,
+            .announcement-card {
+                /* Make the card slightly wider to fill the screen, but not exceed it */
+                max-width: 95%;
             }
-        }
+
+            /* This is the key fix for the long text notes */
+            .announcement-details span {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+            }
+            /* =========================
+            Glassy Modal Styles
+            ========================= */
+            .modal {
+                display: none; /* hidden by default */
+                position: fixed;
+                z-index: 10000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto; /* fallback scroll */
+                background-color: rgba(0,0,0,0.6); /* semi-transparent backdrop */
+                backdrop-filter: blur(6px);
+                transition: opacity 0.3s ease;
+            }
+
+            .modal.show {
+                display: block;
+                opacity: 1;
+            }
+
+            .modal-content {
+                background: rgba(30,30,30,0.8); /* glassy */
+                -webkit-backdrop-filter: blur(10px) saturate(150%);
+                backdrop-filter: blur(10px) saturate(150%);
+                margin: 50px auto;
+                padding: 20px 25px;
+                border-radius: 15px;
+                width: 90%;
+                max-width: 700px;
+                max-height: 80vh; /* limit vertical height */
+                overflow-y: auto; /* scroll for long content */
+                box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+                transition: transform 0.3s ease, opacity 0.3s ease;
+            }
+            
+            /* CORRECTED: Solid Teal/Cyan Color with Dark Stroke for ALL Modal Headings */
+            .modal-content h2,
+            .modal-content h3 {
+                /* Use the accent color for a solid fill, as seen in the image */
+                color: var(--accent) !important; 
+                
+                /* Remove gradient properties that override solid color */
+                background: none !important;
+                -webkit-background-clip: unset !important;
+                background-clip: unset !important;
+                -webkit-text-fill-color: var(--accent) !important;
+                
+                /* Keep the subtle dark stroke/outline for definition and depth */
+                -webkit-text-stroke: 1.6px rgba(0,0,0,0.18);
+                text-shadow: 0 4px 12px rgba(11,12,14,0.3);
+                
+                /* Font and Spacing */
+                font-weight: 700;
+                line-height: 1.2;
+            }
+
+            /* Specific styling for the Main Title (Terms of Service) */
+            .modal-content h2 {
+                font-size: 2.5rem; 
+                text-align: center; 
+                margin: 0 auto 15px auto;
+                width: fit-content;
+            }
+
+            /* Styling for Sub-Headings (Changes to Terms, Use of Website, etc.) */
+            .modal-content h3 {
+                font-size: 1.6rem; 
+                margin-top: 30px;
+                margin-bottom: 8px;
+            }
+
+            /* Text and List Styling (Keep these as they make the body text look correct) */
+            .modal-content p, 
+            .modal-content ul {
+                color: var(--text); 
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+
+            .modal-content ul {
+                list-style: disc; 
+                padding-left: 35px; 
+                margin-top: 5px;
+                margin-bottom: 15px;
+            }
+
+            .modal-content ul li {
+                margin-bottom: 5px; 
+            }        
+            .modal-content::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .modal-content::-webkit-scrollbar-thumb {
+                background-color: rgba(84,238,199,0.6);
+                border-radius: 4px;
+            }
+
+            .modal-content:hover {
+                cursor: grab;
+            }
+
+            /* Close button */
+            .modal-content .close {
+                color: #ccc;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .modal-content .close:hover {
+                color: #37f1f1;
+            }
+
+            /* Optional smooth scroll on hover */
+            .modal-content:hover {
+                scroll-behavior: smooth;
+            }
+
+            /* ---------- UTILITIES ---------- */
+            /* small rounded avatar */
+            .avatar {
+            width:36px; height:36px;
+            border-radius:50%;
+            overflow:hidden;
+            display:inline-block;
+            border:1px solid rgba(255,255,255,0.06);
+            }
+
+            /* small rounded button */
+            .btn {
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            padding:8px 12px;
+            border-radius:10px;
+            border:1px solid rgba(255,255,255,0.05);
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            cursor:pointer;
+            transition:transform var(--transition), box-shadow var(--transition);
+            text-decoration:none;
+            }
+
+            /* subtle focus ring for accessibility */
+            :focus { outline: none; box-shadow: 0 0 0 4px rgba(123,92,255,0.09); border-radius:8px; }
+
+            /* ---------- RESPONSIVE ---------- */
+            @media (max-width: 980px){
+            .navbar { padding: 10px; width: calc(100% - 28px); }
+            .socials { display:flex; gap:8px; }
+            .navbar ul { gap: 6px; }
+            .footer-content { flex-direction:column; text-align:center; gap:12px; }
+            }
+
+            @media (max-width: 720px){
+            .container { padding: 12px; }
+            .navbar{ top:8px; border-radius:12px; }
+            .navbar ul { gap: 4px; }
+            .navbar li { padding: 6px 8px; font-size: 14px; }
+            .social-link { width:36px; height:36px; font-size:16px; }
+            #welcome { padding: 22px; margin: 18px 6px; }
+            .grid, .grid2 { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            }
+
+            /* very small phones */
+            @media (max-width:420px){
+            .navbar { padding:8px; }
+            .navbar ul { gap:3px; }
+            .navbar img { width:22px; height:22px; }
+            .navbar li span { display:none; } /* hide text on very small screens - keeps UI tidy */
+            }
+
+
+            .force-grad{
+            background: linear-gradient(45deg,var(--accent),var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text; /* Standard property for compatibility */
+            -webkit-text-fill-color: transparent;
+            -webkit-text-stroke: 1.4px rgba(0,0,0,0.16);
+            text-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            }
+
+            /* ---------- small accessibility tweak: reduce motion if user prefers ---------- */
+            @media (prefers-reduced-motion: reduce){
+            * { transition: none !important; animation: none !important; transform: none !important; }
+            }
 
         </style>
     </head>
 
     <body>
-        <nav class="navbar">
-            <ul>
-              <li>
-                    <a href="index.html" class="home-icon">
-                    <img src="https://th.bing.com/th/id/R.19ed7c8b456956b57d48630777fa9198?rik=gw7I7o0tcu7vJQ&pid=ImgRaw&r=0" alt="Home">
-                    </a>
-              </li>
-              <li onclick="switchCategory('welcome')" 
-                    style="cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;"
-                    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0px 4px 8px rgba(0,0,0,0.3)';"
-                    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
-                    <i class="fas fa-smile-beam" 
-                    style="font-size: 24px; margin-right: 10px;
-                        background: linear-gradient(45deg, #00BCD4, #9964fa);
-                        background-clip: text;
-                        color: transparent;
-                        text-shadow: 1px 1px 2px rgba(0,0,0,0.4);">
-                    </i>
-                    <span style="font-size: 20px; font-weight: bold;
-                        background: linear-gradient(45deg, #00BCD4, #9964fa);
-                        background-clip: text;
-                        color: transparent;
-                        text-shadow: 2px 2px 5px rgba(0,0,0,0.3);">
-                    </span>
-              </li>
-              <li onclick="window.location.href='customer-view.html'" 
-                    style="cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;"
-                    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0px 4px 8px rgba(0,0,0,0.3)';"
-                    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
-                    <i class="fas fa-chalkboard-teacher" 
-                        style="font-size: 24px; margin-right: 10px; 
-                            background: linear-gradient(45deg, #FF5722, #FFC107);
-                            background-clip: text;
-                            color: transparent;
-                            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);">
-                    </i>
-                    <span style="font-size: 20px; font-weight: bold; 
-                        background: linear-gradient(45deg, #FF5722, #FFC107);
-                        background-clip: text;
-                        color: transparent;
-                        text-shadow: 2px 2px 5px rgba(0,0,0,0.3);">
-                    </span>
-                </li>
-                <li onclick="switchCategory('procreate')">
-                    <img src="images/procreate.png" alt="Procreate Icon">
-                </li>
-                <li onclick="switchCategory('photoshop')">
-                    <img src="images/photoshop.png" alt="Photoshop Icon">
-                </li>
-                <li onclick="switchCategory('indesign')">
-                    <img src="images/indesign.png" alt="InDesign Icon">
-                </li>
-                <li onclick="switchCategory('illustrator')">
-                    <img src="images/illustrator.png" alt="Illustrator Icon">
-                </li>
-                
-            </ul>
-                <div class="socials">
-                <a href="https://x.com/CaitlinAkFallen" target="_blank" class="social-link x-link">
-                    <i class="fa-brands fa-x"></i>
-                </a>
-                <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" class="social-link">
-                    <i class="fa-brands fa-patreon"></i>
-                </a>
-                <a href="https://www.instagram.com/caitlinakafallen" target="_blank" class="social-link">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
-                <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" class="social-link">
-                    <i class="fa-solid fa-cloud"></i>
-                </a>
-                <a href="https://github.com/CaitlinAkaFallen" target="_blank" class="social-link">
-                    <i class="fa-brands fa-github"></i>
-                </a>
-                </div>
-        </nav>
+      <nav id="horizontal-nav" class="horizontal-nav">
+  <ul class="nav-list">
+    <li>
+      <a href="main-page.html" class="home-icon">
+       <i class="fas fa-home"></i><span>Main Page</span>
+      </a>
+    </li>
+    <li onclick="switchCategory('welcome')">
+      <a><i class="fas fa-smile-beam"></i><span>Welcome</span></a>
+    </li>
+    <li onclick="window.location.href='customer-view.html'">
+      <a><i class="fas fa-chalkboard-teacher"></i><span>Customer View</span></a>
+    </li>
+    <li onclick="switchCategory('procreate')">
+      <img src="images/procreate.png" alt="Procreate Icon">
+    </li>
+    <li onclick="switchCategory('photoshop')">
+      <img src="images/photoshop.png" alt="Photoshop Icon">
+    </li>
+    <li onclick="switchCategory('indesign')">
+      <img src="images/indesign.png" alt="InDesign Icon">
+    </li>
+    <li onclick="switchCategory('illustrator')">
+      <img src="images/illustrator.png" alt="Illustrator Icon">
+    </li>
+  </ul>
+
+  <div class="socials">
+
+    <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" rel="noopener noreferrer" class="social-link">
+      <i class="fa-brands fa-patreon"></i>
+    </a>
+    <a href="https://www.instagram.com/caitlinakafallen" target="_blank" rel="noopener noreferrer" class="social-link">
+      <i class="fa-brands fa-instagram"></i>
+    </a>
+    <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link">
+      <i class="fa-brands fa-bluesky"></i>
+    </a>
+    <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener noreferrer" class="social-link">
+      <i class="fa-brands fa-github"></i>
+    </a>
+  </div>
+</nav>
+
             
         <div id="content">
     
@@ -481,277 +715,439 @@
         </div>
 
     </body>
-    <script>
-        // Data for each category's images
-        const categories = {
-        welcome: `
-         <section id="welcome"> 
-            <h1>Welcome to Caitlin's Art Brain</h1>
-            <p>Welcome to the creative space where imagination comes to life! Explore a collection of artwork, time-lapse videos, and creative processes from my art journey.</p>
-            <p>Before you dive in, please note that I am currently limited on certain products. However, I am constantly updating and expanding the collection, so be sure to check back for new additions!</p>
-            <p>If you have any questions or want to learn more about the creative process behind the artwork, feel free to explore and get in touch. I appreciate your support and love for creativity!</p>
-         </section>
-        `,
-        procreate: `
-            <h2>Procreate</h2>
-            <p>Check out my digital art creations, including character designs and illustrations.</p>
-            <div class="grid">
-                <div class="image-item">
-                    <a href="Procreate/pangwippo.png" target="_blank">
-                        <img src="Procreate/pangwippo.png" alt="Procreate Art" />
-                    </a>
-                    <div class="caption">Pangwippo</div>
+        <script>
+            // Data for each category's images
+            const categories = {
+            welcome: `
+            <section id="welcome"> 
+                <h1>Welcome to Caitlin's Art Brain</h1>
+                <p>Welcome to the creative space where imagination comes to life! Explore a collection of artwork, time-lapse videos, and creative processes from my art journey.</p>
+                <p>Before you dive in, please note that I am currently limited on certain products. However, I am constantly updating and expanding the collection, so be sure to check back for new additions!</p>
+                <p>If you have any questions or want to learn more about the creative process behind the artwork, feel free to explore and get in touch. I appreciate your support and love for creativity!</p>
+            </section>
+            `,
+            procreate: `
+                <h2>Procreate</h2>
+                <p>Check out my digital art creations, including character designs and illustrations.</p>
+                <div class="grid">
+                    <div class="image-item">
+                        <a href="Procreate/pangwippo.png" target="_blank">
+                            <img src="Procreate/pangwippo.png" alt="Procreate Art" />
+                        </a>
+                        <div class="caption">Pangwippo</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="Procreate/hippotroll.png" target="_blank">
+                            <img src="Procreate/hippotroll.png" alt="Procreate Art" />
+                        </a>
+                        <div class="caption">HippoTroll</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="Procreate/gangartroll.png" target="_blank">
+                            <img src="Procreate/gangartroll.png" alt="Procreate Art" />
+                        </a>
+                        <div class="caption">GangarTroll</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="Procreate/Brookie.png" target="_blank">
+                            <img src="Procreate/Brookie.png" alt="Procreate Art" />
+                        </a>
+                        <div class="caption">Brookie</div>
+                    </div>
                 </div>
-                <div class="image-item">
-                    <a href="Procreate/hippotroll.png" target="_blank">
-                        <img src="Procreate/hippotroll.png" alt="Procreate Art" />
-                    </a>
-                    <div class="caption">HippoTroll</div>
-                </div>
-                <div class="image-item">
-                    <a href="Procreate/gangartroll.png" target="_blank">
-                        <img src="Procreate/gangartroll.png" alt="Procreate Art" />
-                    </a>
-                    <div class="caption">GangarTroll</div>
-                </div>
-                <div class="image-item">
-                    <a href="Procreate/Brookie.png" target="_blank">
-                        <img src="Procreate/Brookie.png" alt="Procreate Art" />
-                    </a>
-                    <div class="caption">Brookie</div>
-                </div>
-            </div>
-        `,
+            `,
 
-        photoshop: `
-            <h2>Photoshop</h2>
-            <p>Check out my digital art creations, including character designs and illustrations.</p>
-            <h2>Baldur's Gate 3</h2>
-            <div class="grid">
-                <div class="image-item large">
-                    <a href="Photoshop/orin-11x17.jpg" target="_blank">
-                        <img src="Photoshop/orin-11x17.jpg" alt="Orin 11x17" />
-                    </a>
-                    <div class="caption">Orin 11x17</div>
+            photoshop: `
+                <h2>Photoshop</h2>
+                <p>Check out my digital art creations, including character designs and illustrations.</p>
+                <h2>Baldur's Gate 3</h2>
+                <div class="grid">
+                    <div class="image-item large">
+                        <a href="Photoshop/orin-11x17.jpg" target="_blank">
+                            <img src="Photoshop/orin-11x17.jpg" alt="Orin 11x17" />
+                        </a>
+                        <div class="caption">Orin 11x17</div>
+                    </div>
+                    <div class="image-item medium">
+                        <a href="Photoshop/orin-12x17.jpg" target="_blank">
+                            <img src="Photoshop/orin-12x17.jpg" alt="Orin 12x17" />
+                        </a>
+                        <div class="caption">Orin 12x17</div>
+                    </div>
+                    <div class="image-item large">
+                        <a href="Photoshop/orin-13x19.jpg" target="_blank">
+                            <img src="Photoshop/orin-13x19.jpg" alt="Orin 13x19" />
+                        </a>
+                        <div class="caption">Orin 13x19</div>
+                    </div>
+                    <div class="image-item large">
+                        <a href="Photoshop/orin-the-red.jpg" target="_blank">
+                            <img src="Photoshop/orin-the-red.jpg" alt="Orin The Red" class="full-hd" />
+                        </a>
+                        <div class="caption">Orin The Red</div>
+                    </div>
                 </div>
-                <div class="image-item medium">
-                    <a href="Photoshop/orin-12x17.jpg" target="_blank">
-                        <img src="Photoshop/orin-12x17.jpg" alt="Orin 12x17" />
-                    </a>
-                    <div class="caption">Orin 12x17</div>
-                </div>
-                <div class="image-item large">
-                    <a href="Photoshop/orin-13x19.jpg" target="_blank">
-                        <img src="Photoshop/orin-13x19.jpg" alt="Orin 13x19" />
-                    </a>
-                    <div class="caption">Orin 13x19</div>
-                </div>
-                <div class="image-item large">
-                    <a href="Photoshop/orin-the-red.jpg" target="_blank">
-                        <img src="Photoshop/orin-the-red.jpg" alt="Orin The Red" class="full-hd" />
-                    </a>
-                    <div class="caption">Orin The Red</div>
-                </div>
-            </div>
 
-            <h2>Resident Evil</h2>
-            <div class="grid2">
-                <div class="image-item large">
-                    <a href="Photoshop/angry-lady-d.jpg" target="_blank">
-                        <img src="Photoshop/angry-lady-d.jpg" alt="Angry Lady D" />
-                    </a>
-                    <div class="caption">Angry Lady D</div>
+                <h2>Resident Evil</h2>
+                <div class="grid2">
+                    <div class="image-item large">
+                        <a href="Photoshop/angry-lady-d.jpg" target="_blank">
+                            <img src="Photoshop/angry-lady-d.jpg" alt="Angry Lady D" />
+                        </a>
+                        <div class="caption">Angry Lady D</div>
+                    </div>
+                    <div class="image-item medium">
+                        <a href="Photoshop/bela-with-bugs.jpg" target="_blank">
+                            <img src="Photoshop/bela-with-bugs.jpg" alt="Bela and her bugs" />
+                        </a>
+                        <div class="caption">Bela and her bugs</div>
+                    </div>
+                    <div class="image-item large">
+                        <a href="Photoshop/donna-tundra.jpg" target="_blank">
+                            <img src="Photoshop/donna-tundra.jpg" alt="Donna and Tundra" />
+                        </a>
+                        <div class="caption">Donna and Tundra</div>
+                    </div>
+                    <div class="image-item large">
+                        <a href="Photoshop/heisenberg-mutated.jpg" target="_blank">
+                            <img src="Photoshop/heisenberg-mutated.jpg" alt="Heisenberg and his mutated self" class="full-hd" />
+                        </a>
+                        <div class="caption">Heisenberg and his mutated self</div>
+                    </div>
+                    <div class="image-item large">
+                        <a href="Photoshop/lady-d-mutated.jpg" target="_blank">
+                            <img src="Photoshop/lady-d-mutated.jpg" alt="Lady D and her mutated self" class="full-hd" />
+                        </a>
+                        <div class="caption">Lady D and her mutated self</div>
+                    </div>
                 </div>
-                <div class="image-item medium">
-                    <a href="Photoshop/bela-with-bugs.jpg" target="_blank">
-                        <img src="Photoshop/bela-with-bugs.jpg" alt="Bela and her bugs" />
-                    </a>
-                    <div class="caption">Bela and her bugs</div>
-                </div>
-                <div class="image-item large">
-                    <a href="Photoshop/donna-tundra.jpg" target="_blank">
-                        <img src="Photoshop/donna-tundra.jpg" alt="Donna and Tundra" />
-                    </a>
-                    <div class="caption">Donna and Tundra</div>
-                </div>
-                <div class="image-item large">
-                    <a href="Photoshop/heisenberg-mutated.jpg" target="_blank">
-                        <img src="Photoshop/heisenberg-mutated.jpg" alt="Heisenberg and his mutated self" class="full-hd" />
-                    </a>
-                    <div class="caption">Heisenberg and his mutated self</div>
-                </div>
-                <div class="image-item large">
-                    <a href="Photoshop/lady-d-mutated.jpg" target="_blank">
-                        <img src="Photoshop/lady-d-mutated.jpg" alt="Lady D and her mutated self" class="full-hd" />
-                    </a>
-                    <div class="caption">Lady D and her mutated self</div>
-                </div>
-            </div>
-        `,
+            `,
 
-        indesign: `
-            <h2>Indesign</h2>
-            <p>Check out my digital art creations, including character designs and illustrations.</p>
-            <div class="grid">
-                <div class="image-item">
-                    <a href="Indesign/Broken.png" target="_blank">
-                        <img src="Indesign/Broken.png" alt="Indesign Art" />
-                    </a>
-                    <div class="caption">Mental Aware Month</div>
+            indesign: `
+                <h2>Indesign</h2>
+                <p>Check out my digital art creations, including character designs and illustrations.</p>
+                <div class="grid">
+                    <div class="image-item">
+                        <a href="Indesign/Broken.png" target="_blank">
+                            <img src="Indesign/Broken.png" alt="Indesign Art" />
+                        </a>
+                        <div class="caption">Mental Aware Month</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
+                            <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
+                        </a>
+                        <div class="caption">Indesign Project</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
+                            <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
+                        </a>
+                        <div class="caption">Indesign Project</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
+                            <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
+                        </a>
+                        <div class="caption">Indesign Project</div>
+                    </div>
                 </div>
-                <div class="image-item">
-                    <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
-                        <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
-                    </a>
-                    <div class="caption">Indesign Project</div>
-                </div>
-                <div class="image-item">
-                    <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
-                        <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
-                    </a>
-                    <div class="caption">Indesign Project</div>
-                </div>
-                <div class="image-item">
-                    <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
-                        <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
-                    </a>
-                    <div class="caption">Indesign Project</div>
-                </div>
-            </div>
-        `,
+            `,
 
-        illustrator: `
-            <h2>Illustrator</h2>
-            <p>Check out my digital art creations, including character designs and illustrations.</p>
+            illustrator: `
+                <h2>Illustrator</h2>
+                <p>Check out my digital art creations, including character designs and illustrations.</p>
 
-            <h2>Twitch/Kick/Trovo Panels</h2>
-            <div class="grid">
-                 <div class="image-item">
-                    <a href="Illustrator/about-me.png" target="_blank">
-                        <img src="Illustrator/about-me.png" alt="Illustrator Art" />
-                    </a>
-                  </div>
-                  <div class="image-item">
-                    <a href="Illustrator/donations.png" target="_blank">
-                        <img src="Illustrator/donations.png" alt="Illustrator Art" />
-                    </a>
-                 </div> 
-                  <div class="image-item">
-                    <a href="Illustrator/about-me.png" target="_blank">
-                        <img src="Illustrator/about-me.png" alt="Illustrator Art" />
-                    </a>
-                 </div> 
-                  <div class="image-item">
-                    <a href="Illustrator/about-me.png" target="_blank">
-                        <img src="Illustrator/about-me.png" alt="Illustrator Art" />
-                    </a>
-                 </div>          
-                 <div class="image-item">
-                    <a href="Illustrator/commands.png" target="_blank">
-                        <img src="Illustrator/commands.png" alt="Illustrator Art" />
-                    </a>
-                 </div>
-                 <div class="image-item">
-                    <a href="Illustrator/subscribe.png" target="_blank">
-                        <img src="Illustrator/subscribe.png" alt="Illustrator Art" />
-                    </a>
-                 </div> 
-                 <div class="image-item">
-                    <a href="Illustrator/social-media.png" target="_blank">
-                        <img src="Illustrator/social-media.png" alt="Illustrator Art" />
-                    </a>
-                 </div>   
-                 <div class="image-item">
-                    <a href="Illustrator/pc-specs.png" target="_blank">
-                        <img src="Illustrator/pc-specs.png" alt="Illustrator Art" />
-                    </a>
-                 </div>
-                  <div class="image-item">
-                    <a href="Illustrator/schedule.png" target="_blank">
-                        <img src="Illustrator/schedule.png" alt="Illustrator Art" />
-                    </a>
-                 </div>      
-                  <div class="image-item">
-                    <a href="Illustrator/chat-rules.png" target="_blank">
-                        <img src="Illustrator/chat-rules.png" alt="Illustrator Art" />
-                    </a>
-                 </div>
-                 <div class="image-item">
-                    <a href="Illustrator/social-media.png" target="_blank">
-                        <img src="Illustrator/social-media.png" alt="Illustrator Art" />
-                    </a>
-                 </div>
-                 <div class="image-item">
-                    <a href="Illustrator/social-media.png" target="_blank">
-                        <img src="Illustrator/social-media.png" alt="Illustrator Art" />
-                    </a>
-                 </div>   
-                 <div class="image-item">
-                    <a href="Illustrator/social-media.png" target="_blank">
-                        <img src="Illustrator/social-media.png" alt="Illustrator Art" />
-                    </a>
-                 </div>    
-            </div>
+                <h2>Twitch/Kick/Trovo Panels</h2>
+                <div class="grid">
+                    <div class="image-item">
+                        <a href="Illustrator/about-me.png" target="_blank">
+                            <img src="Illustrator/about-me.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="image-item">
+                        <a href="Illustrator/donations.png" target="_blank">
+                            <img src="Illustrator/donations.png" alt="Illustrator Art" />
+                        </a>
+                    </div> 
+                    <div class="image-item">
+                        <a href="Illustrator/about-me.png" target="_blank">
+                            <img src="Illustrator/about-me.png" alt="Illustrator Art" />
+                        </a>
+                    </div> 
+                    <div class="image-item">
+                        <a href="Illustrator/about-me.png" target="_blank">
+                            <img src="Illustrator/about-me.png" alt="Illustrator Art" />
+                        </a>
+                    </div>          
+                    <div class="image-item">
+                        <a href="Illustrator/commands.png" target="_blank">
+                            <img src="Illustrator/commands.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="image-item">
+                        <a href="Illustrator/subscribe.png" target="_blank">
+                            <img src="Illustrator/subscribe.png" alt="Illustrator Art" />
+                        </a>
+                    </div> 
+                    <div class="image-item">
+                        <a href="Illustrator/social-media.png" target="_blank">
+                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                        </a>
+                    </div>   
+                    <div class="image-item">
+                        <a href="Illustrator/pc-specs.png" target="_blank">
+                            <img src="Illustrator/pc-specs.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="image-item">
+                        <a href="Illustrator/schedule.png" target="_blank">
+                            <img src="Illustrator/schedule.png" alt="Illustrator Art" />
+                        </a>
+                    </div>      
+                    <div class="image-item">
+                        <a href="Illustrator/chat-rules.png" target="_blank">
+                            <img src="Illustrator/chat-rules.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="image-item">
+                        <a href="Illustrator/social-media.png" target="_blank">
+                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="image-item">
+                        <a href="Illustrator/social-media.png" target="_blank">
+                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                        </a>
+                    </div>   
+                    <div class="image-item">
+                        <a href="Illustrator/social-media.png" target="_blank">
+                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                        </a>
+                    </div>    
+                </div>
 
 
-            <h2>Fun Designs</h2>
-            <div class="grids2">
-                <div class="large-image-item">
-                    <a href="Illustrator/monsterdoodle.png" target="_blank">
-                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                    </a>
+                <h2>Fun Designs</h2>
+                <div class="grids2">
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/google-doodle.png" target="_blank">
+                            <img src="Illustrator/google-doodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
                 </div>
-                <div class="large-image-item">
-                    <a href="Illustrator/google-doodle.png" target="_blank">
-                        <img src="Illustrator/google-doodle.png" alt="Illustrator Art" />
-                    </a>
-                </div>
-                <div class="large-image-item">
-                    <a href="Illustrator/monsterdoodle.png" target="_blank">
-                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                    </a>
-                </div>
-                <div class="large-image-item">
-                    <a href="Illustrator/monsterdoodle.png" target="_blank">
-                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                    </a>
-                </div>
-                <div class="large-image-item">
-                    <a href="Illustrator/monsterdoodle.png" target="_blank">
-                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                    </a>
-                </div>
-                <div class="large-image-item">
-                    <a href="Illustrator/monsterdoodle.png" target="_blank">
-                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                    </a>
-                </div>
-                <div class="large-image-item">
-                    <a href="Illustrator/monsterdoodle.png" target="_blank">
-                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                    </a>
-                </div>
-                <div class="large-image-item">
-                    <a href="Illustrator/monsterdoodle.png" target="_blank">
-                        <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                    </a>
-                </div>
-            </div>
 
-        `,
-        };
-    
+            `,
+            };
+        
+            
+         // ===== Category Switching =====
+            function switchCategory(category) {
+                const contentDiv = document.getElementById("content");
+                contentDiv.innerHTML = categories[category] || "<p>Category not found.</p>";
+            }
 
-        // Function to handle category switching
-        function switchCategory(category) {
-            const contentDiv = document.getElementById("content");
-            contentDiv.innerHTML = categories[category] || "<p>Category not found.</p>";
-        }
+            // ===== Theme Handling =====
+            function applyTheme(theme) {
+                if (theme === "dark") {
+                    document.body.classList.add("dark");
+                    document.body.classList.remove("light");
+                } else {
+                    document.body.classList.add("light");
+                    document.body.classList.remove("dark");
+                }
+                localStorage.setItem("theme", theme);
+            }
 
-        // Set the default content (welcome) when the page loads
-        window.onload = function() {
-            switchCategory('welcome');
-        };
-    </script>
+            function toggleTheme() {
+                const currentTheme = document.body.classList.contains("dark") ? "dark" : "light";
+                applyTheme(currentTheme === "dark" ? "light" : "dark");
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                // Get modal elements
+                const tosModal = document.getElementById("tos-modal");
+                const privacyModal = document.getElementById("privacy-modal");
+
+                // Get buttons/links that open modals
+                const openTOS = document.getElementById("open-tos");
+                const openPrivacy = document.getElementById("open-privacy");
+
+                // Get all close buttons inside modals
+                const closeButtons = document.querySelectorAll(".modal .close");
+
+                // Open TOS modal
+                openTOS?.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    tosModal.classList.add("show");
+                });
+
+                // Open Privacy modal
+                openPrivacy?.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    privacyModal.classList.add("show");
+                });
+
+                // Close modals when clicking X
+                closeButtons.forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        btn.closest(".modal").classList.remove("show");
+                    });
+                });
+
+                // Close modals when clicking outside modal-content
+                [tosModal, privacyModal].forEach(modal => {
+                    modal.addEventListener("click", (e) => {
+                        if(e.target === modal) modal.classList.remove("show");
+                    });
+                });
+
+                // Close modal on Escape key
+                document.addEventListener("keydown", (e) => {
+                    if(e.key === "Escape") {
+                        [tosModal, privacyModal].forEach(modal => modal.classList.remove("show"));
+                    }
+                });
+            });
+            // ===== Initialize on Load =====
+            window.onload = function() {
+                switchCategory("welcome");
+
+                // Theme initialization
+                const savedTheme = localStorage.getItem("theme");
+                if (savedTheme) {
+                    applyTheme(savedTheme);
+                } else {
+                    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                        applyTheme("dark");
+                    } else {
+                        applyTheme("light");
+                    }
+                }
+            };
+
+        </script>
+
+       <footer class="site-footer">
+      <div class="footer-content">
+          <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
+          <div class="footer-links">
+              <a href="#" id="open-privacy">Privacy Policy</a>
+              <a href="#" id="open-tos">Terms of Service</a>
+          </div>
+      </div>
+  </footer>
+
+    <!-- Terms of Service Glassy Modal -->
+  <div id="tos-modal" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Terms of Service</h2>
+          <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
+
+          <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
+
+          <h3>Changes to Terms</h3>
+          <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
+
+          <h3>Use of Website</h3>
+          <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
+          <ul>
+              <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
+              <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
+              <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
+          </ul>
+
+          <h3>Intellectual Property</h3>
+          <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
+
+          <h3>Links to Other Websites</h3>
+          <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+
+          <h3>Disclaimer</h3>
+          <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
+
+          <h3>Governing Law</h3>
+          <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
+
+          <p><strong>Effective Date: August 13, 2025</strong></p>
+      </div>
+  </div>
+
+  <!-- Privacy Policy Glassy Modal -->
+  <div id="privacy-modal" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Privacy Policy</h2>
+
+          <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
+
+          <h3>Information We Collect</h3>
+          <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+          <h4>Information We Collect Directly From You:</h4>
+          <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+          <h4>Information We Collect Automatically:</h4>
+          <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
+
+          <h3>How We Use Your Information</h3>
+          <ul>
+              <li>Provide and maintain our Website and its features.</li>
+              <li>Improve our Website and develop new features.</li>
+              <li>Communicate with you about services and updates.</li>
+              <li>Analyze how users interact with our Website.</li>
+          </ul>
+
+          <h3>Disclosure of Your Information</h3>
+          <ul>
+              <li>With your consent.</li>
+              <li>To comply with legal obligations.</li>
+              <li>To protect our rights and property.</li>
+          </ul>
+
+          <h3>Data Security</h3>
+          <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
+
+          <h3>Changes to This Policy</h3>
+          <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
+
+          <p><strong>Last updated: August 13, 2025</strong></p>
+      </div>
+  </div>
+
 
 </html>

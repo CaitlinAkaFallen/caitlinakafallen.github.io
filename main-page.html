@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Caitlin's Creative Space</title>
+
+    <!-- Author Meta Tag -->
+    <meta name="author" content="Caitlin Ak Fallen">
+
+    <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
+    <meta property="og:title" content="Caitlin's Creative Space">
+    <meta property="og:description" content="Explore photography, digital art, code, and more by Caitlin.">
+    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview.jpg">
+    <meta property="og:url" content="https://caitlinscreativespace.xyz/main-page.html">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Caitlin's Creative Space">
+    <meta name="twitter:description" content="Explore photography, digital art, code, and more by Caitlin.">
+    <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview.jpg">
+    <meta name="twitter:url" content="https://caitlinscreativespace.xyz/main-page.html">
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css" />
+ </head>
+
+
+  <body>
+      <header style="background-image: url('images/main-page.JPG'); background-size: cover; background-position: center; height: 300px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
+      <div style="text-align: center; color: rgb(253, 244, 113); padding-top: 0;">
+        <h2 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
+          Caitlin's Creative Space
+        </h2>
+        <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
+          Explore my world of creativity: photography, digital art, coding, and more!
+        </h5>
+      </div>
+    </header>
+
+    <!-- Horizontal Navigation Bar -->
+    <nav id="horizontal-nav" class="horizontal-nav">
+      <ul class="nav-list">
+        <li><a id="nav-welcome" href="index.html">
+           <i class="fa-solid fa-door-open"></i><span>Welcome</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-photography" href="photography.html">
+            <i class="fas fa-camera"></i><span>Photography</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-coding" href="programming.html">
+            <i class="fas fa-code"></i><span>Programming</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-art" href="viewer-art.html">
+            <i class="fas fa-paint-brush"></i><span>Gallery</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-conventions" href="viewers-convention.html">
+            <i class="fas fa-users"></i><span>Conventions</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-streaming" href="schedule.html">
+            <i class="fas fa-video"></i><span>Content</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-about" href="about.html">
+            <i class="fas fa-user"></i><span>About</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-contact" href="contact.html">
+            <i class="fas fa-envelope"></i><span>Contact</span>
+          </a>
+        </li>
+         <!-- Hidden User Profile (shows after login) -->
+        <li id="userProfile" style="display:none;">
+            <a href="javascript:void(0)" style="display:flex; align-items:center;">
+                <img
+                    id="profilePic"
+                    src="images/default-avatar.png"
+                    alt="Profile Picture"
+                    style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;"
+                >
+                <span id="profileName" style="font-weight:600;"></span>
+            </a>
+            <button id="logoutBtn" style="margin-left:10px; padding:4px 8px; border:none; border-radius:6px; cursor:pointer;">Logout</button>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="content-wrapper">
+          <!-- Top Left Column -->
+            <div class="main-content">
+              <main>
+                <section id="content">
+                  <h2>
+                    Welcome 
+                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('content')"></i>
+                  </h2>
+                  <div class="section-body">
+                    <p>
+                      Welcome to the Creative Space of My Mind! Step into a world where
+                      photography, digital art, coding, and endless creativity come
+                      together. Explore the unique projects, stories, and inspirations
+                      that shape my artistic journey. Let’s create something extraordinary
+                      together!
+                    </p>
+                    <p>Please select any categories.</p>
+                  </div>
+                </section>
+              </main>
+            </div>
+
+          <!-- Top Right Column -->
+            <div class="main-updates">
+              <main>
+                <section id="updates">
+                  <h2>
+                    Updates 
+                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('updates')"></i>
+                  </h2>
+                  <div class="section-body">
+                    <p>
+                      As this website continues to show improvement, new features and
+                      content will be added regularly. Stay tuned for the latest updates!
+                    </p>
+                    <p>
+                      Feel free to explore the different sections and reach out if you have
+                      any questions or suggestions. Your feedback is always welcome!
+                    </p>
+                  </div>
+                </section>
+              </main>
+            </div>
+
+          <!-- Bottom Left Column: Mobile Tips -->
+            <div class="left-bottom-column">
+              <main>
+                <section id="tips">
+                  <h2>
+                    Mobile Tips 
+                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('tips')"></i>
+                  </h2>
+                  <div class="section-body">
+                    <p>
+                      💡 Just to let you know: the horizontal navigation is scrollable —
+                      swipe side to side to see more options!
+                    </p>
+                  </div>
+                </section>
+              </main>
+            </div>
+
+          <!-- Bottom Left Column: Website History -->
+            <div class="left-bottom-column">
+              <main>
+                <section id="extra-left">
+                  <h2>
+                    Website History
+                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('extra-left')"></i>
+                  </h2>
+                  <div class="section-body">
+                    <p>
+                      🌱 <strong>Caitlin’s Creative Space</strong> began as a single, simple page back in 
+                      <strong>November/December 2024</strong>. It was originally just a small idea — a place to 
+                      showcase my creative projects and coding experiments.
+                    </p>
+                    <p>
+                      💡 Over time, that one page started to grow — expanding into multiple sections featuring 
+                      my art, photography, coding tutorials, and streaming tools. Each new addition was built 
+                      from scratch with care and passion, reflecting my journey as a creator and developer.
+                    </p>
+                    <p>
+                      🌟 Today, it’s evolved into a full creative hub that continues to expand, blending 
+                      technology, art, and imagination — and there’s still more to come!
+                    </p>
+                  </div>
+                </section>
+              </main>
+            </div>
+
+          <!-- Bottom Right Column: Rules & Credits -->
+          <div class="right-bottom-column">
+            <main>
+              <section id="extra-right">
+                <h2>
+                  Rules & Credits 
+                  <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('extra-right')"></i>
+                </h2>
+                <div class="section-body">
+                  <p>
+                    🚫 Please respect my work. Using any of my projects, designs, or code 
+                    as your own without giving credit is not allowed.  
+                  </p>
+                  <p>
+                    ✅ If you’d like to share or use something, make sure to properly 
+                    credit me: <strong>caitlinakafallen</strong>.
+                  </p>
+                  <p>
+                    💬 Collaboration is always welcome — just reach out before reusing or modifying 
+                    any of my projects. I love seeing how others build upon creative ideas, as long as 
+                    proper credit is given and the spirit of respect remains.
+                  </p>
+                  <p>
+                    🌐 All assets, layouts, and designs showcased here are created by me unless otherwise stated. 
+                    Any third-party tools, libraries, or plugins are credited where used.
+                  </p>
+                  <p>
+                    🪄 This site and its contents were built from the ground up with passion, creativity, 
+                    and transparency — please keep that same energy if you take inspiration from it!
+                  </p>
+                </div>
+              </section>
+            </main>
+
+            
+          </div>
+        <!-- Twitch Subscriber Access -->
+        <div class="left-bottom-column">
+          <main>
+              <section id="twitch-subscriber">
+                  <h2>
+                  Twitch Subscriber
+                  <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('twitch-subscriber')"></i>
+                  </h2>
+                  <div class="section-body">
+                      <p>
+                          💜 This content is available for <strong>subscribers only</strong>.  
+                          Please subscribe to 
+                          <a href="https://twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer">
+                          FallenOneArt
+                          </a> 
+                          on Twitch to unlock exclusive access to bonus material, behind-the-scenes updates, 
+                          and special creative content.
+                      </p>
+                      <p>
+                          🌟 Being a subscriber not only supports my work — it also helps me continue 
+                          creating art, tools, and projects for everyone to enjoy. Thank you so much 
+                          for your support!
+                      </p>
+                      <p>
+                          🏆 Once subscribed, you’ll automatically gain access to subscriber-only sections, 
+                          features, or rewards when logged in through Twitch on this website.
+                      </p>
+                  </div>
+              </section>
+          </main>
+      </div>
+
+    </div>
+
+          
+
+    
+   
+
+       <footer>
+          <p>© 2025 Caitlin's Creative Space | All Rights Reserved</p> 
+      
+            <div class="footer-container">
+                <div class="footer-search">
+                  <input type="text" placeholder="Search..." id="search-bar">
+                  <button id="search-button" aria-label="Search">
+                    <i class="fa fa-search"></i>
+                  </button>
+              </div>
+              <!-- Social Sidebar -->
+              <div id="social-sidebar" class="social">
+                          <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener" class="social-link" title="Instagram">
+                              <i class="fa-brands fa-instagram"></i>
+                          </a>
+                          <a href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener" class="social-link twitch-link" title="Twitch">
+                               <span id="live-indicator">LIVE</span>
+                              <i class="fa-brands fa-twitch"></i>
+                          </a>
+                          <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener" class="social-link" title="YouTube">
+                              <i class="fa-brands fa-youtube"></i>
+                          </a>
+                          <a href="https://kick.com/caitlinakafallen" target="_blank" rel="noopener" class="social-link" title="Kick">
+                              <i class="fa-brands fa-kickstarter-k"></i>
+                          </a>
+                          <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener" class="social-link" title="Bluesky">
+                              <i class="fa-brands fa-bluesky"></i>
+                          </a>
+                          <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener" class="social-link" title="GitHub">
+                              <i class="fa-brands fa-github"></i>
+                          </a>
+                          <a href="https://patreon.com/FallenOneArt" target="_blank" rel="noopener" class="social-link" title="Patreon">
+                              <i class="fa-brands fa-patreon"></i>
+                          </a>
+                          <a href="https://www.reddit.com/user/CaitlinAkAFallen" target="_blank" rel="noopener" class="social-link" title="Reddit">
+                              <i class="fa-brands fa-reddit"></i>
+                          </a>
+                  </div>
+            </div>
+        </footer>
+  </body>
+  <script src="script.js"></script>
+</html>

@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Import to Streamer Bot Page",
+    "link": "http://caitlinscreativespace.xyz/import-to-streamerbot",
+    "version": "",
+    "notes": "Slowly it has been improving each day",
+    "type": "normal",
+    "date": "3/27/2026"
+  },
+  {
+    "title": "Game Quiz",
+    "link": "http://localhost:3000/import-to-streamerbot.html",
+    "version": "2.3",
+    "notes": "Newly updated Game Quiz now featuring leaderboard and more features",
+    "type": "release",
+    "date": "3/21/2026"
+  },
+  {
+    "title": "Channel Point Redeem Overlay",
+    "link": "http://localhost:3000/import-to-streamerbot",
+    "version": "2.3",
+    "notes": "Channel Point Redeem Overlay now work properly with Streamer bot",
+    "type": "release",
+    "date": "3/27/2026"
+  },
+  {
+    "title": "Auto Shoutout → Clips → Discord",
+    "link": "http://localhost:3000/import-to-streamerbot.html",
+    "version": "2.3",
+    "notes": "AutoShout to Discord but the auto shout out clips still need to work on still",
+    "type": "release",
+    "date": "3/21/2026"
+  },
+  {
+    "title": "D&D Class Overlay",
+    "link": "http://localhost:3000/import-to-streamerbot",
+    "version": "2.3",
+    "notes": "Newly update D&D classs for your stream",
+    "type": "release",
+    "date": "3/27/2026"
+  },
+  {
+    "title": "Hogwarts Sorting House",
+    "link": "http://localhost:3000/import-to-streamerbot",
+    "version": "2.5",
+    "notes": "New Hogwarts Overlay for Sorting into house randomly",
+    "type": "release",
+    "date": "3/27/2026"
+  },
+  {
+    "title": "Twitch Q&A Overlay",
+    "link": "http://localhost:3000/import-to-streamerbot",
+    "version": "2.3",
+    "notes": "NEW Overlay Twitch Q&A",
+    "type": "release",
+    "date": "3/27/2026"
+  }
+]

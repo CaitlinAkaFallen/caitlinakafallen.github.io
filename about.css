@@ -1,388 +1,420 @@
- /* General styles */
-          body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            background: linear-gradient(45deg, #020202, #360bac, rgb(9, 63, 179));
-            overflow-x: hidden;
-            /* Prevent horizontal scrolling */
-          }
-    
-          /* Horizontal Navigation Bar */
-          .horizontal-nav {
-            width: 100%;
-            background: linear-gradient(#1a4beb, #6e18f8, rgb(43, 255, 244));
-            /* Gradient background */
-            padding: 10px 0;
-            display: flex;
-            justify-content: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-            /* Allows scrolling */
-            scrollbar-width: none;
-            /* Hides scrollbar for Firefox */
-            scroll-behavior: smooth;
-            /* Smooth scrolling */
-            -webkit-overflow-scrolling: touch;
-            /* iOS smooth scrolling */
-          }
-    
-          /* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge, Brave, Opera) */
-          .horizontal-nav::-webkit-scrollbar {
-            width: 0px;
-            height: 0px;
-          }
-    
-          /* Navigation List */
-          .nav-list {
-            list-style: none;
-            display: flex;
-            /* Ensures horizontal alignment */
-            flex-wrap: nowrap;
-            padding: 0;
-            margin: 0;
-            overflow-x: auto;
-            scrollbar-width: none;
-            /* Hide scrollbar for Firefox */
-            -webkit-overflow-scrolling: touch;
-            /* Smooth scrolling for touch devices */
-            white-space: nowrap;
-            /* Prevent wrapping */
-          }
-    
-          /* Hide scrollbar for WebKit browsers */
-          .nav-list::-webkit-scrollbar {
-            width: 0px;
-            height: 0px;
-          }
-    
-          /* Navigation List Items */
-          .nav-list li {
-            display: flex;
-            white-space: nowrap;
-            /* Prevents text wrapping */
-          }
-    
-          /* Navigation Links */
-          .nav-list a {
-            display: flex;
-            align-items: center;
-            color: white;
-            text-decoration: none;
-            padding: 12px 18px;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: background 0.3s ease-in-out;
-            cursor: pointer;
-          }
-    
-          .nav-list a:hover {
-            background: linear-gradient(45deg, #20f1e0, rgb(92, 26, 245));
-          }
-    
-          /* Icons */
-          .nav-list img {
-            margin-right: 8px;
-            width: 24px;
-            height: 24px;
-          }
-    
-          /* Responsive Adjustments */
-          @media screen and (max-width: 1024px) {
-            .horizontal-nav {
-              padding: 8px 0;
-            }
-    
-            .nav-list {
-              justify-content: center;
-              gap: 10px;
-            }
-    
-            .nav-list a {
-              padding: 10px;
-              font-size: 14px;
-            }
-    
-            .nav-list img {
-              width: 20px;
-              height: 20px;
-            }
-          }
-    
-          @media screen and (max-width: 768px) {
-            .horizontal-nav {
-              justify-content: flex-start;
-              padding: 5px 0;
-            }
-    
-            .nav-list {
-              gap: 8px;
-              padding: 0 10px;
-              flex-wrap: nowrap;
-              overflow-x: auto;
-              display: flex;
-              scrollbar-width: none;
-            }
-    
-            .nav-list::-webkit-scrollbar {
-              width: 0px;
-              height: 0px;
-            }
-    
-            .nav-list a {
-              font-size: 13px;
-              padding: 8px;
-            }
-    
-            .nav-list img {
-              width: 18px;
-              height: 18px;
-            }
-          }
-    
-          @media screen and (max-width: 480px) {
-            .horizontal-nav {
-              padding: 5px 0;
-            }
-    
-            .nav-list {
-              gap: 5px;
-            }
-    
-            .nav-list a {
-              font-size: 12px;
-              padding: 6px;
-            }
-    
-            .nav-list img {
-              width: 16px;
-              height: 16px;
-            }
-          }
-    
-          /* Header */
-          header {
-            background-image: url('images/main-page.JPG'));
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            height: 300px;
-            border-radius: 10px;
-            color: #ffffff;
-            padding-top: 50px;
-            text-align: center;
-          }
-    
-          header h2 {
-            font-family: "Georgia", serif;
-            font-size: 40px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 4px rgb(234, 236, 102);
-            margin: 0;
-          }
-    
-          header h5 {
-            font-family: "Verdana", sans-serif;
-            font-size: 18px;
-            font-weight: lighter;
-            margin-top: 10px;
-            letter-spacing: 1px;
-            line-height: 1.6;
-            text-shadow: 1px 1px 2px rgb(0, 0, 0);
-          }
-    
-          /* Content Section */
-          main {
-            flex-grow: 1;
-            padding: 20px;
-          }
-    
-          #content {
-            padding: 10px;
-            background: linear-gradient(#f2f3f8, rgb(126, 57, 255));
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(235, 230, 230, 0.1);
-            width: 70%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: -12px; /* Moves content up */
-            text-align: center;
-          }
-    
-          /* Content Buttons */
-          #content button {
-            padding: 10px 20px;
-            background-color: #333;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
-            margin-top: 20px;
-            transition: background-color 0.3s ease;
-          }
-    
-          #content button:hover {
-            background-color: rgb(92, 26, 245);
-            color: rgb(235, 248, 158);
-          }
-    
-          /* Category Section */
-          #content h2 {
-            font-family: "Georgia", serif;
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: rgb(92, 26, 245);
-          }
-    
-          #content p {
-            font-family: "Verdana", sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: rgb(50, 50, 50);
-          }
-    
-            #about-me {
-          padding: 20px;
-          background-color: rgba(255, 255, 255, 0.3); /* translucent white */
-          border-radius: 10px;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-          margin: 20px auto;
-          font-family: "Arial", sans-serif;
-          width: 90%;
-          max-width: 1000px;
-          text-align: center;
-          overflow: hidden;
+/* =========================
+   Global Styles
+   ========================= */
+body {
+  font-family: "Poppins", Arial, sans-serif;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #000000);
+  overflow-x: hidden;
+  color: #fff;
+}
 
-          /* Frosted glass blur */
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px); /* for Safari */
-          border: 1px solid rgba(255, 255, 255, 0.2); /* subtle border */
-        }
+/* =========================
+   Header
+   ========================= */
+header {
+  background: url("images/main-page.JPG") no-repeat center center / cover;
+  height: 30vh;
+  min-height: 200px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+  border-radius: 10px;
+}
+
+header div {
+  position: relative;
+  z-index: 2;
+}
+
+header h2 {
+  font-family: Georgia, serif;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fdf471;
+  text-shadow: 0 0 12px #000;
+  margin: 0;
+}
+
+header h5 {
+  font-family: Verdana, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  margin-top: 10px;
+  color: #fff;
+  text-shadow: 0 0 8px #000;
+}
+
+/* =========================
+   Navigation Bar
+   ========================= */
+.horizontal-nav {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  padding: 12px 0;
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.horizontal-nav::-webkit-scrollbar { display: none; }
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-list li { display: flex; }
+
+.nav-list a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: all 0.3s ease-in-out;
+  color: #f0f0f0;
+}
+
+.nav-list a:hover {
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+  background-clip: text;
+  box-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
+}
+
+.nav-list img {
+  margin-right: 8px;
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
+}
+
+.nav-list a i {
+  margin-right: 8px;
+  font-size: 20px;
+  color: #f0f0f0;
+  transition: color 0.3s ease;
+}
+
+.nav-list a:hover i {
+  color: #32f2f8; /* optional gradient effect handled via text above */
+}
 
 
-          /* About Me Text */
-          #about-me p {
-            font-size: 18px;
-            color: #111010;
-            line-height: 1.8;
-            text-align: center;
-          }
+/* About Me Section */
+#about-me {
+  padding: 25px;
+  margin: 120px auto 40px auto;
+  width: 90%;
+  max-width: 1000px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  animation: fadeIn 1s ease-in-out;
+}
 
-         /* Decorative Symbols */
-          #about-me p::before {
-            content: "✧ ";
-            color: #c2a2fc;
-            font-size: 24px;
-          }
+#about-me h2 {
+  font-size: 32px;
+  color: #c2a2fc;
+  margin-bottom: 20px;
+  text-shadow: 0 0 12px rgba(194, 162, 252, 0.7);
+}
 
-          #about-me p::after {
-            content: " ✧";
-            color: #4fd6ee;
-            font-size: 24px;
-          }
+#about-me p {
+  font-size: 18px;
+  color: #eaeaea;
+  line-height: 1.8;
+  text-align: center;
+}
+
+#about-me p::before {
+  content: "✧ ";
+  color: #c2a2fc;
+  font-size: 22px;
+}
+
+#about-me p::after {
+  content: " ✧";
+  color: #4fd6ee;
+  font-size: 22px;
+}
+
+/* About Me Image */
+#about-me img {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#about-me img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(79, 214, 238, 0.6);
+}
+
+/* Buttons */
+button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background: linear-gradient(135deg, #32f2f8, #6e18f8);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+button:hover {
+  background: linear-gradient(135deg, #20f1e0, #8e3bff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  header h2 {
+    font-size: 28px;
+  }
+  header h5 {
+    font-size: 14px;
+  }
+  .nav-list {
+    gap: 8px;
+  }
+  .nav-list a {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  #about-me {
+    padding: 15px;
+  }
+}
+
+/* =========================
+   Sleek Glassy Footer (Refined)
+   ========================= */
+footer {
+  background: rgba(20, 20, 20, 0.164); /* glassy */
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: #eaeaea;
+  font-weight: 500;
+  text-align: center;
+  padding: 8px 10px; /* smaller padding */
+  position: fixed;
+  bottom: -80px; /* small default hidden offset */
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-height: 115px; /* prevents large expansion */
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: bottom 0.5s ease-in-out, background 0.4s ease;
+  z-index: 9999;
+  border-radius: 12px 12px 0 0; /* rounded top */
+}
+
+footer:hover {
+  bottom: 0;
+  background: rgba(30, 30, 30, 0.7);
+}
+
+/* Footer Container */
+.footer-container {
+  width: 100%;
+  max-width: 550px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Footer Text */
+.footer-container p {
+  font-size: 12px;
+  margin: 0;
+  color: #cfcfcf;
+  opacity: 0.85;
+}
+
+/* Search Bar */
+.footer-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transform: translateY(10px);
+  opacity: 0;
+  transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+}
+
+footer:hover .footer-search {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+#search-bar {
+  width: 0;
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  outline: none;
+  max-width: 220px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  transition: width 0.4s ease, opacity 0.3s ease, border-color 0.3s ease;
+  opacity: 0;
+}
+
+#search-bar.active,
+#search-bar:focus {
+  width: 220px;
+  opacity: 1;
+  border-color: #20f1e0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+#search-button {
+  width: 38px;           /* smaller size */
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0); /* subtle glass look */
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;       /* smaller font to fit */
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  /* Soft inner & outer glow */
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.2), 
+    0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+#search-button:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.25), 
+    0 0 10px rgba(255, 255, 255, 0.4);
+}
 
 
-          /* Center the image and make it responsive */
-          #about-me img {
-            width: 100%; /* Make the image responsive */
-            max-width: 300px; /* Max-width for larger screens */
-            height: auto; /* Maintain aspect ratio */
-            border-radius: 10px; /* Rounded corners */
-            margin-bottom: 10px; /* Space below the image */
-            display: block; /* Make sure the image is displayed as a block */
-            margin-left: auto; /* Center the image horizontally */
-            margin-right: auto; /* Center the image horizontally */
-          }
 
-          /* Responsive Design for Mobile (iPhone Portrait) */
-          @media screen and (max-width: 600px) {
-            #about-me {
-              width: 90%;
-              padding: 10px;
-            }
 
-            #about-me img {
-              max-width: 250px; /* Adjust max-width for smaller screens */
-            }
 
-            #about-me p {
-              font-size: 16px; /* Adjust font size for better readability */
-            }
-          }
 
-          /* Tablets & iPads */
-          @media screen and (max-width: 1024px) {
-            #about-me {
-              width: 85%;
-            }
+/* Social Links */
+.socials {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 8px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
-            #about-me img {
-              max-width: 280px; /* Adjust max-width for tablet screens */
-            }
-          }
+.social-link {
+  font-size: 22px;
+  color: #f5f5f5;
+  opacity: 0.85;
+  text-decoration: none;
+  transition: transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+}
 
-          /* PCs & Macs */
-          @media screen and (min-width: 1025px) {
-            #about-me {
-              width: 80%;
-            }
-          }
-          /* Base styles for the textarea and button */
-          #post-input {
-            width: 100%;
-            /* Make textarea responsive */
-            max-width: 500px;
-            /* Max width for larger screens */
-            padding: 10px;
-            font-size: 14px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            resize: vertical;
-            /* Allow vertical resize */
-            margin-bottom: 15px;
-          }
-    
-          button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #5a67d8;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-          }
-    
-          button:hover {
-            background-color: #4c51bf;
-          }
-    
-          /* Responsive Design for Mobile Devices */
-          @media screen and (max-width: 600px) {
-            #post-input {
-              max-width: 90%;
-              /* Ensure textarea fits within the screen */
-              font-size: 16px;
-              /* Adjust font size for readability */
-              padding: 8px;
-            }
-    
-            button {
-              width: 100%;
-              /* Make button full width on mobile */
-              font-size: 18px;
-              /* Increase font size for mobile */
-            }
-          }
-    
+.social-link:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+/* Social Hover Colors */
+.social-link:nth-child(1):hover { color: #C13584; }  /* Instagram */
+.social-link:nth-child(2):hover { color: #9146FF; }  /* Twitch */
+.social-link:nth-child(3):hover { color: #FF0000; }  /* YouTube */
+.social-link:nth-child(4):hover { color: #1DA1F2; }  /* Bluesky */
+.social-link:nth-child(5):hover { color: #000; }     /* X/Twitter */
+.social-link:nth-child(6):hover { color: #171515; }  /* GitHub */
+
+/* Responsive Adjustments */
+@media screen and (max-width: 600px) {
+  footer {
+    bottom: -100px;
+    padding: 8px calc(10px + env(safe-area-inset-bottom));
+  }
+  .footer-container p { font-size: 10px; }
+  #search-bar { max-width: 100%; }
+  .social-link { font-size: 18px; }
+}
+
+@media screen and (max-width: 812px) and (orientation: landscape) {
+  footer { bottom: -80px; padding: 10px calc(12px + env(safe-area-inset-bottom)); }
+  .footer-container p { font-size: 11px; }
+  .social-link { font-size: 16px; }
+}
+
+@media screen and (min-width: 1025px) {
+  footer { height: auto; bottom: -90px; }
+}

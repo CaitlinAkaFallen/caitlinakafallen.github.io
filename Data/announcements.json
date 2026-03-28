@@ -1,0 +1,25 @@
+{
+  "release_announcements": [
+    {
+      "title": "New D&D Dice Game!",
+      "link": "https://caitlinakafallen.github.io/csharp.html",
+      "version": "1.0",
+      "notes": "Try the brand new D20 roller for your streams!"
+    },
+    {
+      "title": "Updated Quiz System",
+      "link": "https://caitlinakafallen.github.io/csharp.html",
+      "version": "1.2",
+      "notes": "Bug fixes and mobile improvements."
+    },
+    {
+      "title": "Bloodborne",
+      "link": "https://caitlinakafallen.github.io/csharp.html",
+      "version": "1.1",
+      "notes": "Bug fixes and mobile improvements."
+    }
+  ],
+  "normal_announcements": [
+
+  ]
+}

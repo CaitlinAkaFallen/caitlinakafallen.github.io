@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Caitlins's Gallery</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+        <style>
+
+            /* ---------- VARIABLES (light & dark) ---------- */
+            :root{
+            --bg-1: linear-gradient(135deg,#eafaff 0%, #f7e8ff 100%);
+            --page-bg: #f6f7fb;
+            --card-bg: rgba(255, 255, 255, 0.795);
+            --glass-border: rgba(255,255,255,0.5);
+            --text: #111314;
+            --muted: #666b72;
+            --accent: #54e6c7;
+            --accent-2: #7b5cff;
+            --glass-shadow: 0 6px 30px rgba(12,12,14,0.08);
+            --nav-bg: rgba(255,255,255,0.18);
+            --nav-border: rgba(255,255,255,0.2);
+            --footer-bg: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+            --glass-radius: 12px;
+            --glass-padding: 12px;
+            --transition: 250ms cubic-bezier(.2,.9,.3,1);
+            }
+
+            /* Dark mode overrides */
+            @media (prefers-color-scheme: dark){
+            :root{
+                --bg-1: linear-gradient(135deg,#0f1114 0%, #0b0a0f 100%);
+                --page-bg: #0b0b0d;
+                --card-bg: rgba(233, 227, 227, 0.068);
+                --glass-border: rgba(255,255,255,0.035);
+                --text: #e7eef0;
+                --muted: #b7c2c7;
+                --accent: #54e6c7;
+                --accent-2: #7b5cff;
+                --glass-shadow: 0 8px 40px rgba(0,0,0,0.6);
+                --nav-bg: rgba(255,255,255,0.03);
+                --nav-border: rgba(255,255,255,0.03);
+                --footer-bg: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            }
+            }
+
+            /* ---------- GLOBAL RESET ---------- */
+            *,
+            *::before,
+            *::after { box-sizing: border-box; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+            html,body { height:100%; }
+            body {
+            margin:0;
+            min-height:100vh;
+            font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: var(--bg-1);
+            color: var(--text);
+            line-height:1.45;
+            -webkit-font-smoothing: antialiased;
+            display:flex;
+            flex-direction:column;
+            }
+
+            /* main container */
+            .container {
+            max-width:1200px;
+            margin: 0 auto;
+            padding: calc(var(--glass-padding) * 2);
+            width:100%;
+            transition: all var(--transition);
+            }
+
+      /* =========================
+   Horizontal Navigation
+   ========================= */
+            .horizontal-nav {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+            scrollbar-width: none;
+            }
+
+            .horizontal-nav::-webkit-scrollbar { display: none; }
+
+            .nav-list {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+            }
+
+            .nav-list li { display: flex; }
+
+            .nav-list a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease-in-out;
+            color: #f0f0f0;
+            }
+
+            /* Icon Styles */
+            .nav-list a i {
+            margin-right: 8px;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            }
+
+            /* Custom Gradients per Section */
+            .welcome-icon, .nav-list a span:has(.welcome-icon) {
+            background: linear-gradient(45deg, #00BCD4, #9964fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            }
+
+            .tutorials-icon {
+            background: linear-gradient(45deg, #FF5722, #FFC107);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            }
+
+            /* Hover Glow */
+            .nav-list a:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            }
+
+            .nav-list a:hover i {
+            text-shadow: 0 0 6px rgba(255,255,255,0.6);
+            }
+
+            /* Image Icons */
+            .nav-list img {
+            width: 22px;
+            height: 22px;
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+            transition: transform 0.3s ease;
+            }
+
+            .nav-list a:hover img {
+            transform: scale(1.15);
+            }
+
+            /* Socials */
+            .socials {
+            display: flex;
+            gap: 14px;
+            }
+
+            .social-link {
+            color: #f0f0f0;
+            font-size: 20px;
+            transition: transform 0.3s ease, color 0.3s ease;
+            }
+
+            .social-link:hover {
+            transform: scale(1.2);
+            color: #32f2f8;
+            }
+
+
+            /* custom brand hover colors (non-invasive) */
+            .social-link.x-link:hover { color: #1d1d1f; } /* X */
+            .socials .social-link:nth-child(2):hover { color: #9146FF; } /* patreon */
+            .socials .social-link:nth-child(3):hover { color: #E4405F; } /* insta */
+            .socials .social-link:nth-child(4):hover { color: #2b9ae6; } /* bluesky/cloud */
+            .socials .social-link:nth-child(5):hover { color:#e7e8e9; } /* github */
+
+            /* ---------- CONTENT / GLASS SECTIONS ---------- */
+            #content{ width:100%; padding: 12px; }
+            .container .container-inner{
+            background: var(--card-bg);
+            border-radius: var(--glass-radius);
+            padding: 18px;
+            border: 1px solid var(--glass-border);
+            -webkit-backdrop-filter: blur(8px) saturate(140%);
+            backdrop-filter: blur(8px) saturate(140%);
+            box-shadow: var(--glass-shadow);
+            }
+
+            /* welcome card */
+            #welcome{
+            background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.42));
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 34px;
+            max-width:900px;
+            margin: 28px auto;
+            text-align:center;
+            border: 1px solid var(--glass-border);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 18px 40px rgba(2,6,10,0.08);
+            }
+
+            /* welcome heading gradient + stroke */
+            #welcome h1 {
+            display: inline-block;
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent; /* makes gradient visible */
+            -webkit-text-stroke: 2px #130f40; /* stroke outline */
+            text-align: center;
+            }
+
+
+            /* use gradient fill on H1 with subtle outline */
+            #welcome h1.grad-stroke,
+            #welcome h1 span {
+            background: linear-gradient(90deg, #8be9d6 0%, #7b5cff 60%, #ffd36b 100%);
+            -webkit-background-clip:text;
+            background-clip: text;
+            -webkit-text-fill-color:transparent;
+            -webkit-text-stroke: 1.2px rgba(0,0,0,0.12);
+            letter-spacing: -0.02em;
+            }
+
+            /* welcome paragraph */
+            #welcome p {
+            margin-top: 12px;
+            font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+            max-width: 78ch;
+            margin-left: auto;
+            margin-right: auto;
+
+            /* gradient stroke effect */
+            display: inline-block;
+            background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+            -webkit-background-clip:text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-stroke: 1px transparent;
+            }
+
+
+            /* ---------- IMAGES & GRIDS ---------- */
+            .grid, .grid2 {
+            display:grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap:18px;
+            align-items:center;
+            padding: 8px 0;
+            }
+
+            .image-item{
+            border-radius:12px;
+            overflow:hidden;
+            transition: transform var(--transition), box-shadow var(--transition);
+            border:1px solid rgba(255,255,255,0.04);
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            }
+
+            .image-item img{
+            display:block;
+            width:100%;
+            height:auto;
+            object-fit:cover;
+            transition: transform var(--transition);
+            }
+
+            .image-item:hover{
+            transform: translateY(-6px);
+            box-shadow: 0 12px 34px rgba(2,6,10,0.12);
+            }
+
+            .image-item img:hover{
+            transform: scale(1.04);
+            }
+
+            /* captions */
+            .caption{
+            position:absolute;
+            bottom:10px;
+            left:10px;
+            background: rgba(0,0,0,0.45);
+            color:#fff;
+            padding:6px 10px;
+            border-radius:8px;
+            font-size:0.85rem;
+            backdrop-filter: blur(4px);
+            }
+
+            /* ---------- FOOTER ---------- */
+            .site-footer{
+            width:calc(100% - 40px);
+            margin: 24px auto 40px;
+            padding: 18px 22px;
+            border-radius: 16px;
+            background: var(--footer-bg);
+            border: 1px solid rgba(255,255,255,0.03);
+            -webkit-backdrop-filter: blur(8px) saturate(120%);
+            backdrop-filter: blur(8px) saturate(120%);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+            transition: transform var(--transition);
+            }
+
+            .site-footer:hover { transform: translateY(-6px); }
+
+            .footer-content{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            flex-wrap:wrap;
+            color:var(--muted);
+            }
+
+            .footer-content p{ margin:0; font-weight:300; }
+            .footer-links{ display:flex; gap:14px; align-items:center; }
+            .footer-links a{
+            color:var(--muted);
+            text-decoration:none;
+            font-size:0.94rem;
+            transition: color var(--transition), text-shadow var(--transition);
+            }
+            .footer-links a:hover{ color:var(--accent); text-shadow:0 0 10px rgba(84,230,199,0.14); }
+
+            /* ---------- UTILITIES ---------- */
+            /* small rounded avatar */
+            .avatar {
+            width:36px; height:36px;
+            border-radius:50%;
+            overflow:hidden;
+            display:inline-block;
+            border:1px solid rgba(255,255,255,0.06);
+            }
+
+            /* small rounded button */
+            .btn {
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            padding:8px 12px;
+            border-radius:10px;
+            border:1px solid rgba(255,255,255,0.05);
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            cursor:pointer;
+            transition:transform var(--transition), box-shadow var(--transition);
+            text-decoration:none;
+            }
+
+            /* subtle focus ring for accessibility */
+            :focus { outline: none; box-shadow: 0 0 0 4px rgba(123,92,255,0.09); border-radius:8px; }
+
+            /* ---------- RESPONSIVE ---------- */
+            @media (max-width: 980px){
+            .navbar { padding: 10px; width: calc(100% - 28px); }
+            .socials { display:flex; gap:8px; }
+            .navbar ul { gap: 6px; }
+            .footer-content { flex-direction:column; text-align:center; gap:12px; }
+            }
+
+            @media (max-width: 720px){
+            .container { padding: 12px; }
+            .navbar{ top:8px; border-radius:12px; }
+            .navbar ul { gap: 4px; }
+            .navbar li { padding: 6px 8px; font-size: 14px; }
+            .social-link { width:36px; height:36px; font-size:16px; }
+            #welcome { padding: 22px; margin: 18px 6px; }
+            .grid, .grid2 { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            }
+
+            /* very small phones */
+            @media (max-width:420px){
+            .navbar { padding:8px; }
+            .navbar ul { gap:3px; }
+            .navbar img { width:22px; height:22px; }
+            .navbar li span { display:none; } /* hide text on very small screens - keeps UI tidy */
+            }
+
+
+            .force-grad{
+            background: linear-gradient(45deg,var(--accent),var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text; /* Standard property for compatibility */
+            -webkit-text-fill-color: transparent;
+            -webkit-text-stroke: 1.4px rgba(0,0,0,0.16);
+            text-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            }
+
+            /* ---------- small accessibility tweak: reduce motion if user prefers ---------- */
+            @media (prefers-reduced-motion: reduce){
+            * { transition: none !important; animation: none !important; transform: none !important; }
+            }
+
+        </style>
+    </head>
+
+    <body>
+   <!-- 🌟 Unified Navigation -->
+<nav id="horizontal-nav" class="horizontal-nav">
+  <ul class="nav-list">
+    <!-- Home -->
+ <li>
+      <a href="viewer-art.html" class="home-icon">
+       <i class="fas fa-home"></i><span>Gallery</span>
+      </a>
+    </li>
+
+    <!-- Welcome -->
+    <li>
+      <a href="javascript:void(0)" onclick="switchCategory('welcome')">
+        <i class="fas fa-smile-beam welcome-icon"></i>
+        <span>Welcome</span>
+      </a>
+    </li>
+
+    <!-- Tutorials -->
+    <li>
+      <a href="tutorials.html">
+        <i class="fas fa-chalkboard-teacher tutorials-icon"></i>
+        <span>Tutorials</span>
+      </a>
+    </li>
+
+    <!-- Procreate -->
+    <li>
+      <a href="javascript:void(0)" onclick="switchCategory('procreate')">
+        <img src="images/procreate.png" alt="Procreate">
+      </a>
+    </li>
+
+    <!-- Photoshop -->
+    <li>
+      <a href="javascript:void(0)" onclick="switchCategory('photoshop')">
+        <img src="images/photoshop.png" alt="Photoshop">
+      </a>
+    </li>
+
+    <!-- InDesign -->
+    <li>
+      <a href="javascript:void(0)" onclick="switchCategory('indesign')">
+        <img src="images/indesign.png" alt="InDesign">
+      </a>
+    </li>
+
+    <!-- Illustrator -->
+    <li>
+      <a href="javascript:void(0)" onclick="switchCategory('illustrator')">
+        <img src="images/illustrator.png" alt="Illustrator">
+      </a>
+    </li>
+  </ul>
+
+  <!-- Social Links -->
+  <div class="socials">
+    <a href="https://x.com/CaitlinAkFallen" target="_blank" rel="noopener noreferrer" class="social-link x-link">
+      <i class="fa-brands fa-x-twitter"></i>
+    </a>
+    <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" rel="noopener noreferrer" class="social-link">
+      <i class="fa-brands fa-patreon"></i>
+    </a>
+    <a href="https://www.instagram.com/caitlinakafallen" target="_blank" rel="noopener noreferrer" class="social-link">
+      <i class="fa-brands fa-instagram"></i>
+    </a>
+    <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link">
+      <i class="fa-brands fa-bluesky"></i>
+    </a>
+    <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener noreferrer" class="social-link">
+      <i class="fa-brands fa-github"></i>
+    </a>
+  </div>
+</nav>
+
+            
+        <div id="content">
+    
+            <div id="containerContent" class="container">
+
+                <div id="innerContent"></div>
+           </div>
+           
+        </div>
+
+    </body>
+        <script>
+            // Data for each category's images
+            const categories = {
+            welcome: `
+            <section id="welcome"> 
+                <h1>Welcome to Caitlin's Art Brain</h1>
+                <p>Welcome to the creative space where imagination comes to life! Explore a collection of artwork, time-lapse videos, and creative processes from my art journey.</p>
+                <p>Before you dive in, please note that I am currently limited on certain products. However, I am constantly updating and expanding the collection, so be sure to check back for new additions!</p>
+                <p>If you have any questions or want to learn more about the creative process behind the artwork, feel free to explore and get in touch. I appreciate your support and love for creativity!</p>
+            </section>
+            `,
+            procreate: `
+                <h2>Procreate</h2>
+                <p>Check out my digital art creations, including character designs and illustrations.</p>
+                <div class="grid">
+                    <div class="image-item">
+                        <a href="Procreate/pangwippo.png" target="_blank">
+                            <img src="Procreate/pangwippo.png" alt="Procreate Art" />
+                        </a>
+                        <div class="caption">Pangwippo</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="Procreate/hippotroll.png" target="_blank">
+                            <img src="Procreate/hippotroll.png" alt="Procreate Art" />
+                        </a>
+                        <div class="caption">HippoTroll</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="Procreate/gangartroll.png" target="_blank">
+                            <img src="Procreate/gangartroll.png" alt="Procreate Art" />
+                        </a>
+                        <div class="caption">GangarTroll</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="Procreate/Brookie.png" target="_blank">
+                            <img src="Procreate/Brookie.png" alt="Procreate Art" />
+                        </a>
+                        <div class="caption">Brookie</div>
+                    </div>
+                </div>
+            `,
+
+            photoshop: `
+                <h2>Photoshop</h2>
+                <p>Check out my digital art creations, including character designs and illustrations.</p>
+                <h2>Baldur's Gate 3</h2>
+                <div class="grid">
+                    <div class="image-item large">
+                        <a href="Photoshop/orin-11x17.jpg" target="_blank">
+                            <img src="Photoshop/orin-11x17.jpg" alt="Orin 11x17" />
+                        </a>
+                        <div class="caption">Orin 11x17</div>
+                    </div>
+                    <div class="image-item medium">
+                        <a href="Photoshop/orin-12x17.jpg" target="_blank">
+                            <img src="Photoshop/orin-12x17.jpg" alt="Orin 12x17" />
+                        </a>
+                        <div class="caption">Orin 12x17</div>
+                    </div>
+                    <div class="image-item large">
+                        <a href="Photoshop/orin-13x19.jpg" target="_blank">
+                            <img src="Photoshop/orin-13x19.jpg" alt="Orin 13x19" />
+                        </a>
+                        <div class="caption">Orin 13x19</div>
+                    </div>
+                    <div class="image-item large">
+                        <a href="Photoshop/orin-the-red.jpg" target="_blank">
+                            <img src="Photoshop/orin-the-red.jpg" alt="Orin The Red" class="full-hd" />
+                        </a>
+                        <div class="caption">Orin The Red</div>
+                    </div>
+                </div>
+
+                <h2>Resident Evil</h2>
+                <div class="grid2">
+                    <div class="image-item large">
+                        <a href="Photoshop/angry-lady-d.jpg" target="_blank">
+                            <img src="Photoshop/angry-lady-d.jpg" alt="Angry Lady D" />
+                        </a>
+                        <div class="caption">Angry Lady D</div>
+                    </div>
+                    <div class="image-item medium">
+                        <a href="Photoshop/bela-with-bugs.jpg" target="_blank">
+                            <img src="Photoshop/bela-with-bugs.jpg" alt="Bela and her bugs" />
+                        </a>
+                        <div class="caption">Bela and her bugs</div>
+                    </div>
+                    <div class="image-item large">
+                        <a href="Photoshop/donna-tundra.jpg" target="_blank">
+                            <img src="Photoshop/donna-tundra.jpg" alt="Donna and Tundra" />
+                        </a>
+                        <div class="caption">Donna and Tundra</div>
+                    </div>
+                    <div class="image-item large">
+                        <a href="Photoshop/heisenberg-mutated.jpg" target="_blank">
+                            <img src="Photoshop/heisenberg-mutated.jpg" alt="Heisenberg and his mutated self" class="full-hd" />
+                        </a>
+                        <div class="caption">Heisenberg and his mutated self</div>
+                    </div>
+                    <div class="image-item large">
+                        <a href="Photoshop/lady-d-mutated.jpg" target="_blank">
+                            <img src="Photoshop/lady-d-mutated.jpg" alt="Lady D and her mutated self" class="full-hd" />
+                        </a>
+                        <div class="caption">Lady D and her mutated self</div>
+                    </div>
+                </div>
+            `,
+
+            indesign: `
+                <h2>Indesign</h2>
+                <p>Check out my digital art creations, including character designs and illustrations.</p>
+                <div class="grid">
+                    <div class="image-item">
+                        <a href="Indesign/Broken.png" target="_blank">
+                            <img src="Indesign/Broken.png" alt="Indesign Art" />
+                        </a>
+                        <div class="caption">Mental Aware Month</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
+                            <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
+                        </a>
+                        <div class="caption">Indesign Project</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
+                            <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
+                        </a>
+                        <div class="caption">Indesign Project</div>
+                    </div>
+                    <div class="image-item">
+                        <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
+                            <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
+                        </a>
+                        <div class="caption">Indesign Project</div>
+                    </div>
+                </div>
+            `,
+
+            illustrator: `
+                <h2>Illustrator</h2>
+                <p>Check out my digital art creations, including character designs and illustrations.</p>
+
+                <h2>Twitch/Kick/Trovo Panels</h2>
+                <div class="grid">
+                    <div class="image-item">
+                        <a href="Illustrator/about-me.png" target="_blank">
+                            <img src="Illustrator/about-me.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="image-item">
+                        <a href="Illustrator/donations.png" target="_blank">
+                            <img src="Illustrator/donations.png" alt="Illustrator Art" />
+                        </a>
+                    </div> 
+                    <div class="image-item">
+                        <a href="Illustrator/about-me.png" target="_blank">
+                            <img src="Illustrator/about-me.png" alt="Illustrator Art" />
+                        </a>
+                    </div> 
+                    <div class="image-item">
+                        <a href="Illustrator/about-me.png" target="_blank">
+                            <img src="Illustrator/about-me.png" alt="Illustrator Art" />
+                        </a>
+                    </div>          
+                    <div class="image-item">
+                        <a href="Illustrator/commands.png" target="_blank">
+                            <img src="Illustrator/commands.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="image-item">
+                        <a href="Illustrator/subscribe.png" target="_blank">
+                            <img src="Illustrator/subscribe.png" alt="Illustrator Art" />
+                        </a>
+                    </div> 
+                    <div class="image-item">
+                        <a href="Illustrator/social-media.png" target="_blank">
+                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                        </a>
+                    </div>   
+                    <div class="image-item">
+                        <a href="Illustrator/pc-specs.png" target="_blank">
+                            <img src="Illustrator/pc-specs.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="image-item">
+                        <a href="Illustrator/schedule.png" target="_blank">
+                            <img src="Illustrator/schedule.png" alt="Illustrator Art" />
+                        </a>
+                    </div>      
+                    <div class="image-item">
+                        <a href="Illustrator/chat-rules.png" target="_blank">
+                            <img src="Illustrator/chat-rules.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="image-item">
+                        <a href="Illustrator/social-media.png" target="_blank">
+                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="image-item">
+                        <a href="Illustrator/social-media.png" target="_blank">
+                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                        </a>
+                    </div>   
+                    <div class="image-item">
+                        <a href="Illustrator/social-media.png" target="_blank">
+                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
+                        </a>
+                    </div>    
+                </div>
+
+
+                <h2>Fun Designs</h2>
+                <div class="grids2">
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/google-doodle.png" target="_blank">
+                            <img src="Illustrator/google-doodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                    <div class="large-image-item">
+                        <a href="Illustrator/monsterdoodle.png" target="_blank">
+                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
+                        </a>
+                    </div>
+                </div>
+
+            `,
+            };
+        
+        // Function to handle category switching
+        function switchCategory(category) {
+            const contentDiv = document.getElementById("content");
+            contentDiv.innerHTML = categories[category] || "<p>Category not found.</p>";
+        }
+
+        // Detect system preference and apply theme
+        function applyTheme(theme) {
+            if (theme === "dark") {
+                document.body.classList.add("dark");
+                document.body.classList.remove("light");
+            } else {
+                document.body.classList.add("light");
+                document.body.classList.remove("dark");
+            }
+            localStorage.setItem("theme", theme); // save preference
+        }
+
+        // Toggle theme manually
+        function toggleTheme() {
+            const currentTheme = document.body.classList.contains("dark") ? "dark" : "light";
+            applyTheme(currentTheme === "dark" ? "light" : "dark");
+        }
+
+        // Set default content and theme on load
+        window.onload = function() {
+            switchCategory("welcome");
+
+            // Check if user saved a theme
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                applyTheme(savedTheme);
+            } else {
+                // Otherwise, detect system preference
+                if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                    applyTheme("dark");
+                } else {
+                    applyTheme("light");
+                }
+            }
+        };
+        </script>
+
+       <footer class="site-footer">
+        <div class="footer-content">
+            <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
+            <div class="footer-links">
+                <a href="">Privacy Policy</a>
+                <a href="">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+</html>

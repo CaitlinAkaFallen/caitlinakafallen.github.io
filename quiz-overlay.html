@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game Quiz Overlay — Full Edition</title>
+<style>
+  /* ====== THEME & FONTS ====== */
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@700;900&family=Oswald:wght@500;700&family=Poppins:wght@700;800&display=swap');
+
+  :root{
+    --bg-top: #bfe7ff;
+    --bg-bottom: #66a8ff;
+    --glass: rgba(255,255,255,0.14);
+    --glass-dark: rgba(20, 20, 40, 0.9);
+    --accent: #8a63ff;
+    --accent-2: #d692ff;
+    --dark: #0b0b0b;
+    --border-cyan: rgba(150,240,255,0.4);
+    --radius: 34px;
+    --pad: 24px;
+    --gold: #ffd700;
+    --silver: #c0c0c0;
+    --bronze: #cd7f32;
+  }
+
+  html,body{
+    height:100%; margin:0;
+    background: transparent;
+    font-family: 'Oswald', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+
+  .wrap{
+    box-sizing:border-box;
+    width: 100%; height: 100vh;
+    padding: 28px;
+    display:flex; gap:18px;
+    align-items:stretch;
+  }
+
+  /* ====== LEADERBOARD PANEL ====== */
+  .leaderboard-panel {
+    width: 300px;
+    background: rgba(0,0,0,0.85);
+    border: 4px solid var(--accent);
+    border-radius: 28px;
+    display: flex; flex-direction: column;
+    padding: 15px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .leaderboard-panel h2 {
+    text-align: center; margin: 0 0 10px 0;
+    font-family: 'Cinzel', serif; color: var(--accent-2);
+    border-bottom: 2px solid var(--accent);
+    font-size: 24px;
+  }
+
+  .leaderboard-content { flex: 1; overflow-y: auto; padding-right: 5px; }
+
+  .score-entry {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px; margin-bottom: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px; font-weight: 700;
+    animation: slideIn 0.3s ease-out;
+    border-left: 4px solid #fff;
+  }
+
+  .lb-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 2px solid var(--accent-2);
+  }
+
+  .score-entry .rank { font-size: 14px; opacity: 0.8; }
+  .score-entry .user { 
+    flex: 1; 
+    display: flex; 
+    align-items: center; 
+    text-align: left; 
+    padding: 0 5px; 
+    font-size: 14px; 
+    text-transform: uppercase;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .score-entry .points { color: #ffff00; text-shadow: 0 0 10px rgba(255,255,0,0.5); font-size: 18px; font-family: 'Inter', sans-serif; }
+
+  .score-entry.rank-1 { border-left-color: var(--gold); background: linear-gradient(90deg, rgba(255,215,0,0.2), rgba(255,215,0,0.05)); }
+  .score-entry.rank-1 .rank, .score-entry.rank-1 .user { color: var(--gold); }
+  .score-entry.rank-2 { border-left-color: var(--silver); background: linear-gradient(90deg, rgba(192,192,192,0.2), rgba(192,192,192,0.05)); }
+  .score-entry.rank-3 { border-left-color: var(--bronze); background: linear-gradient(90deg, rgba(205,127,50,0.2), rgba(205,127,50,0.05)); }
+
+  @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* ====== QUIZ PANEL ====== */
+  .quiz-panel {
+    flex:1; border-radius:28px; padding:18px;
+    background: linear-gradient(180deg, var(--glass-dark), rgba(10, 10, 20, 0.95));
+    box-shadow: 0 10px 30px rgba(20,20,30,0.25), inset 0 2px 0 rgba(255,255,255,0.06);
+    border: 3px solid rgba(0,0,0,0.18);
+    position:relative; overflow: hidden;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+
+  .quiz-panel::before{
+    content:""; position:absolute; inset:8px;
+    border-radius:24px; border:4px solid var(--border-cyan);
+    pointer-events:none; mix-blend-mode:screen;
+  }
+
+  .badge {
+    position:absolute; left:25px; top:25px;
+    background: linear-gradient(90deg,var(--accent),var(--accent-2));
+    color:white; padding:6px 16px; border-radius:12px;
+    font-weight:700; font-size:16px; font-family: 'Cinzel', serif; z-index: 10;
+  }
+
+  /* GLOBAL TIMER UI - MOVED LEFT AND DOWN */
+  .global-timer-container {
+    position: absolute;
+    right: 45px;
+    top: 30px;
+    text-align: right;
+    z-index: 10;
+  }
+  .timer-label { font-size: 10px; color: var(--accent-2); letter-spacing: 2px; font-weight: 900; }
+  #sessionTimer { font-size: 32px; color: white; font-family: 'Inter', sans-serif; font-weight: 900; line-height: 1; }
+  .timer-bar { width: 120px; height: 4px; background: rgba(255,255,255,0.1); margin-top: 5px; border-radius: 2px; overflow: hidden; }
+  #timerProgress { height: 100%; width: 100%; background: var(--accent); transition: width 1s linear; }
+
+  /* Warning Animation for the last 15 seconds */
+  .warning-active #answerBox {
+    border-color: #ff4747 !important;
+    animation: flashRed 1s infinite;
+  }
+  @keyframes flashRed {
+    0% { box-shadow: 0 0 5px #ff4747; }
+    50% { box-shadow: 0 0 25px #ff4747; }
+    100% { box-shadow: 0 0 5px #ff4747; }
+  }
+
+  .top-row{ display:flex; gap:18px; height:44%; align-items:stretch; }
+
+  .instructions {
+    flex: 0 0 55%;
+    background: linear-gradient(180deg, #f8b6df, #f2a0d9);
+    border-radius: 22px;
+    padding: 15px;
+    border: 6px solid rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    text-align: center;
+  }
+
+  .instructions h1 {
+    font-size: 48px;
+    color: #551a90;
+    margin: 0;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
+  }
+
+  .command-group {
+    background: rgba(0,0,0,0.08);
+    border-radius: 15px;
+    padding: 10px;
+    border: 2px solid rgba(85, 26, 144, 0.2);
+  }
+
+  .command-group p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    margin: 0;
+    color: #1a0a1a;
+    font-weight: 800;
+    text-shadow: 0 0 8px rgba(255,255,255,0.3);
+  }
+
+  .label {
+    font-size: 11px;
+    font-weight: 900;
+    color: #551a90;
+    display: block;
+    margin-bottom: 2px;
+    letter-spacing: 1px;
+  }
+
+  .dim { font-weight: 500; font-size: 15px; opacity: 0.5; }
+
+  .guess-hint {
+    font-size: 14px !important;
+    color: #551a90 !important;
+    opacity: 0.8;
+    margin-top: 4px !important;
+  }
+
+  .points-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .points-row span {
+    padding: 4px 12px;
+    border-radius: 10px;
+    font-weight: 900;
+    font-size: 16px;
+    border: 3px solid rgba(0,0,0,0.25);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+  }
+
+  .plus { background: #47ff85; color: #004d1a; }
+  .halfplus { background: #ffd447; color: #664d00; }
+  .minus { background: #ff4747; color: #4d0000; }
+
+  .image-box {
+    flex: 1; background: #000; border-radius:36px;
+    border: 6px solid rgba(0,0,0,0.35); overflow:hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .image-box img{
+    width:100%; height:100%;
+    object-fit:cover;
+    opacity:0;
+    transition: opacity 0.5s ease;
+  }
+
+  .question-strip, .answer-strip {
+    background: #000; border: 6px solid rgba(0,0,0,0.35);
+    border-radius:40px; display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.5);
+  }
+  .question-strip { height: 18%; font-size: 28px; color: white; text-align: center; font-weight: 700; }
+  .answer-strip { height: 25%; font-size: 38px; color: #00f2ff; font-weight: 800; text-shadow: 0 0 10px #00f2ff; margin-top: auto; }
+
+  .thin-divider{
+    height:18px; border-left: 6px solid rgba(0,0,0,0.28); border-right: 6px solid rgba(0,0,0,0.28);
+    background: linear-gradient(90deg, rgba(138,99,255,0.9), rgba(214,146,255,0.85));
+    border-radius:6px; margin: 0;
+  }
+
+  .reveal { animation: revealPulse 0.7s ease; }
+  @keyframes revealPulse { 0% { transform: scale(0.95); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+  /* ====== PODIUM OVERLAY ====== */
+  #winner-container {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.9);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+
+  .podium-title {
+    font-family: 'Cinzel', serif;
+    color: #fff;
+    font-size: 60px;
+    margin-bottom: 40px;
+    text-shadow: 0 0 20px var(--accent);
+  }
+
+  .podium-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 30px;
+  }
+
+  .podium-spot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .podium-spot img {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    margin-bottom: 10px;
+  }
+
+  .podium-spot h2 {
+    color: #fff; font-size: 28px; margin: 0;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .podium-spot .medal {
+    font-size: 40px; font-weight: 900; margin-top: 10px;
+    padding: 5px 20px; border-radius: 10px;
+  }
+
+  /* Podium Heights & Colors */
+  .spot-1 img { width: 200px; height: 200px; border-color: var(--gold); box-shadow: 0 0 30px var(--gold); }
+  .spot-1 .medal { background: var(--gold); color: #000; }
+  
+  .spot-2 img { border-color: var(--silver); box-shadow: 0 0 20px var(--silver); }
+  .spot-2 .medal { background: var(--silver); color: #000; }
+
+  .spot-3 img { border-color: var(--bronze); box-shadow: 0 0 20px var(--bronze); }
+  .spot-3 .medal { background: var(--bronze); color: #000; }
+
+  .show-winner { opacity: 1 !important; pointer-events: auto !important; }
+  .show-winner .podium-spot { opacity: 1; transform: translateY(0); }
+  .show-winner .spot-1 { transition-delay: 0.6s; }
+  .show-winner .spot-2 { transition-delay: 0.3s; }
+  .show-winner .spot-3 { transition-delay: 0.9s; }
+
+</style>
+</head>
+<body>
+
+  <div id="winner-container">
+    <h1 class="podium-title">QUIZ CHAMPIONS</h1>
+    <div class="podium-row" id="podiumRow">
+      </div>
+  </div>
+
+  <div class="wrap">
+    <div class="leaderboard-panel">
+      <h2>Top Hunters</h2>
+      <div class="leaderboard-content" id="lbContent"></div>
+    </div>
+
+    <div class="quiz-panel">
+      <div class="badge">Game Quiz</div>
+      
+      <!-- GLOBAL TIMER UI -->
+      <div class="global-timer-container">
+          <div class="timer-label">SESSION TIME</div>
+          <div id="sessionTimer">10:00</div>
+          <div class="timer-bar"><div id="timerProgress"></div></div>
+      </div>
+
+      <div class="top-row">
+        <div class="instructions">
+          <h1>WELCOME TO GAME QUIZ</h1>
+          <div class="command-group">
+            <span class="label">START QUIZ</span>
+            <p>!quiz <span class="dim">or</span> !startquiz</p>
+          </div>
+          <div class="command-group">
+            <span class="label">SUBMIT ANSWER</span>
+            <p>!answer <span class="dim">or</span> !answerquiz</p>
+            <p class="guess-hint">[your guess]</p>
+          </div>
+          <div class="points-row">
+            <span class="plus">+5 Correct</span>
+            <span class="halfplus">+3 Partial</span>
+            <span class="minus">-1 Wrong</span>
+          </div>
+        </div>
+        <div class="image-box">
+          <img id="qImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Game Image">
+        </div>
+      </div>
+      <div class="thin-divider"></div>
+      <div class="question-strip" id="qText">Waiting for question...</div>
+      <div class="thin-divider"></div>
+      <div class="answer-strip" id="answerBox">
+        <div id="aText">—</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const IMG_FOLDER = "Game Quiz Answer Image/";
+const qText = document.getElementById("qText");
+const aText = document.getElementById("aText");
+const qImg = document.getElementById("qImg");
+const answerBox = document.getElementById("answerBox");
+const lbContent = document.getElementById("lbContent");
+const winnerContainer = document.getElementById("winner-container");
+const podiumRow = document.getElementById("podiumRow");
+
+// Global Timer Variables
+let sessionInterval;
+const sessionTimerDisplay = document.getElementById("sessionTimer");
+const timerProgress = document.getElementById("timerProgress");
+
+let currentLeaderboard = [];
+
+const params = new URLSearchParams(window.location.search);
+const socket = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+socket.onopen = () => {
+    socket.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "GameQuizs" }));
+};
+
+socket.onmessage = (evt) => {
+    const data = JSON.parse(evt.data).data || JSON.parse(evt.data);
+
+    // --- GLOBAL TIMER LISTENERS ---
+    if (data.eventName === "GlobalTimerStart") {
+        startSessionTimer(data.duration);
+    }
+
+    if (data.eventName === "TimeWarning") {
+        document.querySelector('.quiz-panel').classList.add('warning-active');
+        aText.textContent = "HURRY! 15 SECONDS LEFT!";
+    }
+
+    if (data.eventName === "QuizUpdate") {
+        if (data.type === "question") {
+            qText.textContent = data.text;
+            aText.textContent = "—";
+            qImg.style.opacity = 0;
+            answerBox.classList.remove("reveal");
+            document.querySelector('.quiz-panel').classList.remove('warning-active');
+        }
+        if (data.type === "answer") {
+            aText.textContent = data.text;
+            answerBox.classList.add("reveal");
+            document.querySelector('.quiz-panel').classList.remove('warning-active');
+            loadAnswerImage(data.text);
+        }
+    }
+
+    if (data.eventName === "LeaderboardUpdate") {
+        currentLeaderboard = data.scores;
+        updateLeaderboard(data.scores);
+    }
+
+    if (data.eventName === "QuizWinnerEvent") {
+        showPodium();
+        clearInterval(sessionInterval);
+        sessionTimerDisplay.textContent = "00:00";
+        timerProgress.style.width = "0%";
+    }
+};
+
+function startSessionTimer(duration) {
+    clearInterval(sessionInterval);
+    let timer = duration;
+    const total = duration;
+
+    sessionInterval = setInterval(() => {
+        let minutes = Math.floor(timer / 60);
+        let seconds = timer % 60;
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        sessionTimerDisplay.textContent = minutes + ":" + seconds;
+        
+        let percent = (timer / total) * 100;
+        timerProgress.style.width = percent + "%";
+
+        if (--timer < 0) {
+            clearInterval(sessionInterval);
+            sessionTimerDisplay.textContent = "00:00";
+        }
+    }, 1000);
+}
+
+function showPodium() {
+    podiumRow.innerHTML = "";
+    const order = [1, 0, 2]; 
+    
+    order.forEach(index => {
+        if (currentLeaderboard[index]) {
+            const player = currentLeaderboard[index];
+            const spotDiv = document.createElement("div");
+            spotDiv.className = `podium-spot spot-${index + 1}`;
+            spotDiv.innerHTML = `
+                <img src="${player.avatarUrl || 'https://decapi.me/twitch/avatar/'+player.user}" onerror="this.src='https://pfp.lol/pfp/default.png'">
+                <h2>${player.user}</h2>
+                <div class="medal">${index === 0 ? '1ST' : index === 1 ? '2ND' : '3RD'}</div>
+            `;
+            podiumRow.appendChild(spotDiv);
+        }
+    });
+
+    winnerContainer.classList.add("show-winner");
+    
+    setTimeout(() => {
+        winnerContainer.classList.remove("show-winner");
+    }, 10000); 
+}
+
+async function loadAnswerImage(name) {
+    const extensions = ['png', 'jpg', 'jpeg'];
+    let found = false;
+    const cleanName = name.trim();
+
+    for (const ext of extensions) {
+        if (found) break;
+        const path = `${IMG_FOLDER}${cleanName}.${ext}?v=${Date.now()}`;
+        const test = new Image();
+        test.src = path;
+
+        await new Promise((resolve) => {
+            test.onload = () => {
+                qImg.src = path;
+                qImg.style.opacity = 1;
+                found = true;
+                resolve();
+            };
+            test.onerror = () => resolve();
+        });
+    }
+}
+
+function updateLeaderboard(scores) {
+    lbContent.innerHTML = scores.slice(0, 8).map((s, i) => `
+        <div class="score-entry rank-${i+1}">
+            <div class="rank">#${i+1}</div>
+            <div class="user">
+                <img src="${s.avatarUrl || 'https://decapi.me/twitch/avatar/'+s.user}" class="lb-avatar" onerror="this.src='https://pfp.lol/pfp/default.png'">
+                ${s.user}
+            </div>
+            <div class="points">${s.points}pt</div>
+        </div>`).join("");
+}
+</script>
+</body>
+</html>

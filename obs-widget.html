@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OBS Widgets</title>
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="widgetstyle.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+<!-- Horizontal Navigation Bar -->
+<nav id="horizontal-nav" class="horizontal-nav">
+  <ul class="nav-list">
+    <li>
+      <a id="nav-coding" href="programming.html">
+        <i class="fas fa-code"></i><span>Programming</span>
+      </a>
+    </li>
+    <li>
+      <a id="nav-csharp" href="csharp.html">
+        <i class="fas fa-code"></i><span>Csharp</span>
+      </a>
+    </li>
+    <li>
+      <a id="nav-streaming" href="schedule.html">
+        <i class="fas fa-video"></i><span>Content</span>
+      </a>
+    </li>
+     <li>
+        <a id="nav-widgets" href="obs-widget.html">
+          <i class="fas fa-obs-studio"></i><span>OBS Widgets</span>
+        </a>
+      </li>
+    <li>
+      <a id="nav-contact" href="contact.html">
+        <i class="fas fa-envelope"></i><span>Contact</span>
+      </a>
+    </li>
+    <!-- Dropdown as a list item -->
+    <li class="widget-select">
+      <select id="widgetSections" aria-label="Choose a Widget section">
+        <option value="dnd-class">D&D Class</option>
+        <option value="bloodborne" selected>BloodBorne</option>
+        <option value="hogwarts-sorting-house">Hogwarts Sorting House</option>
+      </select>
+    </li>
+  </ul>
+</nav>
+
+
+    <header style="background-image: url('images/main-page.JPG'); background-size: cover; background-position: center; width: 100%; height: 300px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
+      <div style="text-align: center; color: rgb(113, 248, 253); padding-top: 0;">
+        <h2>Image Widget for OBS</h2>
+        <h5>Download free image widgets for OBS and Streamlabs!</h5>
+      </div>
+    </header>
+
+    
+
+    <main>
+      <!-- Content always visible -->
+      <div id="twitch-protected-content" class="visible">
+        <div class="grid-container">
+          <div class="grid-item" id="dnd-class">
+            <h2>D&D Class</h2>
+            <a href="DND-Class.zip" download>
+              <button class="download-btn">Download D&D Class SB/OBS pack</button>
+            </a>
+          </div>
+
+          <div class="grid-item" id="bloodborne">
+            <h2>BloodBorne: What Character Are You?</h2>
+            <a href="BloodBorne.zip" download>
+              <button class="download-btn">Download BloodBorne SB/OBS pack</button>
+            </a>
+          </div>
+
+         
+
+          <div class="grid-item" id="hogwarts-sorting-house">
+            <h2>Hogwarts Sorting House</h2>
+            <a href="Hogwarts-House.zip" download>
+              <button class="download-btn">Download Hogwarts Sorting House SB/OBS pack</button>
+            </a>
+          </div>
+
+          <div class="grid-item" id="auto-shoutout">
+            <h2>Auto Shoutout</h2>
+            <p>I am still updating Shoutout Clip so it can work properly</p>
+            <a href="Auto-Shoutout.zip" download>
+              <button class="download-btn">Download Auto Shoutout SB/OBS pack</button>
+            </a>
+          </div>
+     
+
+        </div>
+      </div>
+      
+    </main>
+    
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <p>&copy; 2025 Caitlin's Creative Space | All Rights Reserved</p>
+        <nav class="footer-links" aria-label="Legal links">
+          <a href="#" id="open-privacy">Privacy Policy</a>
+          <a href="#" id="open-tos">Terms of Service</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      /* ================================
+         Widget Dropdown Logic
+         ================================ */
+      document.addEventListener("DOMContentLoaded", () => {
+        const widgetSelect = document.getElementById("widgetSections");
+        const gridItems = document.querySelectorAll(".grid-item");
+
+        function showWidget(selectedId) {
+          gridItems.forEach((item) => {
+            item.classList.toggle("active", item.id === selectedId);
+          });
+        }
+
+        if (widgetSelect) {
+          showWidget(widgetSelect.value);
+          widgetSelect.addEventListener("change", () => {
+            showWidget(widgetSelect.value);
+          });
+        }
+      
+        // Show all content by default
+        const protectedContent = document.getElementById("twitch-protected-content");
+        protectedContent.classList.remove("hidden");
+        protectedContent.classList.add("visible");
+
+        // Modals
+        const tosModal = document.getElementById("tos-modal");
+        const privacyModal = document.getElementById("privacy-modal");
+        const openTos = document.getElementById("open-tos");
+        const openPrivacy = document.getElementById("open-privacy");
+        const closeButtons = document.querySelectorAll(".modal .close");
+
+        function openModal(modal) { modal?.classList.add("show"); }
+        function closeModal(modal) { modal?.classList.remove("show"); }
+
+        if (openTos) openTos.addEventListener("click", e => { e.preventDefault(); openModal(tosModal); });
+        if (openPrivacy) openPrivacy.addEventListener("click", e => { e.preventDefault(); openModal(privacyModal); });
+
+        closeButtons.forEach(btn => btn.addEventListener("click", () => closeModal(btn.closest(".modal"))));
+
+        window.addEventListener("click", e => { if(e.target.classList.contains("modal")) closeModal(e.target); });
+        window.addEventListener("keydown", e => { if(e.key === "Escape") { closeModal(tosModal); closeModal(privacyModal); }});
+      });
+    </script>
+
+    <!-- Terms of Service Glassy Modal -->
+  <div id="tos-modal" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Terms of Service</h2>
+          <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
+
+          <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
+
+          <h3>Changes to Terms</h3>
+          <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
+
+          <h3>Use of Website</h3>
+          <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
+          <ul>
+              <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
+              <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
+              <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
+          </ul>
+
+          <h3>Intellectual Property</h3>
+          <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
+
+          <h3>Links to Other Websites</h3>
+          <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+
+          <h3>Disclaimer</h3>
+          <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
+
+          <h3>Governing Law</h3>
+          <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
+
+          <p><strong>Effective Date: August 13, 2025</strong></p>
+      </div>
+  </div>
+
+  <!-- Privacy Policy Glassy Modal -->
+  <div id="privacy-modal" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Privacy Policy</h2>
+
+          <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
+
+          <h3>Information We Collect</h3>
+          <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+          <h4>Information We Collect Directly From You:</h4>
+          <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+          <h4>Information We Collect Automatically:</h4>
+          <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
+
+          <h3>How We Use Your Information</h3>
+          <ul>
+              <li>Provide and maintain our Website and its features.</li>
+              <li>Improve our Website and develop new features.</li>
+              <li>Communicate with you about services and updates.</li>
+              <li>Analyze how users interact with our Website.</li>
+          </ul>
+
+          <h3>Disclosure of Your Information</h3>
+          <ul>
+              <li>With your consent.</li>
+              <li>To comply with legal obligations.</li>
+              <li>To protect our rights and property.</li>
+          </ul>
+
+          <h3>Data Security</h3>
+          <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
+
+          <h3>Changes to This Policy</h3>
+          <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
+
+          <p><strong>Last updated: August 13, 2025</strong></p>
+      </div>
+  </div>
+
+  </body>
+</html>
+
+
+

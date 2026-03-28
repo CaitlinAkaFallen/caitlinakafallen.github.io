@@ -1,275 +1,507 @@
-/* General Styles */
-        body {
-          font-family: "Poppins", Arial, sans-serif;
-          background: linear-gradient( #000000, #727171);
-          color: #ffffff;
+/* --- Global Styles for Command Container --- */
+:root {
+    --primary-glow: #9146ff; /* Twitch Purple */
+    --accent-glow: #00ffcc;  /* Neon Teal */
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --text-main: #ffffff;
+    --text-muted: #adadb8;
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
+}
+
+/* =========================
+   General Styles
+   ========================= */
+body {
+    font-family: "Poppins", Arial, sans-serif;
+    background: radial-gradient(circle at top, #2c2c2c 0%, #000000 100%);
+    color: #ffffff;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* =========================
+   Header
+   ========================= */
+header {
+    background: url("images/guitar.jgp") no-repeat center center / cover;
+    height: 35vh;
+    min-height: 250px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    margin: 100px auto 40px auto; /* Increased top margin for fixed nav */
+    max-width: 1200px;
+    width: calc(100% - 40px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--glass-border);
+}
+
+header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.7));
+    backdrop-filter: blur(2px);
+}
+
+header div {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+}
+
+header h2 {
+    display: inline-block;
+    font-family: "Georgia", serif;
+    font-size: clamp(2rem, 8vw, 4rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    margin: 0;
+    background: linear-gradient(135deg, #fff 0%, var(--primary-glow) 50%, var(--accent-glow) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+}
+
+header h5 {
+    font-family: "Verdana", sans-serif;
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 400;
+    margin-top: 15px;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+/* =========================
+   Navigation Bar
+   ========================= */
+.horizontal-nav {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.08);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+
+    overflow-x: auto;
+    scrollbar-width: none;
+    min-height: 60px;
+    box-sizing: border-box;
+}
+.horizontal-nav::-webkit-scrollbar { display: none; }
+
+.nav-list {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+}
+.nav-list li { display: flex; }
+
+/* ========================= Nav Links ========================= */
+.nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;  
+    height: 70px;
+    margin: 0 10px;
+    border-radius: 14px;
+    color: #f0f0f0;
+    font-size: 1.8rem; 
+    transition: color 0.3s ease, background-color 0.3s ease;
+    text-decoration: none;
+    position: relative; 
+    flex-shrink: 0; 
+}
+
+.nav-link i {
+    transition: color 0.3s ease;
+}
+ /* ========================= Twitch LIVE indicator ========================= */
+        /* NOTE: The live indicator has been updated with a second block later in the CSS, 
+          I have ensured the final version below is the one used for the compiled result. */
+
+        /* Final version of live-indicator */
+        #live-indicator {
+          display: none; /* hidden by default */
+          margin-left: 6px;
+          font-size: 0.75rem;
+          font-weight: bold;
+          color: #ff0000;
+          text-shadow: 0 0 6px rgba(255, 0, 0, 0.8), 0 0 12px rgba(255, 0, 0, 0.6);
+          animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+          0% { opacity: 1; text-shadow: 0 0 6px rgba(255,0,0,0.9), 0 0 12px rgba(255,0,0,0.7); }
+          50% { opacity: 0.5; text-shadow: 0 0 3px rgba(255,0,0,0.6), 0 0 8px rgba(255,0,0,0.4); }
+          100% { opacity: 1; text-shadow: 0 0 6px rgba(255,0,0,0.9), 0 0 12px rgba(255,0,0,0.7); }
+        }
+/* ========================= Hover Effects ========================= */
+/* Twitch */
+.twitch-link:hover {
+    background-color: transparent;
+    color: #9147ff;
+}
+
+/* YouTube */
+.youtube-link:hover {
+    background-color: transparent;
+    color: #cc0000;
+}
+
+/* Kick */
+.kick-link:hover {
+    background-color: transparent;
+    color: #09d82c; /* green icon */
+}
+
+/* Stream Commands */
+.stream-commands-link:hover {
+    background-color: transparent;
+    color: #00bfae;
+}
+
+/* Schedule */
+.home-link:hover {
+    background-color: transparent;
+    color: #ff6ec4;
+}
+
+/* Discord */
+.discord-link:hover {
+    background-color: transparent;
+    color: #7289da;
+}
+
+/* Hover icon color follows link */
+.nav-link:hover i {
+    color: inherit;
+}
+
+/* ========================= Tab Buttons ========================= */
+.tab-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.stream-commands-link:hover {
+    background: linear-gradient(45deg, #00bfae, #9147ff);
+    color: #fff;
+    box-shadow: 0 0 12px #00bfae, 0 0 12px #9147ff;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.twitch-button {
+    background-color: #9147ff;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 8px 2px rgba(145, 71, 255, 0.6);
+}
+
+.twitch-button:hover {
+    background-color: #9b4fff;
+    box-shadow: 0 0 24px 8px rgba(155, 79, 255, 0.7);
+}
+
+.twitch-button.active {
+    background-color: #7f39fb;
+    box-shadow: 0 0 20px 6px rgba(127, 57, 251, 0.8);
+}
+/* =========================
+   Tab Buttons & Filters
+   ========================= */
+.category-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#categorySelect {
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: #1a1a1a;
+    color: white;
+    cursor: pointer;
+    outline: none;
+    transition: 0.3s;
+}
+
+#categorySelect:hover {
+    border-color: var(--accent-glow);
+}
+
+.twitch-button {
+    background: var(--primary-glow);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(145, 70, 255, 0.3);
+}
+
+.twitch-button:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+}
+
+/* =========================
+   Command Sections (Container)
+   ========================= */
+#commandsContainer {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    padding: 40px 20px;
+    margin-bottom: 120px; /* Space for fixed footer */
+}
+
+.command-section h2 {
+    font-size: 1.8rem;
+    color: #fff;
+    text-align: left;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    /* --- Light Glow Effect --- */
+    /* Layer 1: Sharp inner glow | Layer 2: Medium glow | Layer 3: Soft outer bloom */
+    text-shadow: 
+        0 0 7px rgba(70, 227, 255, 0.7), 
+        0 0 10px rgba(112, 25, 241, 0.5), 
+        0 0 21px rgba(70, 233, 255, 0.2);
+    
+    /* Optional: subtle letter spacing to make the glow cleaner */
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.command-section h2::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--primary-glow), transparent);
+}
+
+/* Card Styling */
+.command-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(5px);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: left;
+    transition: 0.4s ease;
+}
+
+.command-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: var(--accent-glow);
+    transform: translateY(-5px);
+}
+
+.command-text {
+    font-family: 'Fira Code', monospace;
+    color: var(--accent-glow);
+    background: rgba(0, 255, 204, 0.1);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.command-text:hover {
+    background: var(--accent-glow);
+    color: #000;
+}
+
+/* =========================
+        Sleek Glassy Footer (Refined)
+        ========================= */
+      .site-footer {
+          background: rgba(20, 20, 20, 0.164);
+          -webkit-backdrop-filter: blur(14px) saturate(160%);
+          backdrop-filter: blur(14px) saturate(160%);
+          border-top: 1px solid rgba(255, 255, 255, 0.15);
+          color: #eaeaea;
+          font-weight: 500;
           text-align: center;
-          padding: 20px;
-          margin: 0;
+          padding: 8px 10px;
+          position: fixed;
+          bottom: 0; /* always visible */
+          left: 0;
+          right: 0;
+          width: 100%;
+          max-height: 115px;
+          box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.35);
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          min-height: 100vh;
-        }
-        
-        header {
-          background: #1f1f1f;
-          padding: 12px 24px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
-        }
+          gap: 8px;
+          transition: background 0.4s ease;
+          z-index: 9999;
+          border-radius: 12px 12px 0 0;
+      }
 
-        nav {
+      .site-footer:hover {
+          background: rgba(30, 30, 30, 0.7); /* optional hover effect */
+      }
+
+
+      /* Footer Container */
+      .footer-content {
+          width: 100%;
+          max-width: 550px;
           display: flex;
+          justify-content: space-between;
           align-items: center;
-          justify-content: center;
-          gap: 40px;
-          flex-wrap: wrap;
-        }
-
-        .nav-link {
-          color: #fff;
-          font-weight: 600;
-          text-decoration: none;
-          padding: 10px 24px;
-          border-radius: 8px;
-          transition: background-color 0.3s ease, box-shadow 0.3s ease;
-          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .nav-link:hover {
-          background-color: #9147ff;
-          color: #fff;
-        }
-
-        .youtube-link:hover {
-          background-color: #cc0000;
-          box-shadow: 0 0 12px #cc0000;
-        }
-
-        .tab-buttons {
-          display: flex;
-          gap: 12px;
-        }
-
-        .stream-commands-link:hover {
-          background: linear-gradient(45deg, #00bfae, #9147ff);
-          color: #fff;
-          box-shadow: 0 0 12px #00bfae, 0 0 12px #9147ff;
-          transition: background 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .twitch-button {
-          background-color: #9147ff;
-          color: #fff;
-          border: none;
-          padding: 8px 18px;
-          font-size: 1rem;
-          border-radius: 6px;
-          cursor: pointer;
-          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-          transition: background-color 0.3s ease, box-shadow 0.3s ease;
-          box-shadow: 0 0 8px 2px rgba(145, 71, 255, 0.6);
-        }
-
-        .twitch-button:hover {
-          background-color: #9b4fff;
-          box-shadow: 0 0 24px 8px rgba(155, 79, 255, 0.7);
-        }
-
-        .twitch-button.active {
-          background-color: #7f39fb;
-          box-shadow: 0 0 20px 6px rgba(127, 57, 251, 0.8);
-        }
-
-        /* Responsive nav */
-        @media (max-width: 600px) {
-          nav {
-            flex-direction: column;
-            gap: 20px;
-            align-items: center;
-          }
-
-          .tab-buttons {
-            margin-top: 10px;
-          }
-        }
-        
-        .kick-link:hover {
-          background-color: #09d82c;
-          box-shadow: 0 0 12px #eff0f0;
-          color: #000;
-        }
-        /* Header Styles */
-        h1 {
-          color: #f1eeee;
-          font-size: clamp(1.8rem, 5vw, 2.5rem);
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          margin-bottom: 20px;
-          text-shadow: 0 0 10px rgba(99, 226, 243, 0.8),
-                      0 0 20px rgba(56, 56, 56, 0.6),
-                      0 0 30px rgba(94, 250, 255, 0.4);
-        }
-
-        /* Command Sections Wrapper with Glassmorphism */
-        .command-sections {
-          width: 90%;
-          max-width: 1200px;
-          background: rgba(20, 20, 30, 0.6);
-          backdrop-filter: blur(10px);
-          padding: 20px;
-          border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.18);
-          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 20px;
-          justify-items: stretch;
-          margin: 20px auto;
-        }
-
-        /* Individual Command Section */
-        .command-section {
-          background: rgba(50, 50, 60, 0.6);
-          padding: 15px;
-          border-radius: 8px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .command-section:hover {
-          transform: scale(1.03);
-          box-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
-        }
-
-        /* Section Titles */
-        .command-section h2 {
-          font-size: 1.5rem;
-          color: #00ffff;
-          text-shadow: 0 0 10px rgba(253, 253, 252, 0.8);
-          margin-bottom: 10px;
-        }
-
-        /* Command List */
-        .command-section ul {
-          list-style-type: none;
-          padding: 0;
-        }
-
-        /* Command Item */
-        .command-item {
-          display: flex;
-          align-items: center;
-          margin: 5px 0;
-          padding: 10px;
-          background: rgba(70, 70, 80, 0.8);
-          border-radius: 6px;
-          box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
-          flex-wrap: wrap;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .command-item:hover {
-          background: rgba(80, 80, 90, 0.9);
-          transform: translateX(5px);
-          box-shadow: 0 0 12px rgba(80, 156, 255, 0.5);
-        }
-
-        /* Command Text */
-        .command-text {
-          cursor: pointer;
-          flex: 0 0 120px;
-          font-weight: bold;
-          color: #af7de7;
-          transition: color 0.2s ease;
-        }
-        .command-text:hover {
-          color: #6882f5;
-        }
-
-        /* Command Description */
-        .command-description {
-          flex: 1;
-          margin-left: 10px;
-          text-align: left;
-          font-size: 0.9rem;
-          color: #ddd;
-          white-space: normal;
-          word-break: break-word;
-        }
-
-        /* Fancy Button Styles */
-        .fancy-button {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          padding: 12px 20px;
-          background: linear-gradient(135deg, #00aaff, #0047b3);
-          color: white;
-          font-size: clamp(1rem, 2.5vw, 1.2rem);
-          font-weight: bold;
-          text-decoration: none;
-          border-radius: 10px;
-          box-shadow: 0 0 15px rgba(0, 119, 204, 0.6);
-          transition: all 0.3s ease-in-out;
-          border: none;
-          cursor: pointer;
-          overflow: hidden;
+          flex-direction: column; /* stacked for better mobile layout */
+          gap: 6px;
+          margin: 0 auto;
           position: relative;
-          text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-          margin-bottom: 20px;
-        }
-        .fancy-button:hover {
-          background: linear-gradient(135deg, #00ccff, #005bb5);
-          transform: scale(1.1);
-          box-shadow: 0 0 25px rgba(0, 119, 204, 0.8);
-        }
-        .fancy-button img {
-          width: 24px;
-          height: auto;
-          filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
-        }
+          font-size: 0.9rem;
+          color: #ccc;
+      }
 
-        /* Return to Coding Button */
-        .return-coding-button {
-          font-size: 1.2rem;
-          padding: 10px 15px;
-          background-color: #333;
-          color: #ffcc00;
-          border-radius: 8px;
-          border: 1px solid #ffcc00;
-          box-shadow: 0 4px 12px rgba(255, 204, 0, 0.3);
-          transition: all 0.3s ease;
+      .footer-content p {
+          margin: 0;
+          font-weight: 300;
+          font-size: 12px;
+          color: #cfcfcf;
+          opacity: 0.85;
+      }
+
+      .footer-links {
+          display: flex;
+          gap: 20px;
+          flex-wrap: wrap;
+      }
+
+      .footer-links a {
+          color: var(--secondary-color, #ccc);
           text-decoration: none;
-          margin-top: 20px;
-        }
-        .return-coding-button:hover {
-          background-color: #ffcc00;
-          color: #121212;
-          transform: translateY(-3px);
-          box-shadow: 0 8px 18px rgba(255, 204, 0, 0.5);
-        }
+          transition: color 0.3s ease, text-shadow 0.3s ease;
+      }
 
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-          .command-sections {
-            width: 100%;
-            padding: 15px;
-            grid-template-columns: 1fr;
-          }
-          body {
-            padding: 15px;
-          }
-          .fancy-button {
-            padding: 10px 15px;
-          }
-        }
+      .footer-links a:hover {
+          color: var(--accent-color, #54eec7);
+          text-shadow: 0 0 8px rgba(84, 238, 199, 0.6);
+      }
 
-        @media (max-width: 480px) {
-          h1 {
-            font-size: 1.8rem;
+      /* --- Responsive Design for Footer --- */
+      @media (max-width: 768px) {
+          .footer-content {
+              flex-direction: column;
+              text-align: center;
+              gap: 15px;
           }
-          .fancy-button {
-            padding: 8px 12px;
-            font-size: 1rem;
-          }
-        }
+      }
+
+      /* =========================
+        Glassy Modal Styles
+        ========================= */
+      .modal {
+          display: none; /* hidden by default */
+          position: fixed;
+          z-index: 10000;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          overflow: auto; /* fallback scroll */
+          background-color: rgba(0,0,0,0.6); /* semi-transparent backdrop */
+          backdrop-filter: blur(6px);
+          transition: opacity 0.3s ease;
+      }
+
+      .modal.show {
+          display: block;
+          opacity: 1;
+      }
+
+      .modal-content {
+          background: rgba(30,30,30,0.8); /* glassy */
+          -webkit-backdrop-filter: blur(10px) saturate(150%);
+          backdrop-filter: blur(10px) saturate(150%);
+          margin: 50px auto;
+          padding: 20px 25px;
+          border-radius: 15px;
+          width: 90%;
+          max-width: 700px;
+          max-height: 80vh; /* limit vertical height */
+          overflow-y: auto; /* scroll for long content */
+          box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+          transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+
+      .modal-content::-webkit-scrollbar {
+          width: 8px;
+      }
+
+      .modal-content::-webkit-scrollbar-thumb {
+          background-color: rgba(84,238,199,0.6);
+          border-radius: 4px;
+      }
+
+      .modal-content:hover {
+          cursor: grab;
+      }
+
+      /* Close button */
+      .modal-content .close {
+          color: #ccc;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
+          cursor: pointer;
+      }
+
+      .modal-content .close:hover {
+          color: #54EEC7;
+      }
+
+      /* Optional smooth scroll on hover */
+      .modal-content:hover {
+          scroll-behavior: smooth;
+      }

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ Projects - CaitlinAkAFallen</title>
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+   <style>
+/* =========================
+   Theme Variables
+   ========================= */
+:root {
+  --bg-dark: #0f0f0f;
+  --bg-dark-alt: #1a1a1a;
+  --bg-darker: #000000;
+  --fg-light: #ffffff;
+  --accent: #ff0044;
+}
+
+/* =========================
+   Global Styles
+   ========================= */
+body {
+  font-family: "Poppins", Arial, sans-serif;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-dark), var(--bg-dark-alt), var(--bg-darker));
+  overflow-x: hidden;
+  color: var(--fg-light);
+}
+
+/* =========================
+   Header
+   ========================= */
+header {
+  background: url("images/main-page.jpg") no-repeat center center / cover;
+  height: 30vh;
+  min-height: 200px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+  border-radius: 10px;
+}
+
+header div {
+  position: relative;
+  z-index: 2;
+}
+
+header h2 {
+  font-family: Georgia, serif;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #71fdea;
+  text-shadow: 0 0 12px #000;
+  margin: 0;
+}
+
+header h5 {
+  font-family: Verdana, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  margin-top: 10px;
+  color: #fff;
+  text-shadow: 0 0 8px #000;
+}
+
+
+/* =========================
+   Navigation Bar
+   ========================= */
+.horizontal-nav {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  padding: 12px 0;
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.horizontal-nav::-webkit-scrollbar { display: none; }
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-list li { display: flex; }
+
+.nav-list a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: all 0.3s ease-in-out;
+  color: #f0f0f0;
+}
+
+.nav-list a i {
+  margin-right: 8px;
+  font-size: 20px;
+  color: #f0f0f0;
+  transition: color 0.3s ease;
+}
+
+.nav-list a:hover i {
+  color: #32f2f8; /* optional gradient effect handled via text above */
+}
+
+.nav-list a:hover {
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+  background-clip: text;
+  box-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
+}
+
+.nav-list img {
+  margin-right: 8px;
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
+}
+
+/* =========================
+   Projects Container
+   ========================= */
+.projects-container {
+  flex: 1;
+  max-width: 1000px;
+  margin: 80px auto 100px auto; /* spacing from nav and footer */
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  backdrop-filter: blur(12px);
+}
+
+.projects-container h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #71fdea;
+  text-shadow: 0 0 8px rgba(0,0,0,0.6);
+}
+
+/* =========================
+   Project Cards
+   ========================= */
+.project {
+  margin: 20px 0;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.project video {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.project-meta {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.project-meta label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #ccc;
+}
+
+.project-meta input {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  color: var(--fg-light);
+  font-weight: bold;
+  padding: 4px 8px;
+  margin-left: 5px;
+}
+
+
+/* ===== Comments ===== */
+.comments {
+  margin-top: 30px;
+}
+.comments form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.comments input, 
+.comments textarea {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+}
+.comments button {
+  padding: 10px;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 6px;
+}
+#commentList {
+  margin-top: 20px;
+}
+.comment {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* --- Glassy Footer --- */
+.site-footer {
+  background: rgba(20, 20, 20, 0.2);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  border-top: 1px solid rgba(255,255,255,0.15);
+  color: #eaeaea;
+  font-weight: 500;
+  text-align: center;
+  padding: 12px 10px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  box-shadow: 0 -5px 18px rgba(0,0,0,0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  border-radius: 12px 12px 0 0;
+  transition: background 0.3s ease;
+}
+
+.site-footer:hover {
+  background: rgba(30,30,30,0.7);
+}
+
+.footer-links a {
+  color: #54eec7;
+  text-decoration: none;
+  margin-left: 15px;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #fff;
+}
+
+
+/* =========================
+   Glassy Modal Styles
+   ========================= */
+.modal {
+    display: none; /* hidden by default */
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* fallback scroll */
+    background-color: rgba(0,0,0,0.6); /* semi-transparent backdrop */
+    backdrop-filter: blur(6px);
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    display: block;
+    opacity: 1;
+}
+
+.modal-content {
+    background: rgba(30,30,30,0.8); /* glassy */
+    -webkit-backdrop-filter: blur(10px) saturate(150%);
+    backdrop-filter: blur(10px) saturate(150%);
+    margin: 50px auto;
+    padding: 20px 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh; /* limit vertical height */
+    overflow-y: auto; /* scroll for long content */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background-color: rgba(84,238,199,0.6);
+    border-radius: 4px;
+}
+
+.modal-content:hover {
+    cursor: grab;
+}
+
+/* Close button */
+.modal-content .close {
+    color: #ccc;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-content .close:hover {
+    color: #54EEC7;
+}
+
+/* Optional smooth scroll on hover */
+.modal-content:hover {
+    scroll-behavior: smooth;
+}
+
+
+.close {
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+   </style>
+</head>
+<body>
+     <header style="background-image: url('images/main-page.jpg'); background-size: cover; background-position: center; height: 300px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
+        <div style="text-align: center; color: rgb(98, 228, 217); padding-top: 0;">
+          <h2>
+            C++ Project Showcase
+          </h2>
+          <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
+            Welcome to the C++ Project Showcase! Browse through various C++ projects, watch demo videos, and leave your feedback. Note: Uploading is restricted to the owner only.
+          </h5>
+        </div>
+      </header>
+  <!-- ===== Horizontal Navigation Bar ===== -->
+<nav id="horizontal-nav" class="horizontal-nav nav-scroll">
+  <ul class="nav-list">
+    <li>
+      <a id="nav-coding" href="admin-programming.html">
+            <i class="fas fa-code"></i><span>Programming</span>
+          </a>
+    </li>
+    <li>
+      <a id="nav-projects" href="cplus-owner.html">
+        <i class="fa-solid fa-diagram-project"></i><span>Projects</span>
+      </a>
+    </li>
+    <li>
+      <a id="nav-feedback" href="#commentForm">
+        <i class="fas fa-comments"></i><span>Feedback</span>
+      </a>
+    </li>
+    <li>
+      <a id="nav-about" href="about.html">
+        <i class="fas fa-user"></i><span>About</span>
+      </a>
+    </li>
+    <li>
+      <a id="open-instruction" href="javascript:void(0)">
+        <i class="fas fa-info-circle"></i><span>Instructions</span>
+      </a>
+    </li>
+    <li>
+      <a id="open-login" href="javascript:void(0)">
+        <i class="fas fa-lock"></i><span>Owner Login</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+
+  <!-- ===== Projects Section ===== -->
+<main class="projects-container">
+  <h1>C++ Project Showcase</h1>
+
+  <div class="project">
+    <video controls>
+      <source src="sample.mp4" type="video/mp4">
+    </video>
+    <div class="project-meta">
+      <label>Name: <input type="text" value="My C++ Project" readonly></label>
+      <label>Version: <input type="text" value="v1.0" readonly></label>
+    </div>
+  </div>
+
+  <!-- Comment Section -->
+  <section class="comments">
+    <h2>Leave Feedback</h2>
+    <form id="commentForm">
+      <input type="text" id="username" placeholder="Your Name" required>
+      <textarea id="comment" placeholder="Write your feedback..." required></textarea>
+      <button type="submit">Submit</button>
+    </form>
+    <div id="commentList"></div>
+  </section>
+</main>
+
+  <!-- ===== Site Footer ===== -->
+  <footer class="site-footer">
+    <div class="footer-content">
+        <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
+        <div class="footer-links">
+            <a href="#" id="open-privacy">Privacy Policy</a>
+            <a href="#" id="open-tos">Terms of Service</a>
+        </div>
+    </div>
+</footer>
+  <!-- ===== Privacy Modal ===== -->
+  <div id="privacyModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Privacy Policy</h2>
+      <p>Your privacy is respected. Only the owner can upload projects. Comments are public.</p>
+    </div>
+  </div>
+
+  <!-- ===== TOS Modal ===== -->
+  <div id="tosModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Terms of Service</h2>
+      <p>Anyone attempting to steal CaitlinAkAFallen’s work without giving credit will face consequences and required payment.</p>
+    </div>
+  </div>
+
+  <!-- ===== Instructions Modal ===== -->
+  <div id="instructionModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Instructions</h2>
+      <p>Browse projects, watch videos, and leave your feedback. Uploading is restricted to the owner only.</p>
+    </div>
+  </div>
+
+    <script>
+// =========================
+// Modal Handling
+// =========================
+const tosModal = document.getElementById('tosModal');
+const privacyModal = document.getElementById('privacyModal');
+const instructionModal = document.getElementById('instructionModal');
+
+const openTos = document.getElementById('open-tos');
+const openPrivacy = document.getElementById('open-privacy');
+const openInstruction = document.getElementById('open-instruction');
+
+const closeButtons = document.querySelectorAll('.modal .close');
+
+// ===== Modal Logic =====
+function openModal(modal) {
+  if (modal) modal.classList.add('show');
+}
+function closeModal(modal) {
+  if (modal) modal.classList.remove('show');
+}
+
+if (openTos) openTos.addEventListener('click', e => {
+  e.preventDefault();
+  openModal(tosModal);
+});
+if (openPrivacy) openPrivacy.addEventListener('click', e => {
+  e.preventDefault();
+  openModal(privacyModal);
+});
+if (openInstruction) openInstruction.addEventListener('click', e => {
+  e.preventDefault();
+  openModal(instructionModal);
+});
+
+closeButtons.forEach(btn =>
+  btn.addEventListener('click', () => closeModal(btn.closest('.modal')))
+);
+
+window.addEventListener('click', e => {
+  if (e.target.classList.contains('modal')) closeModal(e.target);
+});
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal(tosModal);
+    closeModal(privacyModal);
+    closeModal(instructionModal);
+  }
+});
+
+// =========================
+// Comments (shared with Owner via localStorage)
+// =========================
+let comments = [];
+
+// Save comments
+function saveComments() {
+  localStorage.setItem("cplusComments", JSON.stringify(comments));
+}
+
+// Load comments
+function loadComments() {
+  const stored = localStorage.getItem("cplusComments");
+  if (stored) {
+    comments = JSON.parse(stored);
+  }
+  renderComments();
+}
+
+// Render comments on visitor page
+function renderComments() {
+  const commentList = document.getElementById("commentList");
+  if (!commentList) return;
+
+  commentList.innerHTML = "";
+
+  comments.forEach((c) => {
+    const div = document.createElement("div");
+    div.classList.add("comment");
+    div.innerHTML = `
+      <strong>${c.user}</strong>: ${c.text}
+      <div class="replies">
+        ${c.replies.map(r => `<p><em>Owner:</em> ${r}</p>`).join("")}
+      </div>
+    `;
+    commentList.appendChild(div);
+  });
+}
+
+// Handle new comment submission
+const commentForm = document.getElementById("commentForm");
+if (commentForm) {
+  commentForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const text = document.getElementById("comment").value.trim();
+
+    if (username && text) {
+      comments.push({ user: username, text, replies: [] });
+      saveComments();
+      renderComments();
+      commentForm.reset();
+    }
+  });
+}
+
+// Load existing comments on page load
+loadComments();
+
+
+  </script>
+</body>
+</html>

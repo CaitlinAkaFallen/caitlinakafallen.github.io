@@ -3,557 +3,1874 @@
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>FallenOneArt Streaming</title>
+      <title>Schedule</title>
       <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
-      <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+      <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
+      <meta property="og:title" content="Stream Schedule | FallenOneArt">
+      <meta property="og:description" content="Catch the latest live streams on Twitch, YouTube, and Kick. Check here for weekly dates and times!">
+      <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-schedule.jpg">
+      <meta property="og:url" content="https://caitlinscreativespace.xyz/schedule.html">
+      <meta property="og:type" content="website">
+
+      <!-- Twitter / X Card -->
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content="Stream Schedule - FallenOneArt">
+      <meta name="twitter:description" content="Weekly schedule for Twitch, YouTube, and Kick. Never miss a stream!">
+      <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-schedule.jpg">
+
+      <!-- Instagram / General Redirects -->
+      <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-schedule.jpg">
+      <meta property="og:url" content="https://caitlinscreativespace.xyz/schedule.html">
+
+      <!-- Icons and Styles -->
+      <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+      <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
       <style>
-        /* Base Styling */
-        body {
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
-          color: #fff;
-          margin: 0;
-          padding: 20px;
-          text-align: center;
-        }
-
-        /* Header & Navigation */
-        header {
-          background: #1f1f1f;
-          padding: 12px 24px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
-        }
-
-        nav {
-          display: flex;
-          align-items: center;
-          justify-content: center; /* center horizontally */
-          gap: 40px;
-          flex-wrap: wrap;
-        }
-
-        .nav-link {
-          color: #fff;
-          font-weight: 600;
-          text-decoration: none;
-          padding: 10px 24px;
-          border-radius: 8px;
-          transition: background-color 0.3s ease, box-shadow 0.3s ease;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .nav-link:hover {
-          background-color: #9147ff; /* Default hover: Twitch purple */
-          color: #fff;
-        }
-        
-        /* YouTube specific hover */
-        .youtube-link:hover {
-          background-color: #cc0000; /* YouTube red hover */
-          box-shadow: 0 0 12px #cc0000;
-        }
-
-
-        .stream-commands-link:hover {
-          background: linear-gradient(45deg, #00bfae, #9147ff); /* teal to purple gradient */
-          color: #fff;
-          box-shadow: 0 0 12px #00bfae, 0 0 12px #9147ff;
-          transition: background 0.3s ease, box-shadow 0.3s ease;
-        }
-
-
-        /* Tab Buttons */
-        .tab-buttons {
-          display: flex;
-          justify-content: center;
-          gap: 16px;
-          margin-bottom: 40px;
-        }
-
-        .tab-buttons button {
-          background-color: #ff0000;
-          color: #fff;
-          border: none;
-          padding: 10px 24px;
-          font-size: 1.1rem;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: background-color 0.3s ease, box-shadow 0.3s ease;
-          box-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
-        }
-
-        .twitch-text {
-          color: #9147ff; /* Twitch Purple */
-          font-weight: bold;
-        }
-
-        .youtube-text {
-          color: #ff0000; /* YouTube Red */
-          font-weight: bold;
-        }
-          
-        .kick-text {
-          color: #09d82c; /* Kick Green */
-          font-weight: bold;
-        }
-        .kick-link:hover {
-          background-color: #09d82c;
-          box-shadow: 0 0 12px #eff0f0;
-          color: #000;
-        }
-
-        .stream-schedule {
-          max-width: 700px;
-          margin: 40px auto;
-          padding: 20px;
-          background: rgba(145, 71, 255, 0.1);
-          border: 1px solid rgba(145, 71, 255, 0.35);
-          border-radius: 12px;
-          box-shadow: 0 0 15px rgba(145, 71, 255, 0.2);
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          color: #eee;
-          text-align: center;
-        }
-
-      .stream-schedule h2 {
-        margin-bottom: 20px;
-        color: #9147ff;
-        font-size: 28px;
-      }
-
-      .stream-schedule table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      .stream-schedule th,
-      .stream-schedule td {
-        padding: 12px 15px;
-        border-bottom: 1px solid rgba(145, 71, 255, 0.3);
-      }
-
-      .stream-schedule th {
-        background-color: #9147ff;
-        color: white;
-        font-weight: 600;
-      }
-
-      .stream-schedule tbody tr:hover {
-        background-color: rgba(145, 71, 255, 0.15);
-        transition: background-color 0.3s ease;
-      }
-      
-      .schedule-note {
-        margin-top: 20px;
-        font-size: 1.1rem;
-        color: #ddd;
-        text-align: center;
-      }
-
-      .schedule-note .platform {
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 8px;
-        color: #fff;
-      }
-
-      .schedule-note .twitch {
-        background-color: #9147ff;
-        box-shadow: 0 0 8px rgba(145, 71, 255, 0.7);
-      }
-
-      .schedule-note .youtube {
-        background-color: #ff0000;
-        box-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
-      }
-          
-      .schedule-note .kick {
-        background-color: #09d82c;
-        box-shadow: 0 0 8px rgba(9, 216, 44, 0.7);
-      }
-      .twitch-sub-goals-container {
-        max-width: 800px;
-        margin: 60px auto;
-        padding: 30px;
-        background: rgba(145, 71, 255, 0.1);
-        border: 1px solid rgba(145, 71, 255, 0.35);
-        border-radius: 16px;
-        box-shadow: 0 0 20px rgba(145, 71, 255, 0.25);
-        backdrop-filter: blur(10px);
-        color: #eee;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        text-align: center;
-      }
-
-      .twitch-sub-goals h2 {
-        color: #9147ff;
-        font-size: 28px;
-        margin-bottom: 15px;
-      }
-
-      .twitch-sub-goals p {
-        margin-bottom: 25px;
-        font-size: 16px;
-      }
-
-      .sub-goals-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-      }
-
-      .sub-goals-table th,
-      .sub-goals-table td {
-        padding: 12px 15px;
-        border-bottom: 1px solid rgba(145, 71, 255, 0.3);
-      }
-
-      .sub-goals-table th {
-        background-color: #9147ff;
-        color: white;
-        font-weight: 600;
-      }
-
-      .sub-goals-table tbody tr:hover {
-        background-color: rgba(145, 71, 255, 0.1);
-        transition: background-color 0.3s ease;
-      }
-          
-      .twitch-cheer-section {
-          max-width: 800px;
-          margin: 60px auto;
-          padding: 30px;
-          background: rgba(145, 71, 255, 0.1);
-          border: 1px solid rgba(145, 71, 255, 0.35);
-          border-radius: 16px;
-          box-shadow: 0 0 20px rgba(145, 71, 255, 0.25);
-          backdrop-filter: blur(10px);
-          color: #eee;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          text-align: center;
-        }
-
-        .twitch-cheer-section h2 {
-          color: #8e77b1;
-          font-size: 28px;
-          margin-bottom: 15px;
-        }
-
-        .twitch-cheer-section p {
-          margin-bottom: 25px;
-          font-size: 16px;
-        }
-
-        /* Cheer table styled like sub-goal table */
-        .cheer-table {
-          width: 100%;
-          border-collapse: collapse;
-          margin: 0 auto;
-          font-family: inherit;
-          background-color: transparent;
-          color: #fff;
-          border-radius: 12px;
-          overflow: hidden;
-          font-size: 15px;
-        }
-
-        .cheer-table th,
-        .cheer-table td {
-          padding: 12px 15px;
-          text-align: left;
-          border-bottom: 1px solid rgba(145, 71, 255, 0.3);
-        }
-
-        .cheer-table th {
-          background-color: #9147ff;
-          color: white;
-          font-weight: 600;
-        }
-
-        .cheer-table tbody tr:hover {
-          background-color: rgba(145, 71, 255, 0.1);
-          transition: background-color 0.3s ease;
-        }
-
-        .cheer-table tr:last-child td {
-          border-bottom: none;
-        }
-
-        .cheer-icon {
-          width: 18px;
-          height: 18px;
-          vertical-align: middle;
-          margin-right: 6px;
-        }
-
-        /* Mobile Responsive */
-        @media screen and (max-width: 480px) {
-          .twitch-cheer-section {
-            padding: 20px;
+          :root {
+            --accent: #be2edd;
+            --accent-2: #00a8ff;
           }
 
-          .twitch-cheer-section h2 {
+          /* =========================
+            Global Styles
+            ========================= */
+          body {
+            background: #0b0b0b;
+            font-family: "Poppins", Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #000000, #6f00ff, #4ae4e9);
+            overflow-x: hidden; /* Prevent horizontal scroll from elements poking out */
+            color: #fff;
+            text-align: center;
+            position: relative;
+            /* Added for full-screen mobile view support */
+            width: 100%;
+            box-sizing: border-box; 
+          }
+
+          /* Added: Main content wrapper to handle header spacing on mobile and desktop */
+          main {
+            flex-grow: 1; /* Allows content to take up remaining space */
+            padding-top: 130px; /* Space for the fixed navigation on desktop */
+            padding-left: 10px;
+            padding-right: 10px;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          @media (max-width: 600px) {
+            main {
+              padding-top: 100px; /* Reduced space for wrapping mobile navigation */
+            }
+          }
+
+          /* =========================
+            Header
+            ========================= */
+          header {
+            background: url("images/guitar.jgp") no-repeat center center / cover;
+            height: 30vh;
+            min-height: 200px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            margin-top: 50px; /* added spacing below nav */
+            max-width: 1200px; /* Added max width for desktop viewing */
+            width: calc(100% - 20px); /* Fill space with padding */
+            margin-left: auto;
+            margin-right: auto;
+          }
+
+          header::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+            border-radius: 10px;
+          }
+
+          header div {
+            position: relative;
+            z-index: 2;
+          }
+
+          header h2 {
+            display: inline-block;
+            font-family: Georgia, serif;
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: -0.02em;
+            margin: 0;
+
+            /* Gradient fill */
+            background: linear-gradient(60deg, #9146FF 0%, #FF4F4F 40%, #FF0000 50%, #53FC18 100%);
+
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            /* Stroke outline */
+            -webkit-text-stroke: 1.6px rgba(0, 0, 0, 0.18);
+
+            /* Optional depth */
+            text-shadow:
+              0 1px 0 rgba(255, 255, 255, 0.03),
+              0 6px 18px rgba(11, 12, 14, 0.18);
+          }
+
+          @media (max-width: 600px) {
+            header {
+              height: 25vh;
+              min-height: 150px;
+              margin-top: 10px; /* Less spacing on smaller screens */
+            }
+            header h2 {
+              font-size: 2rem; /* Reduced size for mobile */
+              -webkit-text-stroke: 1px rgba(0, 0, 0, 0.18); /* thinner stroke */
+            }
+          }
+
+
+          header h5 {
+            font-family: Verdana, sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            margin-top: 10px;
+            color: #fff;
+            text-shadow: 0 0 8px #000;
+          }
+
+          @media (max-width: 600px) {
+            header h5 {
+              font-size: 14px;
+              margin-top: 5px;
+            }
+          }
+
+          /* ========================= Navigation Bar ========================= */
+          .horizontal-nav {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            padding: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+            /* Hide scrollbar for all browsers */
+            -ms-overflow-style: none;  /* IE and Edge */
+            overflow: -moz-scrollbars-none;  /* Firefox */
+            &::-webkit-scrollbar {
+              width: 0;
+              height: 0;
+              display: none;  /* Chrome, Safari and Opera */
+            }
+            /* Added: Enforce full width and minimum height */
+            min-height: 60px;
+            box-sizing: border-box;
+          }
+          /* ========================= Nav Links ========================= */
+          .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;  /* larger square clickable area */
+            height: 70px;
+            margin: 0 10px;
+            border-radius: 14px;
+            color: #f0f0f0;
+            font-size: 1.8rem; /* bigger icons */
+            transition: color 0.3s ease, background-color 0.3s ease;
+            text-decoration: none;
+            position: relative; /* for LIVE indicator */
+            flex-shrink: 0; /* Added: Prevents links from shrinking in the overflow scroll on mobile */
+          }
+
+          .nav-link i {
+            transition: color 0.3s ease;
+          }
+
+          /* ========================= Hover Effects ========================= */
+          /* Twitch */
+          .twitch-link:hover {
+            background-color: transparent;
+            color: #9147ff;
+          }
+
+          /* YouTube */
+          .youtube-link:hover {
+            background-color: transparent;
+            color: #cc0000;
+          }
+
+          /* Kick */
+          .kick-link:hover {
+            background-color: transparent;
+            color: #09d82c;
+          }
+
+          /* Stream Commands */
+          .stream-commands-link:hover {
+            background-color: transparent;
+            color: #00bfae;
+          }
+
+          /* Schedule */
+          .home-link:hover {
+            background-color: transparent;
+            color: #ff6ec4;
+          }
+
+          .discord-link:hover {
+            background-color: transparent;
+            color: #7289da;
+          }
+
+          /* Hover icon color follows link */
+          .nav-link:hover i {
+            color: inherit;
+          }
+
+          /* ========================= Stream Selector ========================= */
+          .stream-selector-container {
+            display: flex;
+            position: relative;
+            margin-left: auto;         /* pushes it away from the icons */
+            margin-right: 40px;        /* distance from right edge */
+            margin-top: 4px;           /* optional vertical tweak */
+            z-index: 10;
+          }
+
+          .stream-selector-container label {
+            white-space: nowrap;
+          }
+
+          #streamSections {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.15);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+            color: rgb(255, 253, 253);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            appearance: none;
+            cursor: pointer;
+            min-width: 160px;
+          }
+
+          #streamSections option {
+            background-color: #222;
+            color: #fff;
+          }
+
+          #streamSections:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 8px #00ffff;
+          }
+
+          /* ========================= Responsive ========================= */
+          @media (max-width: 600px) {
+            .stream-selector-container {
+              width: 90%;
+              order: 3; /* push to end when wrapping */
+              margin: 10px auto 0 auto; /* center it with top margin */
+              justify-content: center;
+            }
+
+            #streamSections {
+              width: 100%;
+              min-width: unset;
+            }
+          }
+
+
+          /* Mobile Portrait Only (iPhone, iPad, Android) */
+          @media screen and (max-width: 768px) and (orientation: portrait) {
+            .horizontal-nav {
+              flex-direction: row;
+              justify-content: center;
+              align-items: center;
+              padding: 10px;
+              overflow-x: auto;
+              gap: 12px;
+            }
+
+            .nav-link {
+              width: 48px;
+              height: 48px;
+              margin: 0 6px;
+              font-size: 1.5rem;
+              border-radius: 10px;
+            }
+
+            .nav-link i {
+              font-size: 1.5rem;
+            }
+          }
+          /* ========================= Twitch LIVE indicator ========================= */
+          /* NOTE: The live indicator has been updated with a second block later in the CSS, 
+            I have ensured the final version below is the one used for the compiled result. */
+
+          /* Final version of live-indicator */
+          #live-indicator {
+            display: none; /* hidden by default */
+            margin-left: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #ff0000;
+            text-shadow: 0 0 6px rgba(255, 0, 0, 0.8), 0 0 12px rgba(255, 0, 0, 0.6);
+            animation: pulse 1.5s infinite;
+          }
+
+          @keyframes pulse {
+            0% { opacity: 1; text-shadow: 0 0 6px rgba(255,0,0,0.9), 0 0 12px rgba(255,0,0,0.7); }
+            50% { opacity: 0.5; text-shadow: 0 0 3px rgba(255,0,0,0.6), 0 0 8px rgba(255,0,0,0.4); }
+            100% { opacity: 1; text-shadow: 0 0 6px rgba(255,0,0,0.9), 0 0 12px rgba(255,0,0,0.7); }
+          }
+
+
+          /* ========================= Responsive Adjustment ========================= */
+          @media (max-width: 600px) {
+            .horizontal-nav {
+              flex-wrap: wrap;
+              padding: 12px 0;
+              /* Added: Ensure the mobile nav takes up less screen space vertically */
+              align-content: flex-start;
+            }
+            .nav-link {
+              width: 55px;
+              height: 55px;
+              font-size: 1.5rem;
+              margin: 6px;
+            }
+          }
+
+          /* Tab Buttons */
+          .tab-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 40px;
+          }
+
+          .tab-buttons button {
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
+            white-space: nowrap; /* Added: prevents button text from wrapping */
+          }
+
+          /* Text brand colors */
+          .twitch-text {
+            color: #9147ff;
+            font-weight: bold;
+          }
+          .youtube-text {
+            color: #ff0000;
+            font-weight: bold;
+          }
+          .kick-text {
+            color: #09d82c;
+            font-weight: bold;
+          }
+
+          /* Responsive nav (Legacy/Duplicated block, ensuring all styles are kept) */
+          /* The .horizontal-nav block above covers the main navigation responsiveness. */
+          @media (max-width: 600px) {
+            /* This block targets an imaginary 'nav' element, which may or may not exist in the HTML.
+              The styles are kept for completeness, assuming there's another nav element. */
+            nav {
+              flex-direction: column;
+              gap: 20px;
+              align-items: center;
+            }
+
+            .tab-buttons {
+              margin-top: 10px;
+              /* Added: Allow tab buttons to wrap on very small screens */
+              flex-wrap: wrap;
+              gap: 10px;
+              padding: 0 10px;
+            }
+
+            .tab-buttons button {
+              padding: 10px 20px;
+              font-size: 1rem;
+              flex-grow: 1; /* allow buttons to grow slightly for better fit */
+              min-width: 40%;
+            }
+          }
+
+          /* ========================= Stream Schedule ========================= */
+          .stream-schedule {
+            max-width: 700px;
+            margin: 40px auto; /* adjusted to use main's padding-top, 40px bottom */
+            padding: 20px;
+            background: rgba(203, 200, 209, 0);
+            border: 1px solid rgba(145, 71, 255, 0.35);
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(145, 71, 255, 0.2);
+            color: #eee;
+            text-align: center;
+            width: 100%; /* Added: ensures it respects max-width while filling mobile screen */
+            box-sizing: border-box;
+          }
+
+
+          .stream-schedule h2 {
+            margin-bottom: 20px;
+            color: #9147ff;
+            font-size: 28px;
+          }
+
+          .stream-schedule table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+
+          .stream-schedule th,
+          .stream-schedule td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(145, 71, 255, 0.3);
+          }
+
+          .stream-schedule th {
+            background-color: #9147ff;
+            color: white;
+            font-weight: 600;
+          }
+
+          .stream-schedule tbody tr:hover {
+            background-color: rgba(145, 71, 255, 0);
+            transition: background-color 0.3s ease;
+          }
+
+          .schedule-note {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            color: #ddd;
+            text-align: center;
+          }
+
+          .schedule-note .platform {
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 8px;
+            color: #fff;
+          }
+
+          .schedule-note .twitch {
+            background-color: #9147ff;
+            box-shadow: 0 0 8px rgba(145, 71, 255, 0.7);
+          }
+
+          .schedule-note .youtube {
+            background-color: #ff0000;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
+          }
+
+          .schedule-note .kick {
+            background-color: #09d82c;
+            box-shadow: 0 0 8px rgba(9, 216, 44, 0.7);
+          }
+
+          .platform-icons {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+          }
+
+          .platform-icons i {
+            margin: 0 6px;
+          }
+
+          .twitch-icon {
+            color: #9146FF;
+          }
+
+          .youtube-icon {
+            color: #FF0000;
+          }
+
+          .kick-icon {
+            color: #53FC18;
+          }
+
+          .divider {
+            color: white;
+            font-size: 22px;
+            margin: 0 4px;
+          }
+
+          .stream-schedule .platform-icons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+
+            /* 👇 this is the size control */
+            font-size: 36px; /* was ~28px */
+          }
+
+          /* Twitch Sub Goals Section */
+          .twitch-sub-goals-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05); /* Glassy background */
+            border: 1px solid rgba(145, 71, 255, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(145, 71, 255, 0.25);
+            -webkit-backdrop-filter: blur(10px) saturate(150%);
+            backdrop-filter: blur(10px) saturate(150%);
+            color: #eee;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+          }
+
+          .twitch-sub-goals h2 {
+            color: #aee5f3;
+            text-shadow: 0 0 2px #a0e4fd, 0 0 6px #b5ffff;
+            font-size: 28px;
+            margin-bottom: 15px;
+          }
+
+          .twitch-sub-goals p {
+            margin-bottom: 25px;
+            font-size: 16px;
+            color: #dfefff;
+          }
+
+          /* ========================= Glassy Box Sections (Per Day Goals) ========================= */
+          .glassy-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px) saturate(150%);
+            border: 1px solid rgba(145, 71, 255, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(145, 71, 255, 0.2);
+            padding: 20px;
+            margin: 25px auto;
+            color: #eee;
+            text-align: center;
+            max-width: 700px;
+            transition: all 0.4s ease-in-out;
+          }
+
+          .glassy-box h3 {
+            color: #aee5f3;
+            text-shadow: 0 0 2px #a0e4fd, 0 0 6px #b5ffff;
+            margin-bottom: 15px;
             font-size: 22px;
           }
 
+          /* ========================= Sub Goals Table ========================= */
+          .sub-goals-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+
+            /* Mobile responsiveness */
+            display: block;
+            overflow-x: auto;
+            scrollbar-width: auto; /* Firefox */
+            white-space: nowrap;
+          }
+
+          /* Revert to normal on desktop */
+          @media (min-width: 601px) {
+            .sub-goals-table {
+              display: table;
+              white-space: normal;
+            }
+          }
+
+          .sub-goals-table th,
+          .sub-goals-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(145, 71, 255, 0.3);
+            color: #f0f8ff;
+          }
+
+          .sub-goals-table th {
+            background-color: rgba(145, 71, 255, 0.5);
+            color: #fff;
+            font-weight: 600;
+          }
+
+          .sub-goals-table tbody tr:hover {
+            background-color: rgba(145, 71, 255, 0.1);
+            transition: background-color 0.3s ease;
+          }
+
+          /* Twitch Cheer Section */
+          .twitch-cheer-section {
+            max-width: 800px;
+            margin: 40px auto; /* adjusted to use margin for sections, keep consistency */
+            padding: 30px;
+            background: rgba(145, 71, 255, 0.1);
+            border: 1px solid rgba(145, 71, 255, 0.35);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(145, 71, 255, 0.25);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            color: #eee;
+            text-align: center;
+            width: 100%; /* Added for mobile responsiveness */
+            box-sizing: border-box;
+          }
+
+          .twitch-cheer-section h2 {
+            color: #8e77b1;
+            font-size: 28px;
+            margin-bottom: 15px;
+          }
+
           .twitch-cheer-section p {
-            font-size: 14px;
+            margin-bottom: 25px;
+            font-size: 16px;
+          }
+
+          /* Cheer Table */
+          .cheer-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            font-family: inherit;
+            background-color: transparent;
+            color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            font-size: 15px;
+            /* Added: Table responsiveness by setting display block on small screens */
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: auto; /* Firefox */
+            white-space: nowrap; /* Ensures table doesn't wrap content when overflowing */
+          }
+          /* Revert table to normal display on desktop */
+          @media (min-width: 601px) {
+            .cheer-table {
+              display: table;
+              white-space: normal;
+            }
           }
 
           .cheer-table th,
           .cheer-table td {
-            padding: 8px 10px;
-            font-size: 13px;
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(145, 71, 255, 0.3);
+          }
+
+          .cheer-table th {
+            background-color: #9147ff;
+            color: white;
+            font-weight: 600;
+          }
+
+          .cheer-table tbody tr:hover {
+            background-color: rgba(145, 71, 255, 0.1);
+            transition: background-color 0.3s ease;
+          }
+
+          .cheer-table tr:last-child td {
+            border-bottom: none;
           }
 
           .cheer-icon {
-            width: 16px;
-            height: 16px;
-            margin-right: 4px;
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+            margin-right: 6px;
+          }
+
+          /* Container for the Twitch Affiliate Section */
+          #twitch-affiliate-section {
+            max-width: 800px;
+            margin: 40px auto; /* adjusted to use margin for sections, keep consistency */
+            padding: 30px;
+            background: rgba(92, 73, 122, 0.377);
+            border: 1px solid rgba(169, 121, 241, 0.26);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(145, 71, 255, 0.25);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            color: #eee;
+            text-align: center;
+            width: 100%; /* Added for mobile responsiveness */
+            box-sizing: border-box;
+          }
+
+
+          /* Headings */
+          #twitch-affiliate-section h2 {
+            color: #59f5f5;
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 600;
+          }
+
+          /* Paragraphs inside Twitch Affiliate Section */
+          #twitch-affiliate-section p {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+          }
+
+          /* Table Styling */
+          #twitch-affiliate-section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-family: inherit;
+            background-color: transparent;
+            color: #5becf7;
+            border-radius: 12px;
+            overflow: hidden;
+            font-size: 15px;
+            /* Added: Table responsiveness by setting display block on small screens */
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: auto; /* Firefox */
+            white-space: nowrap; /* Ensures table doesn't wrap content when overflowing */
+          }
+          /* Revert table to normal display on desktop */
+          @media (min-width: 601px) {
+            #twitch-affiliate-section table {
+              display: table;
+              white-space: normal;
+            }
+          }
+
+          #twitch-affiliate-section th,
+          #twitch-affiliate-section td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(145, 71, 255, 0.3);
+          }
+
+          #twitch-affiliate-section th {
+            background-color: #9147ff;
+            color: rgb(255, 255, 255);
+            font-weight: 600;
+          }
+
+          #twitch-affiliate-section tbody tr:hover {
+            background-color: rgba(145, 71, 255, 0.1);
+            transition: background-color 0.3s ease;
+          }
+
+          #twitch-affiliate-section tr:last-child td {
+            border-bottom: none;
+          }
+
+          /* ========================= Mobile Responsive Overrides ========================= */
+          @media (max-width: 600px) {
+            .stream-schedule,
+            .twitch-sub-goals-container,
+            .twitch-cheer-section,
+            #twitch-affiliate-section {
+              padding: 20px;
+              max-width: 100%;
+              margin: 20px 0; /* Reduced margin for better use of mobile screen */
+            }
+
+            .stream-schedule h2,
+            .twitch-sub-goals h2,
+            .twitch-cheer-section h2,
+            #twitch-affiliate-section h2 {
+              font-size: 22px;
+            }
+
+            /* Tables inside sections */
+            .stream-schedule table,
+            .sub-goals-table,
+            .cheer-table,
+            #twitch-affiliate-section table {
+              /* Make tables scrollable horizontally on small screens */
+              display: block;
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+            }
+
+            /* Ensures table cells remain compact */
+            .stream-schedule th,
+            .stream-schedule td,
+            .sub-goals-table th,
+            .sub-goals-table td,
+            .cheer-table th,
+            .cheer-table td,
+            #twitch-affiliate-section th,
+            #twitch-affiliate-section td {
+              padding: 8px 10px;
+              font-size: 13px;
+              /* Added: Ensure minimum width for a scrollable table */
+              min-width: 100px;
+              box-sizing: border-box;
+            }
+            
+            /* Make the header image less disruptive on mobile */
+            header {
+              margin-top: 10px; /* Reduced margin */
+            }
+          }
+
+          /* Extra Mobile Responsive */
+          @media screen and (max-width: 480px) {
+            .twitch-cheer-section {
+              padding: 15px; /* Slightly reduced padding */
+            }
+
+            .twitch-cheer-section h2 {
+              font-size: 20px; /* Further reduction */
+            }
+
+            .twitch-cheer-section p {
+              font-size: 14px;
+            }
+
+            .cheer-table th,
+            .cheer-table td {
+              padding: 8px; /* Further reduction for max content */
+              font-size: 12px;
+            }
+
+            .cheer-icon {
+              width: 16px;
+              height: 16px;
+              margin-right: 4px;
+            }
+          }
+
+          /* ========================= Footer ========================= */
+          footer {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: rgba(145, 71, 255, 0.1);
+            border-top: 1px solid rgba(145, 71, 255, 0.35);
+            border-radius: 12px 12px 0 0; /* Adjusted to keep bottom corners sharp */
+            box-shadow: 0 -2px 10px rgba(145, 71, 255, 0.2);
+            color: #eee;
+            width: 100%;
+            box-sizing: border-box; /* Added: Ensures padding is inside the 100% width */
+          }
+          footer p {
+            margin: 0;
+            font-size: 14px;
+          }
+
+          /* =========================
+          Stream Schedule Section
+          ========================= */
+        .stream-section {
+          padding: 2rem;
+          background: rgba(61, 60, 61, 0.171);
+          border-radius: 14px;
+          backdrop-filter: blur(12px);
+          box-shadow: 0 0 20px rgba(190, 46, 221, 0.2);
+          color: #fff;
+          max-width: 720px;
+          margin: 40px auto;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        .stream-section h2 {
+          font-size: 2rem;
+          margin-bottom: 1.5rem;
+          color: var(--accent);
+          text-shadow: 0 0 8px rgba(190, 46, 221, 0.5);
+        }
+
+        /* =========================
+          Stream Form
+          ========================= */
+        #stream-form {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin-bottom: 24px;
+          justify-content: center;
+        }
+
+        #stream-form input,
+        #stream-form button {
+          padding: 10px 14px;
+          border-radius: 8px;
+          border: none;
+          font-size: 0.95rem;
+          font-family: inherit;
+        }
+
+        #stream-form input {
+          flex: 1 1 200px;
+          background: rgba(255, 255, 255, 0.1);
+          color: #fff;
+          backdrop-filter: blur(6px);
+        }
+
+        #stream-form input::placeholder {
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        #stream-form button {
+          background: var(--accent);
+          color: #fff;
+          cursor: pointer;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #stream-form button:hover {
+          transform: scale(1.05);
+          box-shadow: 0 0 10px rgba(190, 46, 221, 0.6);
+        }
+
+        /* =========================
+          Grid Layout for Streams
+          ========================= */
+        .schedule-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 20px;
+        }
+
+        /* Individual Stream Item */
+        .schedule-grid .stream-item {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 1rem;
+          background: rgba(60, 40, 90, 0.6);
+          border-radius: 12px;
+          box-shadow: 0 0 12px rgba(190, 46, 221, 0.15);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .schedule-grid .stream-item:hover {
+          transform: scale(1.03);
+          box-shadow: 0 0 18px rgba(190, 46, 221, 0.4);
+        }
+
+        .stream-details {
+          color: #fff;
+        }
+
+        .stream-title {
+          font-weight: bold;
+          font-size: 1.1rem;
+          margin-top: 0.5rem;
+          display: block;
+        }
+
+        time {
+          font-family: monospace;
+          color: #ccc;
+          margin-top: 0.3rem;
+          display: block;
+        }
+
+        /* Cover Image */
+        .cover-container img {
+          width: 100%;
+          max-height: 200px;
+          object-fit: cover;
+          border-radius: 8px;
+          margin-top: 8px;
+        }
+
+        /* Highlight Today's Stream */
+        .today-stream {
+          border: 2px solid #ff4444;
+        }
+
+        /* =========================
+          Responsive Adjustments
+          ========================= */
+        @media (max-width: 768px) {
+          .schedule-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          }
+          #stream-form input, #stream-form button {
+            flex: 1 1 100%;
           }
         }
 
-      </style>
-    </head>
-    <body>
+        @media (max-width: 480px) {
+          .stream-section {
+            padding: 1.5rem;
+          }
+          .stream-section h2 {
+            font-size: 1.6rem;
+          }
+          .stream-title {
+            font-size: 1rem;
+          }
+        }
 
-          <header>
-          <nav>
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="stream-commands.html" class="nav-link stream-commands-link">Stream Commands</a>
-            <a href="twitch.html" class="nav-link">Twitch</a>
-            <a href="youtube.html" class="nav-link youtube-link active-tab">YouTube</a>
-            <a href="kick.html" class="nav-link kick-link">Kick</a>
-          </nav>
-        </header>
+              .cover-container img {
+                width: 100%;
+                max-height: 200px;
+                object-fit: cover;
+                border-radius: 8px;
+                box-shadow: 0 0 12px rgba(255, 0, 100, 0.4);
+                transition: box-shadow 0.3s ease;
+              }
 
-        <!-- Stream Schedule Section -->
-        <section class="stream-schedule">
-          <h2>
-            <span style="color: white;">Stream Schedule (</span>
-            <span class="twitch-text">Twitch</span>
-            <span style="color: white;">/</span>
-            <span class="youtube-text">YouTube</span>
-            <span style="color: white;">/</span>
-            <span class="kick-text">Kick</span>
-            <span style="color: white;">)</span>
-          </h2>
+              .cover-container img:hover {
+                box-shadow: 0 0 18px rgba(255, 0, 100, 0.6);
+              }
 
-          <table>
-            <thead>
-              <tr>
-                <th>Day</th>
-                <th>Time</th>
-                <th>Stream Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Monday</td>
-                <td>OFF</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>Tuesday</td>
-                <td>OFF</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>Wednesday</td>
-                <td>7:00PM - 9:30PM</td>
-                <td>Creative  Stream (Variety)</td>
-              </tr>
-              <tr>
-                <td>Thursday</td>
-                <td>OFF</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>Friday</td>
-                <td>7:00PM - 9:30PM </td>
-                <td>Gaming Day/8-Bit Friday</td>
-              </tr>
-              <tr>
-                <td>Saturday</td>
-                <td>7:00PM - 9:30PM</td>
-                <td>Lofi Stream Day[Viewers Chooses]</td>
-              </tr>
-              <tr>
-                <td>Sunday</td>
-                <td>OFF</td>
-                <td>-</td>
-              </tr>
-            </tbody>
-          </table>
+              /* Responsive fallback */
+              @media (max-width: 768px) {
+                .schedule-grid {
+                  grid-template-columns: 1fr;
+                }
+                
+                .stream-section {
+                  padding: 1rem;
+                  margin: 20px auto;
+                }
+              } 
 
-          <p class="schedule-note">
-            <strong>Note:</strong> These times apply to <span class="platform twitch">Twitch</span> ,<span class="platform youtube">YouTube</span> and <span class="platform kick">Kick</span>streams.
-          </p>
-        </section>
-      <section class="stream-schedule twitch-affiliate-announcement">
-      <h2>Twitch Affiliate</h2>
-      <p>FallenOneArt is now a Twitch Affiliate! 🎉</p>
-      <p>Join the community and support the channel by subscribing or cheering with bits!</p>
-      <p>Check out the sub goals and cheer rewards below!</p>
+              #stream-goals {
+                color: #e6faff; /* icy white-blue */
+                text-shadow: 0 0 2px #aeeaff, 0 0 6px #b5ffff; /* low glow */
+                font-weight: 600;
+                font-size: 1.2em;
+                letter-spacing: 1px;
+              }
 
-      <table>
-        <thead>
-          <tr>
-            <th>Day</th>
-            <th>Time</th>
-            <th>Stream Type</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Friday – June 20th</td>
-            <td>12 PM – 12 AM</td>
-            <td>Twitch Affiliate Anniversary Part 1</td>
-          </tr>
-          <tr>
-            <td>Saturday – June 21st</td>
-            <td>2 PM – 8 PM</td>
-            <td>Twitch Affiliate Anniversary Part 2</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+              .schedule-grid {
+                text-align: center; /* center all children */
+                margin-bottom: 30px; /* spacing below the grid */
+              }
 
-      <!-- Twitch Sub Goals Section -->
-      <section class="twitch-sub-goals-container">
-        <div class="twitch-sub-goals">
-          <h2>🎯 Twitch Sub Goals/Rewards</h2>
-          <p>Here are the goals and what you unlock as we grow together!</p>
-          <div class="sub-goals-image"></div>
+              .schedule-grid h1 {
+                color: #aee5f3; /* icy white-blue */
+                text-shadow: 0 0 2px #a0e4fd, 0 0 6px #b5ffff; /* soft low glow */
+                font-size: 2em;
+                letter-spacing: 1px;
+                font-weight: 700;
+                margin: 0 auto 20px auto;
+                position: relative;
+                display: inline-block; /* ensure width fits text */
+                animation: icyPulse 2.5s infinite ease-in-out;
+                text-align: center;
+              }
 
-          <table class="sub-goals-table">
-            <thead>
-              <tr>
-                <th>Sub Goals</th>
-                <th>Reward</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>65 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>75 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>85 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>95 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>100 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>150 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>250 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>350 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>400 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>450 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>500 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>550 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>650 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>750 Subs</td>
-                <td>TBD</td>
-              </tr>
-              <tr>
-                <td>850 Subs</td>
-                <td>TBD</td>
-              </tr>
-            </tbody>
-          </table>
+              /* Glassy, blurred underline using a nested span instead of pseudo-element */
+              .schedule-grid h1 span.underline {
+                display: block;
+                margin: 8px auto 0 auto; /* distance below text */
+                width: 60%; /* width of underline relative to text */
+                max-width: 300px; /* optional max width */
+                height: 4px;
+                background: rgba(175, 245, 255, 0.3); /* semi-transparent icy color */
+                backdrop-filter: blur(5px); /* glassy blur */
+                border-radius: 4px;
+                box-shadow: 0 0 6px rgba(175, 245, 255, 0.4); /* soft glow */
+              }
+
+
+              /* Paragraph below heading */
+              .schedule-grid + p {
+                color: #d9f8ff; /* softer icy tone for text */
+                text-shadow: 0 0 1px #aeeaff;
+                font-size: 1.1em;
+                text-align: center;
+                line-height: 1.6;
+              }
+
+              /* ✨ Icy glow animation */
+              @keyframes icyPulse {
+                0%, 100% {
+                  text-shadow: 0 0 2px #aeeaff, 0 0 5px #b5ffff;
+                }
+                50% {
+                  text-shadow: 0 0 4px #c8ffff, 0 0 8px #e6ffff;
+                }
+              }
+            </style>
+          </head>
+          <body>
+          <header style="background-image: url('images/guitar.jpg'); background-size: cover; background-position: center; height: 300px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
+            <div style="text-align: center; color: rgb(253, 244, 113); padding-top: 0;">
+                <h2>
+                  Schedule
+                </h2>
+                <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
+                  Welcome to the Schedule Page! Here you can find my streaming schedule, Twitch affiliate info, sub goals, and cheer rewards.
+                </h5>
+            </div>
+          </header>
+                <!-- Horizontal Navigation Bar -->
+                <nav id="horizontal-nav" class="horizontal-nav">
+                  <a href="main-page.html" class="nav-link home-link">
+                    <i class="fas fa-home"></i>
+                  </a>
+
+                  <a href="stream-commands.html" class="nav-link stream-commands-link">
+                    <i class="fas fa-sticky-note sc-icon"></i>
+                  </a>
+
+                  <!-- Twitch with LIVE indicator -->
+                  <a href="twitch.html" class="nav-link twitch-link">
+                    <i class="fab fa-twitch"></i>
+                    <span id="live-indicator">LIVE</span>
+                  </a>
+
+                  <a href="youtube.html" class="nav-link youtube-link">
+                    <i class="fab fa-youtube"></i>
+                  </a>
+
+                  <a href="kick.html" class="nav-link kick-link">
+                    <i class="fab fa-kickstarter-k"></i>
+                  </a>
+
+                  <a href="discord.html" class="nav-link discord-link" title="Discord" aria-label="Discord">
+                    <i class="fab fa-discord" aria-hidden="true"></i>
+                    <span class="sr-only">Discord</span>
+                    
+                  </a>
+                  
+
+                  <!-- Stream selector dropdown -->
+                  <div class="stream-selector-container">
+                    <select id="streamSections" aria-label="Choose a stream section">
+                      <option value="schedule">Stream Schedule</option>
+                      <option value="game-section">Upcoming Streams</option>
+                      <option value="twitch-affiliate-section">Twitch Affiliate</option>
+                      <option value="subgoals">Twitch Sub Goals</option>
+                      <option value="cheer">Twitch Cheer</option>
+                      <option value="youtube-affiliate-section">YouTube Goals</option>
+                      <option value="kick-affiliate-section">Kick Goals</option>
+                    </select>
+                  </div>
+                </nav>
+
+              
+                 <section id="schedule" class="stream-section stream-schedule active">
+
+                  <!-- Platform Icons -->
+                  <div class="platform-icons">
+                    <i class="fab fa-twitch twitch-icon"></i>
+                    <span class="divider"></span>
+                    <i class="fab fa-youtube youtube-icon"></i>
+                    <span class="divider"></span>
+                    <i class="fab fa-kickstarter-k kick-icon"></i>
+                  </div>
+
+                  <!-- Title -->
+                  <h2>
+                    <span style="color: white;">Stream Schedule</span>
+                  </h2>
+
+
+
+
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Day</th>
+                      <th>Time</th>
+                      <th>Stream Type</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Monday</td>
+                      <td>OFF</td>
+                      <td>-</td>
+                    </tr>
+                    <tr>
+                      <td>Tuesday</td>
+                      <td>OFF</td>
+                      <td>-</td>
+                    </tr>
+                    <tr>
+                      <td>Wednesday</td>
+                      <td>6:00 PM – 9:30 PM</td>
+                      <td>Creative Stream (Variety)</td>
+                    </tr>
+                    <tr>
+                      <td>Thursday</td>
+                      <td>OFF</td>
+                      <td>-</td>
+                    </tr>
+                    <tr>
+                      <td>Friday</td>
+                      <td>6:00 PM – 9:30 PM</td>
+                      <td>Gaming Day / 8-Bit Friday</td>
+                    </tr>
+                    <tr>
+                      <td>Saturday</td>
+                      <td>6:00 PM – 10:30 PM</td>
+                      <td>Lofi Stream Day (Viewer’s Choice)</td>
+                    </tr>
+                    <tr>
+                      <td>Sunday</td>
+                      <td>OFF</td>
+                      <td>-</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <p class="schedule-note">
+                  <strong>Note:</strong> These times apply to <span class="platform twitch">Twitch</span>, <span class="platform youtube">YouTube</span>, and <span class="platform kick">Kick</span> streams.
+                </p>
+              </section>
+
+              <section id="twitch-affiliate-section" class="stream-section" style="display: none;"> <h2>Twitch Affiliate</h2>
+                <p><strong>FallenOneArt</strong> is now a <strong>Twitch Affiliate</strong>! 🎉</p>
+                <p>Join the community and support the channel by subscribing or cheering with bits!</p>
+                <p>Check out the sub goals and cheer rewards below!</p>
+
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Day</th>
+                      <th>Time</th>
+                      <th>Stream Type</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Friday – June 20th</td>
+                      <td>12:00 PM – 12:00 AM</td>
+                      <td>Twitch Affiliate Anniversary Part 1</td>
+                    </tr>
+                    <tr>
+                      <td>Saturday – June 21st</td>
+                      <td>2:00 PM – 8:00 PM</td>
+                      <td>Twitch Affiliate Anniversary Part 2</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+
+                  
+             <!-- Twitch Sub Goals Section -->
+              <section id="subgoals" class="stream-section" style="display: none;">
+                <div class="twitch-sub-goals-container">
+                  <div class="twitch-sub-goals">
+                    <h2>🎯 Twitch Sub Goals/Rewards</h2>
+                    <p>Here are the goals and what you unlock as we grow together!</p>
+
+                    <div class="sub-goals-image">
+                      <!-- Add an image here if needed -->
+                    </div>
+
+                    <!-- 🌙 Wednesday Stream Goals -->
+                    <section id="goals-wednesday" class="stream-goals-section glassy-box" style="display: none;">
+                      <h3>🎨 Wednesday Stream Goals & Rewards</h3>
+                      <table class="sub-goals-table">
+                        <thead>
+                          <tr>
+                            <th>Goal</th>
+                            <th>Reward</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr><td>5 Subs</td><td></td></tr>
+                          <tr><td>10 Subs</td><td></td></tr>
+                          <tr><td>15 Subs</td><td></td></tr>
+                          <tr><td>25 Subs</td><td></td></tr>
+                          <tr><td>35 Subs</td><td></td></tr>
+                          <tr><td>45 Subs</td><td></td></tr>
+                          <tr><td>55 Subs</td><td></td></tr>
+                          <tr><td>65 Subs</td><td>Winner Chooses Game</td></tr>
+                          <tr><td>85 Subs</td><td>Art Stream – Chat Picks Theme</td></tr>
+                          <tr><td>95 Subs</td><td>Viking Cosplay + Valhalla Stream</td></tr>
+                          <tr><td>100 Subs</td><td>Community Game Night</td></tr>
+                        </tbody>
+                      </table>
+                    </section>
+
+                    <!-- ⚔️ Friday Stream Goals -->
+                    <section id="goals-friday" class="stream-goals-section glassy-box" style="display: none;">
+                      <h3>🕹️ Friday Stream Goals & Rewards</h3>
+                      <table class="sub-goals-table">
+                        <thead>
+                          <tr>
+                            <th>Goal</th>
+                            <th>Reward</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr><td>75 Subs</td><td>Community Movie Night</td></tr>
+                          <tr><td>150 Subs</td><td>Interactive Stream Challenges</td></tr>
+                          <tr><td>250 Subs</td><td>Behind the Scenes Stream</td></tr>
+                          <tr><td>500 Subs</td><td>24-Hour Stream</td></tr>
+                        </tbody>
+                      </table>
+                    </section>
+
+                    <!-- 🌸 Saturday Stream Goals -->
+                    <section id="goals-saturday" class="stream-goals-section glassy-box" style="display: none;">
+                      <h3>🎧 Saturday Stream Goals & Rewards</h3>
+                      <table class="sub-goals-table">
+                        <thead>
+                          <tr>
+                            <th>Goal</th>
+                            <th>Reward</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr><td>85 Subs</td><td>Lofi Art or Chill Stream</td></tr>
+                          <tr><td>350 Subs</td><td>Unlock New Emote Slots</td></tr>
+                          <tr><td>400 Subs</td><td>Q&A Stream (Ask Me Anything)</td></tr>
+                          <tr><td>750 Subs</td><td>Free Custom Commission</td></tr>
+                        </tbody>
+                      </table>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+
+              <!-- Twitch Cheer Bits Section (Initially hidden) -->
+              <section id="cheer" class="stream-section" style="display: none;">
+                <div class="twitch-cheer-section">
+                  <h2 style="color: #9146FF;">✨ Twitch Cheer Rewards</h2>
+                  <p style="color: white;">Show your support with bits and unlock fun titles along the way!</p>
+
+                  <table class="cheer-table">
+                    <thead>
+                      <tr>
+                        <th>Bits</th>
+                        <th>Reward</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><img src="images/twitch-icon.png" class="cheer-icon" alt="Twitch icon"> 10</td>
+                        <td>Funny Sound Effect Plays on Stream</td>
+                      </tr>
+                      <tr>
+                        <td><img src="images/twitch-icon.png" class="cheer-icon" alt="Twitch icon"> 50</td>
+                        <td>Add a Silly Sticker/GIF Overlay for 1 Minute</td>
+                      </tr>
+                      <tr>
+                        <td><img src="images/twitch-icon.png" class="cheer-icon" alt="Twitch icon"> 100</td>
+                        <td>Spin the Digital SUB/Bit Wheel</td>
+                      </tr>
+                      <tr>
+                        <td><img src="images/twitch-icon.png" class="cheer-icon" alt="Twitch icon"> 250</td>
+                        <td>Shoutout + Your Name on Stream Overlay</td>
+                      </tr>
+                      <tr>
+                        <td><img src="images/twitch-icon.png" class="cheer-icon" alt="Twitch icon"> 500</td>
+                        <td>Unlock a Random Stream Challenge</td>
+                      </tr>
+                      <tr>
+                        <td><img src="images/twitch-icon.png" class="cheer-icon" alt="Twitch icon"> 750</td>
+                        <td>Community Poll: Decide My Next Stream Theme</td>
+                      </tr>
+                      <tr>
+                        <td><img src="images/twitch-icon.png" class="cheer-icon" alt="Twitch icon"> 1000</td>
+                        <td>Custom Digital Thank You Card (Made Live)</td>
+                      </tr>
+                      <tr>
+                        <td><img src="images/twitch-icon.png" class="cheer-icon" alt="Twitch icon"> 1500</td>
+                        <td>Exclusive Art/Wallpaper Pack for Supporters</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+      <!-- Game Cover Display -->
+
+
+      <section id="game-section" class="stream-section" style="display: none;">
+        <div class="game-info">
+          <section class="stream-schedule" aria-labelledby="schedule-heading">
+            
+
+            <!-- Stream & Game Info -->
+            <div id="stream-info" style="text-align: center; margin-bottom: 10px;">
+              <h3 id="stream-title" style="margin: 5px 0;">Stream Title</h3>
+              
+            </div>
+
+            <!-- Game Cover -->
+            <div class="cover-container">
+              <img
+                id="game-cover"
+                alt="Game Cover"
+                src="images/default-cover.png"
+                style="max-width: 168px; border-radius: 12px; display: block; margin: 10px auto;"
+              />
+            </div>
+            <p id="game-title" style="margin: 0; font-weight: bold;">Game Name</p>
+
+            <h2 id="schedule-heading">Upcoming Streams</h2>
+            <div class="game-description">
+              <p style="text-align: center; color: #ddd; margin-top: 10px;">
+                <span id="next-stream-full">[Full Stream Info]</span>
+              </p>
+            </div>
+          </section>
         </div>
-         <!-- Twitch Cheer Bits Section -->
-      <section class="twitch-cheer-section">
-        <h2 style="color: #9146FF;">✨ Twitch Cheer Rewards</h2>
-        <p style="color: white;">Show your support with bits and unlock fun titles along the way!</p>
 
-        <table class="cheer-table">
-          <thead>
-            <tr>
-              <th>Bits</th>
-              <th>Reward</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><img src="images/twitch-icon.png" class="cheer-icon">10</td><td>TBA</td>
-            </tr>
-            <tr>
-              <td><img src="images/twitch-icon.png" class="cheer-icon">50</td><td>TBA</td>
-            </tr>
-            <tr>
-              <td><img src="images/twitch-icon.png" class="cheer-icon">100</td><td>TBA</td>
-            </tr>
-            <tr>
-              <td><img src="images/twitch-icon.png" class="cheer-icon">250</td><td>TBA</td>
-            </tr>
-            <tr>
-              <td><img src="images/twitch-icon.png" class="cheer-icon">500</td><td>TBA</td>
-            </tr>
-            <tr>
-              <td><img src="images/twitch-icon.png" class="cheer-icon">750</td><td>TBA</td>
-            </tr>
-            <tr>
-              <td><img src="images/twitch-icon.png" class="cheer-icon">1000</td><td>TBA</td>
-            </tr>
-            <tr>
-              <td><img src="images/twitch-icon.png" class="cheer-icon">1500</td><td>TBA</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-      </section>
-      </section>
-        
+        <div class="schedule-grid" id="schedule-grid">
+        <h1>Stream Goals<span class="underline"></span></h1>
+      </div>
 
-      <script>
-         function switchTab(tab) {
-            const twitch = document.getElementById('twitch-tab');
-            const youtube = document.getElementById('youtube-tab');
+        <p id="stream-goals-summary">
+  <span id="stream-goals">[Date]</span> — Let's see what the goals are today!
+</p>
 
-            if (tab === 'twitch') {
-                twitch.classList.add('active');
-                youtube.classList.remove('active');
-            } else {
-                youtube.classList.add('active');
-                twitch.classList.remove('active');
+      </section>
+
+      <section id="youtube-affiliate-section" class="stream-section" style="display: none;">
+        <h2 style="color: red;">YouTube Goals and Rewards</h2>
+        <div class="youtube-notice">
+          <p>I have yet to reach affiliate status on YouTube.</p>
+        </div>
+      </section>
+
+      <section id="kick-affiliate-section" class="stream-section" style="display: none;">
+        <h2 style="color: #09d82c;">Kick Goals and Rewards</h2>
+        <div class="kick-notice">
+          <p>I have yet to reach affiliate status on Kick.</p>
+        </div>
+      </section>
+
+    <script>
+      // ===============================
+      // 🎮 Twitch & Stream Integration (Unified Version)
+      // ===============================
+      const FIXED_STREAM_TIME = "19:00"; // 7:00 PM local
+
+      // ===============================
+      // ⚙️ Twitch Credentials
+      // ===============================
+      const clientId = "gp762nuuoqcoxypju8c569th9wz7q5";
+      const oauthToken = "0s89vmye9hk95jiifrpion53n6cy9p";
+      const userLogin = "fallenoneart"; // ✅ your Twitch channel name
+
+      // ===============================
+      // 🎯 Fetch Twitch User ID
+      // ===============================
+      async function getTwitchUserId() {
+          const resp = await fetch(`https://api.twitch.tv/helix/users?login=${userLogin}`, {
+              headers: {
+                  "Client-ID": clientId,
+                  "Authorization": `Bearer ${oauthToken}`,
+              },
+          });
+          const data = await resp.json();
+          return data.data?.[0]?.id || null;
+      }
+
+      // ===============================
+      // 📺 Get Channel & Stream Info
+      // ===============================
+      async function getChannelAndStreamInfo(userId) {
+          const [channelResp, streamResp] = await Promise.all([
+              fetch(`https://api.twitch.tv/helix/channels?broadcaster_id=${userId}`, {
+                  headers: {
+                      "Client-ID": clientId,
+                      "Authorization": `Bearer ${oauthToken}`
+                  },
+              }),
+              fetch(`https://api.twitch.tv/helix/streams?user_id=${userId}`, {
+                  headers: {
+                      "Client-ID": clientId,
+                      "Authorization": `Bearer ${oauthToken}`
+                  },
+              })
+          ]);
+
+          const channelData = await channelResp.json();
+          const streamData = await streamResp.json();
+
+          return {
+              channelInfo: channelData.data?.[0],
+              isLive: streamData.data && streamData.data.length > 0,
+          };
+      }
+
+      // ===============================
+      // 📅 Detect Upcoming Stream
+      // ===============================
+      const STREAM_DURATION_HOURS = 2; // Set your stream length here
+
+      async function detectNextStreamDay(streamTitleEl, gameTitleEl) {
+          const streamDays = [3, 5, 6]; // Wed, Fri, Sat
+          const now = new Date();
+          const today = now.getDay();
+
+          let nextStreamDay = streamDays.find(day => day > today) ?? streamDays[0];
+          let daysUntilNext = (nextStreamDay + 7 - today) % 7;
+
+          if (daysUntilNext === 0) {
+              const [hour, minute] = FIXED_STREAM_TIME.split(':').map(Number);
+              const streamTimeToday = new Date(now);
+              streamTimeToday.setHours(hour, minute, 0, 0);
+              if (now >= streamTimeToday) {
+                  const idx = streamDays.indexOf(today);
+                  nextStreamDay = streamDays[(idx + 1) % streamDays.length];
+                  daysUntilNext = (nextStreamDay + 7 - today) % 7 || 7;
+              } else {
+                  daysUntilNext = 0;
+              }
+          }
+
+          const nextStreamDate = new Date(now);
+          nextStreamDate.setDate(now.getDate() + daysUntilNext);
+          nextStreamDate.setHours(...FIXED_STREAM_TIME.split(':').map(Number), 0, 0);
+
+          // Start and End Time
+          const startTimeStr = nextStreamDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+          const endStreamDate = new Date(nextStreamDate);
+          endStreamDate.setHours(endStreamDate.getHours() + STREAM_DURATION_HOURS);
+          const endTimeStr = endStreamDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+          // Day & Date
+          const dayName = nextStreamDate.toLocaleDateString(undefined, { weekday: "long" });
+          const dateStr = nextStreamDate.toLocaleDateString(undefined, { month: "long", day: "numeric" });
+
+          // Update main stream title
+          streamTitleEl.textContent = `${dayName}, ${dateStr} at ${startTimeStr}`;
+
+          // ✅ Update description with full date, day, and time + neon blue effect
+          const nextStreamFullEl = document.getElementById("next-stream-full");
+          const neonBlueStyle = {
+              color: "#00ffff", // neon blue
+              textShadow: "0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff"
+          };
+          if (nextStreamFullEl) {
+              nextStreamFullEl.textContent = `${dateStr}, ${dayName} at ${startTimeStr} – ${endTimeStr}`;
+              Object.assign(nextStreamFullEl.style, neonBlueStyle);
+          }
+
+          // Load Twitch data dynamically
+          const userId = await getTwitchUserId();
+          if (!userId) return;
+
+          const { channelInfo } = await getChannelAndStreamInfo(userId);
+
+          if (channelInfo) {
+              streamTitleEl.textContent = channelInfo.title || streamTitleEl.textContent;
+              gameTitleEl.textContent = channelInfo.game_name || "Game Name";
+
+              // 🎨 Neon Pink with low glow + slightly larger text
+              const neonPinkStyle = {
+                  color: "#ff66cc", 
+                  textShadow: "0 0 2px #ff66cc, 0 0 4px #ff33aa",
+                  fontSize: "1.2em",
+                  fontWeight: "600",
+                  letterSpacing: "0.5px"
+              };
+
+              Object.assign(streamTitleEl.style, neonPinkStyle);
+              Object.assign(gameTitleEl.style, neonPinkStyle);
+
+              if (channelInfo.game_name) {
+                  await loadGameCover(channelInfo.game_name);
+              }
+          }
+
+          // Highlight if today is a stream day
+          const isStreamDay = streamDays.includes(today);
+          if (isStreamDay) {
+              streamTitleEl.style.color = "#FF4D4D";
+              streamTitleEl.style.textShadow = "0 0 5px #FF4D4D, 0 0 15px #FF1A1A";
+          } else {
+              streamTitleEl.style.color = "white";
+              streamTitleEl.style.textShadow = "none";
+          }
+
+          // ==============================
+          // ✅ Show Stream Goals per Day
+          // ==============================
+          showStreamGoalsForDay(dayName);
+      }
+
+      // ===============================
+      // 🕹️ Show Stream Goals Section by Day
+      // ===============================
+      function showStreamGoalsForDay(dayName) {
+          const allGoals = document.querySelectorAll(".stream-goals-section");
+          allGoals.forEach(g => g.style.display = "none");
+
+          if (dayName === "Wednesday") {
+              document.getElementById("goals-wednesday").style.display = "block";
+          } else if (dayName === "Friday") {
+              document.getElementById("goals-friday").style.display = "block";
+          } else if (dayName === "Saturday") {
+              document.getElementById("goals-saturday").style.display = "block";
+          }
+      }
+
+      // ===============================
+      // 📅 Update Stream Goals Date
+      // ===============================
+      function updateStreamGoalsDate() {
+          const dateEl = document.getElementById("stream-goals");
+          const now = new Date();
+
+          const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+          const formattedDate = now.toLocaleDateString("en-US", options);
+
+          const today = new Date();
+          const isToday = now.toDateString() === today.toDateString();
+
+          dateEl.textContent = isToday
+              ? `Today – ${formattedDate}:`
+              : `${formattedDate}:`;
+      }
+
+      // Run when page loads
+      updateStreamGoalsDate();
+      setInterval(updateStreamGoalsDate, 1000);
+
+            
+            // ===============================
+            // 🎮 Load Game Cover
+            // ===============================
+            async function loadGameCover(gameName) {
+                try {
+                    const response = await fetch(`https://api.twitch.tv/helix/games?name=${encodeURIComponent(gameName)}`, {
+                        headers: {
+                            "Client-ID": clientId,
+                            "Authorization": `Bearer ${oauthToken}`
+                        },
+                    });
+
+                    const data = await response.json();
+                    const game = data.data?.[0];
+
+                    const coverImg = document.getElementById("game-cover");
+                    if (coverImg && game?.box_art_url) {
+                        const boxArtUrl = game.box_art_url.replace("{width}", "285").replace("{height}", "380");
+                        coverImg.src = boxArtUrl;
+                        coverImg.style.display = "block";
+                    }
+                } catch (err) {
+                    console.error("Error loading game cover:", err);
+                }
+            }
+
+            // ===============================
+            // 🚀 Initialize
+            // ===============================
+            window.addEventListener("DOMContentLoaded", () => {
+                const titleEl = document.getElementById("stream-title");
+                const gameEl = document.getElementById("game-title");
+                detectNextStreamDay(titleEl, gameEl);
+            });
+
+
+
+
+          // ===============================
+          // 🔴 Twitch Live Status Check (Fixed & Working)
+          // ===============================
+          async function checkTwitchLive() {
+            const clientId = "gp762nuuoqcoxypju8c569th9wz7q5";
+            const oauthToken = "0s89vmye9hk95jiifrpion53n6cy9p";
+            const username = "fallenoneart";
+
+            const titleEl = document.getElementById("streamTitle");
+            const gameEl = document.getElementById("game-title");
+            const coverEl = document.getElementById("game-cover");
+            const liveIndicator = document.getElementById("live-indicator");
+
+            try {
+              // Step 1: Get user ID
+              const userResp = await fetch(`https://api.twitch.tv/helix/users?login=${username}`, {
+                headers: {
+                  "Client-ID": clientId,
+                  "Authorization": `Bearer ${oauthToken}`
+                }
+              });
+              const userData = await userResp.json();
+              if (!userData.data?.length) throw new Error("User not found");
+
+              const userId = userData.data[0].id;
+
+              // Step 2: Check if stream is live
+              const streamResp = await fetch(`https://api.twitch.tv/helix/streams?user_id=${userId}`, {
+                headers: {
+                  "Client-ID": clientId,
+                  "Authorization": `Bearer ${oauthToken}`
+                }
+              });
+              const streamData = await streamResp.json();
+
+              // Step 3: Determine if live
+              const isLive = streamData.data && streamData.data.length > 0;
+
+              // Step 4: Update navbar indicator
+              if (liveIndicator) {
+                liveIndicator.style.display = isLive ? "inline" : "none";
+              }
+
+              // Step 5: Update stream info if live
+              if (isLive) {
+                const streamInfo = streamData.data[0];
+                if (titleEl) titleEl.textContent = streamInfo.title || "Untitled Stream";
+                if (gameEl) gameEl.textContent = streamInfo.game_name || "Unknown Game";
+                if (coverEl) {
+                  coverEl.src = `https://static-cdn.jtvnw.net/ttv-boxart/${streamInfo.game_id}-285x380.jpg`;
+                  coverEl.style.display = "block";
+                }
+              } else {
+                // Optional: reset display when offline
+                if (titleEl) titleEl.textContent = "Currently Offline";
+                if (gameEl) gameEl.textContent = "";
+                if (coverEl) {
+                  coverEl.src = "images/default-cover.png";
+                  coverEl.style.display = "block";
+                }
+              }
+
+            } catch (err) {
+              console.error("Error checking Twitch live status:", err);
+              if (liveIndicator) liveIndicator.style.display = "none";
             }
           }
-      </script>
+
+          // Call it once, or periodically every few minutes
+          checkTwitchLive();
+          // setInterval(checkTwitchLive, 300000); // optional: every 5 minutes
+
+
+            // ===============================
+            // 📅 Render Schedule
+            // ===============================
+            async function renderSchedule() {
+              const grid = document.getElementById("schedule-grid");
+              const segments = await fetchStreams();
+              grid.innerHTML = '';
+
+              for (const segment of segments) {
+                const gameName = segment.category?.name || 'Just Chatting';
+                const coverUrl = await fetchGameImage(gameName);
+                const startTime = new Date(segment.start_time);
+                const endTime = new Date(segment.end_time);
+
+                const streamItem = document.createElement('div');
+                streamItem.classList.add('stream-item');
+                streamItem.innerHTML = `
+                  <div class="stream-details">
+                    <strong>${startTime.toLocaleDateString()}</strong><br>
+                    <span class="stream-title">${gameName}</span> —
+                    <time datetime="${startTime.toISOString()}">${startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time>
+                    to
+                    <time datetime="${endTime.toISOString()}">${endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time>
+                  </div>
+                  <div class="cover-container">
+                    <img src="${coverUrl}" alt="${gameName} Cover"
+                    style="width:100%; max-height:200px; object-fit:cover; border-radius:8px; margin-top:8px;">
+                  </div>
+                `;
+                grid.appendChild(streamItem);
+              }
+            }
+
+            // ===============================
+            // 🔄 Section Selector
+            // ===============================
+            function setupStreamSelection(select, sections) {
+              select.addEventListener('change', () => {
+                const selected = select.value;
+                sections.forEach(section => {
+                  const isMatch = section.id === selected;
+                  section.style.display = isMatch ? 'block' : 'none';
+                  section.classList.toggle('active', isMatch);
+                });
+              });
+            }
+
+            // ===============================
+            // 🚀 Initialize Everything
+            // ===============================
+            document.addEventListener("DOMContentLoaded", async () => {
+              const streamTitleUpcomingEl = document.getElementById("stream-title");
+              const gameTitleUpcomingEl = document.getElementById("game-title");
+              const select = document.getElementById("streamSections");
+              const allSections = document.querySelectorAll(".stream-section");
+              const form = document.getElementById("stream-form");
+
+              setupStreamSelection(select, allSections);
+
+              if (form) {
+                form.addEventListener('submit', async (e) => {
+                  e.preventDefault();
+                  const gameName = document.getElementById('game-name').value.trim();
+                  const startTime = new Date(document.getElementById('start-time').value);
+                  const endTime = new Date(document.getElementById('end-time').value);
+                  if (!gameName || isNaN(startTime) || isNaN(endTime)) return alert('Please fill all fields');
+                  const coverUrl = await fetchGameImage(gameName);
+                  const grid = document.getElementById("schedule-grid");
+                  const streamItem = document.createElement('div');
+                  streamItem.classList.add('stream-item');
+                  streamItem.innerHTML = `
+                    <div class="stream-details">
+                      <strong>${startTime.toLocaleDateString()}</strong><br>
+                      <span class="stream-title">${gameName}</span> —
+                      <time datetime="${startTime.toISOString()}">${startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time>
+                      to
+                      <time datetime="${endTime.toISOString()}">${endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time>
+                    </div>
+                    <div class="cover-container">
+                      <img src="${coverUrl}" alt="${gameName} Cover"
+                      style="width:100%; max-height:200px; object-fit:cover; border-radius:8px; margin-top:8px;">
+                    </div>
+                  `;
+                  grid.appendChild(streamItem);
+                  form.reset();
+                });
+              }
+
+              updateDateDisplay();
+              detectNextStreamDay(streamTitleUpcomingEl, gameTitleUpcomingEl);
+              await checkTwitchLive();
+              await renderSchedule();
+              setInterval(checkTwitchLive, 10000);
+              setInterval(updategameCover, 5 * 60 * 1000);
+              setInterval(() => detectNextStreamDay(streamTitleUpcomingEl, gameTitleUpcomingEl), 10000);
+              setInterval(renderSchedule, 5 * 60 * 1000);
+              setInterval(updateDateDisplay, 1000);
+              setInterval(updateStreamTitleAndGame, 10000);
+            });
+    </script>
     </body>
 </html>

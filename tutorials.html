@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorials - Time to Explore the Art Brain</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <style>
+:root{
+  --bg-1: linear-gradient(135deg,#eafaff 0%, #f7e8ff 100%);
+  --card-bg: rgba(255, 255, 255, 0.18);
+  --text: #111314;
+  --accent: #54e6c7;
+  --accent-2: #7b5cff;
+  --glass-radius: 16px;
+  --transition: 250ms cubic-bezier(.2,.9,.3,1);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg-1: linear-gradient(135deg,#0f1114 0%, #0b0a0f 100%);
+    --card-bg: rgba(255,255,255,0.08);
+    --text: #e7eef0;
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:var(--bg-1);
+  color:var(--text);
+}
+
+/* =========================
+   Navigation Bar
+   ========================= */
+.horizontal-nav {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between; /* spread nav + socials */
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.horizontal-nav::-webkit-scrollbar { display: none; }
+
+/* Left Nav Links */
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-list li { display: flex; }
+
+.nav-list a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #f0f0f0;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+}
+
+.nav-list a i {
+  margin-right: 8px;
+  font-size: 20px;
+  color: #f0f0f0;
+  transition: color 0.3s ease;
+}
+
+/* Gradient Hover Effect for Text */
+.nav-list a:hover {
+  background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
+}
+
+.nav-list a:hover i {
+  color: #32f2f8; /* keep icons glowing on hover */
+}
+
+/* Small icons next to text */
+.nav-list img {
+  margin-right: 8px;
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
+}
+
+/* Right Social Icons */
+.socials {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.social-link {
+  color: #f0f0f0;
+  font-size: 20px;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.social-link:hover {
+  transform: scale(1.2);
+  color: #32f2f8;
+}
+
+/* Brand Colors on Hover */
+.social-link.x-link:hover { color: #1d1d1f; }
+.socials .social-link:nth-child(2):hover { color: #9146FF; } /* Twitch */
+.socials .social-link:nth-child(3):hover { color: #E4405F; } /* Instagram */
+.socials .social-link:nth-child(4):hover { color: #2b9ae6; } /* Twitter/X */
+.socials .social-link:nth-child(5):hover { color:#e7e8e9; } /* GitHub */
+
+
+/* Welcome Section */
+#welcome {
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: 34px;
+  max-width:900px;
+  margin: 28px auto;
+  text-align:center;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 18px 40px rgba(2,6,10,0.08);
+}
+#welcome h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px #130f40;
+}
+#welcome p {
+  margin-top: 12px;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  max-width: 78ch;
+  margin-left: auto;
+  margin-right: auto;
+  display: inline-block;
+  background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color: transparent;
+  background-clip:text;
+  color: transparent;
+}
+
+/* =========================
+   Content + Glass Cards
+========================= */
+
+/* Container & Titles */
+.container {
+  padding: 120px 20px 40px;
+  max-width: 1200px;
+  margin: auto;
+  text-align: center;
+}
+.container h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+  background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.container p {
+  font-size: 1rem;
+  margin-bottom: 30px;
+  color: var(--text);
+}
+form, .video-item {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--glass-radius);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+  color: #222; /* Darker text inside cards */
+}
+
+/* Reflection effect */
+form::after, .video-item::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleY(-1);
+  background: inherit;
+  opacity: 0.25;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+/* Inputs */
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.25);
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(8px);
+  color: #111; /* Darker input text */
+  font-weight: 500;
+}
+input::placeholder, textarea::placeholder, select {
+  color: #333; /* Darker placeholder */
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-2);
+  box-shadow: 0 0 10px rgba(123,92,255,0.4);
+  background: rgba(255,255,255,0.8);
+}
+
+/* Buttons */
+button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+/* Delete + Edit Buttons */
+.delete-btn { background: #ff3b30; color: #fff; }
+.edit-btn { background: #2196f3; color: #fff; }
+.delete-btn:hover { background: #e63946; }
+.edit-btn:hover { background: #1976d2; }
+
+/* =========================
+   Modal
+========================= */
+/* Fix the alignment and centering of the modal */
+.modal {
+  /* This class handles the basic modal properties like positioning and background */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Initially hidden by default */
+  display: none;
+  /* Add centering properties to the modal itself */
+  justify-content: center;
+  align-items: flex-start; /* Corrected to prevent vertical stretching */
+  padding-top: 10vh; /* Optional: Add some space from the top */
+}
+
+.modal-content {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: 16px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  position: relative;
+  color: #222;
+  align-self: flex-start;
+}
+
+/* New class to show the modal with flexbox centering */
+.modal-show {
+  display: flex;
+}
+
+.modal-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleY(-1);
+  background: inherit;
+  opacity: 0.2;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.close {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333; /* Darker close button */
+  transition: color 0.3s;
+}
+
+.close:hover {
+  color: #000;
+}
+  </style>
+</head>
+<body>
+  <!-- NAVIGATION -->
+  <nav id="horizontal-nav" class="horizontal-nav">
+    <ul class="nav-list">
+      <li>
+        <a href="index.html" class="home-icon">
+          <img src="images/home.png" alt="Home">
+        </a>
+      </li>
+      <li>
+        <a href="javascript:void(0)" onclick="switchCategory('welcome')">
+          <i class="fas fa-smile-beam welcome-icon"></i>
+          <span>Welcome</span>
+        </a>
+      </li>
+      <li>
+        <a href="javascript:void(0)" onclick="switchCategory('tutorials')">
+          <i class="fas fa-chalkboard-teacher tutorials-icon"></i>
+          <span>Tutorials</span>
+        </a>
+      </li>
+      <li>
+        <a href="viewer-art.html">
+          <i class="fas fa-images gallery-icon"></i>
+          <span>Gallery</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Social Icons -->
+    <div class="socials" aria-label="Social media links">
+      <a href="https://x.com/CaitlinAkFallen" target="_blank" rel="noopener noreferrer" class="social-link x-link" aria-label="X (formerly Twitter)">
+        <i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
+      </a>
+      <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" rel="noopener noreferrer" class="social-link patreon-link" aria-label="Patreon">
+        <i class="fa-brands fa-patreon" aria-hidden="true"></i>
+      </a>
+      <a href="https://www.instagram.com/caitlinakafallen" target="_blank" rel="noopener noreferrer" class="social-link instagram-link" aria-label="Instagram">
+        <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+      </a>
+      <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link bluesky-link" aria-label="Bluesky">
+        <i class="fa-brands fa-bluesky" aria-hidden="true"></i>
+      </a>
+      <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener noreferrer" class="social-link github-link" aria-label="GitHub">
+        <i class="fa-brands fa-github" aria-hidden="true"></i>
+      </a>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <div id="content">
+    <section id="welcome"> 
+      <h1>Welcome to Caitlin's Art Brain</h1>
+      <p>Welcome to the creative space where imagination comes to life! Explore a collection of artwork, time-lapse videos, and creative processes from my art journey.</p>
+      <p>Before you dive in, please note that I am currently limited on certain products. However, I am constantly updating and expanding the collection, so be sure to check back for new additions!</p>
+      <p>If you have any questions or want to learn more about the creative process behind the artwork, feel free to explore and get in touch. I appreciate your support and love for creativity!</p>
+    </section>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    const categories = {
+      welcome: `
+        <section id="welcome"> 
+          <h1>Welcome to Caitlin's Art Brain</h1>
+          <p>Welcome to the creative space where imagination comes to life! Explore a collection of artwork, time-lapse videos, and creative processes from my art journey.</p>
+          <p>Before you dive in, please note that I am currently limited on certain products. However, I am constantly updating and expanding the collection, so be sure to check back for new additions!</p>
+          <p>If you have any questions or want to learn more about the creative process behind the artwork, feel free to explore and get in touch. I appreciate your support and love for creativity!</p>
+        </section>
+      `,
+
+      tutorials: `
+        <div class="container">
+          <h1 style="text-align:center;">Tutorials</h1>
+          <p style="text-align:center;margin-bottom:30px;">Upload and manage your tutorial videos here.</p>
+
+          <!-- Upload Form -->
+          <form id="video-upload-form">
+            <input type="text" id="video-title" placeholder="Video Title" required>
+            <textarea id="video-description" placeholder="Video Description"></textarea>
+            <div class="form-group">
+              <label for="video-category">Category<span aria-hidden="true">*</span></label>
+              <select id="video-category" name="video-category" required>
+                <option value="" disabled selected>Select Category</option>
+                <option value="Art">Art</option>
+                <option value="Coding">Coding</option>
+                <option value="Streaming">Streaming</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="video-file">Upload MP4 File<span aria-hidden="true">*</span></label>
+              <input type="file" id="video-file" name="video-file" accept="video/mp4" required>
+            </div>
+            <button type="submit">Upload</button>
+          </form>
+
+          <!-- Videos List -->
+          <div id="videos-list"></div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="editForm">
+              <input type="text" id="editTitle" placeholder="Edit Title" required>
+              <textarea id="editDescription" placeholder="Edit Description"></textarea>
+              <input type="text" id="editCategory" placeholder="Edit Category">
+              <button type="submit">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      `,
+    };
+
+    function switchCategory(category) {
+      const contentDiv = document.getElementById("content");
+      contentDiv.innerHTML = categories[category] || "<p>Category not found.</p>";
+    }
+
+    let currentEditingVideoId = null;
+    const editModal = document.getElementById("editModal");
+    const editForm = document.getElementById("editForm");
+    const closeBtn = editModal?.querySelector(".close");
+    const videoForm = document.getElementById("video-upload-form");
+    const videosList = document.getElementById("videos-list");
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        editModal.style.display = "none";
+      });
+    }
+
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open("videoDB", 1);
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains("videos")) {
+            const store = db.createObjectStore("videos", { keyPath: "id", autoIncrement: true });
+            store.createIndex("title", "title", { unique: false });
+          }
+        };
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject("IndexedDB error: " + event.target.errorCode);
+      });
+    }
+
+    async function saveVideoToDB(title, description, category, file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onload = async () => {
+          const db = await initDB();
+          const transaction = db.transaction("videos", "readwrite");
+          const store = transaction.objectStore("videos");
+          const videoData = { id: Date.now(), title, description, category, file: reader.result };
+          const request = store.add(videoData);
+          request.onsuccess = () => { loadVideos(); resolve(); };
+          request.onerror = (error) => reject("Save error: " + error);
+        };
+        reader.onerror = () => reject("FileReader error");
+      });
+    }
+
+    async function updateVideoInDB(id, newTitle, newDescription, newCategory) {
+      const db = await initDB();
+      const transaction = db.transaction("videos", "readwrite");
+      const store = transaction.objectStore("videos");
+      const getRequest = store.get(id);
+      getRequest.onsuccess = () => {
+        const videoData = getRequest.result;
+        if (!videoData) return;
+        videoData.title = newTitle;
+        videoData.description = newDescription;
+        videoData.category = newCategory;
+        const updateRequest = store.put(videoData);
+        updateRequest.onsuccess = () => loadVideos();
+      };
+    }
+
+    async function loadVideos() {
+      const db = await initDB();
+      const transaction = db.transaction("videos", "readonly");
+      const store = transaction.objectStore("videos");
+      const request = store.getAll();
+      request.onsuccess = () => {
+        videosList.innerHTML = "";
+        request.result.forEach(video => {
+          displayVideo(video.id, video.title, video.description, video.category, video.file);
+        });
+      };
+    }
+
+    videoForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("video-title").value;
+      const description = document.getElementById("video-description").value;
+      const category = document.getElementById("video-category").value;
+      const file = document.getElementById("video-file").files[0];
+      if (!file) return;
+      await saveVideoToDB(title, description, category, file);
+      videoForm.reset();
+    });
+
+    function displayVideo(id, title, description, category, fileData) {
+      const videoElement = document.createElement("div");
+      videoElement.classList.add("video-item");
+      const videoBlob = new Blob([fileData], { type: "video/mp4" });
+      const videoUrl = URL.createObjectURL(videoBlob);
+      videoElement.innerHTML = `
+        <h3>${title}</h3>
+        <p>${description}</p>
+        ${category ? `<p><em>Category: ${category}</em></p>` : ""}
+        <video controls>
+          <source src="${videoUrl}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <button class="edit-btn">Edit</button>
+        <button class="delete-btn">Delete</button>
+      `;
+      videosList.appendChild(videoElement);
+      videoElement.querySelector(".delete-btn").addEventListener("click", async () => {
+        await deleteVideoFromDB(id);
+        videoElement.remove();
+      });
+      videoElement.querySelector(".edit-btn").addEventListener("click", () => {
+        currentEditingVideoId = id;
+        document.getElementById("editTitle").value = title;
+        document.getElementById("editDescription").value = description;
+        document.getElementById("editCategory").value = category || "";
+        editModal.style.display = "block";
+      });
+    }
+
+    async function deleteVideoFromDB(id) {
+      const db = await initDB();
+      const transaction = db.transaction("videos", "readwrite");
+      transaction.objectStore("videos").delete(id);
+    }
+
+    editForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const newTitle = document.getElementById("editTitle").value;
+      const newDescription = document.getElementById("editDescription").value;
+      const newCategory = document.getElementById("editCategory").value;
+      await updateVideoInDB(currentEditingVideoId, newTitle, newDescription, newCategory);
+      editModal.style.display = "none";
+    });
+
+    window.onload = () => {
+      loadVideos();
+      if (editModal) editModal.style.display = "none";
+    };
+  </script>
+</body>
+</html>
+

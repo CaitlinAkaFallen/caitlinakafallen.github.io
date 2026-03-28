@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Caitlin's Photography</title>
+
+    <meta property="og:title" content="Photography Portfolio | Caitlin's Creative Space">
+    <meta property="og:description" content="High-quality stills and gallery featuring work from the Sony A7IV.">
+    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-photography.jpg">
+    <meta property="og:url" content="https://caitlinscreativespace.xyz/photography.html">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Photography Portfolio - Caitlin's Creative Space">
+    <meta name="twitter:description" content="High-quality stills and gallery featuring work from the Sony A7IV.">
+    <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-photography.jpg">
+    <meta name="twitter:url" content="https://caitlinscreativespace.xyz/photography.html">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+    <style>
+      /* =========================
+        Global Styles
+        ========================= */
+      body {
+        font-family: "Poppins", Arial, sans-serif;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #000000);
+        overflow-x: hidden;
+        color: #fff;
+      }
+
+      /* =========================
+        Header
+        ========================= */
+      header {
+        background-image: url("images/main-page.JPG");
+        background-size: cover;
+        min-height: 200px;
+        padding: 0px 20px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        /* Removed the linear-gradient because you're using a background image inline */
+        /* background: linear-gradient(to right, rgba(20, 20, 30, 0.8), rgba(40, 20, 50, 0.8)); */
+
+        /* UPDATED: Set width to cover 100% of the parent container */
+        width: 100%;
+        max-width: none; /* Ensure no max-width is limiting it */
+        margin: 40px auto;
+        box-sizing: border-box;
+      }
+
+      /* Optional overlay layer */
+      header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        /* Use a semi-transparent dark overlay to make text stand out over the image */
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 12px;
+        z-index: 0;
+      }
+
+      /* Content stays above overlay */
+      header > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Content above blur + overlay */
+      header div {
+        position: relative;
+        z-index: 2;
+      }
+
+      header h2 {
+        font-family: Georgia, serif;
+        font-size: 42px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #fdf471;
+        text-shadow: 0 0 12px #000;
+        margin: 0;
+      }
+
+      header h5 {
+        font-family: Verdana, sans-serif;
+        font-size: 18px;
+        font-weight: 400;
+        margin-top: 10px;
+        color: #fff;
+        text-shadow: 0 0 8px #000;
+      }
+
+      /* =========================
+            Navigation Bar
+        ========================= */
+      .horizontal-nav {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        padding: 12px 0;
+        display: flex;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .horizontal-nav::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-list {
+        list-style: none;
+        display: flex;
+        gap: 15px;
+        padding: 0;
+        margin: 0;
+      }
+
+      .nav-list li {
+        display: flex;
+      }
+
+      .nav-list a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        padding: 10px 16px;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.3s ease-in-out;
+        color: #f0f0f0;
+      }
+
+      .nav-list a i {
+        margin-right: 8px;
+        font-size: 20px;
+        color: #f0f0f0;
+        transition: color 0.3s ease;
+      }
+
+      .nav-list a:hover i {
+        color: #32f2f8;
+        /* optional gradient effect handled via text above */
+      }
+
+      .nav-list a:hover {
+        -webkit-text-fill-color: transparent;
+        background: linear-gradient(60deg, #be2edd, #00a8ff, #f79f1f);
+        background-clip: text;
+        box-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
+      }
+
+      /* === Main Content Area === */
+      .main-content {
+        /* Adjusted to avoid overriding fixed header width logic */
+        margin-left: 270px;
+        /* Adjust margin for sidebar */
+        padding: 40px;
+        flex-grow: 1;
+        background: linear-gradient(
+          to bottom right,
+          rgba(0, 0, 0, 0.6),
+          rgba(30, 30, 40, 0.7)
+        );
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        transition:
+          background-color 0.3s ease,
+          transform 0.3s ease;
+        max-width: 100%;
+        width: 75%;
+        margin: 40px auto;
+        color: white;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+
+      /* Shifted state for dropdown or sidebar */
+      .main-content.shifted {
+        transform: translateX(70px);
+      }
+
+      /* === Introduction Section === */
+      #introduction {
+        text-align: center;
+        margin-bottom: 50px;
+        padding: 20px;
+        background: rgba(50, 50, 70, 0.4);
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(110, 250, 243, 0.2);
+        transition: box-shadow 0.3s ease;
+      }
+
+      #introduction:hover {
+        box-shadow: 0 0 28px rgba(110, 250, 243, 0.4);
+      }
+
+      #introduction h2 {
+        font-size: 2rem;
+        margin-bottom: 12px;
+        color: #6efaf3;
+        text-shadow: 0 0 12px rgba(110, 250, 243, 0.7);
+        letter-spacing: 1px;
+      }
+
+      #introduction p {
+        font-size: 1.1rem;
+        color: #e0e0e0;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      #introduction p::before {
+        content: "✧ ";
+        color: #6efaf3;
+        font-size: 22px;
+      }
+
+      #introduction p::after {
+        content: " ✧";
+        color: #4fd6ee;
+        font-size: 22px;
+      }
+
+      /* =========================
+    Carousel Styles (Slow & Smooth)
+========================= */
+      .carousel-wrapper {
+        margin: 60px 0;
+      }
+
+      .carousel-wrapper h2 {
+        text-align: center;
+        color: #6efaf3;
+        margin-bottom: 25px;
+        text-shadow: 0 0 10px rgba(110, 250, 243, 0.3);
+      }
+
+      .carousel-container {
+        width: 100%;
+        overflow: hidden;
+        padding: 20px 0;
+        position: relative;
+
+        /* Adds a soft fade effect on the left and right edges */
+        -webkit-mask-image: linear-gradient(
+          to right,
+          transparent,
+          black 10%,
+          black 90%,
+          transparent
+        );
+        mask-image: linear-gradient(
+          to right,
+          transparent,
+          black 10%,
+          black 90%,
+          transparent
+        );
+      }
+
+      .image-container {
+        display: flex;
+        width: max-content;
+        /* Increased to 80s for a very slow, smooth crawl */
+        animation: carouselAnimation 80s linear infinite;
+      }
+
+      /* Pause animation on hover */
+      .image-container:hover {
+        animation-play-state: paused;
+      }
+
+      .image-item {
+        flex: 0 0 280px;
+        margin: 0 15px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        transition:
+          transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+          border-color 0.3s ease,
+          box-shadow 0.3s ease;
+        cursor: pointer;
+      }
+
+      .image-item:hover {
+        transform: translateY(-10px) scale(1.05);
+        border-color: #6efaf3;
+        box-shadow: 0 0 25px rgba(110, 250, 243, 0.5);
+        z-index: 10;
+      }
+
+      .image-item img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .image-item figcaption {
+        padding: 12px;
+        text-align: center;
+        font-style: italic;
+        font-size: 14px;
+        color: #eaeaea;
+        background: rgba(0, 0, 0, 0.6);
+      }
+
+      /* Infinite Loop Animation */
+      @keyframes carouselAnimation {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+
+      /* Header Styling - Redundant, clean up done above */
+      /* header {
+            border-radius: 10px;
+            color: #f0f0f0;
+            padding: 20px 26px; 
+            text-align: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-sizing: border-box;
+            transform: none;
+        } */
+
+      /* Social Links in Navbar */
+      .social-links {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .social-links a {
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .social-links a i {
+        font-size: 24px;
+        color: #333;
+        transition:
+          transform 0.3s ease,
+          color 0.3s ease;
+      }
+
+      .social-links a:hover i {
+        transform: scale(1.2);
+      }
+
+      /* Social Sidebar inside Footer (Original, will be superseded by .fancy-box styles) */
+      .socials {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .social-link {
+        font-size: 24px;
+        color: #070707;
+        text-decoration: none;
+        transition:
+          transform 0.3s ease,
+          color 0.3s ease;
+      }
+
+      .social-link:hover {
+        transform: scale(1.2);
+      }
+
+      /* Patreon (original) */
+      .social-link:nth-child(1):hover {
+        color: #9146ff;
+      }
+
+      /* Instagram (original) */
+      .social-link:nth-child(2):hover {
+        color: #e4405f;
+      }
+
+      /* Bluesky (updated to accurate sky blue) (original) */
+      .social-link:nth-child(3):hover {
+        color: #1184fe;
+      }
+
+      /* GitHub (updated to light gray) (original) */
+      .social-link:nth-child(4):hover {
+        color: #c9d1d9;
+      }
+
+      /* Button styling */
+      button {
+        padding: 12px 20px;
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+        margin-top: 25px;
+      }
+
+      button:hover {
+        background-color: #34495e;
+      }
+
+      /* Keyframe for carousel scrolling */
+      @keyframes carouselAnimation {
+        0% {
+          transform: translateX(0);
+        }
+
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+
+      /* Links styling */
+      a {
+        color: #6efaf3;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      a:hover {
+        color: #fff;
+      }
+
+      .menu-icon {
+        margin-right: 10px;
+      }
+
+      .camera-icon-margin {
+        margin-right: 10px;
+      }
+
+      .icon-margin {
+        margin-right: 10px;
+      }
+
+      .contact-icon-margin {
+        margin-right: 10px;
+      }
+
+      .pulse-animation {
+        animation: pulse 2s infinite ease-in-out;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+
+        50% {
+          transform: scale(1.1);
+        }
+      }
+
+      .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        /* Modern blur background */
+        backdrop-filter: blur(6px);
+
+        cursor: zoom-out;
+      }
+
+      /* Wrapper for bounce animation */
+      .modal-content-wrapper {
+        position: relative;
+
+        display: flex;
+        flex-direction: column;
+
+        align-items: center; /* centers image + caption */
+        justify-content: center;
+
+        max-width: 90%;
+        max-height: 90%;
+
+        animation: modalBounce 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .image-modal-caption {
+        width: 100%;
+        text-align: center;
+
+        color: white;
+
+        margin-top: 12px;
+
+        font-size: 18px;
+
+        text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .image-modal-content {
+        display: block;
+
+        max-width: 100%;
+        max-height: 85vh;
+
+        border-radius: 12px;
+
+        /* Neon border */
+        border: 3px solid #00f3ff;
+
+        /* Glow effect */
+        box-shadow:
+          0 0 10px #00f3ff,
+          0 0 20px #00f3ff,
+          0 0 40px rgba(0, 243, 255, 0.5),
+          0 20px 50px rgba(0, 0, 0, 0.9);
+
+        transition: 0.3s;
+
+        cursor: default;
+      }
+
+      /* Glow pulse */
+      .image-modal-content:hover {
+        box-shadow:
+          0 0 15px #00f3ff,
+          0 0 30px #00f3ff,
+          0 0 60px rgba(0, 243, 255, 0.7),
+          0 25px 60px rgba(0, 0, 0, 1);
+      }
+
+      .image-modal-caption {
+        color: white;
+        margin-top: 15px;
+        font-size: 18px;
+        text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
+      }
+
+      .image-modal-close {
+        position: absolute;
+
+        top: -45px;
+        right: -5px;
+
+        color: white;
+
+        font-size: 40px;
+
+        cursor: pointer;
+
+        text-shadow: 0 0 10px #00f3ff;
+
+        transition: 0.3s;
+      }
+
+      .image-modal-close:hover {
+        color: #ff0055;
+
+        text-shadow: 0 0 15px #ff0055;
+
+        transform: rotate(90deg);
+      }
+
+      /* Bounce animation */
+      @keyframes modalBounce {
+        0% {
+          transform: scale(0.55);
+          opacity: 0;
+        }
+
+        60% {
+          transform: scale(1.05);
+        }
+
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      /* About Me Section */
+      #about-me {
+        padding: 25px;
+        margin: 120px auto 40px auto;
+        width: 90%;
+        max-width: 1000px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      #about-me h2 {
+        font-size: 32px;
+        color: #c2a2fc;
+        margin-bottom: 20px;
+        text-shadow: 0 0 12px rgba(194, 162, 252, 0.7);
+      }
+
+      #about-me p {
+        font-size: 18px;
+        color: #eaeaea;
+        line-height: 1.8;
+        text-align: center;
+      }
+
+      #about-me p::before {
+        content: "✧ ";
+        color: #c2a2fc;
+        font-size: 22px;
+      }
+
+      #about-me p::after {
+        content: " ✧";
+        color: #4fd6ee;
+        font-size: 22px;
+      }
+
+      /* About Me Image */
+      #about-me img {
+        width: 100%;
+        max-width: 300px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      #about-me img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 24px rgba(79, 214, 238, 0.6);
+      }
+
+      /* === Glassy Section Boxes === */
+      section#contact,
+      section#contacts {
+        background: rgba(40, 40, 40, 0.45);
+        -webkit-backdrop-filter: blur(16px) saturate(160%);
+        backdrop-filter: blur(16px) saturate(160%);
+        border-radius: 15px;
+        padding: 40px;
+        margin: 50px auto;
+        max-width: 900px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        animation: fadeUp 1s ease forwards;
+        transform: translateY(30px);
+        opacity: 0;
+      }
+
+      section#contact {
+        animation-delay: 0.2s;
+      }
+
+      section#contacts {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes fadeUp {
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Headings */
+      section#contact h2,
+      section#contacts h3 {
+        color: #fff;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
+        letter-spacing: 1.5px;
+        font-weight: 600;
+        text-align: center;
+        /* center align headings too */
+      }
+
+      /* Remove underline + default link colors globally */
+      a,
+      a:visited,
+      a:active {
+        text-decoration: none;
+        color: inherit;
+        outline: none;
+      }
+
+      /*
+            =========================================
+            FANCY BOX / SOCIALS BOX STYLES (New/Updated)
+            =========================================
+        */
+
+      /* Container for the fancy box (based on the image) */
+      .fancy-box {
+        /* Adjust these values to match the size and positioning in your HTML layout */
+        margin: 50px auto;
+        padding: 20px;
+        max-width: 300px;
+        text-align: center;
+
+        /* Styles from the image */
+        background: #1a1a1a;
+        border-radius: 12px;
+        box-shadow:
+          0 0 20px rgba(0, 0, 0, 0.5),
+          0 0 30px rgba(145, 70, 255, 0.2);
+      }
+
+      /* Headings inside the fancy box */
+      .fancy-box h4 {
+        color: #f0f0f0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 10px 0;
+        letter-spacing: 0.5px;
+      }
+
+      /* === Center the icon groups === */
+      .socials,
+      .streaming-platforms {
+        display: flex;
+        justify-content: center;
+        /* center horizontally */
+        gap: 25px;
+        /* spacing between icons */
+        margin-top: 15px; /* Reduced margin for closer grouping */
+        margin-bottom: 20px; /* Space after the group */
+      }
+
+      /* === Base Icon Style === */
+      .socials .social-link,
+      .streaming-platforms .social-link {
+        font-size: 32px;
+        color: #f0f0f0; /* Default icon color if not specified below */
+        transition:
+          transform 0.4s ease,
+          color 0.3s ease,
+          text-shadow 0.3s ease;
+      }
+
+      /* === Social Media Colors === */
+      /* The icons in the image are: Instagram, Bluesky (Twitter icon used), Patreon (Heart icon used), GitHub */
+      .socials .social-link:nth-child(1) {
+        color: #c13584;
+      }
+
+      /* Instagram */
+      .socials .social-link:nth-child(2) {
+        color: #0285ff;
+      }
+
+      /* Bluesky (using Twitter/X blue) */
+      .socials .social-link:nth-child(3) {
+        color: #ff424d;
+      }
+
+      /* Patreon (using a red/pink) */
+      .socials .social-link:nth-child(4) {
+        color: #ffffff;
+      }
+
+      /* GitHub */
+
+      /* === Streaming Platforms Colors === */
+      /* The icons in the image are: Twitch, YouTube, Kick */
+      .streaming-platforms .social-link:nth-child(1) {
+        color: #9146ff;
+      }
+
+      /* Twitch */
+      .streaming-platforms .social-link:nth-child(2) {
+        color: #ff0000;
+      }
+
+      /* YouTube */
+      .streaming-platforms .social-link:nth-child(3) {
+        color: #52f000;
+      }
+
+      /* Kick */
+
+      /* === Hover Effect (glow + enlarge) === */
+      .socials .social-link:hover,
+      .streaming-platforms .social-link:hover {
+        transform: scale(1.25) rotate(5deg);
+        /* Slightly less rotation than before */
+        text-shadow:
+          0 0 10px currentColor,
+          0 0 20px currentColor;
+        cursor: pointer;
+      }
+
+
+
+/* =========================
+   Revamped Portfolio & Camera Styles
+========================= */
+.revamp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 25px;
+  text-align: center;
+  transition: 0.3s;
+  /* Added for overall safety, ensures children calculate 
+     their width relative to the true container width */
+  box-sizing: border-box; 
+}
+
+.glass-card:hover {
+  transform: translateY(-10px);
+  border-color: #6efaf3;
+  box-shadow: 0 10px 30px rgba(110, 250, 243, 0.2);
+}
+
+.btn-action {
+  display: inline-block;
+  margin-top: 15px;
+  /* (Desktop/Default) Horizontal padding is a little too much for small cards */
+  padding: 10px 18px; 
+  background: transparent;
+  border: 2px solid #ce6efa;
+  color: #fdfdfd6e;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 0 10px rgba(81, 245, 237, 0.3),
+    inset 0 0 5px rgba(110, 250, 243, 0.2);
+
+  /* ========================================================
+     [ CRITICAL FIX ]
+     ========================================================
+     This single property forces the width calculation to INCLUDE 
+     the padding and border inside the container, preventing 
+     it from 'growing' larger than 100%. */
+  box-sizing: border-box; 
+  /* ======================================================== */
+}
+
+.btn-action:hover {
+  background: rgba(110, 250, 243, 0.1);
+  color: #fff;
+  border-color: #fff;
+  box-shadow:
+    0 0 20px rgba(206, 110, 250, 0.6),
+    0 0 40px rgba(110, 250, 243, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Styling for transparent equipment images */
+.equipment-img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background: transparent; 
+  margin-bottom: 15px;
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.8));
+  transition: filter 0.3s ease;
+}
+
+.glass-card:hover .equipment-img {
+  filter: drop-shadow(0 0 10px rgba(110, 250, 243, 0.4));
+}
+
+/* Mobile phones (Standard 600px and under) */
+@media (max-width: 600px) {
+  .revamp-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .glass-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .glass-card:hover {
+    transform: none; 
+  }
+
+  .equipment-img {
+    height: 140px;
+  }
+
+  .btn-action {
+    display: block; /* Changes from inline-block to allow full width */
+    width: 100%;
+    /* Reduced horizontal padding to prevent crowding */
+    padding: 12px 10px; 
+    font-size: 15px;
+    /* Added text-wrap insurance */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Very small phones (Under 400px, e.g., iPhone SE) */
+@media (max-width: 400px) {
+  .glass-card {
+    padding: 15px;
+  }
+
+  .equipment-img {
+    height: 120px;
+  }
+  
+  .btn-action {
+    /* Further reduction for extreme screens */
+    padding: 10px 5px;
+    font-size: 14px;
+  }
+}
+      /*
+            =========================================
+            CLEAN UP / FIXES
+            =========================================
+        */
+      /* The redundant header style block below the carousel styles has been removed. 
+        The initial 'header' block was updated for a 'perfect size' using width/max-width/margin-auto. */
+    </style>
+  </head>
+  <header
+    style="
+      background-image: url(&quot;images/main-page.JPG&quot;);
+      background-size: cover;
+      background-position: center;
+      height: 300px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    "
+  >
+    <div style="text-align: center">
+      <h2>Portfolio</h2>
+      <h5>Capturing Moments, Creating Memories</h5>
+    </div>
+  </header>
+  <body>
+    <!-- Horizontal Navigation Bar -->
+    <nav id="horizontal-nav" class="horizontal-nav">
+        <ul class="nav-list">
+            <li>
+                <a href="main-page.html">
+                    <i class="fas fa-home"></i><span>Home</span>
+                </a>
+            </li>
+            <li>
+    <a href="#" onclick="switchCategory(event, 'about')">
+        <i class="fas fa-user"></i><span>About</span>
+    </a>
+</li>
+<li>
+    <a href="#" onclick="switchCategory(event, 'portfolio')">
+        <i class="fas fa-briefcase"></i><span>Portfolio</span>
+    </a>
+</li>
+<li>
+    <a href="#" onclick="switchCategory(event, 'gallery')">
+        <i class="fas fa-paint-brush"></i><span>Gallery</span>
+    </a>
+</li>
+<li>
+    <a href="#" onclick="switchCategory(event, 'camera')">
+        <i class="fas fa-camera"></i><span>Camera Equipment</span>
+    </a>
+</li>
+            <li>
+                <a href="contact.html">
+                    <i class="fas fa-envelope"></i><span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main content -->
+    <div id="main-content" class="main-content">
+      <section id="introduction">
+        <h2>Welcome to My Photography Portfolio</h2>
+        <p>Explore my work and feel free to reach out!</p>
+      </section>
+    </div>
+
+<script>
+    const categories = {
+        portfolio: `
+            <div class="revamp-grid">
+                <div class="glass-card">
+                    <i class="fas fa-images fa-3x" style="color:#6efaf3; margin-bottom:15px;"></i>
+                    <h3>My Portfolio</h3>
+                    <p>Visit my main Adobe creative portfolio.</p>
+                    <a href="https://caitlinakfallen.myportfolio.com/" target="_blank" class="btn-action">Open Portfolio</a>
+                </div>
+                <div class="glass-card">
+                    <i class="fas fa-camera-retro fa-3x" style="color:#c2a2fc; margin-bottom:15px;"></i>
+                    <h3>Sony Portfolio</h3>
+                    <p>Check out my gear-specific shots on Sony Creators Cloud.</p>
+                    <a href="https://creatorscloud.sony.net/discover/mystudio/gp_Wb27RdL893WZqhGhSRP49F" target="_blank" class="btn-action">Open Sony Studio</a>
+                </div>
+            </div>
+        `,
+        gallery: `
+            <div class="carousel-wrapper">
+                <h2>General Gallery</h2>
+                <div class="carousel-container">
+                    <div class="image-container">
+                        <div class="image-item"><img src="Photography/Thankgiving.jpg" onclick="openModal(this)"><figcaption>Thanksgiving Celebration</figcaption></div>
+                        <div class="image-item"><img src="Photography/me-and-maggie.jpg" onclick="openModal(this)"><figcaption>Me and Maggie</figcaption></div>
+                        <div class="image-item"><img src="Photography/thanksgiving.jpg" onclick="openModal(this)"><figcaption>Autumn Decorations</figcaption></div>
+                        <div class="image-item"><img src="Photography/Thankgiving.jpg" onclick="openModal(this)"><figcaption>Thanksgiving Celebration</figcaption></div>
+                        <div class="image-item"><img src="Photography/Thankgiving.jpg" onclick="openModal(this)"><figcaption>Thanksgiving Celebration</figcaption></div>
+                        <div class="image-item"><img src="Photography/me-and-maggie.jpg" onclick="openModal(this)"><figcaption>Me and Maggie</figcaption></div>
+                        <div class="image-item"><img src="Photography/thanksgiving.jpg" onclick="openModal(this)"><figcaption>Autumn Decorations</figcaption></div>
+                        <div class="image-item"><img src="Photography/Thankgiving.jpg" onclick="openModal(this)"><figcaption>Thanksgiving Celebration</figcaption></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-wrapper">
+                <h2>Conventions</h2>
+                <div class="carousel-container">
+                    <div class="image-container" style="animation-direction: reverse;">
+                        <div class="image-item"><img src="Photography/setup2/photo1.jpg" onclick="openModal(this)"><figcaption>Scene One</figcaption></div>
+                        <div class="image-item"><img src="Photography/setup2/photo2.jpg" onclick="openModal(this)"><figcaption>Scene Two</figcaption></div>
+                        <div class="image-item"><img src="Photography/setup2/photo3.jpg" onclick="openModal(this)"><figcaption>Scene Three</figcaption></div>
+                        <div class="image-item"><img src="Photography/setup2/photo1.jpg" onclick="openModal(this)"><figcaption>Scene One</figcaption></div>
+                        <div class="image-item"><img src="Photography/setup2/photo1.jpg" onclick="openModal(this)"><figcaption>Scene One</figcaption></div>
+                        <div class="image-item"><img src="Photography/setup2/photo2.jpg" onclick="openModal(this)"><figcaption>Scene Two</figcaption></div>
+                        <div class="image-item"><img src="Photography/setup2/photo3.jpg" onclick="openModal(this)"><figcaption>Scene Three</figcaption></div>
+                        <div class="image-item"><img src="Photography/setup2/photo1.jpg" onclick="openModal(this)"><figcaption>Scene One</figcaption></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-wrapper">
+                <h2>Nature</h2>
+                <div class="carousel-container">
+                    <div class="image-container">
+                        <div class="image-item"><img src="Photography/nature1.jpg" onclick="openModal(this)"><figcaption>Forest Path</figcaption></div>
+                        <div class="image-item"><img src="Photography/nature2.jpg" onclick="openModal(this)"><figcaption>Sunset Peaks</figcaption></div>
+                        <div class="image-item"><img src="Photography/nature3.jpg" onclick="openModal(this)"><figcaption>Wildlife</figcaption></div>
+                        <div class="image-item"><img src="Photography/nature1.jpg" onclick="openModal(this)"><figcaption>Forest Path</figcaption></div>
+                        <div class="image-item"><img src="Photography/nature1.jpg" onclick="openModal(this)"><figcaption>Forest Path</figcaption></div>
+                        <div class="image-item"><img src="Photography/nature2.jpg" onclick="openModal(this)"><figcaption>Sunset Peaks</figcaption></div>
+                        <div class="image-item"><img src="Photography/nature3.jpg" onclick="openModal(this)"><figcaption>Wildlife</figcaption></div>
+                        <div class="image-item"><img src="Photography/nature1.jpg" onclick="openModal(this)"><figcaption>Forest Path</figcaption></div>
+                    </div>
+                </div>
+            </div>
+        `,
+        about: `
+            <section id="about-me" style="margin-top: 20px;">
+                <h2>About Me</h2>
+                <img src="images/streamself.png" alt="Photography" style="width: 270px; height: 220px; margin-bottom: 10px; border-radius: 10px; border: 2px solid #6efaf3;">
+                <p>"I'm deeply passionate about photography. I hope to show you some of my fun hobbies when I do some pictures."</p>
+            </section>
+        `,
+        camera: `
+            <h2 style="text-align:center; color:#6efaf3; margin-top:20px;">My Equipment</h2>
+            <div class="revamp-grid">
+                <div class="glass-card">
+                    <img src="images/SonyA7IV.png" alt="Sony A7IV" class="equipment-img">
+                    <h3>Sony A7IV</h3>
+                    <p>Primary Mirrorless Camera Body</p>
+                    <a href="https://electronics.sony.com/imaging/interchangeable-lens-cameras/all-interchangeable-lens-cameras/p/ilce7m4k-b" target="_blank" class="btn-action">View Specs</a>
+                </div>
+                <div class="glass-card">
+                    <img src="images/Sigma-150-600mm-Sport.png" alt="Sigma Lens" class="equipment-img">
+                    <h3>Sigma Sports 150-600mm</h3>
+                    <p>F5-6.3 DG DN OS Lens</p>
+                    <a href="https://www.sigma-global.com/en/lenses/s021_150_600_5_63/" target="_blank" class="btn-action">View Specs</a>
+                </div>
+                <div class="glass-card">
+                    <img src="images/SonyFE28-70mm.png" alt="Sony FE 28-70mm" class="equipment-img">
+                    <h3>Sony FE 28-70mm</h3>
+                    <p> F/3.5-5.6 OSS II</p>
+                    <a href="https://electronics.sony.com/imaging/lenses/all-e-mount/p/sel2870" target="_blank" class="btn-action">View Specs</a>
+                </div>
+                 <div class="glass-card">
+                    <img src="images/SonyE-PZ16-50mm.png" alt="Sony E PZ 16-50mm" class="equipment-img">
+                    <h3>Sony E PZ 16-50mm </h3>
+                    <p>F3.5-5.6 OSS II - Compact APS-C standard power zoom lens with Optical SteadyShot</p>
+                    <a href="https://electronics.sony.com/imaging/lenses/all-e-mount/p/sel2870" target="_blank" class="btn-action">View Specs</a>
+                </div>
+                 <div class="glass-card">
+                    <img src="images/SonyGMFE35mm.png" alt="Sony GM FE 35mm" class="equipment-img">
+                    <h3>Sony GM FE 35mm  </h3>
+                    <p>F1.4 GM Full-frame Standard Prime G Master Lens</p>
+                    <a href="https://electronics.sony.com/imaging/lenses/all-e-mount/p/sel35f14gm" target="_blank" class="btn-action">View Specs</a>
+                </div>
+            </div>
+        `,
+    };
+
+   function switchCategory(event, category) {
+    // 1. STOP the '#' from appearing in the URL
+    if (event) {
+        event.preventDefault();
+    }
+
+    const contentDiv = document.getElementById("main-content");
+
+    // 2. Check if the category exists, then inject the HTML
+    if (categories[category]) {
+        contentDiv.innerHTML = categories[category];
+        
+        // 3. Optional: Smooth scroll back to top of content
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // 4. Re-initialize modal logic for the new images
+        createImageModal();
+    } else {
+        console.error("Category not found:", category);
+    }
+}
+    // Modal Logic
+    function createImageModal() {
+        if (document.getElementById("imageModal")) return;
+        const modal = document.createElement("div");
+        modal.id = "imageModal";
+        modal.className = "image-modal";
+        modal.innerHTML = `
+            <div class="modal-content-wrapper">
+                <span class="image-modal-close" onclick="closeModal()">&times;</span>
+                <img class="image-modal-content" id="modalImg">
+                <div class="image-modal-caption" id="modalCaption"></div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.onclick = function (e) {
+            if (e.target === modal) closeModal();
+        };
+    }
+
+    function openModal(element) {
+        const modal = document.getElementById("imageModal");
+        if (!modal) createImageModal();
+        
+        const modalImg = document.getElementById("modalImg");
+        const caption = document.getElementById("modalCaption");
+
+        document.getElementById("imageModal").style.display = "flex";
+        modalImg.src = element.src;
+
+        const fig = element.parentElement.querySelector("figcaption");
+        caption.textContent = fig ? fig.textContent : "";
+    }
+
+    function closeModal() {
+        const modal = document.getElementById("imageModal");
+        if (modal) modal.style.display = "none";
+    }
+</script>
+  </body>
+</html>

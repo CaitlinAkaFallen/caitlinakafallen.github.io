@@ -1,77 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Conventions</title>
-        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-        <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-        <link rel="stylesheet" href="conventions.css">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conventions</title>
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="conventions.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+</head>
 
-    <body>
-        <!-- Sidebar -->
-        <div id="sidebar" class="sidebar">
-            <div class="sidebar-header">
-                <!-- Optional: Add a logo or title -->
-            </div>
-            <ul class="sidebar-list">
-                <li>
-                    <a href="index.html" class="home-link">
-                        <img src="https://th.bing.com/th/id/R.19ed7c8b456956b57d48630777fa9198?rik=gw7I7o0tcu7vJQ&pid=ImgRaw&r=0" alt="Home" class="home-icon" width="24">
-                        <span class="sidebar-text">HOME</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="viewers-convention.html" class="viewers-link"><span class="sidebar-text">Viewer</span>
-                    </a>
-                </li>
+<body>
+ <!-- Horizontal Navigation Bar -->
+<nav id="horizontal-nav" class="horizontal-nav">
+  <ul class="nav-list">
+    <li>
+      <a id="nav-mainpage" href="main-page.html">
+        <i class="fas fa-home"></i><span>Main Page</span>
+      </a>
+    </li>
+    <li>
+      <a id="nav-coding" href="programming.html">
+        <i class="fas fa-code"></i><span>Programming</span>
+      </a>
+    </li>
+    <li>
+      <a id="nav-art" href="viewer-art.html">
+        <i class="fas fa-paint-brush"></i><span>Gallery</span>
+      </a>
+    </li>
+    <li>
+      <a id="nav-conventions" href="viewers-convention.html">
+        <i class="fas fa-users"></i><span>Conventions</span>
+      </a>
+    </li>
+    <li>
+      <a id="nav-streaming" href="schedule.html">
+        <i class="fas fa-video"></i><span>Content</span>
+      </a>
+    </li>
+    <li>
+      <a id="nav-about" href="about.html">
+        <i class="fas fa-user"></i><span>About</span>
+      </a>
+    </li>
+    <li>
+      <a id="nav-contact" href="contact.html">
+        <i class="fas fa-envelope"></i><span>Contact</span>
+      </a>
+    </li>
+  </ul>
+</nav>
 
-            </ul>
-        </div>
-    
-        <!-- Main Content -->
-        <div class="main-content">
-            <header class="main-header">
-                <h1>Conventions</h1>
-                <p>Explore various conventions and their dates. Edit the list below as needed.</p>
-                <div class="sidebar-toggle" onclick="toggleSidebar()">☰</div>
-                <button id="darkModeToggle" class="dark-mode-btn" onclick="toggleDarkMode()">
-                    🔦 Light Mode
-                </button>
-            </header>
-    
-            <!-- Convention List and Schedule -->
-            <div class="convention-contention">
-                <h1>Convention Schedule</h1>
-                <ul class="conventions-list" id="conventionList">
-                    <li>
-                        <span class="event-name" contenteditable="true">Game On Expo</span>
-                        <span class="event-date" contenteditable="true">April 4th-6th, 2025</span>
-                        <span class="event-location" contenteditable="true">Phoenix, AZ</span>
-                        <span class="event-description" contenteditable="true">A celebration of gaming culture.</span>
-                    </li>
-                    <li>
-                        <span class="event-name" contenteditable="true">Phoenix Fan Fusion</span>
-                        <span class="event-date" contenteditable="true">June 6th-8th, 2025</span>
-                        <span class="event-location" contenteditable="true">Phoenix, AZ</span>
-                        <span class="event-description" contenteditable="true">Description</span>
-                    </li>
-                </ul>
-            </div>
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <header class="main-header" style="background-image: url('images/main-page.JPG'); background-size: cover; background-position: center;">
+      <h1>Upcoming Conventions</h1>
+      <p>Where you can meet me! 🎉</p>
+    </header>
 
 
-            <!-- Add Button OUTSIDE of the UL -->
-            <button id="addEventButton" class="add-event-btn">➕ Add New Event</button>
+    <!-- Convention List -->
+    <section class="convention-content">
+      <h2>Convention Schedule</h2>
+     <ul class="conventions-list" id="conventionList"></ul>
+      <button id="addEventButton" class="add-event-btn">➕ Add New Event</button>
+    </section>
+  </main>
 
-        </div>
-    
-       <script src="conventions.js"></script>
-    
+  <script src="conventions.js"></script>
 
-        
-        
-    </body>
-    
+</body>
+
 </html>
+

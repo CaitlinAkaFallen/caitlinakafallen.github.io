@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ Owner Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #00a8ff;
+      --accent: #be2edd;
+      --danger: #ff4757;
+      --glass: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ===== Global & Fluid Background ===== */
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top right, #1e1e2e, #0f0f0f);
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== Navigation ===== */
+    .horizontal-nav {
+      width: 100%;
+      background: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(20px) saturate(180%);
+      padding: 10px 0;
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-list a {
+      text-decoration: none;
+      color: #999;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.3s;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .nav-list a:hover {
+      color: #fff;
+      background: var(--glass);
+    }
+
+    .nav-list a i { font-size: 16px; }
+
+    /* ===== Containers (Glassmorphism) ===== */
+    .glass-card {
+      background: var(--glass);
+      backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+    }
+
+    /* ===== Login Section ===== */
+    .login-section {
+      padding: 40px;
+      width: 350px;
+      text-align: center;
+    }
+
+    .login-section h2 { margin-top: 0; font-weight: 600; letter-spacing: -0.5px; }
+
+    /* ===== Inputs & Form Elements ===== */
+    input[type="text"], input[type="password"], input[type="file"] {
+      width: 100%;
+      padding: 12px 0;
+      margin-bottom: 25px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--glass-border);
+      color: #fff;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input:focus { border-bottom-color: var(--primary); }
+
+    label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; display: block; text-align: left; }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-primary { background: linear-gradient(45deg, var(--primary), var(--accent)); color: white; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 168, 255, 0.3); }
+
+    .btn-outline { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; width: auto; }
+    .btn-outline:hover { background: var(--danger); color: white; }
+
+    /* ===== Dashboard ===== */
+    .dashboard {
+      max-width: 900px;
+      width: 90%;
+      padding: 40px;
+      margin-top: 80px;
+      display: none; /* Controlled by JS */
+    }
+
+    .dashboard.active { display: block; animation: fadeIn 0.5s ease; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 20px;
+    }
+
+    /* ===== Comments & Items ===== */
+    .comment {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .reply-box {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .reply-box input { margin-bottom: 0; padding: 8px 0; }
+    .reply-box button { width: auto; font-size: 13px; padding: 5px 15px; }
+
+    .hidden { display: none !important; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="horizontal-nav">
+  <ul class="nav-list">
+    <li><a href="programming.html"><i class="fas fa-code"></i> Programming</a></li>
+    <li><a href="#"><i class="fas fa-diagram-project"></i> Projects</a></li>
+    <li><a href="#"><i class="fas fa-lock"></i> Owner Login</a></li>
+  </ul>
+</nav>
+
+<div id="login-section" class="glass-card login-section">
+  <h2>Welcome Back</h2>
+  <form id="loginForm">
+    <label>Username</label>
+    <input type="text" id="username" placeholder="Enter owner handle" required>
+    
+    <label>Password</label>
+    <input type="password" id="password" placeholder="••••••••" required>
+    
+    <button type="submit" class="btn-primary">Authenticate</button>
+    <p id="login-error" style="color: var(--danger); font-size: 13px; margin-top: 15px;"></p>
+  </form>
+</div>
+
+<div id="dashboard" class="glass-card dashboard">
+  <header>
+    <h2 style="margin:0">Owner Console</h2>
+    <button id="logoutBtn" class="btn-outline">Sign Out</button>
+  </header>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+    <section>
+      <h3 style="color: var(--primary)">New Project</h3>
+      <form id="uploadForm">
+        <label>Project Name</label>
+        <input type="text" id="projectName" required>
+        
+        <label>Version</label>
+        <input type="text" id="projectVersion" placeholder="v1.0.0" required>
+        
+        <label>Project Media</label>
+        <input type="file" id="projectVideo" accept="video/mp4" required>
+        
+        <button type="submit" class="btn-primary" style="background: #2ed573">Upload Project</button>
+      </form>
+    </section>
+
+    <section>
+      <h3 style="color: var(--accent)">User Feedback</h3>
+      <div id="commentList">
+        </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const OWNER_USERNAME = "CaitlinAkFallen";
+  const OWNER_PASSWORD = "rlCY;5-4BG4";
+
+  const loginForm = document.getElementById("loginForm");
+  const loginSection = document.getElementById("login-section");
+  const dashboard = document.getElementById("dashboard");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  // Authentication logic
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
+
+    if (user === OWNER_USERNAME && pass === OWNER_PASSWORD) {
+      loginSection.classList.add("hidden");
+      dashboard.classList.add("active");
+      renderComments();
+    } else {
+      document.getElementById("login-error").textContent = "Access Denied: Invalid Credentials";
+    }
+  });
+
+  logoutBtn.addEventListener("click", () => {
+    dashboard.classList.remove("active");
+    loginSection.classList.remove("hidden");
+  });
+
+  // Mock data for demo
+  let comments = JSON.parse(localStorage.getItem("cplusComments")) || [
+    { user: "GuestUser", text: "Love the C++ optimization tips!", replies: [] }
+  ];
+
+  function renderComments() {
+    const list = document.getElementById("commentList");
+    list.innerHTML = comments.map((c, i) => `
+      <div class="comment">
+        <div style="font-size: 12px; color: var(--primary); font-weight: 600;">@${c.user}</div>
+        <div style="margin: 5px 0 15px 0; font-size: 14px;">${c.text}</div>
+        <div class="replies" style="border-left: 1px solid #444; padding-left: 10px; margin-bottom: 10px;">
+          ${c.replies.map(r => `<p style="font-size: 12px; margin: 4px 0;"><strong>Me:</strong> ${r}</p>`).join("")}
+        </div>
+        <div class="reply-box">
+          <input type="text" id="reply-${i}" placeholder="Write a response...">
+          <button class="btn-primary" onclick="addReply(${i})">Send</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  window.addReply = (index) => {
+    const input = document.getElementById(`reply-${index}`);
+    if (input.value.trim()) {
+      comments[index].replies.push(input.value.trim());
+      localStorage.setItem("cplusComments", JSON.stringify(comments));
+      renderComments();
+    }
+  };
+</script>
+
+</body>
+</html>

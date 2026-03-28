@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FallenOneArt Streaming</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <style>
+      /* =============== Base =============== */
+      * {
+        box-sizing: border-box;
+      }
+
+      /* Hide scrollbar globally for Chrome, Safari and Opera */
+      *::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Hide scrollbar globally for IE, Edge and Firefox */
+      * {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      :root {
+        --sidebar-width: 240px;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family:
+          "Inter", "Roobert", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        background: #0e0e10;
+        color: #efeff1;
+      }
+
+      /* Ensure the grid column itself shrinks with the sidebar */
+      .app {
+        display: grid;
+        grid-template-columns: auto 1fr 340px;
+        grid-template-areas: "sidebar main chat";
+        height: 100vh;
+        width: 100%;
+      }
+
+      header {
+        background: url("images/main-page.JPG") no-repeat center center / cover;
+        height: 30vh;
+        min-height: 200px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+      }
+
+      header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
+        border-radius: 10px;
+      }
+
+      header div {
+        position: relative;
+        z-index: 2;
+      }
+
+      header h2 {
+        font-family: Georgia, serif;
+        font-size: 42px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #672cf1;
+        text-shadow: 0 0 12px #000;
+        margin: 0;
+      }
+
+      header h5 {
+        font-family: Verdana, sans-serif;
+        font-size: 18px;
+        font-weight: 400;
+        margin-top: 10px;
+        color: #fff;
+        text-shadow: 0 0 8px #000;
+      }
+
+      /* =============== Sidebar (Fixed Scrollbar) =============== */
+      .sidebar {
+        grid-area: sidebar;
+        background: #1f1f23;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 10;
+        position: relative;
+        width: var(--sidebar-width);
+        overflow-y: auto;
+        overflow-x: hidden;
+        white-space: nowrap;
+      }
+
+      .sidebar::-webkit-scrollbar {
+        display: block;
+        width: 6px;
+      }
+
+      .sidebar::-webkit-scrollbar-thumb {
+        background-color: #313135;
+        border-radius: 10px;
+      }
+
+      .sidebar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .sidebar {
+        /* 1. The Modern Standard (What you already have) */
+        scrollbar-width: thin;
+        -webkit-scrollbar-color: #313135 transparent;
+        scrollbar-color: #313135 transparent;
+      }
+
+      /* 2. The "Webkit" way (For Chrome, Safari, and to stop some editor warnings) */
+      .sidebar::-webkit-scrollbar {
+        width: 8px; /* How wide the scrollbar is */
+      }
+
+      .sidebar::-webkit-scrollbar-track {
+        background: transparent; /* The "track" or background */
+      }
+
+      .sidebar::-webkit-scrollbar-thumb {
+        background-color: #313135; /* The draggable "thumb" */
+        border-radius: 20px; /* Makes it look clean and round */
+        border: 2px solid transparent; /* Gives it some breathing room */
+      }
+
+      .sidebar::-webkit-scrollbar-thumb:hover {
+        background-color: #3d3d3d;
+      }
+
+      .sidebar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .sidebar.collapsed {
+        width: 50px;
+        min-width: 50px;
+      }
+
+      .sidebar-header {
+        padding: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* Updated: Micro Branding for Stream Container Link */
+      .stream-container h2 {
+        margin: 0;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+      }
+
+      .stream-container h2 a {
+        font-size: 11px; /* Micro size for ultimate sleekness */
+        font-weight: 800;
+        color: #9147ff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 4px; /* Minimal gap for compact look */
+        transition:
+          color 0.3s ease,
+          text-shadow 0.3s ease;
+        white-space: nowrap;
+        letter-spacing: 0.8px; /* Increased tracking to keep small text legible */
+      }
+
+      .stream-container h2 a:hover,
+      .stream-container h2 a:focus {
+        color: #fff;
+        text-shadow: 0 0 4px #9147ff; /* Very tight glow for micro text */
+        outline: none;
+      }
+
+      /* Ensure the icon stays visible but text hides when collapsed */
+      .sidebar.collapsed .stream-container h2 span {
+        display: none;
+      }
+
+      .sidebar.collapsed .stream-container h2 a {
+        justify-content: center;
+        font-size: 14px; /* Icon scaled down for the collapsed sidebar */
+        gap: 0;
+      }
+      .followed-channels-header {
+        padding: 8px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .section-main-title {
+        font-size: 13px;
+        font-weight: 600;
+        margin: 0;
+        text-transform: uppercase;
+        color: #efeff1;
+      }
+      .section-sub-title {
+        font-size: 11px;
+        color: #adadb8;
+        margin: 0;
+      }
+      .sort-icon {
+        color: #efeff1;
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      /* Channel Item Styling */
+      .channel-item {
+        display: flex;
+        align-items: center;
+        padding: 6px 12px;
+        gap: 12px;
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+
+      .channel-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        position: relative;
+      }
+
+      .channel-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        background-color: #2c2c2f;
+      }
+
+      .channel-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .channel-top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .channel-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #efeff1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* Red Dot and Viewer Count Styling */
+      .live-dot {
+        color: #eb0400;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .v-count {
+        color: #efeff1;
+        font-weight: 400;
+        font-size: 12px;
+      }
+
+      .channel-game {
+        font-size: 12px;
+        color: #adadb8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+      }
+
+      .offline-tag {
+        font-size: 11px;
+        color: #adadb8;
+      }
+
+      /* Collapsed Sidebar Logic */
+      .sidebar.collapsed .sidebar-header span,
+      .sidebar.collapsed .followed-channels-header,
+      .sidebar.collapsed .channel-info {
+        display: none;
+      }
+
+      .sidebar.collapsed .channel-item {
+        justify-content: center;
+        padding: 8px 0;
+        gap: 0;
+      }
+      .sidebar.collapsed .sidebar-header {
+        justify-content: center;
+        padding: 12px 0;
+      }
+      .sidebar.collapsed .channel-avatar {
+        width: 30px;
+        height: 30px;
+      }
+
+      /* Sidebar Toggle */
+      .sidebar-toggle {
+        cursor: pointer;
+        font-size: 14px;
+        padding: 4px;
+        border-radius: 4px;
+        transition: background 0.2s;
+        color: #efeff1;
+      }
+
+      .sidebar-toggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      /* --- FOLLOWED CHANNELS HEADER --- */
+      .followed-channels-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 10px;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .section-main-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #efeff1;
+        margin: 0;
+      }
+
+      .section-sub-title {
+        font-size: 12px;
+        color: #adadb8;
+        margin: 0;
+      }
+      /* Container for the buttons */
+      .toggle-button-container {
+        display: flex;
+        justify-content: space-between; /* Pushes buttons to far left and far right */
+        align-items: center;
+        padding: 8px 10px;
+      }
+
+      /* Base button style (Twitch Purple) */
+      .show-more-btn,
+      .show-less-btn {
+        background: none;
+        border: none;
+        color: #bf94ff;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .show-more-btn:hover,
+      .show-less-btn:hover {
+        color: #a970ff;
+        text-decoration: underline;
+      }
+
+      /* Force hidden state to stay hidden */
+      .hidden-btn {
+        display: none !important;
+      }
+      /* --- SORT ICON --- */
+      .sort-icon {
+        font-size: 16px;
+        color: #adadb8;
+        transition: transform 0.2s ease;
+      }
+
+      .sort-icon.open {
+        transform: rotate(180deg);
+      }
+
+      /* --- DROPDOWN MENU --- */
+      .sort-dropdown {
+        position: relative;
+        background: #1f1f23;
+        border: 1px solid #2c2c2f;
+        border-radius: 6px;
+        width: 180px;
+        padding: 6px 0;
+        display: none;
+        flex-direction: column;
+        margin-left: auto;
+        margin-right: 10px;
+        margin-top: 4px;
+        z-index: 20;
+        opacity: 0;
+        transform: translateY(-5px);
+        transition:
+          opacity 0.15s ease,
+          transform 0.15s ease;
+      }
+
+      .sort-dropdown.open {
+        display: flex;
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .sort-option {
+        padding: 8px 12px;
+        font-size: 13px;
+        color: #efeff1;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+
+      .sort-option:hover {
+        background: #2c2c2f;
+      }
+
+      .sort-option.active {
+        color: #a970ff;
+        font-weight: 600;
+      }
+
+      /* Rotate icon when open */
+      .sort-icon.open {
+        transform: rotate(180deg);
+        transition: transform 0.2s ease;
+      }
+
+/* Container for the whole category item */
+.category-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.category-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Accuracy for the Category Box Art */
+.category-img {
+  width: 40px; 
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  flex-shrink: 0; /* Prevents the circle from shrinking if text is long */
+}
+
+/* Category Text Content */
+.category-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; 
+}
+
+.category-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.category-name-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #efeff1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.category-tag-text {
+  font-size: 12px;
+  color: #adadb8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.category-view-text {
+  font-size: 13px;
+  color: #f1efef;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* The Red Live Dot from your image */
+.red-dot {
+  color: #eb0400;
+  font-size: 10px;
+}
+      /* =============== Live Channels List Styling =============== */
+
+      /* Container spacing */
+      #liveFollowingList {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+
+      /* Reusing the channel-item logic for the recommended list */
+      #liveFollowingList .channel-item {
+        display: flex;
+        align-items: center;
+        padding: 6px 12px;
+        gap: 12px;
+        cursor: pointer;
+        transition: background 0.1s ease;
+      }
+
+      #liveFollowingList .channel-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      /* Ensure avatars are consistent */
+      #liveFollowingList .channel-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      /* Text layout for name and game */
+      #liveFollowingList .channel-info {
+        flex: 1;
+        min-width: 0; /* Necessary for ellipsis to work */
+      }
+
+      #liveFollowingList .channel-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #efeff1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      #liveFollowingList .channel-game {
+        font-size: 12px;
+        color: #adadb8;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+      }
+
+      /* Live viewer count and red dot (Twitch Style) */
+      #liveFollowingList .live-dot {
+        color: #eb0400; /* Red color for the live dot */
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-weight: 400;
+      }
+
+      #liveFollowingList .v-count {
+        color: #efeff1;
+        font-size: 12px;
+      }
+
+      /* =============== Section Transitions =============== */
+
+      /* Adds a slight gap between the 'Show More' of the first section 
+   and the 'Live Channels' title of the second section */
+      .recommendations-section {
+        margin-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding-top: 8px;
+      }
+      /* =========================
+   Fix for horizontal nav jump
+   ========================= */
+      .horizontal-nav {
+        width: calc(
+          100% - (var(--sidebar-width, 240px) + 340px)
+        ); /* *LEAVE THIS ALONE* */
+        left: var(--sidebar-width, 240px);
+
+        background: rgba(0, 0, 0, 0);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+
+        padding: 10px 0;
+        display: flex;
+        justify-content: center;
+
+        position: fixed;
+        top: 0;
+        z-index: 9999;
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        transition:
+          left 0.2s ease,
+          width 0.2s ease;
+      }
+      /* This balances the bar so the icons stay in the middle */
+      .nav-left-spacer {
+        flex: 1;
+      }
+/* Container adjustment */
+.nav-right {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 20px;
+}
+
+/* SHARED PILL STYLE 
+   This applies the "Pill" look to both the Main Login 
+   and any button with the .dropdown-item class
+*/
+.twitch-login-btn, 
+.twitch-signout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  /* Sizing */
+  height: 38px;
+  padding: 0 16px;
+
+  /* Visuals */
+  background: rgba(145, 70, 255, 0.1);
+  border: 1px solid rgba(145, 70, 255, 0.4);
+  border-radius: 50px; /* Perfect pill shape */
+
+  /* Text & Icons */
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+
+  /* Transitions */
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  white-space: nowrap;
+}
+
+/* 2. SHARED STATES (Hover & Active) */
+.twitch-login-btn:hover,
+.twitch-signout-btn:hover {
+ background: rgba(145, 70, 255, 0.3);
+  border-color: #9146ff;
+  box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
+  transform: translateY(-1px); /* Subtle lift */
+}
+
+.twitch-login-btn:active,
+.twitch-signout-btn:active {
+  transform: translateY(0px);
+}
+
+/* 3. AVATAR STYLING (Inside the pill) */
+#twitchAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* 4. DROPDOWN CONTAINER - Adjusted for alignment */
+.twitch-dropdown {
+  position: absolute;
+  /* Adjust top to be just below the button + some gap */
+  top: 50px;
+  /* Align to the right edge of the nav-right container */
+  right: 20px; 
+  
+  /* Your Pill Styling */
+  height: 38px; 
+  padding: 0 16px;
+  background: rgba(145, 70, 255, 0.1);
+  border: 1px solid rgba(145, 70, 255, 0.4);
+  border-radius: 50px;
+  
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  min-width: 150px;
+  
+  display: none; /* Toggle with JS */
+  
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  z-index: 100;
+  
+  /* Flex to center the button inside */
+  align-items: center;
+  justify-content: center;
+}
+
+/* 5. Ensure button fits inside container */
+#signOutBtn {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0; /* Override padding so it doesn't double up */
+  margin: 0;
+}
+
+
+
+/* Animation */
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+      /* =========================
+   Nav links
+   ========================= */
+      .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 50px;
+        height: 50px;
+        margin: 0 8px;
+
+        border-radius: 12px;
+        color: #f0f0f0;
+        font-size: 1.5rem;
+        text-decoration: none;
+
+        transition: all 0.3s ease;
+      }
+
+      /* =========================
+   Hover colors
+   ========================= */
+      .twitch-link:hover {
+        color: #9147ff;
+      }
+      .youtube-link:hover {
+        color: #cc0000;
+      }
+      .kick-link:hover {
+        color: #09d82c;
+      }
+      .stream-commands-link:hover {
+        color: #00bfae;
+      }
+      .schedule-link:hover {
+        color: #ff6ec4;
+      }
+
+      /* =========================
+   Mobile fix
+   ========================= */
+      @media (max-width: 600px) {
+        .nav-link {
+          width: 55px;
+          height: 55px;
+          font-size: 1.5rem;
+          margin: 6px;
+        }
+      }
+
+      /* =============== Main Column =============== */
+      .main {
+        grid-area: main;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 100px 20px 20px 20px;
+        overflow-y: auto;
+      }
+
+      /* Twitch Player */
+      .twitch-player-container {
+        width: 100%;
+        max-width: 1280px;
+        aspect-ratio: 16/9;
+        background: #000;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      #twitch-player {
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Stream Header */
+      .stream-header {
+        width: 100%;
+        max-width: 1280px;
+        margin-top: 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .bottom-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        border: 2px solid #9147ff;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .bottom-avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      #live-indicator {
+        display: none;
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #eb0400;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 5px;
+        border-radius: 2px;
+        border: 2px solid #0e0e10;
+        line-height: 1;
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .header-text-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;
+      }
+      .bottom-streamer {
+        font-weight: 700;
+        font-size: 18px;
+        color: #efeff1;
+        display: block;
+      }
+
+      /* About Card */
+      .about-card {
+        background: #18181b;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .about-card h3 {
+        margin: 0 0 15px 0;
+        font-size: 1.2rem;
+      }
+
+      .about-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: space-between;
+      }
+      .about-text {
+        flex: 1 1 250px;
+        min-width: 200px;
+      }
+      .follower-stat {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+      }
+      .bio {
+        min-height: 1.5em;
+        display: block;
+        word-wrap: break-word;
+        color: #efeff1;
+      }
+
+      .about-links {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 150px;
+      }
+
+      .about-links a {
+        color: #efeff1;
+        text-decoration: none;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .link-twitch:hover {
+        color: #a970ff !important;
+        transform: translateX(5px);
+      }
+      .link-youtube:hover {
+        color: #ff4d4d !important;
+        transform: translateX(5px);
+      }
+      .link-throne:hover {
+        color: #fcf484 !important;
+        transform: translateX(5px);
+      }
+      .link-instagram:hover {
+        color: #f06292 !important;
+        transform: translateX(5px);
+      }
+      .link-kofi:hover {
+        color: #59d5ff !important;
+        transform: translateX(5px);
+      }
+
+      /* Responsive About Card */
+      @media (max-width: 900px) {
+        .about-content {
+          flex-direction: column;
+          gap: 15px;
+        }
+        .about-links {
+          flex-direction: row;
+          flex-wrap: wrap;
+        }
+        .about-links a {
+          flex: 1 1 calc(50% - 8px);
+          margin-left: 0;
+        }
+      }
+
+    /* Clips Section */
+.clips-section h2 { text-align: center; margin: 20px 0; font-size: 1.8rem; cursor: pointer; }
+.clips-row { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+.clips-row iframe { border-radius: 8px; box-shadow: 0 0 10px rgba(145, 71, 255, 0.4); width: 320px; height: 180px; }
+
+      /* Stream Info */
+      #streamTitle {
+        font-size: 14px;
+        font-weight: 600;
+        color: #efeff1;
+        line-height: 1.2;
+      }
+      #streamGame {
+        font-size: 14px;
+        color: #bf94ff;
+        font-weight: 600;
+      }
+      .stream-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 6px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      #viewerCount {
+        color: #ff4c4c;
+      }
+      #streamTimer {
+        color: #efeff1;
+      }
+      .stream-stats {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 6px;
+      }
+
+      /* =============== Chat Column =============== */
+      .chat {
+        grid-area: chat;
+        background: #000;
+        border-left: 1px solid #2c2c2c;
+      }
+      .chat iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: #000;
+      }
+
+      /* Optional: hide white flash on load */
+      .chat,
+      .chat iframe {
+        background-color: #000 !important;
+      }
+
+      /* =============== Show More / Show Less Toggle Styles =============== */
+      .show-more-toggle {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: background 0.1s;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      .show-more-toggle span {
+        font-size: 12px;
+        color: #a970ff;
+        font-weight: 600;
+      }
+
+      .show-more-toggle:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .show-more-toggle:hover span {
+        text-decoration: underline;
+      }
+
+      #showLessFollowed span {
+        color: #adadb8;
+      }
+
+      .sidebar.collapsed .show-more-toggle {
+        display: none !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div>
+        <h2>Twitch Streaming</h2>
+        <h5
+          style="
+            text-shadow:
+              -2px -2px 0 #000,
+              2px -2px 0 #000,
+              -2px 2px 0 #000,
+              2px 2px 0 #000;
+          "
+        >
+          Streaming Schedule & Live Content
+        </h5>
+      </div>
+    </header>
+
+    <nav class="horizontal-nav">
+      <div class="nav-left-spacer"></div>
+
+      <a href="schedule.html" class="nav-link schedule-link" title="Schedule"
+        ><i class="fas fa-calendar-alt"></i
+      ></a>
+      <a
+        href="stream-commands.html"
+        class="nav-link stream-commands-link"
+        title="Commands"
+        ><i class="fas fa-sticky-note sc-icon"></i
+      ></a>
+      <a href="twitch.html" class="nav-link twitch-link" title="Twitch"
+        ><i class="fab fa-twitch"></i
+      ></a>
+      <a href="youtube.html" class="nav-link youtube-link" title="YouTube"
+        ><i class="fab fa-youtube"></i
+      ></a>
+      <a href="kick.html" class="nav-link kick-link" title="Kick"
+        ><i class="fab fa-kickstarter-k"></i
+      ></a>
+
+      <div class="nav-right">
+      <button id="twitchLoginBtn" class="twitch-login-btn">
+        <i id="twitchUserIcon" class="fa-regular fa-user"></i>
+        <span id="twitchAvatar"></span> <span id="twitchUsername">Login</span>
+      </button>
+
+      <div id="twitchDropdown" class="twitch-dropdown">
+      <button id="signOutBtn" class="twitch-signout-btn">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+      </button>
+    </div>
+    </div>
+  </nav>
+
+<div class="app">
+<div class="sidebar" id="mainSidebar">
+
+        <div class="sidebar-header">
+          <div class="stream-container">
+              <h2>
+                  <a href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer" aria-label="Visit fallenoneart on Twitch">
+                      <i class="fab fa-twitch" aria-hidden="true"></i>
+                      <span>FallenOneArt's Twitch</span>
+                  </a>
+              </h2>
+          </div>
+          <div id="sidebarToggle" class="sidebar-toggle">❮</div>
+    </div>
+
+
+
+    <div class="followed-channels-header" id="followedHeader">
+        <div>
+            <p class="section-main-title">Followed Channels</p>
+            <p class="section-sub-title">Viewers (High to Low)</p>
+        </div>
+        <span class="sort-icon">⇅</span>
+    </div>
+
+    <div class="channel-list-container">
+        <div id="followingList"></div>
+        <div class="toggle-button-container">
+            <button id="showMoreFollowed" class="show-more-btn">Show More</button>
+            <button id="showLessFollowed" class="show-less-btn hidden-btn">Show Less</button>
+        </div>
+    </div>
+
+    <div class="recommendations-section">
+        <div class="followed-channels-header">
+            <p class="section-main-title">Live Channels</p>
+        </div>
+
+        <div id="liveFollowingList"></div>
+
+        <div class="toggle-button-container">
+            <button id="showMoreLive" class="show-more-btn">Show More</button>
+            <button id="showLessLive" class="show-less-btn hidden-btn">Show Less</button>
+        </div>
+    </div>
+
+    <div class="categories-section">
+        <div class="followed-channels-header">
+            <p class="section-main-title">Recommended Categories</p>
+        </div>
+
+        <div id="recommendedCategoriesList" class="category-list"></div>
+
+        <div class="toggle-button-container">
+            <button id="showMoreCategories" class="show-more-btn">Show More</button>
+            <button id="showLessCategories" class="show-less-btn hidden-btn">Show Less</button>
+        </div>
+    </div>
+</div>
+
+  <div class="main">
+    <div class="twitch-player-container">
+      <div id="twitch-player"></div>
+    </div>
+
+    <div class="stream-header">
+      <div class="bottom-avatar">
+        <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/bb91b174-8cb2-4bf8-8416-67c645b333f3-profile_image-70x70.png" alt="Avatar">
+        <span id="live-indicator">LIVE</span>
+      </div>
+
+      <div class="header-text-container">
+        <span class="bottom-streamer">FallenOneArt</span>
+        <span id="streamTitle"></span>
+        <span id="streamGame"></span>
+
+        <div class="stream-info">
+          <span id="viewerCount">👤 0</span>
+          <span id="streamTimer">00:00:00</span>
+        </div>
+
+        <div class="about-card">
+          <h3>About FallenOneArt</h3>
+          <div class="about-content">
+            <div class="about-text">
+              <p class="follower-stat"><span id="followerCount">0</span> followers</p>
+              <p class="bio"><span id="bioText">Loading bio...</span></p>
+            </div>
+            <div class="about-links">
+              <a href="https://www.twitch.tv/fallenpool_bot" target="_blank" rel="noopener noreferrer" class="link-twitch"><i class="fab fa-twitch"></i> Bot account</a>
+              <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener noreferrer" class="link-youtube"><i class="fab fa-youtube"></i> YouTube</a>
+              <a href="https://throne.com/caitlinakafallen" target="_blank" rel="noopener noreferrer" class="link-throne"><i class="fas fa-scroll"></i> Throne</a>
+              <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener noreferrer" class="link-instagram"><i class="fab fa-instagram"></i> Instagram</a>
+              <a href="https://ko-fi.com/caitlinakafallen" target="_blank" rel="noopener noreferrer" class="link-kofi"><i class="fas fa-coffee"></i> Ko-fi</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="clips-section">
+      <h2 onclick="toggleClips()">Recent Clips</h2>
+      <div id="clipsContainer" class="clips-row">
+        <iframe src="https://clips.twitch.tv/embed?clip=ArbitraryFrigidDiscBabyRage-Y5h_dBp0jr3J373d&parent=localhost" title="Twitch Clip: ArbitraryFrigidDiscBabyRage" allowfullscreen></iframe>
+        <iframe src="https://clips.twitch.tv/embed?clip=EndearingInspiringStinkbugYouWHY-7-ukExW7FN-dX_dk&parent=localhost" title="Twitch Clip: EndearingInspiringStinkbugYouWHY" allowfullscreen></iframe>
+        <iframe src="https://clips.twitch.tv/embed?clip=ThirstyOptimisticTrollFeelsBadMan-VCPPKHW3DaUw9xtT&parent=localhost" title="Twitch Clip: ThirstyOptimisticTrollFeelsBadMan" allowfullscreen></iframe>
+        <iframe src="https://clips.twitch.tv/embed?clip=SlipperySquareKumquatPoooound-gFEPFF5mTYtRKa-i&parent=localhost" title="Twitch Clip: SlipperySquareKumquatPoooound" allowfullscreen></iframe>
+        <iframe src="https://clips.twitch.tv/embed?clip=CalmGleamingFriseeBatChest-yQy2hvT4qq9Nca6c&parent=localhost" title="Twitch Clip: CalmGleamingFriseeBatChest" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat">
+    <iframe id="twitch-chat" title="Twitch Chat"></iframe>
+  </div>
+</div>
+
+    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
+<script>
+/* ==========================
+   Full unified JS (replace your existing script block with this)
+   Keeps your UI, adds cross-browser login fix, and fixes storage mismatch
+   ========================== */
+
+/* ==========================================
+   GLOBAL STATE & CONFIGURATION
+   ========================================== */
+let visibleFollowedCount = 12;
+let visibleLiveRecsCount = 12;
+let visibleCategoriesCount = 12;
+
+let currentFollowedData = [];
+let currentLiveRecsData = [];
+let currentCategoriesData = [];
+let cachedAvatars = {};
+
+// Login / App credentials (kept as you provided)
+const LOGIN_CLIENT_ID = "iv3dicfghd1hflqzzysljadc8mw1sa";
+const OAUTH_REDIRECT = "https://caitlinscreativespace.xyz/twitch.html";
+const LOGIN_SCOPE = "user:read:email user:read:follows";
+
+// Main app tokens (kept)
+const TARGET_USERNAME = "fallenoneart";
+const APP_CLIENT_ID = "gp762nuuoqcoxypju8c569th9wz7q5";
+const APP_TOKEN = "0s89vmye9hk95jiifrpion53n6cy9p";
+
+/* ==========================================
+   Helper: parse URL hash safely
+   ========================================== */
+function parseHashForToken() {
+  if (!window.location.hash) return null;
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  return params.get("access_token");
+}
+
+/* ==========================================
+   TWITCH NAVBAR LOGIN SYSTEM (Unified)
+   - Uses localStorage key "twitchUser" (object)
+   - Handles redirect, saves user, updates UI
+   ========================================== */
+function initNavbarTwitchLogin() {
+  const loginBtn = document.getElementById("twitchLoginBtn");
+  const avatarEl = document.getElementById("twitchAvatar");
+  const nameEl = document.getElementById("twitchUsername");
+  const userIcon = document.getElementById("twitchUserIcon");
+  const dropdown = document.getElementById("twitchDropdown");
+  const signOutBtn = document.getElementById("signOutBtn");
+
+  if (!loginBtn) return;
+
+  // Show saved session if present
+  const saved = JSON.parse(localStorage.getItem("twitchUser"));
+  if (saved && avatarEl && nameEl) {
+    if (saved.avatar) {
+      avatarEl.style.backgroundImage = `url('${saved.avatar}')`;
+      avatarEl.style.display = "inline-block";
+    }
+    nameEl.textContent = saved.username || nameEl.textContent;
+    if (userIcon) userIcon.style.display = saved.avatar ? "none" : "inline-block";
+  }
+
+  /* -------------------------
+     LOGIN BUTTON CLICK
+  ------------------------- */
+  loginBtn.addEventListener("click", (e) => {
+
+    const existing = JSON.parse(localStorage.getItem("twitchUser"));
+
+    // If NOT logged in → start OAuth
+    if (!existing || !existing.token) {
+      const url =
+        "https://id.twitch.tv/oauth2/authorize" +
+        "?response_type=token" +
+        "&client_id=" + LOGIN_CLIENT_ID +
+        "&redirect_uri=" + encodeURIComponent(OAUTH_REDIRECT) +
+        "&scope=" + encodeURIComponent(LOGIN_SCOPE);
+
+      window.location.href = url;
+      return;
+    }
+
+    // If logged in → toggle dropdown instead
+    if (dropdown) {
+      e.stopPropagation();
+      dropdown.style.display =
+        dropdown.style.display === "block" ? "none" : "block";
+    }
+  });
+
+  /* -------------------------
+     CLICK OUTSIDE CLOSE
+  ------------------------- */
+  document.addEventListener("click", (event) => {
+    if (!dropdown) return;
+
+    if (!loginBtn.contains(event.target) && !dropdown.contains(event.target)) {
+      dropdown.style.display = "none";
+    }
+  });
+
+  /* -------------------------
+     SIGN OUT BUTTON
+  ------------------------- */
+  if (signOutBtn) {
+    signOutBtn.addEventListener("click", () => {
+
+      localStorage.removeItem("twitchUser");
+      localStorage.removeItem("twitch_token");
+      localStorage.removeItem("twitch_user");
+
+      // Reset UI
+      if (nameEl) nameEl.textContent = "Login";
+
+      if (avatarEl) {
+        avatarEl.style.backgroundImage = "";
+        avatarEl.style.display = "none";
+      }
+
+      if (userIcon) userIcon.style.display = "inline-block";
+
+      if (dropdown) dropdown.style.display = "none";
+
+      // Clear sidebar follows
+      currentFollowedData = [];
+      renderFollowingListUI(currentFollowedData);
+    });
+  }
+
+  /* -------------------------
+     HANDLE REDIRECT TOKEN
+  ------------------------- */
+  const tokenFromHash = parseHashForToken();
+
+  if (tokenFromHash) {
+
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname + window.location.search
+      );
+    }
+
+    fetchTwitchUser(tokenFromHash);
+  }
+}
+
+/* ==========================================
+   fetchTwitchUser - saves EXACT format used by initFollowingList
+   (keeps compatibility with the rest of your code)
+   ========================================== */
+async function fetchTwitchUser(token) {
+  try {
+    const resp = await fetch("https://api.twitch.tv/helix/users", {
+      headers: {
+        "Client-ID": LOGIN_CLIENT_ID,
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    const json = await resp.json();
+    if (!json.data || !json.data.length) {
+      console.warn("fetchTwitchUser: no user data returned");
+      return;
+    }
+
+    const user = json.data[0];
+
+    // Save in the same shape initFollowingList expects
+    const saveData = {
+      username: user.display_name,
+      avatar: user.profile_image_url,
+      id: user.id,
+      token: token
+    };
+
+    // MAIN SAVE (used by your sidebar)
+    localStorage.setItem("twitchUser", JSON.stringify(saveData));
+
+    // Backwards-compatible saves (in case old code checks those keys)
+    localStorage.setItem("twitch_token", token);
+    localStorage.setItem("twitch_user", JSON.stringify(user));
+
+    // Update UI immediately
+    const avatarEl = document.getElementById("twitchAvatar");
+    const nameEl = document.getElementById("twitchUsername");
+    const userIcon = document.getElementById("twitchUserIcon");
+    if (avatarEl) {
+      avatarEl.style.backgroundImage = `url('${saveData.avatar}')`;
+      avatarEl.style.display = "inline-block";
+    }
+    if (nameEl) nameEl.textContent = saveData.username;
+    if (userIcon) userIcon.style.display = "none";
+
+    // Trigger sidebar refresh for this user
+    await initFollowingList();
+
+  } catch (err) {
+    console.error("Login fetch error:", err);
+    // If token invalid, clear saved data so next click forces login again
+    try { localStorage.removeItem("twitchUser"); } catch(e) {}
+  }
+}
+
+/* ==========================================
+   CORE INITIALIZATION
+   - Ensure we wait for DOM so elements exist before using them
+   ========================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  // First: initialize UI bits (so login button exists)
+  initSidebarToggle();
+  initTwitchEmbeds();
+
+  // Initialize the unified login/nav system
+  initNavbarTwitchLogin();
+
+  // Show/hide clip container
+  const clipsContainer = document.getElementById("clipsContainer");
+  if (clipsContainer) clipsContainer.style.display = "none";
+
+  // Init other listeners and restore session if any
+  initShowMoreLessListeners();
+
+  // If already logged in (from previous session), refresh UI + sidebar
+  const saved = JSON.parse(localStorage.getItem("twitchUser"));
+  if (saved && saved.token) {
+    // ensure avatar UX updates (in case initNavbarTwitchLogin didn't)
+    const avatarEl = document.getElementById("twitchAvatar");
+    const nameEl = document.getElementById("twitchUsername");
+    const userIcon = document.getElementById("twitchUserIcon");
+    if (avatarEl && saved.avatar) {
+      avatarEl.style.backgroundImage = `url('${saved.avatar}')`;
+      avatarEl.style.display = "inline-block";
+    }
+    if (nameEl) nameEl.textContent = saved.username || nameEl.textContent;
+    if (userIcon && saved.avatar) userIcon.style.display = "none";
+
+    // Load their followed list now
+    initFollowingList();
+  } else {
+    // no saved session — ensure sidebar starts empty/neutral
+    renderFollowingListUI([]);
+  }
+});
+
+/* =====================
+   Show More / Show Less Logic
+   ===================== */
+function initShowMoreLessListeners() {
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#showMoreFollowed")) {
+      visibleFollowedCount += 12;
+      renderFollowingListUI(currentFollowedData);
+    }
+    if (e.target.closest("#showLessFollowed")) {
+      visibleFollowedCount = 12;
+      renderFollowingListUI(currentFollowedData);
+    }
+    if (e.target.closest("#showMoreLive")) {
+      visibleLiveRecsCount += 12;
+      renderLiveRecsUI(currentLiveRecsData);
+    }
+    if (e.target.closest("#showLessLive")) {
+      visibleLiveRecsCount = 12;
+      renderLiveRecsUI(currentLiveRecsData);
+    }
+    if (e.target.closest("#showMoreCategories")) {
+      visibleCategoriesCount += 12;
+      renderCategoriesUI(currentCategoriesData);
+    }
+    if (e.target.closest("#showLessCategories")) {
+      visibleCategoriesCount = 12;
+      renderCategoriesUI(currentCategoriesData);
+    }
+  });
+}
+
+function updateToggleButtons(section, totalItems, currentVisible) {
+  const mappings = {
+    followed: ["showMoreFollowed", "showLessFollowed"],
+    live: ["showMoreLive", "showLessLive"],
+    categories: ["showMoreCategories", "showLessCategories"],
+  };
+  const ids = mappings[section];
+  if (!ids) return;
+  const [moreId, lessId] = ids;
+  const moreBtn = document.getElementById(moreId);
+  const lessBtn = document.getElementById(lessId);
+
+  if (moreBtn) moreBtn.classList.toggle("hidden-btn", currentVisible >= totalItems);
+  if (lessBtn) lessBtn.classList.toggle("hidden-btn", currentVisible <= 12);
+}
+
+/* =====================
+   Sidebar Toggle Logic
+   ===================== */
+function initSidebarToggle() {
+  const sidebar = document.getElementById("mainSidebar");
+  const toggleBtn = document.getElementById("sidebarToggle");
+  const root = document.documentElement;
+  if (!sidebar || !toggleBtn) return;
+  toggleBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("collapsed");
+    const isCollapsed = sidebar.classList.contains("collapsed");
+    toggleBtn.innerHTML = isCollapsed ? "❯" : "❮";
+    root.style.setProperty("--sidebar-width", isCollapsed ? "50px" : "240px");
+    setTimeout(() => { window.dispatchEvent(new Event("resize")); }, 200);
+  });
+}
+
+/* =====================
+   Twitch API Data Fetching (unchanged, uses saved token)
+   ===================== */
+async function fetchAllFollowed(baseUrl, clientId, token) {
+  let allData = [];
+  let cursor = "";
+  try {
+    do {
+      let fetchUrl = baseUrl + (baseUrl.includes("?") ? "&" : "?") + (cursor ? `after=${cursor}&` : "") + `t=${Date.now()}`;
+      const response = await fetch(fetchUrl, {
+        headers: { "Client-ID": clientId, "Authorization": `Bearer ${token}` }
+      });
+      const json = await response.json();
+      if (json.data) allData = allData.concat(json.data);
+      cursor = json.pagination?.cursor || null;
+    } while (cursor);
+  } catch (e) { console.error("Fetch Loop Error:", e); }
+  return allData;
+}
+
+async function fetchUserAvatars(ids, clientId, token) {
+  const uniqueIds = [...new Set(ids)].filter(id => !cachedAvatars[id]);
+  if (uniqueIds.length === 0) return cachedAvatars;
+  for (let i = 0; i < uniqueIds.length; i += 100) {
+    const batch = uniqueIds.slice(i, i + 100);
+    const url = `https://api.twitch.tv/helix/users?id=${batch.join('&id=')}`;
+    const resp = await fetch(url, {
+      headers: { "Client-ID": clientId, "Authorization": `Bearer ${token}` }
+    });
+    const json = await resp.json();
+    if (json.data) json.data.forEach(user => { cachedAvatars[user.id] = user.profile_image_url; });
+  }
+  return cachedAvatars;
+}
+
+async function initFollowingList() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("twitchUser"));
+    if (!saved || !saved.token) {
+      console.log("No Twitch user logged in.");
+      // show empty UI / prompt to login
+      renderFollowingListUI([]);
+      renderLiveRecsUI([]);
+      return;
+    }
+
+    const userToken = saved.token;
+    let myId = saved.id;
+
+    // If ID missing for some reason, recover from Twitch
+    if (!myId) {
+      const userResponse = await fetch("https://api.twitch.tv/helix/users", {
+        headers: { "Client-ID": LOGIN_CLIENT_ID, "Authorization": "Bearer " + userToken }
+      });
+      if (!userResponse.ok) throw new Error("401 - Invalid token");
+      const userData = await userResponse.json();
+      if (!userData.data || !userData.data.length) throw new Error("Could not retrieve user info.");
+      myId = userData.data[0].id;
+      const newSave = { token: userToken, id: myId, username: userData.data[0].display_name, avatar: userData.data[0].profile_image_url };
+      localStorage.setItem("twitchUser", JSON.stringify(newSave));
+    }
+
+    // Fetch follows + live info
+    const [liveStreams, allFollows, topStreamsResp] = await Promise.all([
+      fetchAllFollowed(`https://api.twitch.tv/helix/streams/followed?user_id=${myId}&first=100`, LOGIN_CLIENT_ID, userToken),
+      fetchAllFollowed(`https://api.twitch.tv/helix/channels/followed?user_id=${myId}&first=100`, LOGIN_CLIENT_ID, userToken),
+      fetch(`https://api.twitch.tv/helix/streams?first=50`, { headers: { "Client-ID": APP_CLIENT_ID, "Authorization": `Bearer ${APP_TOKEN}` } }).then(r => r.json())
+    ]);
+
+    const followedIds = new Set(allFollows.map(f => f.broadcaster_id));
+    const liveMap = new Map(liveStreams.map(s => [s.user_id, s]));
+
+    currentFollowedData = allFollows.map(follow => ({
+      id: follow.broadcaster_id,
+      display_name: follow.broadcaster_name,
+      login: follow.broadcaster_login,
+      avatar: "",
+      live: liveMap.get(follow.broadcaster_id) || null
+    })).sort((a, b) => {
+      if (a.live && !b.live) return -1;
+      if (!a.live && b.live) return 1;
+      if (a.live && b.live) return b.live.viewer_count - a.live.viewer_count;
+      return a.display_name.localeCompare(b.display_name);
+    });
+
+    currentLiveRecsData = (topStreamsResp?.data || []).filter(stream => !followedIds.has(stream.user_id) && stream.user_id !== myId).map(stream => ({
+      id: stream.user_id,
+      display_name: stream.user_name,
+      login: stream.user_login,
+      avatar: "",
+      live: stream
+    })).slice(0, 20);
+
+    const allIdsToFetch = [...currentFollowedData.map(d => d.id), ...currentLiveRecsData.map(d => d.id)];
+    await fetchUserAvatars(allIdsToFetch, LOGIN_CLIENT_ID, userToken);
+    currentFollowedData.forEach(d => d.avatar = cachedAvatars[d.id] || "");
+    currentLiveRecsData.forEach(d => d.avatar = cachedAvatars[d.id] || "");
+
+    renderFollowingListUI(currentFollowedData);
+    renderLiveRecsUI(currentLiveRecsData);
+
+    // Categories
+    const gameIds = [...new Set(liveStreams.map(s => s.game_id))].filter(id => id);
+    if (gameIds.length > 0) await fetchLiveCategoryData(gameIds);
+
+  } catch (err) {
+    console.error("Sidebar Sync Error:", err);
+    if (String(err).includes("401")) {
+      localStorage.removeItem("twitchUser");
+      alert("Session expired. Please log in again.");
+    }
+  }
+}
+
+async function fetchLiveCategoryData(gameIds) {
+  try {
+    const gameResp = await fetch(`https://api.twitch.tv/helix/games?id=${gameIds.slice(0,15).join("&id=")}`, {
+      headers: { "Client-ID": APP_CLIENT_ID, "Authorization": `Bearer ${APP_TOKEN}` }
+    });
+    const gameJson = await gameResp.json();
+    currentCategoriesData = (gameJson.data || []).map(game => ({
+      name: game.name,
+      viewers: "Live",
+      img: game.box_art_url.replace("{width}", "188").replace("{height}", "250"),
+      rawViewers: 0
+    }));
+    renderCategoriesUI(currentCategoriesData);
+  } catch (e) { console.error("Category Error:", e); }
+}
+
+/* =====================
+   UI Rendering
+   ===================== */
+function renderFollowingListUI(list) {
+  const el = document.getElementById("followingList");
+  if (!el) return;
+  const items = list.slice(0, visibleFollowedCount);
+  el.innerHTML = items.map(item => generateChannelHTML(item)).join('');
+  updateToggleButtons('followed', list.length, visibleFollowedCount);
+}
+
+function renderLiveRecsUI(list) {
+  const el = document.getElementById("liveFollowingList");
+  if (!el) return;
+  const items = list.slice(0, visibleLiveRecsCount);
+  el.innerHTML = items.map(item => generateChannelHTML(item)).join('');
+  updateToggleButtons('live', list.length, visibleLiveRecsCount);
+}
+
+function renderCategoriesUI(list) {
+  const el = document.getElementById("recommendedCategoriesList");
+  if (!el) return;
+  const items = list.slice(0, visibleCategoriesCount);
+  el.innerHTML = items.map(cat => `
+    <div class="category-item" onclick="window.open('https://twitch.tv/directory/game/${encodeURIComponent(cat.name)}','_blank')">
+      <img src="${cat.img}" class="category-img" onerror="this.src='https://static-cdn.jtvnw.net/ttv-static/404_boxart-30x40.jpg'">
+      <div class="category-info">
+        <div class="category-top-row">
+          <span class="category-name-text">${cat.name}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  updateToggleButtons('categories', list.length, visibleCategoriesCount);
+}
+
+function generateChannelHTML(item) {
+  const isLive = !!item.live;
+  const vCount = isLive ? (item.live.viewer_count >= 1000 ? (item.live.viewer_count/1000).toFixed(1)+"K" : item.live.viewer_count) : "";
+  return `
+    <div class="channel-item ${isLive ? 'is-live' : 'is-offline'}" onclick="window.open('https://twitch.tv/${item.login}','_blank')">
+      <img src="${item.avatar}" class="channel-avatar" onerror="this.src='https://static-cdn.jtvnw.net/user-default-pictures-uv/ce577150-75ef-4ed3-b3d3-f6f4df39455d-profile_image-70x70.png'">
+      <div class="channel-info">
+        <div class="channel-top-row">
+          <span class="channel-name">${item.display_name}</span>
+          ${isLive ? `<span class="live-dot">● <span class="v-count">${vCount}</span></span>` : '<span class="offline-tag">Offline</span>'}
+        </div>
+        <span class="channel-game">${isLive ? item.live.game_name : 'Offline'}</span>
+      </div>
+    </div>
+  `;
+}
+
+/* ========== ADDON: toggleClips (user requested) ========== */
+function toggleClips() {
+    const clips = document.getElementById("clipsContainer");
+    if (!clips) return;
+    if (clips.style.display === "none" || clips.style.display === "") {
+        clips.style.display = "flex";
+    } else {
+        clips.style.display = "none";
+    }
+}
+/* ======================================================== */
+
+setInterval(initFollowingList, 60000);
+
+/* =====================
+   Twitch Player & Embeds (unchanged)
+   ===================== */
+function initTwitchEmbeds() {
+  const domain = window.location.hostname === "127.0.0.1" ? "localhost" : window.location.hostname;
+  try {
+    const player = new Twitch.Player("twitch-player", {
+      channel: TARGET_USERNAME,
+      parent: [domain],
+      width: "100%",
+      height: "100%",
+      autoplay: false,
+    });
+    player.setVolume(0.5);
+  } catch (err) { console.warn("Player init failed:", err); }
+
+  const chatIframe = document.getElementById("twitch-chat");
+  if (chatIframe) chatIframe.src = `https://www.twitch.tv/embed/${TARGET_USERNAME}/chat?parent=${domain}&darkpopout&theme=dark`;
+
+  // remaining per-stream fetch logic unchanged below...
+  const clientId = APP_CLIENT_ID;
+  const oauthToken = APP_TOKEN;
+  const username = TARGET_USERNAME;
+
+  const titleEl = document.getElementById("streamTitle");
+  const gameEl = document.getElementById("streamGame");
+  const viewerCountEl = document.getElementById("viewerCount");
+  const timerEl = document.getElementById("streamTimer");
+  const liveIndicator = document.querySelectorAll('#live-indicator');
+  const followerCountEl = document.getElementById("followerCount");
+  const bioTextEl = document.getElementById("bioText");
+
+  let streamSeconds = 0;
+  let interval = null;
+
+  async function checkLive() {
+    try {
+      const userResp = await fetch(`https://api.twitch.tv/helix/users?login=${username}`, {
+        headers: { "Client-ID": clientId, "Authorization": `Bearer ${oauthToken}` }
+      });
+      const userData = await userResp.json();
+      if (!userData.data || !userData.data.length) return;
+      const user = userData.data[0];
+      const userId = user.id;
+
+      if (bioTextEl && user.description) bioTextEl.textContent = user.description;
+      const avatarImg = document.querySelector('.bottom-avatar img');
+      if (avatarImg && user.profile_image_url) avatarImg.src = user.profile_image_url;
+
+      const followResp = await fetch(`https://api.twitch.tv/helix/channels/followers?broadcaster_id=${userId}`, {
+        headers: { "Client-ID": clientId, "Authorization": `Bearer ${oauthToken}` }
+      });
+      const followData = await followResp.json();
+      if (followerCountEl && followData.total !== undefined) followerCountEl.textContent = followData.total.toLocaleString();
+
+      const channelResp = await fetch(`https://api.twitch.tv/helix/channels?broadcaster_id=${userId}`, {
+        headers: { "Client-ID": clientId, "Authorization": `Bearer ${oauthToken}` }
+      });
+      const channelData = await channelResp.json();
+      if (channelData.data && channelData.data[0]) {
+        const channel = channelData.data[0];
+        if (titleEl) titleEl.textContent = channel.title || "";
+        if (gameEl) gameEl.textContent = channel.game_name || "";
+      }
+
+      const streamResp = await fetch(`https://api.twitch.tv/helix/streams?user_id=${userId}`, {
+        headers: { "Client-ID": clientId, "Authorization": `Bearer ${oauthToken}` }
+      });
+      const streamData = await streamResp.json();
+      const isLive = streamData.data && streamData.data.length > 0;
+      liveIndicator.forEach(el => { if (el) el.style.display = isLive ? "inline-block" : "none"; });
+
+      if (isLive) {
+        const stream = streamData.data[0];
+        updateViewers(stream.viewer_count || 0, true);
+        const started = new Date(stream.started_at);
+        streamSeconds = Math.floor((Date.now() - started.getTime()) / 1000);
+        startTimer();
+      } else {
+        stopTimer();
+        updateViewers(0, false);
+      }
+    } catch (err) {
+      console.error("Twitch API error:", err);
+    }
+  }
+
+  function startTimer() {
+    if (interval) return;
+    if (timerEl) timerEl.style.display = "inline";
+    interval = setInterval(() => {
+      streamSeconds++;
+      const h = String(Math.floor(streamSeconds / 3600)).padStart(2, "0");
+      const m = String(Math.floor((streamSeconds % 3600) / 60)).padStart(2, "0");
+      const s = String(streamSeconds % 60).padStart(2, "0");
+      if (timerEl) timerEl.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+  }
+  function stopTimer() {
+        if (interval) clearInterval(interval);
+        interval = null;
+        streamSeconds = 0;
+        if (timerEl) {
+            timerEl.textContent = "00:00:00";
+            timerEl.style.display = "none";
+        }
+    }
+
+    function updateViewers(count, isLive) {
+        if (viewerCountEl) {
+            viewerCountEl.textContent = `👤 ${count}`;
+            viewerCountEl.style.display = isLive ? "inline" : "none";
+        }
+    }
+
+  checkLive();
+  setInterval(checkLive, 30000);
+}
+</script>
+  </body>
+</html>

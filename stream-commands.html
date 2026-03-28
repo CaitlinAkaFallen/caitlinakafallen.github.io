@@ -7,365 +7,537 @@
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
         <link rel="icon" href="images/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" href="stream-commands.css" />
-          
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     </head>
+    
     <body>
-       <header>
-           <nav>
-                <a href="schedule.html" class="nav-link home-link">Schedule</a>
-                <a href="twitch.html" class="nav-link">Twitch</a>
-                <a href="youtube.html" class="nav-link youtube-link active-tab">YouTube</a>
-                <a href="kick.html" class="nav-link kick-link">Kick</a>
-           </nav>
-      </header>
+        <header style="background-image: url('images/guitar.jpg'); background-size: cover; background-position: center; height: 300px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
+        <div style="text-align: center; color: rgb(253, 244, 113); padding-top: 0;">
+            <h2>
+                Stream Commands
+            </h2>
+            <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
+                Get your chat commands here by clicking on them to copy to paste in the Twitch, YouTube, or Kick chat!
+            </h5>
+        </div>
+        </header>
 
+        <nav id="horizontal-nav" class="horizontal-nav">
+            <ul class="nav-list">
+                <li>
+                  <a href="schedule.html" class="nav-link home-link" title="Schedule">
+                    <i class="fa fa-calendar" aria-hidden="true"></i> 
+                  </a>
+                </li>
+                <li>            
+                <a href="twitch.html" class="nav-link twitch-link" title="Twitch">
+                    <i class="fab fa-twitch" aria-hidden="true"></i>
+                    <span class="sr-only"></span>
+                    <span id="live-indicator">LIVE</span>
+                </a>
+                </li>
+                <li>
+                  <a href="youtube.html" class="nav-link youtube-link active-tab" title="YouTube">
+                  <i class="fab fa-youtube" aria-hidden="true"></i>
+                    <span class="sr-only"></span>
+                  </a>
+                </li>
+                <li>  
+                <a href="kick.html" class="nav-link kick-link" title="Kick" aria-label="Kick">
+                    <i class="fab fa-kickstarter-k" aria-hidden="true"></i>
+                    <span class="sr-only"></span>
+                  </a>
+                </li>
+            </ul>
+            <div class="category-filter-container">
+                <label for="categorySelect">Filter by Category:</label>
+                    <select id="categorySelect" onchange="filterCommands()">
+                        <option value="all">All Categories</option>
+                        <option value="General Commands">General</option>
+                        <option value="Fun and Interaction">Fun</option>
+                        <option value="Game and Score Tracking">Game</option>
+                        <option value="Moderation and Utility">Moderation</option>
+                        <option value="Music and Entertainment">Music</option>
+                        <option value="Special Features">Special</option>
+                        <option value="Moderator Commands">Moderator</option>
+                        <option value="VIP Commands">VIP</option>
+                        <option value="Subscriber Commands">Subscriber</option>
+                        <option value="Follower Commands">Follower</option>
+                    </select>
+            </div>
+        </nav>
 
-        <h1>Stream Commands</h1>
-        <div class="command-sections">
-            <!-- General Commands -->
-            <div class="command-section">
+            
+
+       <div class="command-sections" id="commandsContainer">
+
+        <!-- General Commands -->
+            <div class="command-section" data-category="General Commands">
                 <h2>General Commands</h2>
                 <ul>
-                    <li class="command-item">
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!420</span>
                     <span class="command-description">Basic command example</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!accountage</span>
                     <span class="command-description">Displays your account age</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!HG</span>
-                    <span class="command-description">How  Much of Hungry Gremlin are you!</span>
-                    </li>
-                    <li class="command-item">
+                    <span class="command-description">How Much of Hungry Gremlin are you!</span>
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!adhd</span>
                     <span class="command-description">Shows ADHD info</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!birthday</span>
                     <span class="command-description">Displays birthday details</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!setbirthday (Use MM/DD)</span>
                     <span class="command-description">Set your birthday</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!resetbirthday (Mods only)</span>
                     <span class="command-description">Reset birthday info (mods only)</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!lurk</span>
                     <span class="command-description">Enter lurk mode</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!unlurk</span>
                     <span class="command-description">Exit lurk mode</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!summon</span>
                     <span class="command-description">Summon command</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!troll</span>
                     <span class="command-description">Troll a viewer</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!nospoiler</span>
                     <span class="command-description">Avoid spoilers</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!throne</span>
                     <span class="command-description">My Throne Wishlist</span>
-                    </li>
-                    <li class="command-item">
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!gribbish</span>
                     <span class="command-description">Words are Hard</span>
-                    </li>
+                </li>
                 </ul>
             </div>
 
             <!-- Fun & Interaction -->
-            <div class="command-section">
+            <div class="command-section" data-category="Fun and Interaction">
                 <h2>Fun and Interaction</h2>
-                <ul>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!battle</span>
-                    <span class="command-description">
-                        Choose a target for battle. For example: Fallen chooses the troll to fall into Despair.
-                    </span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!bonk</span>
-                    <span class="command-description">Bonk someone playfully</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!clip</span>
-                    <span class="command-description">Clip a moment from the stream</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!chaos</span>
-                    <span class="command-description">Unleash chaos in chat</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!dork</span>
-                    <span class="command-description">Send a playful insult</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!dungeon</span>
-                    <span class="command-description">Enter the dungeon</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!fart</span>
-                    <span class="command-description">Trigger a funny fart sound</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!hugs (@ someone)</span>
-                    <span class="command-description">Give someone a virtual hug</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!dadjokes</span>
-                    <span class="command-description">Tell a dad joke</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!donno</span>
-                    <span class="command-description">Express uncertainty</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!umbrella</span>
-                    <span class="command-description">Bring an umbrella</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!quote add</span>
-                    <span class="command-description">Add a new quote</span>
-                    </li>
-                </ul>
+            <ul>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!battle</span>
+                <span class="command-description">
+                    Choose a target for battle. For example: Fallen chooses the troll to fall into Despair.
+                </span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!bonk</span>
+                <span class="command-description">Bonk someone playfully</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">$clip</span>
+                <span class="command-description">Clip a moment from the stream</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!chaos</span>
+                <span class="command-description">Unleash chaos in chat</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!dork</span>
+                <span class="command-description">Send a playful insult</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!dungeon</span>
+                <span class="command-description">Enter the dungeon</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!fart</span>
+                <span class="command-description">Trigger a funny fart sound</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!hugs (@ someone)</span>
+                <span class="command-description">Give someone a virtual hug</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!dadjokes</span>
+                <span class="command-description">Tell a dad joke</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!donno</span>
+                <span class="command-description">Express uncertainty</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!umbrella</span>
+                <span class="command-description">Bring an umbrella</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">$add qotd</span>
+                <span class="command-description">Add a new quote</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">$delete qotd</span>
+                <span class="command-description">Remove a quote</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">$qotd</span>
+                <span class="command-description">Randomly selecta quote</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">$edit qotd</span>
+                <span class="command-description">Edit an existing quote</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!tarot</span>
+                <span class="command-description">Draw a tarot card</span>
+                </li>
+            </ul>
             </div>
 
+            
             <!-- Game & Score Tracking -->
-            <div class="command-section">
+                <div class="command-section" data-category="Game and Score Tracking">
                 <h2>Game and Score Tracking</h2>
-                <ul>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!deaths</span>
-                    <span class="command-description">Display death count</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!death-</span>
-                    <span class="command-description">Subtract a death</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!death+</span>
-                    <span class="command-description">Add a death</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!resedeaths</span>
-                    <span class="command-description">Reset death count</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!wins+</span>
-                    <span class="command-description">Increase win count</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!wins-</span>
-                    <span class="command-description">Decrease win count</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!resetwins</span>
-                    <span class="command-description">Reset wins</span>
-                    </li>
-                    <!-- Continue for additional tracking commands... -->
-                </ul>
+            <ul>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!deaths</span>
+                <span class="command-description">Display death count</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!death-</span>
+                <span class="command-description">Subtract a death</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!death+</span>
+                <span class="command-description">Add a death</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!resedeaths</span>
+                <span class="command-description">Reset death count</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!wins+</span>
+                <span class="command-description">Increase win count</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!wins-</span>
+                <span class="command-description">Decrease win count</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!resetwins</span>
+                <span class="command-description">Reset wins</span>
+                </li>
+            </ul>
             </div>
 
             <!-- Moderation & Utility -->
-            <div class="command-section">
-                <h2>Moderation and Utility</h2>
-                <ul>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!cuss-</span>
-                    <span class="command-description">Lower cuss count</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!cuss+</span>
-                    <span class="command-description">Increase cuss count</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!resetcuss</span>
-                    <span class="command-description">Reset cuss count</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!resetyawn</span>
-                    <span class="command-description">Reset yawn counter</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!subtier</span>
-                    <span class="command-description">Display subscriber tier</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">raid (no "!")</span>
-                    <span class="command-description">Initiate a raid</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!hidehr</span>
-                    <span class="command-description">Hide Heart Rate</span>
-                    </li>
-                </ul>
+            <div class="command-section" data-category="Moderation and Utility">
+            <h2>Moderation and Utility</h2>
+            <ul>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!cuss-</span>
+                <span class="command-description">Lower cuss count</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!cuss+</span>
+                <span class="command-description">Increase cuss count</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!resetcuss</span>
+                <span class="command-description">Reset cuss count</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!resetyawn</span>
+                <span class="command-description">Reset yawn counter</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!subtier</span>
+                <span class="command-description">Display subscriber tier</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">raid (no "!")</span>
+                <span class="command-description">Initiate a raid</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!hidehr</span>
+                <span class="command-description">Hide Heart Rate</span>
+                </li>
+            </ul>
             </div>
 
-            <!-- Music & Entertainment -->
-            <div class="command-section">
-                <h2>Music and Entertainment</h2>
-                <ul>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!play</span>
-                    <span class="command-description">Play the current track</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!pause</span>
-                    <span class="command-description">Pause the music</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!skip</span>
-                    <span class="command-description">Skip to the next song</span>
-                    </li>
-                </ul>
+
+                        <!-- Music & Entertainment -->
+            <div class="command-section" data-category="Music and Entertainment">
+            <h2>Music and Entertainment</h2>
+            <ul>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!play</span>
+                <span class="command-description">Play the current track</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!pause</span>
+                <span class="command-description">Pause the music</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!skip</span>
+                <span class="command-description">Skip to the next song</span>
+                </li>
+            </ul>
             </div>
 
-            <!-- Special Features -->
-            <div class="command-section">
-                  <h2>Special Features</h2>
-                  <ul>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!gametags</span>
-                    <span class="command-description">Show game tags</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!elgatoOn</span>
-                    <span class="command-description">Activate Elgato lighting</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!elgatoOff</span>
-                    <span class="command-description">Deactivate Elgato lighting</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!pr</span>
-                    <span class="command-description">Show PR information</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!hogwarts</span>
-                    <span class="command-description">Enter Hogwarts mode</span>
-                    </li>
-                    <li class="command-item">
+
+                        <!-- Special Features -->
+            <div class="command-section" data-category="Special Features">
+            <h2>Special Features</h2>
+            <ul>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!gametags</span>
+                <span class="command-description">Show game tags</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!elgatoOn</span>
+                <span class="command-description">Activate Elgato lighting</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!elgatoOff</span>
+                <span class="command-description">Deactivate Elgato lighting</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!pr</span>
+                <span class="command-description">Show PR information</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!hogwarts</span>
+                <span class="command-description">Enter Hogwarts mode</span>
+                </li>
+                <li class="command-item">
                     <span class="command-text" onclick="copyText(this)">!dnd (Choose a class)</span>
                     <span class="command-description">Start Dungeons and Dragons</span>
-                    </li>
-                    <li class="command-item">
-                      <div class="command-group">
-                        <span class="command-text" onclick="copyText(this)">!quiz</span><br>
-                        <span class="command-text" onclick="copyText(this)">!startquiz</span>
-                      </div>
-                      <span class="command-description">Begin a quiz session</span>
-                    </li>
-                    
-                    <li class="command-item">
-                      <div class="command-group">
-                        <span class="command-text" onclick="copyText(this)">!answerquiz</span><br>
-                        <span class="command-text" onclick="copyText(this)">!answer</span>
-                      </div>
-                      <span class="command-description">Submit your quiz answer</span>
-                    </li>
-                 </ul>
+                </li>
+                <li class="command-item">
+                <div class="command-group">
+                    <span class="command-text" onclick="copyText(this)">!quiz</span>
+                    <span class="command-text" onclick="copyText(this)">!startquiz</span>
+                    <span class="command-description">Begin a quiz session</span>
+                </div>
+                
+                </li>
+                <li class="command-item">
+                <div class="command-group">
+                    <span class="command-text" onclick="copyText(this)">!answerquiz</span>
+                    <span class="command-text" onclick="copyText(this)">!answer</span>
+                    <span class="command-description">Submit your quiz answer</span>
+                </div>
+                
+                </li>
+                <li class="command-item">
+                    <span class="command-text" onclick="copyText(this)">!stopquiz</span>
+                    <span class="command-description">End the quiz session</span>
+                </li>
+                <li class="command-item">
+                    <span class="command-text" onclick="copyText(this)">!leaderboard</span>
+                    <span class="command-description">Show quiz leaderboard</span>
+                </li>
+            </ul>
             </div>
 
-            <!-- Moderator Commands -->
-            <div class="command-section">
-                <h2>Moderator Commands</h2>
-                <ul>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">/ban</span>
-                    <span class="command-description">Ban a user</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">/timeout</span>
-                    <span class="command-description">Timeout a user</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">/clear</span>
-                    <span class="command-description">Clear the chat</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">/slowmode</span>
-                    <span class="command-description">Toggle slow mode</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">/raid</span>
-                    <span class="command-description">Initiate a raid</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!so</span>
-                    <span class="command-description">Shout out a user</span>
-                    </li>
-                </ul>
+
+                    <!-- Moderator Commands -->
+            <div class="command-section" data-category="Moderator Commands">
+            <h2>Moderator Commands</h2>
+            <ul>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">/ban</span>
+                <span class="command-description">Ban a user</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">/timeout</span>
+                <span class="command-description">Timeout a user</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">/clear</span>
+                <span class="command-description">Clear the chat</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">/slowmode</span>
+                <span class="command-description">Toggle slow mode</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">/raid</span>
+                <span class="command-description">Initiate a raid</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!so</span>
+                <span class="command-description">Shout out a user</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!grounded</span>
+                <span class="command-description">Grounding the user for 69 seconds</span>
+                </li>
+            </ul>
             </div>
 
             <!-- VIP Commands -->
-            <div class="command-section">
-                <h2>VIP Commands</h2>
-                <ul>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!highlight</span>
-                    <span class="command-description">Highlight a moment</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!roast</span>
-                    <span class="command-description">Send a playful roast</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!cheer</span>
-                    <span class="command-description">Cheer for the streamer</span>
-                    </li>
-                </ul>
+            <div class="command-section" data-category="VIP Commands">
+            <h2>VIP Commands</h2>
+            <ul>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!highlight</span>
+                <span class="command-description">Highlight a moment</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!roast</span>
+                <span class="command-description">Send a playful roast</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!cheer</span>
+                <span class="command-description">Cheer for the streamer</span>
+                </li>
+            </ul>
             </div>
 
-            <!-- Subscriber Commands -->
-            <div class="command-section">
-                <h2>Subscriber Commands</h2>
-                <ul>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!subemote</span>
-                    <span class="command-description">Use subscriber emotes</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!loyalty</span>
-                    <span class="command-description">Check loyalty points</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!emotes</span>
-                    <span class="command-description">List available emotes</span>
-                    </li>
-                </ul>
+
+                    <!-- Subscriber Commands -->
+            <div class="command-section" data-category="Subscriber Commands">
+            <h2>Subscriber Commands</h2>
+            <ul>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!subemote</span>
+                <span class="command-description">Use subscriber emotes</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!loyalty</span>
+                <span class="command-description">Check loyalty points</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!emotes</span>
+                <span class="command-description">List available emotes</span>
+                </li>
+            </ul>
             </div>
 
-            <!-- Follower Commands -->
-            <div class="command-section">
-                <h2>Follower Commands</h2>
-                <ul>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!followage</span>
-                    <span class="command-description">Display follow duration</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!social</span>
-                    <span class="command-description">Show social links</span>
-                    </li>
-                    <li class="command-item">
-                    <span class="command-text" onclick="copyText(this)">!latest</span>
-                    <span class="command-description">Show latest stream info</span>
-                    </li>
-                </ul>
+
+                    <!-- Follower Commands -->
+            <div class="command-section" data-category="Follower Commands">
+            <h2>Follower Commands</h2>
+            <ul>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!followage</span>
+                <span class="command-description">Display follow duration</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!social</span>
+                <span class="command-description">Show social links</span>
+                </li>
+                <li class="command-item">
+                <span class="command-text" onclick="copyText(this)">!latest</span>
+                <span class="command-description">Show latest stream info</span>
+                </li>
+            </ul>
             </div>
+
         </div>
+
+
+      <footer class="site-footer">
+        <div class="footer-content">
+              <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
+              <div class="footer-links">
+                  <a href="#" id="open-privacy">Privacy Policy</a>
+                  <a href="#" id="open-tos">Terms of Service</a>
+              </div>
+          </div>
+        </footer>
+
+        <!-- Terms of Service Glassy Modal -->
+        <div id="tos-modal" class="modal">
+          <div class="modal-content">
+              <span class="close">&times;</span>
+              <h2>Terms of Service</h2>
+              <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
+
+              <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
+
+              <h3>Changes to Terms</h3>
+              <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
+
+              <h3>Use of Website</h3>
+              <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
+              <ul>
+                  <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
+                  <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
+                  <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
+              </ul>
+
+              <h3>Intellectual Property</h3>
+              <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
+
+              <h3>Links to Other Websites</h3>
+              <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+
+              <h3>Disclaimer</h3>
+              <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
+
+              <h3>Governing Law</h3>
+              <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
+
+              <p><strong>Effective Date: August 13, 2025</strong></p>
+          </div>
+        </div>
+
+    <!-- Privacy Policy Glassy Modal -->
+    <div id="privacy-modal" class="modal">
+          <div class="modal-content">
+              <span class="close">&times;</span>
+              <h2>Privacy Policy</h2>
+
+              <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
+
+              <h3>Information We Collect</h3>
+              <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+              <h4>Information We Collect Directly From You:</h4>
+              <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+              <h4>Information We Collect Automatically:</h4>
+              <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
+
+              <h3>How We Use Your Information</h3>
+              <ul>
+                  <li>Provide and maintain our Website and its features.</li>
+                  <li>Improve our Website and develop new features.</li>
+                  <li>Communicate with you about services and updates.</li>
+                  <li>Analyze how users interact with our Website.</li>
+              </ul>
+
+              <h3>Disclosure of Your Information</h3>
+              <ul>
+                  <li>With your consent.</li>
+                  <li>To comply with legal obligations.</li>
+                  <li>To protect our rights and property.</li>
+              </ul>
+
+              <h3>Data Security</h3>
+              <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
+
+              <h3>Changes to This Policy</h3>
+              <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
+
+              <p><strong>Last updated: August 13, 2025</strong></p>
+          </div>
+    </div>
+
 
         <script src="stream-commands.js"></script>
     </body>

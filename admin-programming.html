@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Caitlin's Programming</title>
+      <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+      <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+      <link rel="stylesheet" href="admin-coding.css">
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+  </head>
+
+  <body class="admin-page">
+      <div class="loading-overlay" id="loading-overlay">
+          <div class="loading-spinner"></div>
+      </div>
+
+      <header class="site-header">
+          <div class="header-content">
+              <h1>Coding</h1>
+              <p>Explore various programming languages and projects.</p>
+          </div>
+      </header>
+
+  <!-- Horizontal Navigation Bar -->
+  <nav id="horizontal-nav" class="horizontal-nav">
+    <ul class="nav-list">
+      <li>
+         <a id="nav-mainpage" href="main-page.html">
+          <i class="fas fa-home"></i><span>Main Page</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-csharp" href="import-to-Streamerbot.html" class="nav-item">
+          <img src="images/csharp.png" alt="C# Icon" width="24" class="nav-icon">
+        </a>
+      </li>
+      <li>
+        <a id="nav-json" href="json-projects.html" class="nav-item">
+        <img src="images/json.png" alt="JSON Icon" width="24" class="nav-icon">
+        </a>
+      </li>
+      <li>
+        <a id="nav-streamerbot" href="https://streamer.bot/" class="nav-item">
+          <img src="images/streamer-bot.png" alt="Streamer.Bot" width="24" class="nav-icon">
+        </a>
+      </li>
+      <li>
+        <a id="nav-vscode" href="https://code.visualstudio.com/download" class="nav-item">
+          <img src="images/vscode.png" alt="VS Code" width="24" class="nav-icon">
+        </a>
+      </li>
+      <li>
+            <a id="nav-coding" href="viewer-programming.html">
+              <i class="fas fa-code"></i><span>Programming</span>
+            </a>
+          </li>
+      <li>
+        <a id="nav-art" href="viewer-art.html" class="nav-item">
+          <i class="fas fa-paint-brush"></i><span>Gallery</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-conventions" href="viewers-convention.html" class="nav-item">
+          <i class="fas fa-users"></i><span>Conventions</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-streaming" href="schedule.html" class="nav-item">
+          <i class="fas fa-video"></i><span>Content</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-about" href="about.html" class="nav-item">
+          <i class="fas fa-user"></i><span>About</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-contact" href="contact.html" class="nav-item">
+          <i class="fas fa-envelope"></i><span>Contact</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="content-wrapper">
+      <section class="announcements-section">
+          <h2>Announcements</h2>
+
+          <!-- Toggle Buttons -->
+          <div class="announcement-toggle" style="text-align:center; margin-bottom:20px;">
+              <button id="normal-announcements-btn" class="active-toggle">Normal Announcements</button>
+              <button id="release-announcements-btn">Release Announcements</button>
+          </div>
+
+          <!-- Announcement Form -->
+          <div class="announcement-form-container">
+              <form id="announcement-form">
+                  <div class="form-group">
+                      <label for="announcement-title">Title</label>
+                      <input type="text" id="announcement-title" name="title" placeholder="Enter announcement title">
+                  </div>
+
+                  <div class="form-group">
+                      <label for="announcement-link">Project Link</label>
+                      <input type="url" id="announcement-link" name="link" placeholder="https://example.com">
+                  </div>
+
+                  <!-- Release-only version field -->
+                  <div class="form-group release-only" style="display:none;">
+                      <label for="announcement-version">Version</label>
+                      <input type="text" id="announcement-version" name="version" placeholder="e.g., 1.0.0">
+                  </div>
+
+                  <!-- Notes -->
+                  <div class="form-group">
+                      <label for="announcement-notes">Notes</label>
+                      <textarea id="announcement-notes" name="notes" placeholder="Add any additional notes..." rows="4"></textarea>
+                  </div>
+
+                  <div class="form-actions">
+                      <button type="submit" id="add-announcement-btn">Add Announcement</button>
+                      <button type="button" id="edit-announcement-btn" class="hidden">Update Announcement</button>
+                  </div>
+              </form>
+          </div>
+
+          <!-- Announcement Lists -->
+          <div class="announcement-list-container">
+    
+    <div class="normal-announcements-container">
+        <h3>Normal Announcements</h3>
+        <ul id="normal-announcements-list" class="announcement-list" aria-live="polite"></ul>
+    </div>
+
+    <div class="release-announcements-container">
+        <h3>Release Announcements</h3>
+        <ul id="release-announcements-list" class="announcement-list" aria-live="polite"></ul>
+    </div>
+
+    <div class="form-actions"> 
+        <button type="button" id="delete-announcement" class="btn secondary danger hidden">Delete Selected</button>
+    </div>
+</div>
+      </section>
+  </main>
+
+
+
+    <footer class="site-footer">
+      <div class="footer-content">
+          <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
+          <div class="footer-links">
+              <a href="#" id="open-privacy">Privacy Policy</a>
+              <a href="#" id="open-tos">Terms of Service</a>
+          </div>
+      </div>
+  </footer>
+
+    <!-- Terms of Service Glassy Modal -->
+  <div id="tos-modal" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Terms of Service</h2>
+          <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
+
+          <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
+
+          <h3>Changes to Terms</h3>
+          <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
+
+          <h3>Use of Website</h3>
+          <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
+          <ul>
+              <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
+              <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
+              <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
+          </ul>
+
+          <h3>Intellectual Property</h3>
+          <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
+
+          <h3>Links to Other Websites</h3>
+          <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+
+          <h3>Disclaimer</h3>
+          <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
+
+          <h3>Governing Law</h3>
+          <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
+
+          <p><strong>Effective Date: August 13, 2025</strong></p>
+      </div>
+  </div>
+
+  <!-- Privacy Policy Glassy Modal -->
+  <div id="privacy-modal" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Privacy Policy</h2>
+
+          <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
+
+          <h3>Information We Collect</h3>
+          <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+          <h4>Information We Collect Directly From You:</h4>
+          <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+          <h4>Information We Collect Automatically:</h4>
+          <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
+
+          <h3>How We Use Your Information</h3>
+          <ul>
+              <li>Provide and maintain our Website and its features.</li>
+              <li>Improve our Website and develop new features.</li>
+              <li>Communicate with you about services and updates.</li>
+              <li>Analyze how users interact with our Website.</li>
+          </ul>
+
+          <h3>Disclosure of Your Information</h3>
+          <ul>
+              <li>With your consent.</li>
+              <li>To comply with legal obligations.</li>
+              <li>To protect our rights and property.</li>
+          </ul>
+
+          <h3>Data Security</h3>
+          <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
+
+          <h3>Changes to This Policy</h3>
+          <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
+
+          <p><strong>Last updated: August 13, 2025</strong></p>
+      </div>
+  </div>
+
+
+
+      <script src="admin-coding.js"></script>
+      <script src="annoucements.js"></script>
+
+  </body>
+
+</html>

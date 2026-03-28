@@ -1,114 +1,1623 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Caitlin's Creative Space</title>
-
-  <!-- Author Meta Tag -->
-  <meta name="author" content="Caitlin Ak Fallen">
-
-  <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
-  <meta property="og:title" content="Caitlin's Creative Space">
-  <meta property="og:description" content="Explore photography, digital art, code, and more by Caitlin.">
-  <meta property="og:image" content="https://caitlinakafallen.github.io/images/social-preview.jpg">
-  <meta property="og:url" content="https://caitlinakafallen.github.io/">
-  <meta property="og:type" content="website">
-  
-  <!-- Twitter / X Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Caitlin's Creative Space">
-  <meta name="twitter:description" content="Explore photography, digital art, code, and more by Caitlin.">
-  <meta name="twitter:image" content="https://caitlinakafallen.github.io/images/social-preview.jpg">
-  <meta name="twitter:url" content="https://caitlinakafallen.github.io/">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="style.css" />
-</head>
+        <!-- Author Meta Tag -->
+        <meta name="author" content="Caitlin Ak Fallen">
+        <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
+        <title>Welcome Page | Caitlin's Creative Space</title>
+
+        <!-- Open Graph Meta Tags (Facebook, Discord) -->
+        <meta property="og:title" content="Welcome Page | Caitlin's Creative Space">
+        <meta property="og:description" content="Explore photography, digital art, code, and more">
+        <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-welcomepage.jpg">
+        <meta property="og:url" content="https://caitlinscreativespace.xyz/">
+        <meta property="og:type" content="website">
+
+        <!-- Twitter / X Card -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Welcome Page | Caitlin's Creative Space">
+        <meta name="twitter:description" content="Explore photography, digital art, code, and more">
+        <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-welcomepage.jpg">
+
+        <!-- Instagram Card (Uses OG Tags) -->
+        <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-welcomepage.jpg">
+        <meta property="og:url" content="https://caitlinscreativespace.xyz/">
+        
+
+       <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+       <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+        <style>
+            /* =========================
+            Global Styles
+            ========================= */
+            body {
+            font-family: "Poppins", Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #000000);
+            overflow-x: hidden;
+            color: #fff;
+            }
+
+            /* =========================
+            Header
+            ========================= */
+            header {
+            background: url("images/main-page.JPG") no-repeat center center / cover;
+            height: 30vh;
+            min-height: 200px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            }
+
+            header::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(3px);
+            border-radius: 10px;
+            }
+
+            header div {
+            position: relative;
+            z-index: 2;
+            }
+
+            header h2 {
+            font-family: Georgia, serif;
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #fdf471;
+            text-shadow: 0 0 12px #000;
+            margin: 0;
+            }
+
+            header h5 {
+            font-family: Verdana, sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            margin-top: 10px;
+            color: #fff;
+            text-shadow: 0 0 8px #000;
+            }
+
+            /* =========================
+            Navigation Bar
+            ========================= */
+            .horizontal-nav {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            padding: 12px 0;
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+            scrollbar-width: none;
+            }
+
+            .horizontal-nav::-webkit-scrollbar { display: none; }
+
+            .nav-list {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            padding: 0;
+            margin: 0;
+            }
+
+            .nav-list li { display: flex; }
+
+            .nav-list a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease-in-out;
+            color: #f0f0f0;
+            }
+
+            .nav-list a i {
+            margin-right: 8px;
+            font-size: 20px;
+            color: #f0f0f0;
+            transition: color 0.3s ease;
+            }
+
+            .nav-list a:hover i {
+            color: #32f2f8; /* optional gradient effect handled via text above */
+            }
+
+            .nav-list a:hover {
+            -webkit-text-fill-color: transparent;
+            background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+            background-clip: text;
+            box-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
+            }
+            /* Login Button */
+            .login-btn {
+            background: linear-gradient(90deg, #7f00ff, #e100ff);
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.3s ease;
+            }
+            .login-btn:hover {
+            transform: scale(1.05);
+            }
+
+            /* Existing Modal Background */
+            .modal {
+                display: none; 
+                position: fixed;
+                z-index: 9999;
+                padding-top: 120px;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(6px);
+            }
+
+            /* Existing Modal Box (Glassy) */
+            .modal-content {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+                margin: auto;
+                padding: 25px;
+                border-radius: 15px;
+                width: 90%;
+                max-width: 400px;
+                text-align: center;
+                color: white;
+                animation: slideIn 0.3s ease;
+            }
+
+            /* --- Updated Terms & Privacy Modals --- */
+            #tos-modal .modal-content,
+            #privacy-modal .modal-content {
+                max-width: 800px;
+                width: 90%;
+                background: rgba(30, 30, 40, 0.85);
+                backdrop-filter: blur(12px);
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+                text-align: left;
+                padding: 35px 40px;
+                color: #f1f1f1;
+                line-height: 1.7;
+                overflow-y: auto;
+                max-height: 85vh;
+                transition: all 0.3s ease-in-out;
+            }
+
+            /* Headings inside TOS/Privacy */
+            #tos-modal h2, 
+            #privacy-modal h2 {
+                text-align: center;
+                color: #ff79c6;
+                font-size: 1.8rem;
+                margin-bottom: 25px;
+                letter-spacing: 0.5px;
+                text-shadow: 0 0 8px rgba(255, 121, 198, 0.6);
+            }
+
+            #tos-modal h3, 
+            #privacy-modal h3 {
+                color: #8be9fd;
+                margin-top: 25px;
+                font-size: 1.2rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+                padding-bottom: 6px;
+                text-shadow: 0 0 6px rgba(139, 233, 253, 0.4);
+            }
+
+            #tos-modal h4,
+            #privacy-modal h4 {
+                color: #50fa7b;
+                margin-top: 15px;
+                font-size: 1.1rem;
+                text-shadow: 0 0 5px rgba(80, 250, 123, 0.4);
+            }
+            .contact-email {
+                color: #ff79c6; /* neon pink tone */
+                font-weight: 600;
+                text-decoration: none;
+                transition: color 0.3s ease, text-shadow 0.3s ease;
+            }
+
+            .contact-email:hover {
+                color: #ffb3e6;
+                text-shadow: 0 0 8px rgba(255, 121, 198, 0.8);
+            }
+
+            /* Paragraph and text spacing */
+            #tos-modal p,
+            #privacy-modal p {
+                margin-bottom: 15px;
+                font-size: 0.98rem;
+            }
+
+            /* Lists inside modals */
+            #tos-modal ul, 
+            #privacy-modal ul {
+                margin-left: 25px;
+                list-style-type: disc;
+            }
+
+            #tos-modal li, 
+            #privacy-modal li {
+                margin-bottom: 10px;
+                font-size: 0.95rem;
+            }
+
+            /* Scrollbar styling for long text */
+            #tos-modal .modal-content::-webkit-scrollbar,
+            #privacy-modal .modal-content::-webkit-scrollbar {
+                width: 10px;
+            }
+
+            #tos-modal .modal-content::-webkit-scrollbar-thumb,
+            #privacy-modal .modal-content::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 10px;
+            }
+
+            #tos-modal .modal-content::-webkit-scrollbar-thumb:hover,
+            #privacy-modal .modal-content::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.6);
+            }
+
+            /* Close Button */
+            .close {
+                float: right;
+                font-size: 28px;
+                cursor: pointer;
+                color: #ccc;
+                transition: color 0.3s ease, transform 0.2s ease;
+            }
+            .close:hover {
+                color: #ff0080;
+                transform: scale(1.2);
+            }
+
+            /* Responsive tweaks for smaller screens */
+            @media (max-width: 600px) {
+                #tos-modal .modal-content,
+                #privacy-modal .modal-content {
+                    padding: 25px 20px;
+                    font-size: 0.95rem;
+                }
+
+                #tos-modal h2,
+                #privacy-modal h2 {
+                    font-size: 1.5rem;
+                }
+
+                #tos-modal h3,
+                #privacy-modal h3 {
+                    font-size: 1.1rem;
+                }
+            }
 
 
-  <body>
-    <header style="background-image: url('images/main-page.JPG'); background-size: cover; background-position: center; height: 300px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
-      <div style="text-align: center; color: rgb(253, 244, 113); padding-top: 0;">
-        <h2 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
-          Caitlin's Creative Space
-        </h2>
-        <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
-          Explore my world of creativity: photography, digital art, coding, and more!
-        </h5>
-      </div>
-    </header>
+            /* Social Buttons */
+            .social-login button {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+                border: none;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 600;
+                padding: 10px;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+
+            .twitch-btn { background: #9146ff; color: white; }
+            .discord-btn { background: #5865f2; color: white; }
+            .youtube-btn { background: #ff0000; color: white; }
+
+            .social-login button:hover {
+                opacity: 0.85;
+            }
+
+            .small-text {
+                font-size: 12px;
+                color: #ccc;
+            }
+            .small-text a {
+                color: #ff79c6;
+                text-decoration: none;
+            }
+            .small-text a:hover {
+                text-decoration: underline;
+            }
+
+            /* Optional fade-in animation for modals */
+            @keyframes slideIn {
+                from { transform: translateY(-40px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+
+    /* =========================
+   Twitch Login / User Display
+   ========================= */
+
+/* Hide elements by default */
+.hidden {
+    display: none !important;
+}
+
+/* Twitch login container inside modal */
+.twitch-login,
+.twitch-user {
+    text-align: center;
+    margin: 20px auto;
+}
+
+/* Twitch login button */
+.twitch-button {
+    background-color: #9146ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    width: 100%;
+    justify-content: center; /* center icon + text */
+}
+
+.twitch-button i {
+    font-size: 20px;
+}
+
+/* Twitch user avatar inside nav or modal */
+.twitch-user img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Logout button styling */
+.twitch-logout {
+    margin-left: 10px;
+    background: #444;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+/* Optional hover effects for Twitch button */
+.twitch-button:hover {
+    background-color: #772ce8;
+}
+
+/* =========================
+   Two-Column Layout (Responsive)
+   ========================= */
+.content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto;
+  flex-wrap: wrap; /* allows stacking on smaller screens */
+}
+
+/* Left Column (Top) */
+.main-content {
+  flex: 1;
+  min-width: 280px;
+  padding-bottom: 140px;
+}
+
+#content {
+  padding: 20px;
+  background: linear-gradient(135deg, #f2f3f8, #7e39ff);
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+#content h2 {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: rgb(92, 26, 245);
+}
+
+#content p {
+  font-family: Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(40, 40, 40);
+  margin-bottom: 12px;
+}
+
+/* Right Column (Top) */
+.main-updates {
+  flex: 1;
+  min-width: 280px;
+}
+
+#updates {
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff, #aaf380); /* Twitch purple */
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+#updates h2 {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: rgb(19, 245, 94);
+}
+
+#updates p {
+  font-family: Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(40, 40, 40);
+  margin-bottom: 12px;
+}
+
+/* =========================
+   Bottom Row
+   ========================= */
+.left-bottom-column,
+.right-bottom-column {
+  flex: 1;
+  min-width: 280px;
+}
+
+/* Tips (Bottom Left) */
+#tips {
+  padding: 20px;
+  background: linear-gradient(135deg, #e6f9ff, #00bcd4); /* Aqua style */
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+#tips h2 {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #008c99;
+}
+
+#tips p {
+  font-family: Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(30, 30, 30);
+  margin-bottom: 12px;
+}
+
+/* Extra Right (Bottom Right) */
+#extra-right {
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff, #ff4444); /* YouTube red */
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+#extra-right h2 {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #cc0000;
+}
+
+#extra-right p {
+  font-family: Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(40, 40, 40);
+  margin-bottom: 12px;
+}
+
+#extra-left {
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff, #3d58f3); /* YouTube red */
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+#extra-left h2 {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #3d58f3;
+}
+
+#extra-left p {
+  font-family: Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(40, 40, 40);
+  margin-bottom: 12px;
+}
+
+/* Twitch Subscriber (Bottom Right) */
+#twitch-subscriber {
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff, #4d2eff); /* Twitch Purple */
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+#twitch-subscriber h2 {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #9a41ff;
+  text-align: center;
+}
+
+#twitch-subscriber p {
+  font-family: Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(40, 40, 40);
+  margin-bottom: 12px;
+}
 
 
 
-    <!-- Horizontal Navigation Bar -->
-      <nav id="horizontal-nav" class="horizontal-nav">
-        <ul class="nav-list">
-          <li><a id="nav-coding" href="coding.html">
-            <img src="https://static.vecteezy.com/system/resources/previews/016/017/020/non_2x/transparent-coding-development-icon-free-png.png" alt="Coding" width="24"><span>Programming</span></a></li>
-          <li><a id="nav-art" href="viewer-art.html">
-            <img src="https://img.icons8.com/ios-filled/50/000000/paint-palette.png" alt="Art" width="24"><span>Gallery</span></a></li>
-          <li><a id="nav-about" href="about.html">
-            <img src="https://img.icons8.com/ios-filled/50/000000/user.png" alt="About Me" width="24"><span>About</span></a></li>
-          <li><a id="nav-conventions" href="viewers-convention.html">
-            <img src="https://img.icons8.com/ios-filled/50/000000/conference.png" alt="Conventions" width="24"><span>Conventions</span></a></li>
-          <li><a id="nav-contact" href="contact.html">
-            <img src="https://th.bing.com/th/id/R.e9bcb262e26ab650b202f61b56f52c4e?rik=tR85Dsc8A%2bmfCQ&pid=ImgRaw&r=0" alt="Contact" width="24"><span>Contact</span></a></li>
-          <li><a id="nav-streaming" href="schedule.html">
-            <img src="https://img.icons8.com/ios-filled/50/000000/comments.png" alt="Live Post" width="24"><span>Stream Platforms</span></a></li>
-        </ul>
-      </nav>
+#twitch-subscriber a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #721dfa;
+  background: rgba(144, 70, 255, 0); /* soft translucent purple */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+#twitch-subscriber a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(145, 70, 255, 0.3);
+}
 
 
 
-        <div class="main-content">
-          <main>
-            <section id="content">
-              <h2>Welcome</h2>
-              <p>Welcome to the Creative Space of My Mind! Step into a world where photography, digital art, coding, and endless creativity come together. Explore the unique projects, stories, and inspirations that shape my artistic journey. Let’s create something extraordinary together!</p>        
-              <p>Please select any Categories.</p>   
-            </section>   
-          </main>
+/* =========================
+   Responsive Layout
+   ========================= */
+@media screen and (max-width: 900px) {
+  .content-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .main-content,
+  .main-updates,
+  .left-bottom-column,
+  .right-bottom-column {
+    width: 100%;
+    max-width: 600px;
+    padding-bottom: 80px;
+  }
+}
+
+/* =========================
+   Collapsible Section Body
+   ========================= */
+.section-body {
+  transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
+  max-height: 1000px;
+  overflow: hidden;
+  opacity: 1;
+  padding: 10px 0;
+}
+
+.section-body.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
+}
+/* =========================
+   Responsive Layout
+   ========================= */
+@media screen and (max-width: 900px) {
+  .content-wrapper {
+    flex-direction: column;
+    align-items: stretch; /* makes them fill width */
+    gap: 20px;
+    width: 95%; /* use more space on mobile */
+    margin: 20px auto;
+  }
+
+  .main-content,
+  .main-updates,
+  .left-bottom-column,
+  .right-bottom-column {
+    width: 100%;
+    max-width: 100%; /* no artificial limit */
+    padding-bottom: 40px; /* less padding for mobile */
+  }
+
+  /* Headings a little smaller for phones */
+  #content h2,
+  #updates h2,
+  #tips h2,
+  #extra-right h2,
+  #extra-left h2,
+  #twitch-subscriber h2{
+    font-size: 22px;
+  }
+
+  /* Paragraphs scale for readability */
+  #content p,
+  #updates p,
+  #tips p,
+  #extra-right p,
+  #twitch-subscriber p{
+    font-size: 15px;
+    line-height: 1.5;
+  }
+}
+
+/* Extra tweak for very small phones (<= 480px) */
+@media screen and (max-width: 480px) {
+  .content-wrapper {
+    gap: 15px;
+    width: 100%;
+    margin: 15px auto;
+  }
+
+  #content,
+  #updates,
+  #tips,
+  #extra-right,
+  #extra-left,
+  #twitch-subscriber {
+    padding: 15px;
+  }
+
+  #content h2,
+  #updates h2,
+  #tips h2,
+  #extra-right h2,
+  #extra-left h2,
+  #twitch-subscriber h2{
+    font-size: 20px;
+  }
+
+  #content p,
+  #updates p,
+  #tips p,
+  #extra-right p,
+  #extra-left p,
+  #twitch-subscriber p {
+    font-size: 14px;
+  }
+}
+
+
+.toggle-icon {
+  margin-left: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+.toggle-icon.rotate {
+  transform: rotate(180deg); /* points up when open */
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 1024px) {
+  .section-body {
+    font-size: 15px;
+    padding: 8px 0;
+  }
+
+  .toggle-icon {
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .section-body {
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
+  .toggle-icon {
+    font-size: 14px;
+    margin-left: 6px;
+  }
+}
+
+            /* =========================
+            Site News
+            ========================= */
+            #site-news {
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            background: rgba(17, 17, 17, 0.014);
+            color: #eee;
+            border-radius: 10px;
+            margin: 10px auto;
+            max-width: 900px;
+            backdrop-filter: blur(10px);
+            }
+
+            .revamp-notice {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            background: transparent;
+            color: #f0f0f0;
+            font-size: 14px;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 5px;
+            }
+
+            .revamp-notice p {
+            display: inline-block;
+            padding-left: 100%;
+            animation: scrollNotice 90s linear infinite;
+            }
+
+            @keyframes scrollNotice {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+            }
+
+            /* =========================
+            Sleek Glassy Footer (Refined)
+            ========================= */
+            footer {
+            background: rgba(20, 20, 20, 0.164); /* glassy */
+            -webkit-backdrop-filter: blur(14px) saturate(160%);
+            backdrop-filter: blur(14px) saturate(160%);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            color: #eaeaea;
+            font-weight: 500;
+            text-align: center;
+            padding: 8px 10px; /* smaller padding */
+            position: fixed;
+            bottom: -80px; /* small default hidden offset */
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-height: 115px; /* prevents large expansion */
+            box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.35);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: bottom 0.5s ease-in-out, background 0.4s ease;
+            z-index: 9999;
+            border-radius: 12px 12px 0 0; /* rounded top */
+            }
+
+            footer:hover {
+            bottom: 0;
+            background: rgba(30, 30, 30, 0.7);
+            }
+
+            /* Footer Container */
+            .footer-container {
+            width: 100%;
+            max-width: 550px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin: 0 auto;
+            position: relative;
+            }
+
+            /* Footer Text */
+            .footer-container p {
+            font-size: 12px;
+            margin: 0;
+            color: #cfcfcf;
+            opacity: 0.85;
+            }
+
+
+            /* Social Links */
+            .socials {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 8px;
+            padding-bottom: env(safe-area-inset-bottom);
+            }
+
+            .social-link {
+            font-size: 22px;
+            color: #f5f5f5;
+            opacity: 0.85;
+            text-decoration: none;
+            transition: transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+            }
+
+            .social-link:hover {
+            transform: scale(1.2);
+            opacity: 1;
+            }
+
+             /* Social Hover Colors */ 
+            .social-link:nth-child(1):hover { color: #C13584; }  /* Instagram */
+            .social-link:nth-child(2):hover { color: #9146FF; }  /* Twitch */
+            .social-link:nth-child(3):hover { color: #FF0000; }  /* YouTube */
+            .social-link:nth-child(4):hover { color: #24f21d; }  /* Kick */
+            .social-link:nth-child(5):hover { color: #1DA1F2; }  /* Bluesky */
+            .social-link:nth-child(6):hover { color: #000; }     /* GitHub */
+            .social-link:nth-child(7):hover { color: #F96854; }  /* Patreon */
+            .social-link:nth-child(8):hover { color: #FF4500; }  /* Reddit */
+
+
+             /* ========================= Twitch LIVE indicator ========================= */
+        /* NOTE: The live indicator has been updated with a second block later in the CSS, 
+          I have ensured the final version below is the one used for the compiled result. */
+
+        /* Final version of live-indicator */
+        #live-indicator {
+          display: none; /* hidden by default */
+          margin-left: 6px;
+          font-size: 0.75rem;
+          font-weight: bold;
+          color: #ff0000;
+          text-shadow: 0 0 6px rgba(255, 0, 0, 0.8), 0 0 12px rgba(255, 0, 0, 0.6);
+          animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+          0% { opacity: 1; text-shadow: 0 0 6px rgba(255,0,0,0.9), 0 0 12px rgba(255,0,0,0.7); }
+          50% { opacity: 0.5; text-shadow: 0 0 3px rgba(255,0,0,0.6), 0 0 8px rgba(255,0,0,0.4); }
+          100% { opacity: 1; text-shadow: 0 0 6px rgba(255,0,0,0.9), 0 0 12px rgba(255,0,0,0.7); }
+        }
+            /* Responsive Adjustments */
+            @media screen and (max-width: 600px) {
+            footer {
+                bottom: -100px;
+                padding: 8px calc(10px + env(safe-area-inset-bottom));
+            }
+            .footer-container p { font-size: 10px; }
+            #search-bar { max-width: 100%; }
+            .social-link { font-size: 18px; }
+            }
+
+            @media screen and (max-width: 812px) and (orientation: landscape) {
+            footer { bottom: -80px; padding: 10px calc(12px + env(safe-area-inset-bottom)); }
+            .footer-container p { font-size: 11px; }
+            .social-link { font-size: 16px; }
+            }
+
+            @media screen and (min-width: 1025px) {
+            footer { height: auto; bottom: -90px; }
+            }
+
+        </style>
+    </head>
+        <body>
+                    <header style="background-image: url('images/main-page.JPG'); background-size: cover; background-position: center; height: 300px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
+                    <div style="text-align: center; color: rgb(253, 244, 113); padding-top: 0;">
+                        <h2 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
+                        Caitlin's Creative Space
+                        </h2>
+                        <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
+                        Explore my world of creativity: photography, digital art, coding, and more!
+                        </h5>
+                    </div>
+                    </header>
+
+           <!-- Horizontal Navigation Bar -->
+<nav id="horizontal-nav" class="horizontal-nav">
+    <ul class="nav-list">
+        <!-- Login Button -->
+        <li>
+            <a id="loginBtn" href="javascript:void(0)">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Social Accounts Login</span>
+            </a>
+        </li>
+
+        <!-- Hidden User Profile (shows after login) -->
+        <li id="userProfile" style="display:none;">
+            <a href="javascript:void(0)" style="display:flex; align-items:center;">
+                <img
+                    id="profilePic"
+                    src="images/default-avatar.png"
+                    alt="Profile Picture"
+                    style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;"
+                >
+                <span id="profileName" style="font-weight:600;"></span>
+            </a>
+            <button id="logoutBtn" style="margin-left:10px; padding:4px 8px; border:none; border-radius:6px; cursor:pointer;">Logout</button>
+        </li>
+    </ul>
+</nav>
+
+<!-- Modal Background -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Social Login Accounts</h2>
+        <p>Use your social media account to continue:</p>
+
+        <div class="social-login">
+            <!-- Twitch Login using your div structure -->
+            <div id="twitch-btn" class="auth-visible">
+                <button id="twitchLoginBtn" class="twitch-button">
+                    <i class="fab fa-twitch"></i> Continue with Twitch
+                </button>
+            </div>
+
+            <!-- Discord Login -->
+            <button class="discord-btn" id="discordLoginBtn">
+                <i class="fab fa-discord"></i> Continue with Discord
+            </button>
+
+            <!-- YouTube / Google Login -->
+            <button class="youtube-btn" id="youtubeLoginBtn">
+                <i class="fab fa-youtube"></i> Continue with YouTube
+            </button>
+            
         </div>
 
-       <footer>
-          <p>© 2025 Caitlin's Creative Space | All Rights Reserved</p> 
-      
-           <div class="footer-container">
-              <div class="footer-search">
-                <input type="text" placeholder="Search..." id="search-bar">
-                <button id="search-button">
-                  <i class="fa fa-search"></i>
-                </button>
-              </div>
-              <!-- Social Sidebar -->
-              <div id="social-sidebar" class="social">
-                  <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" class="social-link">
-                      <i class="fa-brands fa-instagram"></i>
-                  </a>
-                  <a href="https://www.twitch.tv/fallenoneart" target="_blank" class="social-link">
-                      <i class="fa-brands fa-twitch"></i>
-                  </a>
-                  <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" class="social-link">
-                      <i class="fa-brands fa-youtube"></i>
-                  </a>
-                  <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" class="social-link">
-                      <i class="fa-solid fa-cloud"></i> <!-- Bluesky doesn't have an official icon, so I used a cloud -->
-                  </a>
-                  <a href="https://twitter.com/CaitlinAkFallen" target="_blank" class="social-link x-twitter">
-                    <i class="fa-brands fa-x-twitter"></i>
-                  </a>
-                  <a href="https://github.com/CaitlinAkaFallen" target="_blank" class="social-link">
-                    <i class="fa-brands fa-github"></i>
-                  </a>
-                </div>
-    
+        <p class="small-text">
+            By continuing, you agree to our 
+            <a href="#" id="open-tos">Terms</a> and 
+            <a href="#" id="open-privacy">Privacy</a>.
+        </p>
+    </div>
+</div>
+
+                    <!-- Terms of Service Glassy Modal -->
+                    <div id="tos-modal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h2>Terms of Service</h2>
+                                <p>Welcome to <strong>Caitlin’s Creative Space</strong>. By accessing or using this website, you agree to the following Terms of Service (“Terms”). Please read them carefully before using the site.</p>
+
+                                <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree with any part of these Terms, you must not use the Website.</p>
+
+                                <h3>1. Changes to Terms</h3>
+                                <p>We may update or revise these Terms at any time. If any changes are significant, we will provide notice at least 30 days before the new Terms take effect. Your continued use of the Website after any updates constitutes your acceptance of the revised Terms.</p>
+
+                                <h3>2. Use of Website</h3>
+                                <p>You agree to use this Website only for lawful purposes and in a manner that does not infringe the rights of others or restrict their enjoyment of the Website.</p>
+                                <ul>
+                                    <li>You must not use the Website in any way that may damage, disable, or impair its operation or accessibility.</li>
+                                    <li>You must not engage in any unauthorized automated data collection (such as scraping or data mining) without prior written consent.</li>
+                                    <li>You must not use the Website to send spam, unsolicited messages, or harmful content.</li>
+                                </ul>
+
+                                <h3>3. Intellectual Property</h3>
+                                <p>All content, design, and functionality of <strong>Caitlin’s Creative Space</strong> — including but not limited to text, graphics, images, videos, and code — are the exclusive property of Caitlin’s Creative Space and its licensors. The Website is protected under copyright, trademark, and other intellectual property laws. You may not reproduce, redistribute, or modify any part of this Website without explicit written permission.</p>
+
+                                <h3>4. Links to Third-Party Websites</h3>
+                                <p>Our Website may include links to third-party sites or services that are not owned or controlled by Caitlin’s Creative Space. We are not responsible for the content, policies, or practices of any third-party websites. Visiting these links is at your own risk.</p>
+
+                                <h3>5. Disclaimer</h3>
+                                <p>Your use of the Website is at your own risk. The Website is provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis. We make no warranties or representations of any kind, express or implied, regarding the operation, reliability, or availability of the Website.</p>
+
+                                <h3>6. Limitation of Liability</h3>
+                                <p>To the fullest extent permitted by law, Caitlin’s Creative Space and its affiliates shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Website or any linked services.</p>
+
+                                <h3>7. Governing Law</h3>
+                                <p>These Terms are governed by and construed in accordance with the laws of the State of California, United States, without regard to its conflict of law principles.</p>
+
+                                <h3>8. Contact Information</h3>
+                                <p>
+                                    If you have any questions about these Terms, please contact us at:<br>
+                                    <a href="mailto:fallenonerart@gmail.com" class="contact-email">fallenonerart@gmail.com</a>
+                                </p>
+
+                                <p><strong>Effective Date:</strong> October 12, 2025</p>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Policy Glassy Modal -->
+                    <div id="privacy-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <h2>Privacy Policy</h2>
+
+                        <p>This Privacy Policy describes how Caitlin's Creative Space collects, uses, and protects information obtained from visitors to the website.</p>
+
+                        <h3>Information We Collect</h3>
+                        <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+
+                        <h4>Information We Collect Directly From You:</h4>
+                        <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+
+                        <h4>Information We Collect Automatically:</h4>
+                        <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This may include your IP address, browser type, operating system, pages viewed, links clicked, and timestamps of visits.</p>
+
+                        <h3>How We Use Your Information</h3>
+                        <ul>
+                            <li>Provide and maintain our Website and its features.</li>
+                            <li>Improve our Website and develop new tools and creative projects.</li>
+                            <li>Communicate with you about updates or inquiries.</li>
+                            <li>Analyze user interactions to enhance user experience.</li>
+                        </ul>
+
+                        <h3>Disclosure of Your Information</h3>
+                        <ul>
+                            <li>With your explicit consent.</li>
+                            <li>To comply with legal obligations.</li>
+                            <li>To protect our rights, intellectual property, and website security.</li>
+                        </ul>
+
+                        <h3>Content Ownership and Usage Restrictions</h3>
+                        <p>
+                            All content featured on this website — including but not limited to 
+                            photography, digital art, gallery works, and programming projects — 
+                            is the intellectual property of Caitlin's Creative Space. 
+                            Unauthorized use, reproduction, redistribution, or claiming of any 
+                            such materials as your own is strictly prohibited.
+                        </p>
+                        <p>
+                            If you use any of the mentioned works (photography, gallery, or programming content) 
+                            without permission, you will be subject to a formal <strong>Cease and Desist Letter</strong> 
+                            and potential legal action for copyright infringement.
+                        </p>
+
+                        <h3>Data Security</h3>
+                        <p>We implement reasonable security measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, or destruction.</p>
+
+                        <h3>Changes to This Policy</h3>
+                        <p>We may update this Privacy Policy periodically. Any significant updates will be posted on this page with a revised effective date.</p>
+
+                        <p><strong>Last Updated: October 12, 2025</strong></p>
+
+                        <p>If you have any questions regarding this Privacy Policy or content usage permissions, please contact us at:<br>
+                        <a href="mailto:fallenonerart@gmail.com" class="contact-email">fallenonerart@gmail.com</a></p>
+                    </div>
+                    </div>
+
+            <div class="content-wrapper">
+
+            <!-- Top Left Column -->
+            <div class="main-content">
+                <main>
+                <section id="content">
+                    <h2>
+                    Welcome 
+                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('content')"></i>
+                    </h2>
+                    <div class="section-body">
+                    <p>
+                        Welcome to the Creative Space of My Mind! Step into a world where
+                        photography, digital art, coding, and endless creativity come
+                        together. Explore the unique projects, stories, and inspirations
+                        that shape my artistic journey. Let’s create something extraordinary
+                        together!
+                    </p>
+                    <p>Please select any categories.</p>
+                    </div>
+                </section>
+                </main>
             </div>
+
+            <!-- Top Right Column -->
+            <div class="main-updates">
+                <main>
+                <section id="updates">
+                    <h2>
+                    Updates 
+                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('updates')"></i>
+                    </h2>
+                    <div class="section-body">
+                    <p>
+                        As this website continues to show improvement, new features and
+                        content will be added regularly. Stay tuned for the latest updates!
+                    </p>
+                    <p>
+                        Feel free to explore the different sections and reach out if you have
+                        any questions or suggestions. Your feedback is always welcome!
+                    </p>
+                    </div>
+                </section>
+                </main>
+            </div>
+
+            <!-- Bottom Left Column: Mobile Tips -->
+            <div class="left-bottom-column">
+                <main>
+                <section id="tips">
+                    <h2>
+                    Mobile Tips 
+                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('tips')"></i>
+                    </h2>
+                    <div class="section-body">
+                    <p>
+                        💡 Just to let you know: the horizontal navigation is scrollable — 
+                        swipe side to side to see more options!
+                    </p>
+                    </div>
+                </section>
+                </main>
+            </div>
+
+            <!-- Bottom Left Column: Website History -->
+            <div class="left-bottom-column">
+                <main>
+                <section id="extra-left">
+                    <h2>
+                    Website History
+                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('extra-left')"></i>
+                    </h2>
+                    <div class="section-body">
+                    <p>
+                        🌱 <strong>Caitlin’s Creative Space</strong> began as a single, simple page back in 
+                        <strong>November/December 2024</strong>. It was originally just a small idea — a place to 
+                        showcase my creative projects and coding experiments.
+                    </p>
+                    <p>
+                        💡 Over time, that one page started to grow — expanding into multiple sections featuring 
+                        my art, photography, coding tutorials, and streaming tools. Each new addition was built 
+                        from scratch with care and passion, reflecting my journey as a creator and developer.
+                    </p>
+                    <p>
+                        🌟 Today, it’s evolved into a full creative hub that continues to expand, blending 
+                        technology, art, and imagination — and there’s still more to come!
+                    </p>
+                    </div>
+                </section>
+                </main>
+            </div>
+
+            <!-- Bottom Right Column: Rules & Credits -->
+            <div class="right-bottom-column">
+                <main>
+                <section id="extra-right">
+                    <h2>
+                    Rules & Credits 
+                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('extra-right')"></i>
+                    </h2>
+                    <div class="section-body">
+                    <p>
+                        🚫 Please respect my work. Using any of my projects, designs, or code 
+                        as your own without giving credit is not allowed.  
+                    </p>
+                    <p>
+                        ✅ If you’d like to share or use something, make sure to properly 
+                        credit me: <strong>caitlinakafallen</strong>.
+                    </p>
+                    <p>
+                        💬 Collaboration is always welcome — just reach out before reusing or modifying 
+                        any of my projects. I love seeing how others build upon creative ideas, as long as 
+                        proper credit is given and the spirit of respect remains.
+                    </p>
+                    <p>
+                        🌐 All assets, layouts, and designs showcased here are created by me unless otherwise stated. 
+                        Any third-party tools, libraries, or plugins are credited where used.
+                    </p>
+                    <p>
+                        🪄 This site and its contents were built from the ground up with passion, creativity, 
+                        and transparency — please keep that same energy if you take inspiration from it!
+                    </p>
+                    </div>
+                </section>
+                </main>
+            </div>
+
+            <!-- Bottom Right Column: Twitch Subscriber Access -->
+            <div class="right-bottom-column">
+                <main>
+                <section id="twitch-subscriber">
+                    <h2>
+                    Twitch Subscriber
+                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('twitch-subscriber')"></i>
+                    </h2>
+                    <div class="section-body">
+                    <p>
+                        💜 This content is available for <strong>subscribers only</strong>.  
+                        Please subscribe to 
+                        <a href="https://twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer">
+                        FallenOneArt
+                        </a> 
+                        on Twitch to unlock exclusive access to bonus material, behind-the-scenes updates, 
+                        and special creative content.
+                    </p>
+                    <p>
+                        🌟 Being a subscriber not only supports my work — it also helps me continue 
+                        creating art, tools, and projects for everyone to enjoy. Thank you so much 
+                        for your support!
+                    </p>
+                    <p>
+                        🏆 Once subscribed, you’ll automatically gain access to subscriber-only sections, 
+                        features, or rewards when logged in through Twitch on this website.
+                    </p>
+                    </div>
+                </section>
+                </main>
+            </div>
+
+            </div>
+
+
+
+
+            <!-- Site News Section: comes after bulletin -->
+          <section id="site-news">
+            <div class="revamp-notice">
+              <p id="revamp-message">
+                ⚠️ This website is entering a revamp stage to improve eye-sight protection.
+                Eye strain can be bothersome, so some visual elements may temporarily change.
+                Also we are putting a login in with social media accounts for a more personalized experience.
+                Still in working progress of getting the profile pictures and names to show up correctly.
+                Thank you for your patience during this transition!
+                <br>
+                <strong>Date:</strong> <span id="revamp-date"></span>
+              </p>
+            </div>
+          </section>
+        </body>
+
+
+        <footer>
+                <p>© 2025 Caitlin's Creative Space | All Rights Reserved</p> 
+
+                <div class="footer-container">
+                    <!-- Social Sidebar -->
+                    <div id="social-sidebar" class="social">
+                        <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener" class="social-link" title="Instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                         <a href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener" class="social-link" title="Twitch">
+                               <span id="live-indicator">LIVE</span>
+                              <i class="fa-brands fa-twitch"></i>
+                          </a>
+                        <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener" class="social-link" title="YouTube">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                        <a href="https://kick.com/caitlinakafallen" target="_blank" rel="noopener" class="social-link" title="Kick">
+                              <i class="fa-brands fa-kickstarter-k"></i>
+                        </a>
+                        <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener" class="social-link" title="Bluesky">
+                            <i class="fa-brands fa-bluesky"></i>
+                        </a>
+                        <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener" class="social-link" title="GitHub">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                        <a href="https://patreon.com/FallenOneArt" target="_blank" rel="noopener" class="social-link" title="Patreon">
+                            <i class="fa-brands fa-patreon"></i>
+                        </a>
+                        <a href="https://www.reddit.com/user/CaitlinAkAFallen" target="_blank" rel="noopener" class="social-link" title="Reddit">
+                            <i class="fa-brands fa-reddit"></i>
+                        </a>
+                    </div>
+
+
+                </div>
         </footer>
-  </body>
-  <script src="script.js"></script>
-  
+
+        <script src="script.js"></script>
+            
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+
+    /* ===== REMOVE .HTML FROM URL ===== */
+    (function hideHtmlInURL() {
+        const pathname = window.location.pathname;
+        if (pathname.endsWith("/index.html")) {
+            // Replace URL in browser without reloading the page
+            window.history.replaceState({}, "", pathname.replace(".html", ""));
+        }
+    })();
+
+    /* ===== CLEAN OAUTH TOKENS FROM URL (Twitch / Discord / Google) ===== */
+    (function cleanOAuthFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+
+        if (hashParams.has("access_token")) {
+            sessionStorage.setItem("oauthAccessToken", hashParams.get("access_token"));
+            history.replaceState(null, "", window.location.pathname);
+        }
+
+        if (urlParams.has("code")) {
+            sessionStorage.setItem("discordAuthCode", urlParams.get("code"));
+            urlParams.delete("code");
+            const cleanURL = window.location.origin + window.location.pathname + (urlParams.toString() ? "?" + urlParams.toString() : "");
+            history.replaceState(null, "", cleanURL);
+        }
+    })();
+
+    /* ===== ELEMENTS ===== */
+    const loginBtn = document.getElementById("loginBtn");
+    const userProfile = document.getElementById("userProfile");
+    const profilePic = document.getElementById("profilePic");
+    const profileName = document.getElementById("profileName");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const twitchBtn = document.getElementById("twitchLoginBtn"); // Use the correct ID
+    const discordBtn = document.getElementById("discordLoginBtn");
+    const youtubeBtn = document.getElementById("youtubeLoginBtn");
+
+    const loginModal = document.getElementById("loginModal");
+    const tosModal = document.getElementById("tos-modal");
+    const privacyModal = document.getElementById("privacy-modal");
+    const tosLink = document.getElementById("open-tos");
+    const privacyLink = document.getElementById("open-privacy");
+    const closeButtons = document.querySelectorAll(".modal .close");
+
+    /* ===== USER PROFILE FUNCTIONS ===== */
+    function showUserProfile(user) {
+        if (!userProfile || !loginBtn) return;
+        profilePic.src = user.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+        profileName.textContent = user.name || "User";
+        userProfile.style.display = "flex";
+        loginBtn.style.display = "none";
+    }
+
+    function hideUserProfile() {
+        if (!userProfile || !loginBtn) return;
+        userProfile.style.display = "none";
+        loginBtn.style.display = "flex";
+    }
+
+    /* ===== LOAD SAVED USER ===== */
+    const savedUser = JSON.parse(localStorage.getItem("socialUser"));
+    if (savedUser) showUserProfile(savedUser);
+
+    // ===== Show/Hide LIVE indicator in navbar =====
+    const liveIndicator = document.getElementById("live-indicator");
+    const isLive = false; // 🔴 Change this dynamically or through an API if needed
+
+    if (liveIndicator) {
+        liveIndicator.style.display = isLive ? "inline" : "none";
+    }
+
+    /* ===== LOGOUT ===== */
+    logoutBtn?.addEventListener("click", () => {
+        localStorage.removeItem("socialUser");
+        localStorage.removeItem("twitchUser");
+        sessionStorage.removeItem("oauthAccessToken");
+        sessionStorage.removeItem("discordAuthCode");
+        hideUserProfile();
+        updateTwitchAuthUI(false);
+        hideAllProtected?.();
+    });
+
+    /* ===== TWITCH OAUTH CONFIG ===== */
+    const twitchClientId = "93zm8q03ri0840ul18y8e7owbl4y01";
+    const discordClientId = "1426998908164505600";
+    const googleClientId = "323446283951-pqq1ic2ivpnofmfrp7flc83iklc6tjp1.apps.googleusercontent.com";
+    const redirectUri = encodeURIComponent("https://caitlinscreativespace.xyz/main-page.html");
+    const broadcasterId = "fallenoneart";
+    const twitchScopes = "user:read:email user:read:subscriptions";
+
+    /* ===== UPDATE TWITCH AUTH UI ===== */
+    function updateTwitchAuthUI(isLoggedIn, username, avatarUrl) {
+        const loginDiv = document.getElementById('twitch-login');
+        const userDiv = document.getElementById('twitch-user');
+        const userNameSpan = document.getElementById('twitchUserName');
+        const userAvatarImg = document.getElementById('twitchUserAvatar');
+
+        if (isLoggedIn) {
+            loginDiv?.classList.replace('auth-visible', 'auth-hidden');
+            userDiv?.classList.replace('auth-hidden', 'auth-visible');
+            if (userNameSpan) userNameSpan.textContent = username;
+            if (userAvatarImg) userAvatarImg.src = avatarUrl || 'images/default-avatar.png';
+        } else {
+            loginDiv?.classList.replace('auth-hidden', 'auth-visible');
+            userDiv?.classList.replace('auth-visible', 'auth-hidden');
+            if (userNameSpan) userNameSpan.textContent = "";
+            if (userAvatarImg) userAvatarImg.src = "images/default-avatar.png";
+        }
+    }
+
+    /* ===== SOCIAL LOGIN BUTTONS ===== */
+    twitchBtn?.addEventListener("click", () => {
+        const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${twitchClientId}&redirect_uri=${redirectUri}&response_type=token&scope=${encodeURIComponent(twitchScopes)}`;
+        window.location.href = authUrl;
+    });
+
+    discordBtn?.addEventListener("click", () => {
+        window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify%20email`;
+    });
+
+    youtubeBtn?.addEventListener("click", () => {
+        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${redirectUri}&response_type=token&scope=profile%20email`;
+    });
+
+    /* ===== TWITCH API FUNCTIONS ===== */
+    async function checkSubscriptionStatus(userId, token) {
+        try {
+            const res = await fetch(`https://api.twitch.tv/helix/subscriptions/user?broadcaster_id=${broadcasterId}&user_id=${userId}`, {
+                headers: { Authorization: `Bearer ${token}`, "Client-Id": twitchClientId }
+            });
+            if (!res.ok) throw new Error("Subscription check failed");
+            const data = await res.json();
+            return data.data && data.data.length > 0;
+        } catch (err) {
+            console.error("Subscription check error:", err);
+            return false;
+        }
+    }
+
+    async function fetchTwitchUserAndVerify(token) {
+        try {
+            const res = await fetch("https://api.twitch.tv/helix/users", {
+                headers: { Authorization: `Bearer ${token}`, "Client-Id": twitchClientId }
+            });
+            if (!res.ok) throw new Error("Invalid token");
+            const user = (await res.json()).data[0];
+            const twitchUserData = { name: user.display_name, avatar: user.profile_image_url, id: user.id };
+            localStorage.setItem("twitchUser", JSON.stringify(twitchUserData));
+            updateTwitchAuthUI(true, twitchUserData.name, twitchUserData.avatar);
+            showUserProfile(twitchUserData);
+
+            const isSub = await checkSubscriptionStatus(user.id, token);
+            if (isSub) showProtectedContent?.();
+            else showSubscriberMessage?.();
+        } catch (err) {
+            console.error("Twitch auth error:", err);
+            localStorage.removeItem("twitch_access_token");
+            localStorage.removeItem("twitchUser");
+            updateTwitchAuthUI(false);
+            hideAllProtected?.();
+        }
+    }
+
+    /* ===== DETECT LOGIN SOURCE ===== */
+    async function detectLoginSource() {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get("access_token");
+        const discordCode = sessionStorage.getItem("discordAuthCode");
+        const savedUser = JSON.parse(localStorage.getItem("socialUser"));
+
+        if (savedUser) return showUserProfile(savedUser);
+
+        // Twitch
+        if (accessToken && window.location.href.includes("twitch")) {
+            localStorage.setItem("twitch_access_token", accessToken);
+            window.location.hash = "";
+            await fetchTwitchUserAndVerify(accessToken);
+        }
+
+        // Discord (simulated)
+        if (discordCode) {
+            const user = { name: "Discord User", avatar: "https://cdn.discordapp.com/embed/avatars/0.png", platform: "discord" };
+            localStorage.setItem("socialUser", JSON.stringify(user));
+            showUserProfile(user);
+            sessionStorage.removeItem("discordAuthCode");
+        }
+
+        // Google / YouTube
+        if (accessToken && (window.location.href.includes("google") || window.location.href.includes("youtube"))) {
+            try {
+                const res = await fetch("https://www.googleapis.com/oauth2/v1/userinfo?alt=json", {
+                    headers: { "Authorization": `Bearer ${accessToken}` }
+                });
+                const data = await res.json();
+                const user = { name: data.name, avatar: data.picture, platform: "google" };
+                localStorage.setItem("socialUser", JSON.stringify(user));
+                showUserProfile(user);
+                history.replaceState(null, "", window.location.pathname);
+            } catch (err) { console.error("Google login error:", err); }
+        }
+    }
+    detectLoginSource();
+
+    /* ===== MODAL HANDLING ===== */
+    loginBtn?.addEventListener("click", () => (loginModal.style.display = "flex"));
+
+    tosLink?.addEventListener("click", (e) => {
+        e.preventDefault();
+        loginModal.style.display = "none";
+        tosModal.style.display = "block";
+    });
+
+    privacyLink?.addEventListener("click", (e) => {
+        e.preventDefault();
+        loginModal.style.display = "none";
+        privacyModal.style.display = "block";
+    });
+
+    closeButtons.forEach(btn => {
+        btn.addEventListener("click", () => btn.closest(".modal").style.display = "none");
+    });
+
+    window.addEventListener("click", (e) => {
+        [loginModal, tosModal, privacyModal].forEach(modal => { if (e.target === modal) modal.style.display = "none"; });
+    });
+
+    /* ===== AUTO-DETECT TODAY'S DATE ===== */
+    const today = new Date();
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    const dateElement = document.getElementById("revamp-date");
+    if (dateElement) dateElement.textContent = today.toLocaleDateString(undefined, options);
+
+    /* ===== SECTION TOGGLE ===== */
+    window.toggleSection = function(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (!section) return;
+        const body = section.querySelector(".section-body");
+        const icon = section.querySelector(".toggle-icon");
+        if (body && icon) {
+            body.classList.toggle("collapsed");
+            icon.classList.toggle("rotate");
+        }
+    };
+});
+</script>
+
+
+
 </html>
