@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchAnnouncements() {
         try {
             // We fetch from the API route defined in your Node.js server
-            const response = await fetch('/api/announcements');
+            const response = await fetch('https://caitlins-creativespace-api.onrender.com/api/announcements');
             if (!response.ok) throw new Error('Network response was not ok');
             
             const allAnnouncements = await response.json();

@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const allAnnouncements = [...normal, ...release];
 
         try {
-            const response = await fetch('/update-announcements', {
+            const response = await fetch('https://caitlins-creativespace-api.onrender.com/api/announcements', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(allAnnouncements) 
