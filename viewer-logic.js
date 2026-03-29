@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadAnnouncements() {
         try {
             // Fetch with cache-busting
-            const response = await fetch(`https://caitlins-creativespace-api.onrender.com/api/announcements?t=${Date.now()}`);
+            const response = await fetch(`/announcements.json?t=${Date.now()}`);
             if (!response.ok) throw new Error('File not found');
             const data = await response.json();
 

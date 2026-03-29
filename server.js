@@ -31,16 +31,20 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname));
 
 // ===== Page Routing =====
-app.get('/admin-programming', (req, res) => {
+
+// Accepts both the clean URL and the .html extension
+app.get(['/admin-programming', '/admin-programming.html'], (req, res) => {
     res.sendFile(path.join(__dirname, 'admin-programming.html'));
 });
 
-app.get('/programming', (req, res) => {
-    res.sendFile(path.join(__dirname, 'programming.html')); // ✅ correct
+// Accepts both the clean URL and the .html extension
+app.get(['/programming', '/programming.html'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'programming.html')); 
 });
 
+// Root URL defaults to the viewer page
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'programming.html')); // ✅ fix this too
+    res.sendFile(path.join(__dirname, 'programming.html')); 
 });
 
 // ===== API Routes =====

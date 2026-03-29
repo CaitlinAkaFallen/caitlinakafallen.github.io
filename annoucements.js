@@ -1,11 +1,11 @@
 /**
  * announcements.js
- * Handled by: Viewer-programming.html
+ * Handled by: programming.html
  * Purpose: Fetch the global JSON data and display it to users.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // These IDs must match your Viewer-programming.html containers
+    // These IDs must match your programming.html containers
     const normalContainer = document.getElementById('normal-announcements-list');
     const releaseContainer = document.getElementById('release-announcements-list');
 

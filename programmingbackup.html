@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+
+  <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Caitlin's Programming</title>
@@ -27,13 +28,18 @@
       <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet"/>
       <link rel="stylesheet" href="admin-coding.css">
   </head>
-<body class="viewer-page">
-    <header class="site-header">
-        <div class="header-content">
-            <h1>Coding Announcements</h1>
-            <p>The latest updates on projects and releases.</p>
-        </div>
-    </header>
+
+  <body>
+      <div class="loading-overlay" id="loading-overlay">
+          <div class="loading-spinner"></div>
+      </div>
+
+      <header class="site-header">
+          <div class="header-content">
+              <h1>Coding</h1>
+              <p>Explore various programming languages and projects.</p>
+          </div>
+      </header>
 
  <nav id="horizontal-nav" class="horizontal-nav">
   <ul class="nav-list">
@@ -42,72 +48,60 @@
         <i class="fas fa-home"></i><span>Main Page</span>
       </a>
     </li>
-
     <li>
       <a id="nav-csharp" href="import-to-streamerbot.html" class="nav-item">
         <img src="images/csharp.png" alt="C# Icon" width="24" class="nav-icon">
       </a>
     </li>
-
     <li>
       <a id="nav-json" href="json-projects.html" class="nav-item">
         <img src="images/json.png" alt="JSON Icon" width="24" class="nav-icon">
       </a>
     </li>
-
     <li>
       <a id="nav-streamerbot" href="https://streamer.bot/" class="nav-item">
         <img src="images/streamer-bot.png" alt="Streamer.Bot" width="24" class="nav-icon">
       </a>
     </li>
-
     <li>
       <a id="nav-vscode" href="https://code.visualstudio.com/download" class="nav-item">
         <img src="images/vscode.png" alt="VS Code" width="24" class="nav-icon">
       </a>
     </li>
-
+    
+    <li>
+      <a id="nav-admin-coding" href="admin-programming.html">
+        <i class="fas fa-code"></i><span>Programming</span>
+      </a>
+    </li>
+  
     <li>
       <a id="nav-streaming" href="schedule.html" class="nav-item">
         <i class="fas fa-video"></i><span>Content</span>
       </a>
     </li>
-
     <li>
       <a id="nav-contact" href="contact.html" class="nav-item">
         <i class="fas fa-envelope"></i><span>Contact</span>
       </a>
     </li>
-
-    <!-- 🔐 This is the protected link -->
-    <li>
-      <a id="nav-coding" href="admin-programming.html">
-        <i class="fas fa-lock"></i><span>Programming</span>
-      </a>
-    </li>
   </ul>
 </nav>
+  <div class="announcement-toggle">
+      <section class="announcements-section">
+          <div class="announcement-toggle-buttons">
+              <button id="normal-announcements-btn" class="active-toggle">Normal Announcements</button>
+              <button id="release-announcements-btn">Release Announcements</button>
+          </div>
 
-    <main class="content-wrapper">
-        <section class="announcements-section">
-            <div class="announcement-toggle">
-                <button id="normal-announcements-btn" class="active-toggle">Normal</button>
-                <button id="release-announcements-btn">Releases</button>
-            </div>
-
-            <div class="announcement-list-container">
-                <div id="normal-container" class="normal-announcements-container active">
-                    <h3>Current Updates</h3>
-                    <ul id="normal-announcements-list" class="announcement-list"></ul>
-                </div>
-
-                <div id="release-container" class="release-announcements-container">
-                    <h3>Version Releases</h3>
-                    <ul id="release-announcements-list" class="announcement-list"></ul>
-                </div>
-            </div>
-        </section>
-    </main>
+          <div class="announcement-list-container">
+              <h3 id="announcement-heading">Normal Announcements</h3>
+              <ul id="announcement-list" class="announcement-list" aria-live="polite">
+                  <!-- Announcements will load here -->
+              </ul>
+          </div>
+      </section>
+  </div>
 
     <footer class="site-footer">
       <div class="footer-content">
@@ -196,6 +190,9 @@
   </div>
 
 
-    <script src="viewer-logic.js"></script>
-</body>
+
+      <script src="viewer-logic.js"></script>
+
+  </body>
+
 </html>
