@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Caitlin's Programming</title>
+
+    <meta property="og:title" content="Programming & Automation | Caitlin's Creative Space">
+    <meta property="og:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
+    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
+    <meta property="og:url" content="https://caitlinscreativespace.xyz/programming.html">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Programming & Automation - Caitlin's Creative Space">
+    <meta name="twitter:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
+    <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
+
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="admin-coding.css">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="admin-page">
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <header class="site-header">
+        <div class="header-content">
+            <h1>Coding Admin Panel</h1>
+            <p>Manage announcements and project updates live.</p>
+        </div>
+    </header>
+
+    <nav id="horizontal-nav" class="horizontal-nav">
+        <ul class="nav-list">
+            <li>
+                <a id="nav-mainpage" href="main-page.html">
+                    <i class="fas fa-home"></i><span>Main Page</span>
+                </a>
+            </li>
+            <li>
+                <a id="nav-csharp" href="import-to-Streamerbot.html" class="nav-item">
+                    <img src="images/csharp.png" alt="C#" width="24" class="nav-icon">
+                </a>
+            </li>
+            <li>
+                <a id="nav-json" href="json-projects.html" class="nav-item">
+                    <img src="images/json.png" alt="JSON" width="24" class="nav-icon">
+                </a>
+            </li>
+            <li>
+                <!-- FIXED: Pointing to programming.html -->
+                <a id="nav-coding" href="programming.html" class="active">
+                    <i class="fas fa-code"></i><span>Programming</span>
+                </a>
+            </li>
+            <li>
+                <a id="nav-art" href="viewer-art.html" class="nav-item">
+                    <i class="fas fa-paint-brush"></i><span>Gallery</span>
+                </a>
+            </li>
+            <li>
+                <a id="nav-conventions" href="viewers-convention.html" class="nav-item">
+                    <i class="fas fa-users"></i><span>Conventions</span>
+                </a>
+            </li>
+            <li>
+                <a id="nav-streaming" href="schedule.html" class="nav-item">
+                    <i class="fas fa-video"></i><span>Content</span>
+                </a>
+            </li>
+            <li>
+                <a id="nav-about" href="about.html" class="nav-item">
+                    <i class="fas fa-user"></i><span>About</span>
+                </a>
+            </li>
+            <li>
+                <a id="nav-contact" href="contact.html" class="nav-item">
+                    <i class="fas fa-envelope"></i><span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="content-wrapper">
+        <section class="announcements-section">
+            <h2>Manage Announcements</h2>
+
+            <div class="announcement-toggle" style="text-align:center; margin-bottom:20px;">
+                <button id="normal-announcements-btn" class="active-toggle">Normal</button>
+                <button id="release-announcements-btn">Releases</button>
+            </div>
+
+            <div class="announcement-form-container">
+                <form id="announcement-form">
+                    <div class="form-group">
+                        <label for="announcement-title">Title</label>
+                        <input type="text" id="announcement-title" name="title" placeholder="Enter title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="announcement-link">Project Link</label>
+                        <input type="url" id="announcement-link" name="link" placeholder="https://caitlinscreativespace.xyz/project">
+                    </div>
+
+                    <div class="form-group release-only" style="display:none;">
+                        <label for="announcement-version">Version</label>
+                        <input type="text" id="announcement-version" name="version" placeholder="e.g., 1.0.0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="announcement-notes">Notes</label>
+                        <textarea id="announcement-notes" name="notes" placeholder="Details..." rows="4"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="add-announcement-btn">Add Announcement</button>
+                        <button type="button" id="edit-announcement-btn" style="display:none;">Update</button>
+                        <button type="button" id="delete-announcement" style="display:none;" class="danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="announcement-list-container">
+                <div class="normal-announcements-container active">
+                    <h3>Normal Announcements</h3>
+                    <ul id="normal-announcements-list" class="announcement-list"></ul>
+                </div>
+
+                <div class="release-announcements-container">
+                    <h3>Release Announcements</h3>
+                    <ul id="release-announcements-list" class="announcement-list"></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Caitlin's Creative Space | <a href="#" id="open-privacy">Privacy</a> | <a href="#" id="open-tos">TOS</a></p>
+    </footer>
+
+    <div id="tos-modal" class="modal"><div class="modal-content"><span class="close">&times;</span><h2>TOS</h2><p>Your TOS Content...</p></div></div>
+    <div id="privacy-modal" class="modal"><div class="modal-content"><span class="close">&times;</span><h2>Privacy</h2><p>Your Privacy Content...</p></div></div>
+
+    <script src="admin-coding.js"></script>
+    
+    <!-- Added a quick URL fixer to kill the ghost redirect -->
+    <script>
+        if (window.location.pathname.includes('viewer-programming')) {
+            window.location.replace('https://caitlinscreativespace.xyz/programming.html');
+        }
+    </script>
+</body>
+</html>
