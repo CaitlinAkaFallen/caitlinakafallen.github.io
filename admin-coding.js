@@ -42,19 +42,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // SYNC TO SERVER: Sends full list to your backend to update announcements.json
-    
-        async function syncToServer() {
-            const normal = getStoredAnnouncements('normal');
-            const release = getStoredAnnouncements('release');
-            const allAnnouncements = [...normal, ...release];
+    async function syncToServer() {
+        const normal = getStoredAnnouncements('normal');
+        const release = getStoredAnnouncements('release');
+        const allAnnouncements = [...normal, ...release];
 
-            try {
-                // RIGHT HERE: You already updated this to your Render URL! ✅
-                const response = await fetch('https://caitlins-creativespace-api.onrender.com/api/announcements', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(allAnnouncements) 
-                });
+        try {
+            const response = await fetch('https://caitlins-creativespace-api.onrender.com/api/announcements', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(allAnnouncements) 
+            });
 
             if (response.ok) {
                 console.log("✅ Server updated successfully!");
