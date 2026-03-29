@@ -175,5 +175,3 @@ function toggleSection(sectionId) {
     body.classList.toggle("collapsed");
     icon.classList.toggle("rotate");
 }
-
-
