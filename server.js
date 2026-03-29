@@ -36,11 +36,11 @@ app.get('/admin-programming', (req, res) => {
 });
 
 app.get('/programming', (req, res) => {
-    res.sendFile(path.join(__dirname, 'viewer-programming.html'));
+    res.sendFile(path.join(__dirname, 'programming.html')); // ✅ correct
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'viewer-programming.html'));
+    res.sendFile(path.join(__dirname, 'programming.html')); // ✅ fix this too
 });
 
 // ===== API Routes =====
