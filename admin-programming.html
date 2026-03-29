@@ -5,10 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Caitlin's Programming</title>
+
+    <meta property="og:title" content="Programming & Automation | Caitlin's Creative Space">
+    <meta property="og:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
+    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
+    <meta property="og:url" content="https://caitlinscreativespace.xyz/programming.html">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Programming & Automation - Caitlin's Creative Space">
+    <meta name="twitter:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
+    <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
+
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="admin-coding.css">
-    <!-- Updated Font Awesome to a stable version -->
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 
@@ -24,7 +36,6 @@
         </div>
     </header>
 
-    <!-- Horizontal Navigation Bar -->
     <nav id="horizontal-nav" class="horizontal-nav">
         <ul class="nav-list">
             <li>
@@ -79,13 +90,11 @@
         <section class="announcements-section">
             <h2>Manage Announcements</h2>
 
-            <!-- Toggle Buttons -->
             <div class="announcement-toggle" style="text-align:center; margin-bottom:20px;">
                 <button id="normal-announcements-btn" class="active-toggle">Normal</button>
                 <button id="release-announcements-btn">Releases</button>
             </div>
 
-            <!-- Announcement Form -->
             <div class="announcement-form-container">
                 <form id="announcement-form">
                     <div class="form-group">
@@ -116,7 +125,6 @@
                 </form>
             </div>
 
-            <!-- List Display -->
             <div class="announcement-list-container">
                 <div class="normal-announcements-container active">
                     <h3>Normal Announcements</h3>
@@ -135,11 +143,9 @@
         <p>&copy; 2026 Caitlin's Creative Space | <a href="#" id="open-privacy">Privacy</a> | <a href="#" id="open-tos">TOS</a></p>
     </footer>
 
-    <!-- Modals -->
     <div id="tos-modal" class="modal"><div class="modal-content"><span class="close">&times;</span><h2>TOS</h2><p>Your TOS Content...</p></div></div>
     <div id="privacy-modal" class="modal"><div class="modal-content"><span class="close">&times;</span><h2>Privacy</h2><p>Your Privacy Content...</p></div></div>
 
-    <!-- Script order is important -->
     <script src="admin-coding.js"></script>
     
 </body>
