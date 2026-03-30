@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viking Coin Flip</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@700;900&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    padding: 40px;
+    background: transparent;
+    font-family: 'Cinzel', serif;
+    overflow: hidden;
+}
+
+/* ═══════════════════════════════════════
+   MAIN BANNER
+═══════════════════════════════════════ */
+#pill-container {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    background: linear-gradient(
+        135deg,
+        rgba(12, 7, 2, 0.98) 0%,
+        rgba(30, 16, 5, 0.98) 45%,
+        rgba(15, 8, 2, 0.98) 100%
+    );
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    padding: 14px 48px 14px 16px;
+    clip-path: polygon(4% 0%, 100% 0%, 96% 100%, 0% 100%);
+    color: #e8c97a;
+    border-left: 5px solid #b8860b;
+    box-shadow:
+        0 12px 40px rgba(0,0,0,0.9),
+        0 0 25px rgba(184,134,11,0.2),
+        inset 0 1px 0 rgba(220,170,60,0.2),
+        inset 0 -1px 0 rgba(0,0,0,0.6);
+    min-width: 520px;
+    opacity: 0;
+    transform: skewX(-10deg) translateX(-130px);
+    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
+
+#pill-container.show {
+    opacity: 1;
+    transform: skewX(-10deg) translateX(0);
+    pointer-events: auto;
+}
+
+/* Gold top-edge rule */
+#pill-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        #7a5500 10%,
+        #e8c040 40%,
+        #fff8c0 50%,
+        #e8c040 60%,
+        #7a5500 90%,
+        transparent 100%
+    );
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* Stone texture */
+#pill-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ═══════════════════════════════════════
+   AVATAR  (matching sub alert style)
+═══════════════════════════════════════ */
+.avatar-wrapper {
+    margin-right: 16px;
+    z-index: 2;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.avatar-wrapper::after {
+    /* rune border glow ring */
+    content: '';
+    position: absolute;
+    inset: -3px;
+    clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
+    background: linear-gradient(135deg, #e8c040, #7a5500, #e8c040);
+    z-index: -1;
+    opacity: 0.8;
+}
+
+.user-avatar {
+    width: 70px;
+    height: 70px;
+    clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
+    background-size: cover;
+    background-position: center;
+    background-color: #1a0d03;
+    /* fallback rune symbol if no image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: #b8860b;
+}
+
+/* ═══════════════════════════════════════
+   COIN (positioned over avatar corner)
+═══════════════════════════════════════ */
+.coin-anchor {
+    position: relative;
+    z-index: 2;
+    margin-right: 16px;
+}
+
+.coin-stage {
+    perspective: 500px;
+    width: 52px;
+    height: 52px;
+}
+
+.coin {
+    width: 52px;
+    height: 52px;
+    position: relative;
+    transform-style: preserve-3d;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 6px rgba(184,134,11,0.7));
+}
+
+.coin-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    border: 3px solid;
+}
+
+.coin-heads {
+    background: radial-gradient(circle at 30% 30%,
+        #fff8c0 0%, #e8c040 20%, #c8960c 55%, #7a5500 80%, #3d2800 100%);
+    border-color: #e8c040;
+    box-shadow:
+        0 0 14px rgba(232,192,64,0.8),
+        inset 0 3px 5px rgba(255,255,200,0.4),
+        inset 0 -3px 5px rgba(0,0,0,0.5);
+}
+
+.coin-tails {
+    background: radial-gradient(circle at 30% 30%,
+        #e8e0d0 0%, #a09080 30%, #585048 65%, #201810 100%);
+    border-color: #887060;
+    box-shadow:
+        0 0 10px rgba(140,120,80,0.5),
+        inset 0 3px 5px rgba(255,255,255,0.2),
+        inset 0 -3px 5px rgba(0,0,0,0.6);
+    transform: rotateY(180deg);
+}
+
+@keyframes spinHeads {
+    0%   { transform: rotateY(0deg); }
+    100% { transform: rotateY(1800deg); }
+}
+@keyframes spinTails {
+    0%   { transform: rotateY(0deg); }
+    100% { transform: rotateY(1980deg); }
+}
+.coin.spin-heads { animation: spinHeads 2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.coin.spin-tails { animation: spinTails 2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+/* ═══════════════════════════════════════
+   TEXT GROUP
+═══════════════════════════════════════ */
+.text-group {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    transform: skewX(10deg);
+    z-index: 2;
+    min-width: 0;
+}
+
+.flip-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.52rem;
+    letter-spacing: 4px;
+    color: #b8860b;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    opacity: 0.9;
+}
+.flip-title::before { content: '᛭ '; }
+.flip-title::after  { content: ' ᛭'; }
+
+.user-name {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #f0d878;
+    text-shadow:
+        0 0 14px rgba(240,200,60,0.6),
+        0 1px 4px rgba(0,0,0,0.95);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.flip-message {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #a08840;
+    letter-spacing: 0.3px;
+    line-height: 1.35;
+    margin-top: 1px;
+}
+
+/* ═══════════════════════════════════════
+   RESULT SHARD
+═══════════════════════════════════════ */
+.stat-shard {
+    margin-left: 16px;
+    padding: 8px 16px;
+    background: rgba(184,134,11,0.1);
+    border: 1px solid rgba(184,134,11,0.4);
+    clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);
+    text-align: center;
+    transform: skewX(10deg);
+    z-index: 2;
+    flex-shrink: 0;
+    min-width: 88px;
+    transition: background 0.5s, border-color 0.5s, box-shadow 0.5s;
+}
+
+.stat-shard.win {
+    background: rgba(180, 110, 0, 0.28);
+    border-color: rgba(220,160,20,0.75);
+    box-shadow: 0 0 20px rgba(200,130,0,0.45), inset 0 0 12px rgba(220,160,20,0.1);
+}
+.stat-shard.lose {
+    background: rgba(110, 15, 15, 0.35);
+    border-color: rgba(180,40,40,0.65);
+    box-shadow: 0 0 20px rgba(140,20,20,0.45), inset 0 0 12px rgba(180,40,40,0.1);
+}
+
+#badge-value {
+    display: block;
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 0.95rem;
+    color: #e0b840;
+    letter-spacing: 1px;
+    transition: color 0.5s, text-shadow 0.5s;
+}
+.stat-shard.win  #badge-value { color: #f0c030; text-shadow: 0 0 12px rgba(240,180,20,0.9); }
+.stat-shard.lose #badge-value { color: #cc3333; text-shadow: 0 0 12px rgba(200,40,40,0.8); }
+
+#badge-label {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.5rem;
+    letter-spacing: 2px;
+    color: #907030;
+    opacity: 0.9;
+    margin-top: 3px;
+    text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════ */
+.pulse { animation: valhalla-pulse 0.85s cubic-bezier(0.16, 1, 0.3, 1); }
+
+@keyframes valhalla-pulse {
+    0%   { transform: skewX(-10deg) scale(1);    filter: brightness(1); }
+    50%  { transform: skewX(-10deg) scale(1.05); filter: brightness(1.55); }
+    100% { transform: skewX(-10deg) scale(1);    filter: brightness(1); }
+}
+
+/* Avatar reveal on show */
+@keyframes avatarReveal {
+    from { opacity: 0; transform: scale(0.8) skewX(10deg); }
+    to   { opacity: 1; transform: scale(1)   skewX(10deg); }
+}
+#pill-container.show .avatar-wrapper {
+    animation: avatarReveal 0.5s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+/* Result flash */
+@keyframes resultFlash {
+    0%   { opacity: 0; transform: skewX(10deg) scale(0.7); }
+    60%  { transform: skewX(10deg) scale(1.08); }
+    100% { opacity: 1; transform: skewX(10deg) scale(1); }
+}
+.stat-shard.win, .stat-shard.lose {
+    animation: resultFlash 0.45s cubic-bezier(0.16,1,0.3,1) both;
+}
+    </style>
+</head>
+<body>
+
+<div id="pill-container">
+
+    <!-- Avatar -->
+    <div class="avatar-wrapper">
+        <div class="user-avatar" id="avatar">᛫</div>
+    </div>
+
+    <!-- Coin -->
+    <div class="coin-anchor">
+        <div class="coin-stage">
+            <div class="coin" id="coin">
+                <div class="coin-face coin-heads">⚜️</div>
+                <div class="coin-face coin-tails">🪓</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text -->
+    <div class="text-group">
+        <div class="flip-title">Coin of Fate</div>
+        <div class="user-name"   id="username">Warrior Name</div>
+        <div class="flip-message" id="display-message">invokes the ancient flip...</div>
+    </div>
+
+    <!-- Result -->
+    <div class="stat-shard" id="shard">
+        <span id="badge-value">᛫</span>
+        <span id="badge-label">The Norns</span>
+    </div>
+
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+let hideTimer = null;
+
+ws.onopen = () => {
+    ws.send(JSON.stringify({
+        request: "Subscribe",
+        events: { general: ["Custom"] },
+        id: "CoinFlipAlert"
+    }));
+};
+
+ws.onmessage = (event) => {
+    const response = JSON.parse(event.data);
+    if (response.data && response.data.eventName === "coin_flip") {
+        updateUI(response.data);
+    }
+};
+
+function updateUI(data) {
+    const pill  = document.getElementById('pill-container');
+    const coin  = document.getElementById('coin');
+    const shard = document.getElementById('shard');
+    const avatar = document.getElementById('avatar');
+    const isWin = data.called === data.result;
+
+    // 1. Avatar
+    if (data.avatar) {
+        avatar.style.backgroundImage = `url('${data.avatar}')`;
+        avatar.innerText = ''; // clear fallback rune
+    } else {
+        avatar.style.backgroundImage = '';
+        avatar.innerText = '᛫';
+    }
+
+    // 2. Text — pre-flip state
+    document.getElementById('username').innerText     = data.user || "Warrior";
+    document.getElementById('display-message').innerText = `calls upon ${cap(data.called)} — the Norns decide!`;
+    document.getElementById('badge-value').innerText  = "⚔";
+    document.getElementById('badge-label').innerText  = "Spinning";
+    shard.className = "stat-shard";
+
+    // 3. Clear any existing hide timer
+    if (hideTimer) clearTimeout(hideTimer);
+
+    // 4. Slide banner in — identical pattern to the sub alert
+    pill.classList.remove('show');
+    void pill.offsetWidth;
+    pill.classList.add('show');
+
+    // 5. Spin coin
+    coin.className = 'coin';
+    void coin.offsetWidth;
+    coin.classList.add(data.result === "heads" ? "spin-heads" : "spin-tails");
+
+    // 6. Reveal result after spin finishes (2s)
+    setTimeout(() => {
+        document.getElementById('badge-value').innerText  = data.result === "heads" ? "HEADS" : "TAILS";
+        document.getElementById('badge-label').innerText  = isWin ? "⚡ VICTORY" : "☠ VALHALLA";
+        document.getElementById('display-message').innerText = isWin
+            ? `${cap(data.called)} — Odin smiles upon you! Glory awaits!`
+            : `${cap(data.called)} — The fates were cruel. To Valhalla!`;
+
+        shard.className = "stat-shard " + (isWin ? "win" : "lose");
+
+        pill.classList.remove('pulse');
+        void pill.offsetWidth;
+        pill.classList.add('pulse');
+    }, 2100);
+
+    // 7. Auto-hide after 8s
+    hideTimer = setTimeout(() => {
+        pill.classList.remove('show');
+    }, 8000);
+}
+
+function cap(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+</script>
+</body>
+</html>
