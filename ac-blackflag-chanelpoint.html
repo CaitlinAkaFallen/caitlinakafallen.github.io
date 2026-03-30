@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AC: Black Flag Fixed Slide</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;700&family=Oswald:wght@500&display=swap');
+
+        :root {
+            --ac-gold: #c5a967;
+            --ac-bg: rgba(5, 10, 12, 0.98);
+            --font-main: 'Lato', sans-serif;
+            --fluid-timing: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: transparent;
+            overflow: hidden;
+            width: 1920px; height: 1080px;
+        }
+
+        .ac-wrapper {
+            position: fixed;
+            bottom: 100px;
+            left: 100px;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            /* Shortened fade out to prevent the "ghosting" look at the end */
+            transition: opacity 0.4s ease;
+        }
+
+        .ac-wrapper.active {
+            opacity: 1;
+        }
+
+.avatar-frame {
+    width: 590px;
+    height: 280px; /* Sharpened height */
+    background: #000; 
+    border: 2px solid var(--ac-gold);
+    /* Slightly adjusted polygon to keep the slant steep and clean at 280px height */
+    clip-path: polygon(0% 0%, 100% 0%, 88% 100%, 0% 100%);
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+
+    /* THE SHARPNESS LOCK */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0) scale(1.0001); 
+    isolation: isolate; /* Prevents pixels from bleeding into the background */
+}
+
+.avatar-img {
+    width: 101%;
+    height: 101%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Forced centering + GPU hardware acceleration */
+    transform: translate(-50%, -50%) translateZ(0);
+    
+    background-size: cover;
+    background-position: center;
+    filter: contrast(1.1) brightness(0.9);
+    
+    /* OBS/Chromium High-quality scaling */
+    image-rendering: -webkit-optimize-contrast; 
+    backface-visibility: hidden;
+}
+
+.info-frame {
+    width: 230px; 
+    height: 210px; /* Adjusted slightly to sit centered behind the 280px frame */
+    background: rgba(0, 0, 0, 0.92);
+    margin-left: -180px; 
+    padding: 30px 40px 20px 200px; 
+    border-bottom: 2px solid var(--ac-gold);
+    /* Matched the 12% slant of the avatar frame for a perfect fit */
+    clip-path: polygon(12% 0%, 100% 0%, 100% 100%, 0% 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 8;
+    
+    /* Starting position */
+    transform: translateX(-100%); 
+    opacity: 0;
+    
+    /* Use GPU for the slide transition */
+    will-change: transform, opacity;
+    transition: transform 1.5s var(--fluid-timing), opacity 1s ease;
+}
+
+.show-info .info-frame {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.retreat .info-frame {
+    /* Your Sweet Spot */
+    transform: translateX(-85%);
+    opacity: 0.5;
+    transition: transform 15s linear, opacity 15s linear;
+}
+
+.reward-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 32px;
+    color: var(--ac-gold);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid rgba(197, 169, 103, 0.4);
+    width: fit-content;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    white-space: nowrap;
+}
+
+.username {
+    font-family: var(--font-main);
+    font-size: 26px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.reales-cost {
+    font-family: var(--font-main);
+    font-size: 16px;
+    color: var(--ac-gold);
+    margin-top: 10px;
+    letter-spacing: 3px;
+    white-space: nowrap;
+}
+    </style>
+</head>
+<body>
+
+<div id="overlay" class="ac-wrapper">
+    <div class="avatar-frame">
+        <div class="avatar-img" id="avatar"></div>
+    </div>
+    
+    <div class="info-frame">
+        <div class="reward-title" id="reward-display">SYNCHRONIZING</div>
+        <div class="username" id="username">SUBJECT</div>
+        <div class="reales-cost" id="data-log">REALE: 0000 // MEMORY_SYNC</div>
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const address = params.get("address") || "localhost";
+    const port = params.get("port") || "8080";
+    const ws = new WebSocket(`ws://${address}:${port}/`);
+    
+    let activeTimers = [];
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({
+            request: "Subscribe",
+            events: { general: ["Custom"] },
+            id: "BlackFlagFluid"
+        }));
+    };
+
+    ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.data?.eventName === "iPhoneCallTrigger") {
+            const data = message.data;
+            triggerBlackFlag(data.user, data.reward, data.cost, data.avatar);
+        }
+    };
+
+    function triggerBlackFlag(user, reward, cost, avatarUrl) {
+        const overlay = document.getElementById('overlay');
+        const usernameEl = document.getElementById('username');
+        const rewardEl = document.getElementById('reward-display');
+        const dataLogEl = document.getElementById('data-log');
+        const avatarEl = document.getElementById('avatar');
+
+        activeTimers.forEach(t => clearTimeout(t));
+        activeTimers = [];
+        overlay.classList.remove('active', 'show-info', 'retreat');
+
+        const formattedCost = String(cost).padStart(4, '');
+        usernameEl.textContent = user;
+        rewardEl.textContent = reward.toUpperCase();
+        dataLogEl.textContent = `REALE: ${formattedCost} // ${reward.toUpperCase()}`;
+        avatarEl.style.backgroundImage = `url('${avatarUrl}')`;
+
+        void overlay.offsetWidth; 
+
+        overlay.classList.add('active');
+
+        // Slide Out
+        activeTimers.push(setTimeout(() => {
+            overlay.classList.add('show-info');
+        }, 500));
+
+        // Retreat Sequence (Start at 5.5s)
+        activeTimers.push(setTimeout(() => {
+            overlay.classList.remove('show-info');
+            overlay.classList.add('retreat');
+        }, 5500));
+
+        // Final clean fade out (at 22s)
+        activeTimers.push(setTimeout(() => {
+            overlay.classList.remove('active');
+        }, 22000)); 
+        
+        // Remove 'retreat' class a half second after the overlay is gone to reset
+        activeTimers.push(setTimeout(() => {
+            overlay.classList.remove('retreat');
+        }, 22500));
+    }
+
+    ws.onclose = () => setTimeout(() => location.reload(), 5000);
+</script>
+</body>
+</html>

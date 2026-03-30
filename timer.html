@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Ripple Effect</title>
+    <style>
+        :root {
+            --accent: #00ffcc;
+            --accent-2: #00d9ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: transparent;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Ripple Canvas */
+        #rippleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* GLOBAL TIMER UI */
+        .global-timer-container {
+            position: absolute;
+            right: 45px;
+            top: 30px;
+            text-align: right;
+            z-index: 10;
+            opacity: 0; /* Hidden by default */
+            transform: translateX(50px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .global-timer-container.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        #sessionTimer { 
+            font-size: 32px; 
+            color: white; 
+            font-weight: 900; 
+            line-height: 1; 
+        }
+
+        .timer-bar { 
+            width: 120px; 
+            height: 4px; 
+            background: rgba(255,255,255,0.1); 
+            margin-top: 5px; 
+            border-radius: 2px; 
+            overflow: hidden; 
+        }
+
+        #timerProgress { 
+            height: 100%; 
+            width: 100%; 
+            background: var(--accent); 
+            transition: width 1s linear; 
+        }
+
+        /* Warning Animation */
+        .warning-active #sessionTimer {
+            color: #ff4747;
+            animation: flashRed 1s infinite;
+        }
+
+        @keyframes flashRed {
+            0% { text-shadow: 0 0 5px #ff4747; }
+            50% { text-shadow: 0 0 25px #ff4747; }
+            100% { text-shadow: 0 0 5px #ff4747; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="rippleCanvas"></canvas>
+
+    <div class="global-timer-container" id="timerContainer">
+        <div id="sessionTimer">00:00</div>
+        <div class="timer-bar"><div id="timerProgress"></div></div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+        let timeLeft = 0;
+        let totalTime = 0;
+        let timerId = null;
+
+        const timerDisplay = document.getElementById('sessionTimer');
+        const progressBar = document.getElementById('timerProgress');
+        const container = document.getElementById('timerContainer');
+
+        // --- RIPPLE CANVAS LOGIC ---
+        const canvas = document.getElementById('rippleCanvas');
+        const ctx = canvas.getContext('2d');
+        let ripples = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Ripple {
+            constructor(x, y) {
+                this.x = x; this.y = y; this.r = 0; this.opacity = 1;
+            }
+            update() { this.r += 4; this.opacity -= 0.015; }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 242, 255, ${this.opacity})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        function triggerRipple() {
+            const rect = container.getBoundingClientRect();
+            const centerX = rect.left + (rect.width / 2);
+            const centerY = rect.top + (rect.height / 2);
+            ripples.push(new Ripple(centerX, centerY));
+            setTimeout(() => ripples.push(new Ripple(centerX - 15, centerY + 10)), 150);
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ripples = ripples.filter(r => r.opacity > 0);
+            ripples.forEach(r => { r.update(); r.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- WEBSOCKET LISTENER ---
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "TimerTrigger" }));
+        };
+
+        ws.onmessage = (event) => {
+    const response = JSON.parse(event.data);
+    
+    // This checks if the data is at the root OR inside a 'data' property
+    const messageData = response.data ? response.data : response;
+
+    if (messageData.eventName === "timer_start") {
+        startTimer(messageData.seconds);
+    }
+};
+
+        function startTimer(seconds) {
+            clearInterval(timerId);
+            timeLeft = seconds;
+            totalTime = seconds;
+
+            container.classList.add('show');
+            container.classList.remove('warning-active');
+            triggerRipple();
+            updateDisplay();
+
+            timerId = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 15) container.classList.add('warning-active');
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    container.classList.remove('show');
+                }
+                updateDisplay();
+            }, 1000);
+        }
+
+        function updateDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            progressBar.style.width = `${(timeLeft / totalTime) * 100}%`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Valhalla Elemental Shard</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap');
+
+:root {
+    --element-color: #00f2ff;
+    --element-glow: rgba(0, 242, 255, 0.5);
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; padding: 40px; overflow: hidden; background: transparent; font-family: 'Inter', sans-serif; }
+
+#element-container {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    background: radial-gradient(circle at center, rgba(20, 35, 40, 0.98) 0%, rgba(10, 15, 20, 1) 100%);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    padding: 20px 50px;
+    clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+    border-left: 5px solid var(--element-color);
+    color: white;
+    box-shadow: 0 0 30px var(--element-glow);
+    opacity: 0;
+    transform: skewX(-10deg) translateX(-100px);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 900px;
+}
+
+#element-container.show {
+    opacity: 1;
+    transform: skewX(-10deg) translateX(0);
+}
+
+#element-container::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+.avatar-wrapper {
+    margin-right: 25px;
+    transform: skewX(10deg);
+}
+
+.avatar {
+    width: 75px; height: 75px;
+    clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
+    border: 2px solid var(--element-color);
+    background-size: cover;
+    background-position: center;
+    transition: border 0.4s ease;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    transform: skewX(10deg);
+    min-width: 320px;
+}
+
+.username {
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 0 10px var(--element-glow);
+    margin: 0;
+}
+
+.message {
+    font-size: 1rem;
+    color: #a0c0c8;
+    font-style: italic;
+    margin: 6px 0;
+}
+
+.element-badge {
+    margin-top: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--element-color);
+    width: fit-content;
+    color: var(--element-color);
+    transition: all 0.4s ease;
+    cursor: pointer; 
+    user-select: none;
+}
+
+/* Details panel */
+.details-panel {
+    margin-top: 12px;
+    padding: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.04);
+    color: #dbeef6;
+    font-size: 0.9rem;
+    max-width: 520px;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    transform: skewX(10deg);
+    display: none;
+}
+
+.details-panel.show {
+    display: block;
+}
+
+.details-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 6px;
+}
+
+.details-label {
+    min-width: 110px;
+    color: #9fb8c2;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.details-value {
+    color: #e6f7fb;
+    line-height: 1.3;
+}
+
+/* Glitch/Pulse Animation */
+.pulse { animation: animus-pulse 0.7s ease-out; }
+@keyframes animus-pulse {
+    0% { filter: brightness(1); transform: skewX(-10deg) scale(1); }
+    30% { filter: brightness(1.8) saturate(1.5); transform: skewX(-10deg) scale(1.05); }
+    100% { filter: brightness(1); transform: skewX(-10deg) scale(1); }
+}
+
+/* small responsive */
+@media (max-width: 640px) {
+    #element-container { padding: 16px 20px; display:block; max-width: 92vw; }
+    .info { transform: none; margin-top: 12px; }
+    .avatar-wrapper { transform: none; margin-right: 0; display:flex; justify-content:center; }
+}
+    </style>
+</head>
+<body>
+
+<div id="element-container" role="region" aria-label="Elemental Alert">
+    <div class="avatar-wrapper">
+        <div id="user-avatar" class="avatar" aria-hidden="true"></div>
+    </div>
+    <div class="info">
+        <div id="user-name" class="username">Warrior Name</div>
+        <div id="user-message" class="message">Manifesting power...</div>
+        <div id="element-type" class="element-badge" title="Click for details">ELEMENT</div>
+
+        <div id="element-details" class="details-panel" aria-hidden="true">
+            <div class="details-row">
+                <div class="details-label">Primary Effect</div>
+                <div id="detail-primary" class="details-value">—</div>
+            </div>
+            <div class="details-row">
+                <div class="details-label">Typical Status</div>
+                <div id="detail-status" class="details-value">—</div>
+            </div>
+            <div class="details-row">
+                <div class="details-label">Visual / Audio</div>
+                <div id="detail-visual" class="details-value">—</div>
+            </div>
+            <div class="details-row">
+                <div class="details-label">Synergies</div>
+                <div id="detail-synergy" class="details-value">—</div>
+            </div>
+            <div class="details-row">
+                <div class="details-label">Weaknesses</div>
+                <div id="detail-weakness" class="details-value">—</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // WebSocket connection (keeps your original behavior)
+    const params = new URLSearchParams(window.location.search);
+    const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+    let hideTimer;
+
+    // Color map (keeps your original color choices)
+    const elementEffects = {
+        "Fire": "#ff4d00",
+        "Water": "#00aaff",
+        "Earth": "#795548",
+        "Air": "#e0f7fa",
+        "Lightning": "#ffeb3b",
+        "Ice": "#81d4fa",
+        "Light": "#ffffff",
+        "Darkness": "#7e57c2",
+        "Nature": "#4caf50",
+        "Metal": "#9e9e9e",
+        "Wood": "#8d6e63",
+        "Void": "#212121",
+        "Plasma": "#f44336",
+        "Spirit": "#00bcd4",
+        "Magnetism": "#3f51b5",
+        "Time": "#009688",
+        "Gravity": "#311b92",
+        "Sound": "#ff4081",
+        "Electricity": "#ffff00",
+        "Quantum": "#00e5ff",
+        "Psychic": "#e91e63",
+        "Energy": "#76ff03",
+        "Radiation": "#c6ff00",
+        "Dream": "#ce93d8",
+        "Illusion": "#9575cd",
+        "Chaos": "#d50000",
+        "Order": "#3d5afe"
+    };
+
+    // Detailed effects for each element
+    const elementEffectsDetails = {
+        "Fire": {
+            primary: "High direct damage over time",
+            status: "Burning; damage over time",
+            visual: "Bright orange flames; crackling fire sound",
+            synergy: "Chaos; Plasma",
+            weakness: "Water"
+        },
+        "Water": {
+            primary: "Slows targets and enables healing/cleansing",
+            status: "Soaked; reduced movement",
+            visual: "Blue ripples; soft splashing",
+            synergy: "Ice; Nature",
+            weakness: "Electricity"
+        },
+        "Earth": {
+            primary: "High defense and area control",
+            status: "Rooted or Armored; increased defense",
+            visual: "Brown stone textures; low rumble",
+            synergy: "Metal; Gravity",
+            weakness: "Air"
+        },
+        "Air": {
+            primary: "High mobility and evasion, knockback",
+            status: "Disoriented; lifted or pushed",
+            visual: "Pale wisps; whooshing wind",
+            synergy: "Lightning; Sound",
+            weakness: "Gravity"
+        },
+        "Lightning": {
+            primary: "Fast chain damage and stun chance",
+            status: "Shocked; brief paralysis",
+            visual: "Yellow arcs; sharp crackle",
+            synergy: "Metal; Electricity",
+            weakness: "Earth"
+        },
+        "Ice": {
+            primary: "Strong slow and brittle effects",
+            status: "Frozen; immobilized or brittle",
+            visual: "Pale cyan shards; crystalline chime",
+            synergy: "Water; Light",
+            weakness: "Fire"
+        },
+        "Light": {
+            primary: "Healing, buffs, reveal stealth",
+            status: "Illuminated; cleansed",
+            visual: "White glow; soft bell tones",
+            synergy: "Order; Spirit",
+            weakness: "Darkness"
+        },
+        "Darkness": {
+            primary: "Stealth, drain, debuffs",
+            status: "Cursed; reduced accuracy or drain",
+            visual: "Purple/black haze; low hum",
+            synergy: "Void; Illusion",
+            weakness: "Light"
+        },
+        "Nature": {
+            primary: "Regeneration, entangle, growth",
+            status: "Regenerating; slowed enemies",
+            visual: "Green leaves and vines; rustling",
+            synergy: "Wood; Water",
+            weakness: "Fire"
+        },
+        "Metal": {
+            primary: "Armor piercing, rigidity, reflect",
+            status: "Hardened; increased defense",
+            visual: "Grey sheen; metallic clang",
+            synergy: "Magnetism; Earth",
+            weakness: "Corrosion/Acid"
+        },
+        "Wood": {
+            primary: "Persistent traps and growth damage",
+            status: "Entangled; bleed over time",
+            visual: "Brown-green grain; creaking",
+            synergy: "Nature",
+            weakness: "Fire"
+        },
+        "Void": {
+            primary: "Space manipulation, silence, drain",
+            status: "Nullified; ability suppression",
+            visual: "Deep black void; muffled silence",
+            synergy: "Darkness; Quantum",
+            weakness: "Light"
+        },
+        "Plasma": {
+            primary: "Extreme heat burst, area denial",
+            status: "Scorched; heavy DoT",
+            visual: "Intense red-white glow; high-pitched sizzle",
+            synergy: "Fire; Energy",
+            weakness: "Water"
+        },
+        "Spirit": {
+            primary: "Buffs, possession, ethereal effects",
+            status: "Haunted; morale or control effects",
+            visual: "Teal mist; whispering voices",
+            synergy: "Psychic; Light",
+            weakness: "Void"
+        },
+        "Magnetism": {
+            primary: "Pull/push, control metal objects",
+            status: "Attracted/Repelled; immobilize metal",
+            visual: "Indigo field lines; low electromagnetic hum",
+            synergy: "Metal; Electricity",
+            weakness: "Quantum"
+        },
+        "Time": {
+            primary: "Slow/haste, rewind or temporal stasis",
+            status: "Aged/Slowed; altered cooldowns",
+            visual: "Teal clock motifs; ticking echo",
+            synergy: "Order; Gravity",
+            weakness: "Chaos"
+        },
+        "Gravity": {
+            primary: "Heavy control, crush, area suppression",
+            status: "Weighed Down; reduced mobility",
+            visual: "Deep violet distortion; low bass thud",
+            synergy: "Earth; Time",
+            weakness: "Air"
+        },
+        "Sound": {
+            primary: "Disorient, deafening, vibration damage",
+            status: "Deafened; stagger",
+            visual: "Pink pulses; loud reverberation",
+            synergy: "Air; Illusion",
+            weakness: "Silence/Void"
+        },
+        "Electricity": {
+            primary: "Burst damage, overload, short circuits",
+            status: "Overloaded; system disruption",
+            visual: "Bright yellow flashes; electrical buzz",
+            synergy: "Lightning; Magnetism",
+            weakness: "Grounding/Earth"
+        },
+        "Quantum": {
+            primary: "Unpredictable effects, phase shifts",
+            status: "Entangled; random buffs/debuffs",
+            visual: "Cyan flicker; glitchy chime",
+            synergy: "Void; Time",
+            weakness: "Order"
+        },
+        "Psychic": {
+            primary: "Mind control, reveal thoughts, debuff",
+            status: "Confused; charm or panic",
+            visual: "Magenta haze; distant voices",
+            synergy: "Spirit; Illusion",
+            weakness: "Psychic resistance/Order"
+        },
+        "Energy": {
+            primary: "Pure damage or resource amplification",
+            status: "Charged; increased power output",
+            visual: "Lime glow; humming energy",
+            synergy: "Plasma; Quantum",
+            weakness: "Dissipation/Void"
+        },
+        "Radiation": {
+            primary: "Persistent area damage and mutation",
+            status: "Irradiated; DoT and stat shifts",
+            visual: "Neon yellow-green haze; static hiss",
+            synergy: "Chaos; Energy",
+            weakness: "Containment/Earth"
+        },
+        "Dream": {
+            primary: "Sleep, altered reality, buffs/debuffs",
+            status: "Asleep or Dreambound; altered perception",
+            visual: "Lavender swirls; soft lullaby",
+            synergy: "Illusion; Psychic",
+            weakness: "Wake/Light"
+        },
+        "Illusion": {
+            primary: "Confuse, create decoys, misdirection",
+            status: "Deceived; mis-targeting",
+            visual: "Pastel distortions; echoing laughter",
+            synergy: "Darkness; Dream",
+            weakness: "True Sight/Light"
+        },
+        "Chaos": {
+            primary: "Random high-risk high-reward effects",
+            status: "Unstable; unpredictable outcomes",
+            visual: "Red flashes; chaotic noise",
+            synergy: "Plasma; Radiation",
+            weakness: "Order"
+        },
+        "Order": {
+            primary: "Buffs, structure, debuff removal, control",
+            status: "Stabilized; predictable bonuses",
+            visual: "Deep blue lines; harmonic tone",
+            synergy: "Light; Time",
+            weakness: "Chaos"
+        }
+    };
+
+    // Helper: convert hex to rgba string with alpha
+    function hexToRgba(hex, alpha = 0.5) {
+        if (!hex) return `rgba(0,0,0,${alpha})`;
+        const h = hex.replace('#','');
+        const bigint = parseInt(h.length === 3 ? h.split('').map(c=>c+c).join('') : h, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    // UI elements
+    const container = document.getElementById('element-container');
+    const root = document.documentElement;
+    const nameEl = document.getElementById('user-name');
+    const msgEl = document.getElementById('user-message');
+    const badgeEl = document.getElementById('element-type');
+    const avatarEl = document.getElementById('user-avatar');
+    const detailsPanel = document.getElementById('element-details');
+    const detailPrimary = document.getElementById('detail-primary');
+    const detailStatus = document.getElementById('detail-status');
+    const detailVisual = document.getElementById('detail-visual');
+    const detailSynergy = document.getElementById('detail-synergy');
+    const detailWeakness = document.getElementById('detail-weakness');
+
+    // Toggle details on badge click
+    badgeEl.addEventListener('click', () => {
+        const isShown = detailsPanel.classList.toggle('show');
+        detailsPanel.setAttribute('aria-hidden', !isShown);
+    });
+
+    // WebSocket handshake
+    ws.onopen = () => {
+        try {
+            ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "ElementalAlert" }));
+        } catch (e) {
+            console.warn('WS send failed', e);
+        }
+    };
+
+    ws.onmessage = (event) => {
+        try {
+            const response = JSON.parse(event.data);
+            if (response.data && response.data.eventName === "elemental_alert") {
+                triggerAlert(response.data);
+            }
+        } catch (e) {
+            console.warn('Invalid WS message', e);
+        }
+    };
+
+    // Main alert handler
+    function triggerAlert(data) {
+        // Defensive defaults
+        const elementName = data.element || "Element";
+        const color = elementEffects[elementName] || "#00f2ff";
+        const glow = hexToRgba(color, 0.45);
+
+        // Set CSS variables
+        root.style.setProperty('--element-color', color);
+        root.style.setProperty('--element-glow', glow);
+
+        // Update content
+        nameEl.innerText = data.user || "Unknown";
+        msgEl.innerText = data.message || "Manifesting power...";
+        badgeEl.innerText = elementName;
+        avatarEl.style.backgroundImage = data.avatar ? `url('${data.avatar}')` : `linear-gradient(135deg, ${hexToRgba(color,0.15)}, rgba(0,0,0,0.2))`;
+
+        // Populate details from the detailed map
+        const details = elementEffectsDetails[elementName] || {
+            primary: "Unknown effect",
+            status: "—",
+            visual: "—",
+            synergy: "—",
+            weakness: "—"
+        };
+
+        detailPrimary.textContent = details.primary;
+        detailStatus.textContent = details.status;
+        detailVisual.textContent = details.visual;
+        detailSynergy.textContent = details.synergy;
+        detailWeakness.textContent = details.weakness;
+
+        // Show container with pulse
+        clearTimeout(hideTimer);
+        container.classList.remove('show', 'pulse');
+        void container.offsetWidth;
+        container.classList.add('show', 'pulse');
+
+        // Auto-show details briefly for first 3 seconds
+        detailsPanel.classList.add('show');
+        detailsPanel.setAttribute('aria-hidden', 'false');
+        setTimeout(() => {
+            // hide details but keep badge clickable
+            detailsPanel.classList.remove('show');
+            detailsPanel.setAttribute('aria-hidden', 'true');
+        }, 8000);
+
+        // Auto-hide the whole container after 8s
+        hideTimer = setTimeout(() => {
+            container.classList.remove('show');
+            detailsPanel.classList.remove('show');
+            detailsPanel.setAttribute('aria-hidden', 'true');
+        }, 15000);
+    }
+
+    // Example: If you want to test without a websocket, uncomment the following:
+    /*
+    setTimeout(() => {
+        triggerAlert({
+            element: "Fire",
+            user: "Cailan",
+            message: "Igniting the battlefield",
+            avatar: ""
+        });
+    }, 800);
+    */
+</script>
+</body>
+</html>

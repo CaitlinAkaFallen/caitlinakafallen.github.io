@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Q&As Overlay</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap');
+
+        body { margin: 0; padding: 40px; background-color: transparent; font-family: 'Inter', sans-serif; overflow: hidden; }
+
+        #alert-wrapper {
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #alert-wrapper.show { opacity: 1; transform: translateX(0); }
+
+        #pill-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            background: linear-gradient(145deg, rgba(30, 45, 50, 1) 0%, rgba(10, 20, 25, 1) 100%);
+            padding: 20px 45px;
+            clip-path: polygon(4% 0%, 100% 0%, 96% 100%, 0% 100%);
+            border-left: 6px solid #00d4ff; /* Default Blue */
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9), inset 0 0 30px rgba(0, 0, 0, 0.5);
+            transform: skewX(-10deg);
+            min-width: 500px;
+            max-width: 850px;
+            overflow: hidden;
+        }
+
+        /* --- GOLD THEME FOR THANK YOU --- */
+        #pill-container.thanks { border-left-color: #ffaa00; }
+        #pill-container.thanks .user-header, 
+        #pill-container.thanks .user-name { color: #ffaa00; text-shadow: 0 0 15px rgba(255, 170, 0, 0.6); }
+        #pill-container.thanks .user-avatar { border-color: #ffaa00; box-shadow: 0 0 20px rgba(255, 170, 0, 0.3); }
+
+        #pill-container::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.15;
+            mix-blend-mode: soft-light;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .avatar-wrapper { transform: skewX(10deg); margin-right: 25px; z-index: 2; }
+        .user-avatar {
+            width: 85px; height: 85px;
+            background-size: cover; background-position: center;
+            border: 3px solid rgba(0, 212, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            background-color: #0a1e28;
+        }
+
+        .text-group { display: flex; flex-direction: column; transform: skewX(10deg); color: white; z-index: 2; }
+        .user-header { font-family: 'Cinzel', serif; font-size: 1rem; color: #00d4ff; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; }
+        .user-name { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 900; margin: 0; text-shadow: 0 0 15px rgba(0, 212, 255, 0.6); }
+        .question-text { font-size: 1.15rem; color: #b0c4de; line-height: 1.4; margin-top: 8px; word-break: break-word; font-weight: 400; }
+    </style>
+</head>
+<body>
+
+<div id="alert-wrapper">
+    <div id="pill-container">
+        <div class="avatar-wrapper">
+            <div class="user-avatar" id="avatar"></div>
+        </div>
+        <div class="text-group">
+            <div class="user-header" id="header-text">Inquiry from</div>
+            <div class="user-name" id="username">Warrior</div>
+            <div class="question-text" id="content-text">Awaiting the Oracle...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "TwitchQAS" }));
+    };
+
+    ws.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        const d = response.data || response;
+
+        if (d.eventName === "questionAlert" || d.eventName === "thankYouAlert") {
+            const pill = document.getElementById('pill-container');
+            
+            // Set Text
+            document.getElementById('username').innerText = d.user;
+            document.getElementById('avatar').style.backgroundImage = `url('${d.avatar}')`;
+
+            if (d.eventName === "thankYouAlert") {
+                pill.classList.add('thanks');
+                document.getElementById('header-text').innerText = "Honor to";
+                document.getElementById('content-text').innerText = "Thank you for the wonderful question!";
+            } else {
+                pill.classList.remove('thanks');
+                document.getElementById('header-text').innerText = "Inquiry from";
+                document.getElementById('content-text').innerText = d.message;
+            }
+
+            // Animation
+            const wrapper = document.getElementById('alert-wrapper');
+            wrapper.classList.add('show');
+            setTimeout(() => wrapper.classList.remove('show'), 15000);
+        }
+    };
+</script>
+</body>
+</html>
