@@ -1282,6 +1282,7 @@
           <option value="emote-bingo">Twitch Emote Stream Bingo</option> <!--17-->
           <option value="twitch-qa"> Twitch Q&A</option> <!--18-->
           <option value="cp-timer"> Channel Points Timer</option> <!--19-->
+          <option value="coin-flip"> Coin Flip </option> <!--20-->
         </select>
       </div>
     </nav>
@@ -2448,6 +2449,73 @@
             </video>
           </div>
         </div>
+      <!--Coin Flip-->
+        <div class="grid-item" id="coin-flip">
+          <h3>Coin Flip</h3>
+          <div class="main-layout-wrapper">
+            <div class="side-column">
+              
+              <!-- OBS Link Selection -->
+              <div class="select-copy-container">
+                <label for="obs-select-20" style="display: block; margin-bottom: 5px; font-size: 0.9em">Select Overlay to Copy Link:</label>
+                <select id="obs-select-20" class="code-select-glassy" onchange="copySelectValue(this)">
+                    <option value="" disabled selected>Choose an overlay...</option>
+                    <option value="https://caitlinscreativespace.xyz/coinflip-overlay.html">Standard Coin Flip</option>
+                    <option value="https://caitlinscreativespace.xyz/ac-coiflips-overlay.html">Assassin's Creed Coin Flip</option>
+                    <option value="https://caitlinscreativespace.xyz/coinflips-overlay.html">Coin Flip</option>
+
+                </select>
+                <p id="copy-status-20" style="font-size: 12px; color: #00ffcc; margin-top: 5px; height: 15px; font-weight: bold;"></p>
+              </div>
+
+              <div style="margin-top: 15px"></div>
+
+              <!-- Import Code Selection -->
+              <div class="select-copy-container">
+                <label for="import-select-20" style="display: block; margin-bottom: 5px; font-size: 0.9em">Select Import Code to Copy:</label>
+                <select id="import-select-20" class="code-select-glassy" onchange="copySelectValue(this)">
+                    <option value="" disabled selected>Choose a code...</option>
+                    <option value="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">Coin Flip Script</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="center-column">
+              <p class="instruction-text">
+                Select the version you want on both sides.<br />
+                Import code into Streamer.bot & add Link to OBS.
+              </p>
+              <img
+                src="images/coinflip-cover.png"
+                alt="Coin Flip"
+                class="feature-img"
+              />
+            </div>
+
+            <div class="side-column">
+              <div class="video-container">
+                <video
+                  class="modal-trigger"
+                  controls
+                  data-modal="modal-coinflip"
+                  data-src="Videos/coinflip-preview.mp4"
+                >
+                  <source src="Videos/coinflip-preview.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal for Coin Flip -->
+          <div id="modal-coinflip" class="video-modal">
+            <div class="video-wrapper">
+              <span class="close">&times;</span>
+              <video controls>
+                <source src="Videos/coinflip-preview.mp4" type="video/mp4" />
+              </video>
+            </div>
+          </div>
     </section>
 
     <div id="imageModal" class="image-modal">
