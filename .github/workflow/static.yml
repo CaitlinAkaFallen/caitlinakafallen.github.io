@@ -1,13 +1,10 @@
+# Simple workflow for deploying static content to GitHub Pages
 name: Deploy static content to Pages
 
 on:
   push:
     branches: ["main"]
   workflow_dispatch:
-
-# GLOBAL FIX: This tells GitHub to use Node 24 for the entire process
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
   contents: read
@@ -26,20 +23,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
+        # Only use ONE version. v4 is stable, v6 is the newest.
         uses: actions/checkout@v4
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        # v3 was giving you the "build" warning. v6 is the fix.
+        uses: actions/upload-pages-artifact@v6
         with:
           path: '.'
-          # SAFETY: Prevents your private keys in .env from being public
+          # Extra safety for your Twitch/YouTube keys
           exclude: |
             .env
             .git
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        # v4 was giving you the "deploy" warning. v5 is the fix.
+        uses: actions/deploy-pages@v5
