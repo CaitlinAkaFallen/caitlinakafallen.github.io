@@ -36,6 +36,10 @@ jobs:
           exclude: |
             .env
             .git
+            .github
+            README.md
+            package.json
+            node_modules
 
       - name: Deploy to GitHub Pages
         id: deployment
