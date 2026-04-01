@@ -244,6 +244,14 @@ header {
 
       <script>
         document.addEventListener("DOMContentLoaded", () => {
+          /* ===== REMOVE .HTML FROM URL ===== */
+          (function hideHtmlInURL() {
+              const pathname = window.location.pathname;
+              if (pathname.endsWith(".html")) {
+                  // Replace URL in browser without reloading the page
+                  window.history.replaceState({}, "", pathname.replace(".html", ""));
+              }
+          })();
           console.log("Kick stream and chat loaded for CaitlinAkAFallen.");
 
           // Manually set live status here:
