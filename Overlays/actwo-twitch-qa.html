@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assassin's Creed II Animus Overlay</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            /* Animus 2.0 Core Colors */
+            --animus-white: rgba(240, 240, 240, 0.95);
+            --animus-border: #d1d1d1;
+            
+            /* Templar / Memory Glitch (Red) */
+            --ac-red: #b30000;
+            --ac-red-faint: rgba(179, 0, 0, 0.1);
+            
+            /* Assassin / Sync (Blue) */
+            --ac-blue: #0099ff;
+            --ac-blue-faint: rgba(0, 153, 255, 0.1);
+        }
+
+        body { margin: 0; padding: 40px; background-color: transparent; font-family: 'Cinzel', serif; overflow: hidden; }
+
+        #alert-wrapper {
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: scale(1.1) filter(blur(10px));
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #alert-wrapper.show { opacity: 1; transform: scale(1); filter: blur(0); }
+
+        #pill-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 20px 40px;
+            background: var(--animus-white);
+            border: 1px solid var(--animus-border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), inset 0 0 100px rgba(255, 255, 255, 1);
+            min-width: 600px;
+            max-width: 850px;
+            overflow: hidden;
+            transition: all 0.8s ease;
+        }
+
+        /* Border Accents (Assassin's Creed HUD Style) */
+        #pill-container::before, #pill-container::after {
+            content: '';
+            position: absolute;
+            width: 15px; height: 15px;
+            border: 2px solid var(--ac-red);
+            transition: all 0.8s ease;
+        }
+        #pill-container::before { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+        #pill-container::after { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+
+        /* Sync State (Blue) */
+        #pill-container.thanks { border-color: var(--ac-blue); }
+        #pill-container.thanks::before, #pill-container.thanks::after { border-color: var(--ac-blue); }
+
+        /* Animus Pulse Background */
+        .pulse-bg {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 3px);
+            animation: drift 20s infinite linear;
+            z-index: 1;
+        }
+
+        @keyframes drift {
+            from { background-position: 0 0; }
+            to { background-position: 0 400px; }
+        }
+
+        .avatar-wrapper { 
+            position: relative;
+            margin-right: 30px; 
+            z-index: 2; 
+        }
+
+        .user-avatar {
+            width: 80px; height: 80px;
+            background-size: cover; background-position: center;
+            border: 1px solid var(--animus-border);
+            padding: 5px;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            /* Clipping for Assassin look */
+            clip-path: polygon(15% 0, 100% 0, 100% 85%, 85% 100%, 0 100%, 0 15%);
+        }
+
+        .text-group { display: flex; flex-direction: column; color: #333; z-index: 2; }
+        
+        .user-header { 
+            font-family: 'Share Tech Mono', monospace; 
+            font-size: 0.8rem; 
+            color: var(--ac-red); 
+            text-transform: uppercase; 
+            letter-spacing: 5px; 
+            margin-bottom: 5px;
+            transition: color 0.8s ease;
+        }
+
+        .user-name { 
+            font-size: 2rem; 
+            font-weight: 700; 
+            margin: 0; 
+            color: #111;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .question-text { 
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem; 
+            color: #555; 
+            margin-top: 8px; 
+            line-height: 1.4;
+            word-break: break-word; 
+            font-style: italic;
+        }
+
+        #pill-container.thanks .user-header { color: var(--ac-blue); }
+
+        /* Memory Status Indicator */
+        .memory-bar {
+            position: absolute;
+            left: 0; top: 0; width: 4px; height: 100%;
+            background: var(--ac-red);
+            transition: background 0.8s ease;
+        }
+        #pill-container.thanks .memory-bar { background: var(--ac-blue); }
+
+    </style>
+</head>
+<body>
+
+<div id="alert-wrapper">
+    <div id="pill-container">
+        <div class="memory-bar"></div>
+        <div class="pulse-bg"></div>
+        <div class="avatar-wrapper">
+            <div class="user-avatar" id="avatar"></div>
+        </div>
+        <div class="text-group">
+            <div class="user-header" id="header-text">Memory Fragment</div>
+            <div class="user-name" id="username">Ezio</div>
+            <div class="question-text" id="content-text">Nothing is true, everything is permitted...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "AssassinQA" }));
+    };
+
+    ws.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        const d = response.data || response;
+
+        if (d.eventName === "questionAlert" || d.eventName === "thankYouAlert") {
+            const pill = document.getElementById('pill-container');
+            const wrapper = document.getElementById('alert-wrapper');
+            
+            document.getElementById('username').innerText = d.user;
+            document.getElementById('avatar').style.backgroundImage = `url('${d.avatar}')`;
+
+            if (d.eventName === "thankYouAlert") {
+                pill.classList.add('thanks');
+                document.getElementById('header-text').innerText = "Synchronization Complete";
+                document.getElementById('content-text').innerText = "Memory added to the database. Requiescat in pace.";
+            } else {
+                pill.classList.remove('thanks');
+                document.getElementById('header-text').innerText = "Memory Fragment";
+                document.getElementById('content-text').innerText = d.message;
+            }
+
+            // Animation sequence
+            wrapper.classList.add('show');
+            setTimeout(() => { wrapper.classList.remove('show'); }, 15000);
+        }
+    };
+</script>
+</body>
+</html>

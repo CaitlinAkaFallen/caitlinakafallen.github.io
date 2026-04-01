@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Viking Glassy Sub</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap');
+
+body { 
+    margin: 0; 
+    padding: 40px; 
+    background-color: transparent; 
+    font-family: 'Inter', sans-serif; 
+    overflow: hidden; 
+}
+
+#pill-container {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    background: radial-gradient(circle at center, rgba(20, 55, 65, 0.98) 0%, rgba(10, 25, 30, 1) 100%);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    padding: 15px 45px;
+    clip-path: polygon(4% 0%, 100% 0%, 96% 100%, 0% 100%);
+    color: white;
+    border-left: 5px solid #00f2ff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 242, 255, 0.2);
+    
+    /* --- HIDE BY DEFAULT --- */
+    opacity: 0;
+    transform: skewX(-10deg) translateX(-100px); 
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    min-width: 450px;
+    pointer-events: none; /* Prevents accidental clicks in OBS */
+}
+
+/* --- SHOW CLASS --- */
+#pill-container.show {
+    opacity: 1;
+    transform: skewX(-10deg) translateX(0);
+    pointer-events: auto;
+}
+
+#pill-container::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.12;
+    mix-blend-mode: soft-light;
+    pointer-events: none;
+}
+
+.avatar-wrapper { 
+    margin-right: 20px; 
+    z-index: 2;
+}
+
+.subber-avatar {
+    width: 70px; 
+    height: 70px; 
+    clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
+    background-size: cover; 
+    background-position: center;
+    border: 2px solid #00f2ff;
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+}
+
+.text-group { 
+    display: flex; 
+    flex-direction: column; 
+    flex-grow: 1; 
+    transform: skewX(10deg); 
+    z-index: 2;
+}
+
+.subb-name { 
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem; 
+    font-weight: 900; 
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
+    margin: 0;
+}
+
+.sub-message { 
+    font-size: 1rem; 
+    font-weight: 400; 
+    line-height: 1.2; 
+    color: #a0c0c8;
+    font-style: italic;
+}
+
+.stat-shard {
+    margin-left: 20px;
+    padding: 8px 15px;
+    background: rgba(0, 242, 255, 0.15);
+    border: 1px solid rgba(0, 242, 255, 0.4);
+    clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);
+    text-align: center;
+    transform: skewX(10deg);
+    z-index: 2;
+    min-width: 80px;
+}
+
+#badge-value {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: #00f2ff;
+}
+
+#badge-label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: #ffffff;
+    opacity: 0.8;
+}
+
+.pulse { animation: valhalla-pulse 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+
+@keyframes valhalla-pulse {
+    0% { transform: skewX(-10deg) scale(1); filter: brightness(1); }
+    50% { transform: skewX(-10deg) scale(1.05); filter: brightness(1.4); }
+    100% { transform: skewX(-10deg) scale(1); filter: brightness(1); }
+}
+    </style>
+</head>
+<body>
+
+<div id="pill-container">
+    <div class="avatar-wrapper">
+        <div class="subber-avatar" id="avatar"></div>
+    </div>
+    
+    <div class="text-group">
+        <div class="subb-name" id="username">Warrior Name</div>
+        <div class="sub-message" id="display-message">Message here...</div>
+    </div>
+
+    <div class="stat-shard">
+        <span id="badge-value">-</span>
+        <span id="badge-label">-</span>
+    </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+let hideTimer = null;
+
+ws.onopen = () => {
+    ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "VikingAlert" }));
+};
+
+ws.onmessage = (event) => {
+    const response = JSON.parse(event.data);
+    // Listen for the custom eventName from your C# script
+    if (response.data && response.data.eventName === "sub_alert") {
+        updateUI(response.data);
+    }
+};
+
+function updateUI(data) {
+    const pill = document.getElementById('pill-container');
+    const avatarElem = document.getElementById('avatar');
+    
+    // 1. Update text content
+    document.getElementById('username').innerText = data.user; 
+    document.getElementById('display-message').innerText = data.message;
+    document.getElementById('badge-value').innerText = data.badge || "1";
+    document.getElementById('badge-label').innerText = data.label || "TIER";
+    
+    // 2. Update Avatar
+    if (data.avatar) {
+        avatarElem.style.backgroundImage = `url('${data.avatar}')`;
+    }
+
+    // 3. Reset Timer Logic
+    if (hideTimer) {
+        clearTimeout(hideTimer);
+    }
+
+    // 4. Trigger Animations and Show
+    pill.classList.remove('show'); // Reset to hidden if quickly triggered
+    void pill.offsetWidth;         // Trigger reflow
+    pill.classList.add('show');
+
+    // 5. Pulse Effect
+    pill.classList.remove('pulse');
+    void pill.offsetWidth; 
+    pill.classList.add('pulse');
+
+    // 6. Hide after 8 seconds
+    hideTimer = setTimeout(() => {
+        pill.classList.remove('show');
+    }, 8000);
+}
+</script>
+</body>
+</html>

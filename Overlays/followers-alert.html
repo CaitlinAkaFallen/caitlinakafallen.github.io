@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Viking Follower Alert</title>
+    <style>
+        /* [Keeping your beautiful CSS styles from the raid alert] */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap');
+
+        body { margin: 0; padding: 40px; background-color: transparent; font-family: 'Inter', sans-serif; overflow: hidden; }
+
+        #alert-container {
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+            background: radial-gradient(circle at center, rgba(20, 55, 65, 0.98) 0%, rgba(10, 25, 30, 1) 100%);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            padding: 20px 45px;
+            border-radius: 4px;
+            clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+            border-left: 5px solid #00f2ff;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2), inset 0 0 20px rgba(0,0,0,0.5);
+            transition: all 0.5s ease;
+            max-width: 850px;
+            opacity: 0;
+            transform: translateX(-150px) skewX(-10deg);
+        }
+
+        .avatar-wrapper { margin-right: 25px; position: relative; z-index: 2; }
+
+        .follower-avatar {
+            width: 85px; height: 85px; 
+            clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
+            background-size: cover; background-position: center;
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+            background-color: #0a191e; /* Dark fill for anonymous */
+        }
+
+        .text-group { display: flex; flex-direction: column; transform: skewX(10deg); z-index: 2; }
+
+        .follower-name { 
+            font-family: 'Cinzel', serif; font-size: 1.9rem; font-weight: 900; 
+            color: #ffffff; text-transform: uppercase; letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.8), 2px 2px 5px rgba(0,0,0,1);
+        }
+
+        .follow-message { 
+            font-size: 1.1rem; font-weight: 600; line-height: 1.3; margin-top: 5px;
+            color: #a0c0c8; text-shadow: 1px 1px 2px black;
+        }
+
+        .show-alert { animation: valhalla-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .hide-alert { animation: valhalla-out 0.6s ease-in forwards; }
+
+        @keyframes valhalla-in {
+            from { transform: translateX(-150px) skewX(-10deg); opacity: 0; filter: brightness(2); }
+            to { transform: translateX(0) skewX(-10deg); opacity: 1; filter: brightness(1); }
+        }
+
+        @keyframes valhalla-out {
+            from { transform: translateX(0) skewX(-10deg); opacity: 1; }
+            to { transform: translateX(200px) skewX(-10deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="alert-container">
+        <div class="avatar-wrapper">
+            <div class="follower-avatar" id="avatar"></div>
+        </div>
+        <div class="text-group">
+            <div class="follower-name" id="username">New Follower</div>
+            <div class="follow-message" id="display-message">A new warrior joins the clan!</div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ 
+                request: "Subscribe", 
+                events: { general: ["Custom"] }, 
+                id: "VikingFollowListener" 
+            }));
+        };
+
+       ws.onmessage = (event) => {
+            const response = JSON.parse(event.data);
+            // Check for the correct event name from your Streamer.bot sub-action
+            if (response.data && response.data.eventName === "followAlert") {
+                triggerFollow(response.data);
+            }
+        };
+
+        function triggerFollow(data) {
+            const container = document.getElementById('alert-container');
+            const avatar = document.getElementById('avatar');
+            const userText = document.getElementById('username');
+            const messageText = document.getElementById('display-message');
+
+            // 1. Use actual data from Streamer.bot (or fallback if empty)
+            const followerName = data.user || "A Mysterious Warrior";
+            const customMsg = data.message || "Has stepped out of the mist to join the clan!";
+            
+            userText.innerText = followerName;
+            messageText.innerText = customMsg;
+            
+            // 2. Avatar logic: Use user's profile pic if available, otherwise your Viking silhouette
+            const userImg = data.avatar || "https://i.imgur.com/vHQuUvX.png"; 
+            avatar.style.backgroundImage = `url('${userImg}')`;
+
+            // 3. Animation Logic
+            container.style.opacity = "0"; // Reset before starting
+            container.classList.remove('show-alert', 'hide-alert');
+            void container.offsetWidth; // Force reflow
+            container.classList.add('show-alert');
+
+            setTimeout(() => {
+                container.classList.remove('show-alert');
+                container.classList.add('hide-alert');
+            }, 10000); 
+        }
+    </script>
+</body>
+</html>

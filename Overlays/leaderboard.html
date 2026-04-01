@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viking Leaderboard & Event</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap');
+
+        body { 
+            margin: 0; background-color: transparent; font-family: 'Inter', sans-serif; 
+            color: white; overflow: hidden; display: flex; 
+            flex-direction: column; justify-content: flex-end; align-items: center; 
+            height: 100vh; padding-bottom: 60px; 
+        }
+
+        /* NEW: Event Overlay for Current User */
+        #overlay {
+            position: absolute;
+            top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: all 0.8s ease;
+            transform: translateY(-20px);
+        }
+
+        #overlay.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #avatar {
+            width: 120px;
+            height: 120px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            border: 4px solid #00f2ff;
+            background-size: cover;
+            background-position: center;
+            filter: drop-shadow(0 0 15px #00f2ff);
+            margin-bottom: 10px;
+        }
+
+        #username {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px #00f2ff;
+        }
+
+        /* PODIUM STYLES */
+        .podium-container { 
+            display: flex; align-items: flex-end; gap: 25px;
+            opacity: 1; 
+            transform: translateY(0);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .shard-card {
+            background: radial-gradient(circle at center, rgba(20, 55, 65, 0.98), rgba(10, 25, 30, 1));
+            border-left: 5px solid #00f2ff;
+            clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+            padding: 25px; text-align: center; min-width: 210px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); position: relative;
+            transform: skewX(-8deg);
+        }
+
+        .avatar-podium {
+            width: 85px; height: 85px; margin: 0 auto 10px;
+            clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
+            border: 2px solid #00f2ff; background-size: cover; background-position: center;
+            background-color: #111;
+            transform: skewX(8deg);
+        }
+
+        .rank-1 { height: 360px; border-left-color: #ffd700; z-index: 3; transform: scale(1.1) skewX(-8deg); }
+        .rank-1 .avatar-podium { border-color: #ffd700; width: 105px; height: 105px; }
+        .rank-2 { height: 270px; border-left-color: #c0c0c0; z-index: 2; }
+        .rank-3 { height: 230px; border-left-color: #cd7f32; z-index: 1; transform: translateY(-10px) skewX(-8deg); }
+
+        .name { 
+            font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 900; 
+            margin-bottom: 5px; text-shadow: 0 0 10px rgba(0,242,255,0.5); 
+        }
+
+        .points-shard { 
+            background: rgba(0, 242, 255, 0.15); border: 1px solid rgba(0, 242, 255, 0.4);
+            padding: 6px; font-family: 'Cinzel', serif; color: #00f2ff; font-weight: 900;
+            clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+        }
+
+        .trophy { font-size: 2.2rem; display: block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div id="overlay">
+    <div id="avatar"></div>
+    <div id="username">---</div>
+</div>
+
+<div id="podium" class="podium-container show">
+    <div class="shard-card rank-2" id="card2">
+        <div class="avatar-podium" id="img2"></div>
+        <div class="name" id="name2">---</div>
+        <div class="points-shard" id="pts2">0 XP</div>
+        <span class="trophy">🥈</span>
+    </div>
+
+    <div class="shard-card rank-1" id="card1">
+        <div class="avatar-podium" id="img1"></div>
+        <div class="name" id="name1">---</div>
+        <div class="points-shard" id="pts1">0 XP</div>
+        <span class="trophy">🥇</span>
+    </div>
+
+    <div class="shard-card rank-3" id="card3">
+        <div class="avatar-podium" id="img3"></div>
+        <div class="name" id="name3">---</div>
+        <div class="points-shard" id="pts3">0 XP</div>
+        <span class="trophy">🥉</span>
+    </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const address = params.get("address") || "localhost";
+const port = params.get("port") || "8080";
+
+const ws = new WebSocket(`ws://${address}:${port}/`);
+
+const usernameEl = document.getElementById('username');
+const avatarEl = document.getElementById('avatar');
+const overlay = document.getElementById('overlay');
+
+ws.onopen = () => {
+    ws.send(JSON.stringify({
+        request: "Subscribe",
+        events: { general: ["Custom"] },
+        id: "LeaderboardOverlay"
+    }));
+};
+
+ws.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    if (msg.data?.eventName === "LeaderboardUpdate") {
+        updateLeaderboard(msg.data.leaders, msg.data.currentUser);
+    }
+};
+
+function updateLeaderboard(leaders, currentUser) {
+    // 1. Handle the Event Overlay (The "Alert")
+    if (currentUser && currentUser.name !== "Unknown Warrior") {
+        usernameEl.innerText = currentUser.name;
+        avatarEl.style.backgroundImage = `url('${currentUser.avatar}')`;
+        overlay.classList.add('active');
+        
+        // Hide overlay after 8 seconds
+        setTimeout(() => overlay.classList.remove('active'), 8000);
+    }
+
+    // 2. Update the Podium
+    const podium = document.getElementById('podium');
+    podium.style.opacity = "0.5";
+
+    leaders.forEach((w, i) => {
+        const rank = i + 1;
+        document.getElementById(`name${rank}`).innerText = w.name || "---";
+        document.getElementById(`pts${rank}`).innerText = `${w.score} XP`;
+        document.getElementById(`img${rank}`).style.backgroundImage = `url('${w.avatar || ""}')`;
+    });
+
+    setTimeout(() => podium.style.opacity = "1", 500);
+}
+
+ws.onclose = () => setTimeout(() => location.reload(), 5000);
+</script>
+</body>
+</html>
+

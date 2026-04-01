@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elden Ring: Grace & Frenzy</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Nanum+Myeongjo:wght@400;700&display=swap');
+
+        :root {
+            /* Grace of the Tarnished */
+            --er-gold: #c6a761;
+            --er-gold-bright: #f0d9a3;
+            --er-bg: rgba(10, 10, 10, 0.85);
+            
+            /* Frenzied Flame */
+            --er-frenzy: #ff4500;
+            --er-frenzy-glow: #ff8c00;
+        }
+
+        body { margin: 0; padding: 40px; background-color: transparent; overflow: hidden; }
+
+        #alert-wrapper {
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            filter: blur(10px);
+            transform: translateY(10px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #alert-wrapper.show { opacity: 1; filter: blur(0); transform: translateY(0); }
+
+        #pill-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 20px 40px;
+            background: var(--er-bg);
+            border: 1px solid var(--er-gold);
+            outline: 1px solid var(--er-gold);
+            outline-offset: 4px;
+            min-width: 550px;
+            max-width: 800px;
+            box-shadow: 0 0 30px rgba(0,0,0,1);
+            transition: all 0.8s ease-in-out;
+        }
+
+        /* --- FRENZIED FLAME TRANSITION --- */
+        #pill-container.thanks { 
+            border-color: var(--er-frenzy);
+            outline-color: var(--er-frenzy);
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.3), inset 0 0 20px rgba(255, 69, 0, 0.2);
+            animation: flicker 0.15s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.9; }
+            100% { opacity: 1; filter: drop-shadow(0 0 5px var(--er-frenzy)); }
+        }
+
+        /* Ornamental Flourishes */
+        .corner {
+            position: absolute;
+            width: 15px; height: 15px;
+            border: 1px solid var(--er-gold);
+            transition: all 0.8s;
+        }
+        .top-left { top: -8px; left: -8px; border-right: none; border-bottom: none; }
+        .bottom-right { bottom: -8px; right: -8px; border-left: none; border-top: none; }
+
+        #pill-container.thanks .corner { border-color: var(--er-frenzy); }
+
+        /* Avatar: The Great Rune Frame */
+        .avatar-wrapper { 
+            position: relative;
+            margin-right: 30px; 
+            z-index: 2; 
+        }
+
+        .user-avatar {
+            width: 90px; height: 90px;
+            background-size: cover; background-position: center;
+            border: 1px solid var(--er-gold);
+            border-radius: 2px;
+            padding: 3px;
+            background-clip: content-box;
+            transition: all 0.8s;
+        }
+
+        #pill-container.thanks .user-avatar {
+            border-color: var(--er-frenzy);
+            filter: saturate(1.5) contrast(1.2);
+        }
+
+        /* Text Styles */
+        .text-group { display: flex; flex-direction: column; z-index: 2; }
+        
+        .user-header { 
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem; 
+            color: var(--er-gold-bright); 
+            text-transform: uppercase; 
+            letter-spacing: 4px;
+            margin-bottom: 5px;
+            opacity: 0.8;
+            transition: color 0.8s;
+        }
+
+        .user-name { 
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem; 
+            color: var(--er-gold);
+            margin: 0; 
+            line-height: 1;
+            font-weight: 400;
+            transition: all 0.8s;
+        }
+        
+        .question-text { 
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 1.2rem; 
+            color: #d4d4d4; 
+            margin-top: 10px;
+            line-height: 1.4;
+            transition: color 0.8s;
+        }
+
+        /* Frenzy Text Styles */
+        #pill-container.thanks .user-header { color: var(--er-frenzy-glow); }
+        #pill-container.thanks .user-name { 
+            color: #fff; 
+            text-shadow: 0 0 10px var(--er-frenzy);
+        }
+        #pill-container.thanks .question-text { color: #f0f0f0; }
+
+        /* Particles / Grace Effect */
+        .particles {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(198, 167, 97, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="alert-wrapper">
+    <div id="pill-container">
+        <div class="particles"></div>
+        <div class="corner top-left"></div>
+        <div class="corner bottom-right"></div>
+        
+        <div class="avatar-wrapper">
+            <div class="user-avatar" id="avatar"></div>
+        </div>
+        <div class="text-group">
+            <div class="user-header" id="header-text">Seeker of Grace</div>
+            <div class="user-name" id="username">TARNISHED</div>
+            <div class="question-text" id="content-text">"Arise now, ye Tarnished..."</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "EldenAlert" }));
+    };
+
+    ws.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        const d = response.data || response;
+
+        if (d.eventName === "questionAlert" || d.eventName === "thankYouAlert") {
+            const pill = document.getElementById('pill-container');
+            const wrapper = document.getElementById('alert-wrapper');
+            const header = document.getElementById('header-text');
+            
+            document.getElementById('username').innerText = d.user;
+            document.getElementById('avatar').style.backgroundImage = `url('${d.avatar}')`;
+
+            if (d.eventName === "thankYouAlert") {
+                pill.classList.add('thanks');
+                header.innerText = "Lord of Frenzied Flame";
+                document.getElementById('content-text').innerText = "MAY CHAOS TAKE THE WORLD!";
+            } else {
+                pill.classList.remove('thanks');
+                header.innerText = "Seeker of Grace";
+                document.getElementById('content-text').innerText = d.message;
+            }
+
+            wrapper.classList.add('show');
+            setTimeout(() => { wrapper.classList.remove('show'); }, 15000);
+        }
+    };
+</script>
+</body>
+</html>
