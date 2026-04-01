@@ -1,0 +1,95 @@
+# Runs on pushes targeting the default branch
+
+  push:
+
+    branches: ["main"]
+
+
+
+  # Allows you to run this workflow manually from the Actions tab
+
+  workflow_dispatch:
+
+
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+
+permissions:
+
+  contents: read
+
+  pages: write
+
+  id-token: write
+
+
+
+# Allow only one concurrent deployment
+
+concurrency:
+
+  group: "pages"
+
+  cancel-in-progress: false
+
+
+
+jobs:
+
+  # Single deploy job since we're just deploying
+
+  deploy:
+
+    environment:
+
+      name: github-pages
+
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+
+        uses: actions/checkout@v5
+
+        uses: actions/checkout@v4
+
+
+
+      - name: Setup Pages
+
+        uses: actions/configure-pages@v5
+
+
+
+      - name: Upload artifact
+
+        # Updated to v4 to match the latest Node.js requirements
+
+        uses: actions/upload-pages-artifact@v4
+
+        # Using v4 here clears the "upload-artifact" warning
+
+        uses: actions/upload-pages-artifact@v3
+
+        with:
+
+          # Upload entire repository
+
+          path: '.'
+
+
+
+      - name: Deploy to GitHub Pages
+
+        id: deployment
+
+        # Updated to v5 to clear the deprecation warning
+
+        uses: actions/deploy-pages@v5
+
+        # Reverted to v4 because v5 does not exist yet!
+
+        uses: actions/deploy-pages@v4
