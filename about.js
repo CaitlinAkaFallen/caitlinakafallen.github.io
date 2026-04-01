@@ -1,4 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
+        /* ===== REMOVE .HTML FROM URL ===== */
+    (function hideHtmlInURL() {
+        const pathname = window.location.pathname;
+        if (pathname.endsWith(".html")) {
+            // Replace URL in browser without reloading the page
+            window.history.replaceState({}, "", pathname.replace(".html", ""));
+        }
+    })();
     const searchButton = document.getElementById("search-button");
     const searchBar = document.getElementById("search-bar");
 
