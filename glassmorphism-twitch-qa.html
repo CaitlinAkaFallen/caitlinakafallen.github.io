@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glassmorphism Q&A Overlay - Floating Layout</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 50px;
+            background: transparent;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        /* ═══════════════════════════════════════
+        MAIN WRAPPER 
+        ═══════════════════════════════════════ */
+        #qna-container {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        #qna-container.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ═══════════════════════════════════════
+        AVATAR
+        ═══════════════════════════════════════ */
+        .avatar-wrapper {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #111;
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            flex-shrink: 0;
+            transform: translateX(-300px) rotate(-720deg);
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.4, 1), border-color 0.5s ease;
+        }
+
+        #qna-container.show .avatar-wrapper {
+            transform: translateX(0) rotate(0deg);
+        }
+
+        .user-avatar {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.3s ease;
+        }
+
+        /* ═══════════════════════════════════════
+        CONTENT COLUMN
+        ═══════════════════════════════════════ */
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch; /* Stretch to allow the split header */
+        }
+
+        /* UPDATED: Split Header Row */
+        .top-label-row {
+            display: flex;
+            justify-content: space-between; /* Pushes Label Left, Name Right */
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 0 20px; /* Padding on both sides */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
+        }
+
+        #qna-container.expanded .top-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .inquiry-label {
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            color: #64ffda;
+            text-transform: uppercase;
+            font-weight: 700;
+            transition: color 0.5s ease;
+        }
+
+        .user-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ccd6f6;
+            letter-spacing: 1px;
+        }
+
+        /* ═══════════════════════════════════════
+        THE GLASS PILL
+        ═══════════════════════════════════════ */
+        .glass-pill {
+            background: rgba(15, 20, 30, 0.7);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            
+            width: 400px; 
+            display: flex;
+            align-items: flex-start;
+            overflow: hidden;
+            
+            height: 0; 
+            padding: 0 30px;
+            opacity: 0;
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+                        padding 0.4s ease, 
+                        opacity 0.3s ease,
+                        border-color 0.5s ease;
+        }
+
+        #qna-container.expanded .glass-pill {
+            height: auto; 
+            min-height: 70px;
+            padding: 20px 30px;
+            opacity: 1;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #ffffff;
+            line-height: 1.4;
+            white-space: normal; 
+            word-wrap: break-word;
+            opacity: 0;
+            transition: opacity 0.3s ease 0.4s;
+            width: 100%;
+        }
+
+        #qna-container.expanded .question-text {
+            opacity: 1;
+        }
+
+        .content-fade {
+            opacity: 0 !important;
+            transition: opacity 0.3s ease !important;
+        }
+
+        /* ═══════════════════════════════════════
+        BOTTOM LABEL
+        ═══════════════════════════════════════ */
+        .bottom-label-row {
+            margin-top: 8px;
+            padding-right: 20px;
+            display: flex;
+            justify-content: flex-end; /* Keeps time on the right */
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
+        }
+
+        #qna-container.expanded .bottom-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .time-stamp {
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: #4df5f5;
+            letter-spacing: 1px;
+        }
+
+        /* Gold Theme for Thank You Alerts */
+        #qna-container.thanks .inquiry-label { color: #ffaa00; }
+        #qna-container.thanks .avatar-wrapper { border-color: #ffaa00; }
+        #qna-container.thanks .glass-pill { border-color: rgba(255, 170, 0, 0.3); }
+    </style>
+</head>
+<body>
+
+<div id="qna-container">
+    <div class="avatar-wrapper">
+        <div class="user-avatar" id="avatar"></div>
+    </div>
+    
+    <div class="content-column">
+        <div class="top-label-row">
+            <span class="inquiry-label" id="label-text">Inquiry From</span>
+            <span class="user-name" id="username">userName</span>
+        </div>
+        
+        <div class="glass-pill">
+            <div class="question-text" id="content-text">
+                Question content goes here...
+            </div>
+        </div>
+        
+        <div class="bottom-label-row">
+            <span class="time-stamp" id="time">00:00 PM</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+    let resetTimer = null;
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "TwitchQAS" }));
+    };
+
+    ws.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        const d = response.data || response;
+
+        if (d.eventName === "questionAlert" || d.eventName === "thankYouAlert") {
+            triggerAlert(d);
+        }
+    };
+
+    function triggerAlert(data) {
+        const container = document.getElementById('qna-container');
+        const labelText = document.getElementById('label-text');
+        const contentText = document.getElementById('content-text');
+        const userName = document.getElementById('username');
+        const avatar = document.getElementById('avatar');
+
+        const isThanks = data.eventName === "thankYouAlert";
+
+        // SMOOTH TRANSITION IF ALREADY OPEN
+        if (container.classList.contains('show')) {
+            // Fade out current text
+            labelText.classList.add('content-fade');
+            contentText.classList.add('content-fade');
+            userName.classList.add('content-fade');
+
+            setTimeout(() => {
+                // Swap Theme and Data
+                if (isThanks) {
+                    container.classList.add('thanks');
+                    labelText.innerText = "Appreciation For";
+                    contentText.innerText = "Thank you for the wonderful question!";
+                } else {
+                    container.classList.remove('thanks');
+                    labelText.innerText = "Inquiry From";
+                    contentText.innerText = data.message;
+                }
+
+                userName.innerText = data.user;
+                avatar.style.backgroundImage = `url('${data.avatar}')`;
+
+                // Fade back in
+                labelText.classList.remove('content-fade');
+                contentText.classList.remove('content-fade');
+                userName.classList.remove('content-fade');
+            }, 300);
+
+            startResetTimer();
+            return;
+        }
+
+        // FRESH TRIGGER
+        if (resetTimer) clearTimeout(resetTimer);
+        container.classList.remove('show', 'expanded', 'thanks');
+        void container.offsetWidth; 
+
+        userName.innerText = data.user;
+        avatar.style.backgroundImage = `url('${data.avatar}')`;
+        document.getElementById('time').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        if (isThanks) {
+            container.classList.add('thanks');
+            labelText.innerText = "Appreciation For";
+            contentText.innerText = "Thank you for the wonderful question!";
+        } else {
+            container.classList.remove('thanks');
+            labelText.innerText = "Inquiry From";
+            contentText.innerText = data.message;
+        }
+
+        container.classList.add('show'); 
+        setTimeout(() => container.classList.add('expanded'), 800);
+        startResetTimer();
+    }
+
+    function startResetTimer() {
+        if (resetTimer) clearTimeout(resetTimer);
+        resetTimer = setTimeout(() => {
+            const container = document.getElementById('qna-container');
+            container.classList.remove('expanded');
+            setTimeout(() => {
+                container.classList.remove('show', 'thanks');
+            }, 900);
+        }, 15000);
+    }
+</script>
+</body>
+</html>
