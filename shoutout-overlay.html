@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Shoutout Overlay</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 50px;
+            background: transparent;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        #so-container {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        #so-container.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* AVATAR */
+        .avatar-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #111;
+            border: 4px solid #9146ff; /* Twitch Purple */
+            box-shadow: 0 0 20px rgba(145, 70, 255, 0.4);
+            overflow: hidden;
+            flex-shrink: 0;
+            transform: scale(0) rotate(-180deg);
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        #so-container.show .avatar-wrapper {
+            transform: scale(1) rotate(0deg);
+        }
+
+        .user-avatar {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* CONTENT */
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .top-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
+        }
+
+        #so-container.expanded .top-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .shout-label {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: #bf94ff;
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #45f7e8;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .glass-pill {
+            background: rgba(20, 10, 35, 0.8);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(145, 70, 255, 0.3);
+            border-radius: 20px;
+            width: 450px; 
+            height: 0; 
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+
+        #so-container.expanded .glass-pill {
+            height: 80px;
+            padding: 20px 30px;
+        }
+
+        .so-message {
+            font-size: 1.1rem;
+            color: #e2d7ff;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease 0.6s;
+        }
+
+        #so-container.expanded .so-message {
+            opacity: 1;
+        }
+
+        .game-accent {
+            color: #00ffcc;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<div id="so-container">
+    <div class="avatar-wrapper">
+        <div class="user-avatar" id="avatar"></div>
+    </div>
+    
+    <div class="content-column">
+        <div class="top-label-row">
+            <span class="shout-label">Amazing Creator</span>
+            <span class="user-name" id="username">@User</span>
+        </div>
+        
+        <div class="glass-pill">
+            <div class="so-message" id="so-text">
+                Go check them out at <span class="game-accent">twitch.tv/user</span>!
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Configuration
+    const displayDuration = 10000; // 10 seconds
+
+    const params = new URLSearchParams(window.location.search);
+    const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+    ws.onopen = () => {
+        // Subscribing to Custom Shoutout event
+        ws.send(JSON.stringify({ 
+            request: "Subscribe", 
+            events: { general: ["Custom"] }, 
+            id: "ShoutoutOverlay" 
+        }));
+    };
+
+    ws.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        const d = response.data;
+
+        // Ensure this matches the event name you trigger in Streamer.bot
+        if (d && d.eventName === "shoutout") {
+            triggerShoutout(d);
+        }
+    };
+
+    function triggerShoutout(data) {
+        const container = document.getElementById('so-container');
+        const userName = document.getElementById('username');
+        const avatar = document.getElementById('avatar');
+        const soText = document.getElementById('so-text');
+
+        // Reset if currently showing
+        container.classList.remove('show', 'expanded');
+
+        // Allow DOM to reset
+        setTimeout(() => {
+            // Mapping Streamer.bot variables
+            userName.innerText = data.targetUser || "Streamer";
+            avatar.style.backgroundImage = `url('${data.targetUserProfileImageUrl}')`;
+            soText.innerHTML = `Go check them out at <span class="game-accent">twitch.tv/${data.targetUser}</span>!`;
+
+            container.classList.add('show'); 
+            
+            setTimeout(() => {
+                container.classList.add('expanded');
+            }, 600);
+
+            // Hide after duration
+            setTimeout(() => {
+                container.classList.remove('expanded');
+                setTimeout(() => container.classList.remove('show'), 700);
+            }, displayDuration);
+        }, 100);
+    }
+</script>
+</body>
+</html>
