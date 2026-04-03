@@ -1278,7 +1278,7 @@
           <option value="grounded">Grounded</option> <!--13-->
           <option value="twitch-live-notification">Twitch Live Notifications</option> <!--14-->
           <option value="discord-prelive-notification">Discord Pre-Live Notification</option> <!--15-->
-          <option value="auto-shoutout">[Auto Shout → Clips → Discord]</option> <!--16-->
+          <option value="shoutout">[Shoutout → Clips → Discord]</option> <!--16-->
           <option value="emote-bingo">Twitch Emote Stream Bingo</option> <!--17-->
           <option value="twitch-qa"> Twitch Q&A</option> <!--18-->
           <option value="cp-timer"> Channel Points Timer</option> <!--19-->
@@ -2196,22 +2196,36 @@
           </div>
         </div>
 
-        <!--[Auto Shout → Clips → Discord]-->
-        <div class="grid-item" id="auto-shoutout">
-          <h3>Auto Shoutout → Clips → Discord</h3>
+        <!--[Shoutout → Clips → Discord]-->
+        <div class="grid-item" id="shoutout">
+          <h3>Shoutout → Clips → Discord</h3>
           <div class="main-layout-wrapper">
             
-            <!-- Left Column: Code Selection -->
-            <div class="side-column">
+              <div class="side-column">
+              
+              <!-- OBS Link Selection -->
+              <div class="select-copy-container">
+                <label for="obs-select-16" style="display: block; margin-bottom: 5px; font-size: 0.9em">Select Overlay to Copy Link:</label>
+                <select id="obs-select-16" class="code-select-glassy" onchange="copySelectValue(this)">
+                    <option value="" disabled selected>Choose an overlay...</option>
+                    <option value="https://caitlinscreativespace.xyz/shoutout-overlay.html">Shoutout Overlay</option>
+                </select>
+                <p id="copy-status-16" style="font-size: 12px; color: #00ffcc; margin-top: 5px; height: 15px; font-weight: bold;"></p>
+              </div>
+
+              <div style="margin-top: 15px"></div>
+
+              <!-- Import Code Selection -->
               <div class="select-copy-container">
                 <label for="import-select-16" style="display: block; margin-bottom: 5px; font-size: 0.9em">Select Import Code to Copy:</label>
                 <select id="import-select-16" class="code-select-glassy" onchange="copySelectValue(this)">
                   <option value="" disabled selected>Choose a code...</option>
-                  <option value="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">Auto Shoutout Script</option>
+                  <option value="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">Shoutout Script</option>
                 </select>
-                <p id="copy-status-16" style="font-size: 12px; color: #00ffcc; margin-top: 5px; height: 15px; font-weight: bold;"></p>
               </div>
             </div>
+
+              
 
             <!-- Center Column: Info & Image -->
             <div class="center-column">
@@ -2219,11 +2233,11 @@
                 Select and copy the code to the left, then paste it into the <b>Streamer.bot Import</b> window.
               </p>
               <p class="credit-text">
-                This script automatically plays any of your clipd and sends a shoutout to your Discord server when someone raids or part of  a group on Streamer Bot.(Hopefully)
+                This script manual Shoutout then plays a clip then  sends a shoutout to your Discord server when someone raids by triggering the command **!so {user}** in your Twitch chat
               </p>
               <img
-                src="images/auto-shoutout-clips-discord.png"
-                alt="Auto Shoutout → Clips → Discord"
+                src="images/shoutout-clips-discord.png"
+                alt="Shoutout → Clips → Discord"
                 class="feature-img"
               />
             </div>
@@ -2234,26 +2248,25 @@
                 <video
                   class="modal-trigger"
                   controls
-                  data-modal="modal-auto-shoutout"
-                  data-src="Videos/auto-shoutout-clips-discord.mp4"
+                  data-modal="modal-shoutout"
+                  data-src="Videos/shoutout-clips-discord.mp4"
                 >
-                  <source src="Videos/auto-shoutout-clips-discord.mp4" type="video/mp4" />
+                  <source src="Videos/shoutout-clips-discord.mp4" type="video/mp4" />
                 </video>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Modal for Auto Shoutout -->
-        <div id="modal-auto-shoutout" class="video-modal">
+        <!-- Modal for Shoutout -->
+        <div id="modal-shoutout" class="video-modal">
           <div class="video-wrapper">
             <span class="close">&times;</span>
             <video controls>
-              <source src="Videos/auto-shoutout-clips-discord.mp4" type="video/mp4" />
+              <source src="Videos/shoutout-clips-discord.mp4" type="video/mp4" />
             </video>
           </div>
         </div>
-
         <!--Stream Bingo-->
         <div class="grid-item" id="emote-bingo">
           <h3>Stream Emote Bingo</h3>
