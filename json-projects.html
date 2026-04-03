@@ -14,7 +14,7 @@
 
     <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="OBS Widget Downloads - Caitlin's Creative Space">
+    <meta name="twitter:title" content="OBS Widget Downloads | Caitlin's Creative Space">
     <meta name="twitter:description" content="Custom automation and tools for your stream.">
     <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-obswidget.jpg">
 
@@ -512,61 +512,62 @@ h2 { text-align: center; }
     </footer>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-          /* ===== REMOVE .HTML FROM URL ===== */
-    (function hideHtmlInURL() {
-        const pathname = window.location.pathname;
-        if (pathname.endsWith(".html")) {
-            // Replace URL in browser without reloading the page
-            window.history.replaceState({}, "", pathname.replace(".html", ""));
-        }
-    })();
-    /* ===== DROP_DOWN SELECTION ===== */
-    const jsonDropdown = document.getElementById("jsonSections");
-    
-    if (jsonDropdown) {
-        jsonDropdown.addEventListener("change", function() {
-            const selectedValue = this.value;
+        document.addEventListener("DOMContentLoaded", function () {
+            /* ===== REMOVE .HTML FROM URL ===== */
+            (function hideHtmlInURL() {
+                const pathname = window.location.pathname;
+                if (pathname.endsWith(".html")) {
+                    // Replace URL in browser without reloading the page
+                    window.history.replaceState({}, "", pathname.replace(".html", ""));
+                }
+            })();
+            
+            /* ===== DROP_DOWN SELECTION ===== */
+            const jsonDropdown = document.getElementById("jsonSections");
+            
+            if (jsonDropdown) {
+                jsonDropdown.addEventListener("change", function() {
+                    const selectedValue = this.value;
 
-            // 1. Hide all sections first
-            const allTabs = document.querySelectorAll(".tab-content");
-            allTabs.forEach(tab => {
-                tab.classList.remove("active");
-            });
+                    // 1. Hide all sections first
+                    const allTabs = document.querySelectorAll(".tab-content");
+                    allTabs.forEach(tab => {
+                        tab.classList.remove("active");
+                    });
 
-            // 2. Show the one that matches the dropdown value
-            const targetTab = document.getElementById(selectedValue);
-            if (targetTab) {
-                targetTab.classList.add("active");
+                    // 2. Show the one that matches the dropdown value
+                    const targetTab = document.getElementById(selectedValue);
+                    if (targetTab) {
+                        targetTab.classList.add("active");
+                    }
+                });
             }
         });
-    }
-});
 
-/* ===== WIDGET DOWNLOAD ===== */
-function downloadWidget(widgetName, jsonFileName) {
-    // Note: The filePath inside the JSON is for OBS internal reference, 
-    // but the browser will save the actual file to the user's Downloads folder.
-    const jsonContent = {
-        "widgetName": widgetName,
-        "filePath": "C:\\Users\\caitl\\OneDrive\\Desktop\\Coding\\OBS Profile\\" + jsonFileName
-    };
+        /* ===== WIDGET DOWNLOAD ===== */
+        function downloadWidget(widgetName, jsonFileName) {
+            // Note: The filePath inside the JSON is for OBS internal reference, 
+            // but the browser will save the actual file to the user's Downloads folder.
+            const jsonContent = {
+                "widgetName": widgetName,
+                "filePath": "C:\\Users\\caitl\\OneDrive\\Desktop\\Coding\\OBS Profile\\" + jsonFileName
+            };
 
-    const dataStr = JSON.stringify(jsonContent, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = jsonFileName;
-    
-    document.body.appendChild(link);
-    link.click();
-    
-    // Cleanup
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-}
+            const dataStr = JSON.stringify(jsonContent, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = jsonFileName;
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>
