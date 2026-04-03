@@ -1,97 +1,565 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OBS Widget Downloads</title>
+
+    <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
+    <meta property="og:title" content="OBS Widget Downloads | Caitlin's Creative Space">
+    <meta property="og:description" content="Custom automation and tools for your stream.">
+    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-obswidget.jpg">
+    <meta property="og:url" content="https://caitlinscreativespace.xyz/json-projects.html">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="OBS Widget Downloads - Caitlin's Creative Space">
+    <meta name="twitter:description" content="Custom automation and tools for your stream.">
+    <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-obswidget.jpg">
+
+        <!-- Instagram Card (Uses OG Tags) -->
+        <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-obswidget.jpg">
+        <meta property="og:url" content="https://caitlinscreativespace.xyz/json-projects.html">
+
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="jsonstyle.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      /* CSS Custom Properties for a consistent theme */
+:root {
+    --primary-color: #490eee;
+    --secondary-color: #2cd1fa;
+    --accent-color: #04eeff;
+    --dark-bg: #0000007c;
+    --light-bg: #222;
+    --nav-bg: rgba(20, 20, 20, 0.9);
+    --nav-border: rgba(255, 255, 255, 0.1);
+    --text-color: #f4f4f4;
+    --input-bg: rgba(19, 18, 18, 0.582);
+    --border-color: rgba(255, 255, 255, 0.4);
+    --shadow-color: rgba(0, 0, 0, 0.541);
+    --font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --header-font: 'Poppins', sans-serif;
+}
 
-  </head>
-    <body>
-        <nav class="navbar">
-          <!-- New Return to Coding Button -->
-          <button class="tab-btn return-button" onclick="window.location.href='programming.html'">
-          <i class="fas fa-arrow-left"></i> 
-        </button>
+/* General Body and Page Layout */
+body {
+    font-family: var(--font-stack);
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(145deg, #0f0c29, #302b63, #24243e);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
 
-          <!-- Dropdown instead of navbar -->
-          <div class="json-select">
+/* Push content down because of fixed nav */
+.main-content {
+    margin-top: 100px;
+    padding: 2rem;
+}
+
+/* Glassy effect for containers */
+.container, .tab-content, .navbar, #jsonSections, button, .tab-btn {
+    background: rgba(40, 40, 40, 0.45);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    backdrop-filter: blur(16px) saturate(160%);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Container & Headings */
+.container { padding: 2rem; }
+h2 { text-align: center; }
+
+/* TAB LOGIC: Hidden by default, shown when active */
+.tab-content {
+    display: none;
+    padding: 20px;
+    animation: fadeIn 0.5s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+/* =========================
+   Cyber-Aero Header Banner
+   ========================= */
+.site-banner {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin-top: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    /* Deep violet to black base from the image */
+    background: radial-gradient(circle at center, #1e0b36 0%, #0a0a0a 100%);
+    border-bottom: 2px solid #32f2f8;
+}
+
+/* The Circuit Grid Effect */
+.site-banner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Drawing the circuit-like lines */
+    background-image: 
+        linear-gradient(rgba(50, 242, 248, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(50, 242, 248, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    /* This creates the "fade out" at the edges seen in the image */
+    -webkit-mask-image: radial-gradient(circle,black 30%,transparent 90%);
+    mask-image: radial-gradient(circle, black 30%, transparent 90%);
+    z-index: 1;
+}
+
+/* Glowing Aura behind the text */
+.site-banner::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(190, 46, 221, 0.3) 0%, transparent 60%);
+    filter: blur(40px);
+    z-index: 2;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+}
+
+.banner-content h1 {
+    font-size: 4rem;
+    margin: 0;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    /* Cyan to Purple Gradient Text */
+    background: linear-gradient(to bottom, #fff 20%, #32f2f8 50%, #be2edd 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* Intense Outer Glow */
+    filter: drop-shadow(0 0 10px rgba(50, 242, 248, 0.8)) 
+            drop-shadow(0 0 30px rgba(190, 46, 221, 0.5));
+}
+
+.banner-content p {
+    font-size: 1rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    margin-top: 15px;
+    font-weight: 600;
+    opacity: 0.9;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* Neon Divider Line */
+.banner-line {
+    width: 150px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #32f2f8, #be2edd, transparent);
+    margin: 20px auto 0;
+    box-shadow: 0 0 15px #32f2f8;
+}
+
+/* Responsive Fix */
+@media (max-width: 768px) {
+    .site-banner { height: 300px; }
+    .banner-content h1 { font-size: 2.2rem; }
+    .banner-content p { font-size: 0.8rem; letter-spacing: 3px; }
+}
+/* =========================
+   Navigation Bar
+   ========================= */
+.horizontal-nav {
+    width: 100%;
+    background: var(--nav-bg);
+    backdrop-filter: blur(12px);
+    padding: 12px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* This ensures the nav links and dropdown are vertically centered */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--nav-border);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.horizontal-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-list {
+    list-style: none;
+    display: flex;
+    align-items: center; /* Keeps list items perfectly aligned */
+    gap: 15px;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-list li {
+    display: flex;
+}
+
+.nav-list a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s ease-in-out;
+    color: #f0f0f0;
+}
+
+.nav-list a  {
+    font-size: 20px; /* Match other icons */
+    margin-right: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-list a:hover  {
+    background-color: #32f2f8; /* Same as hover color for other icons */
+}
+
+.nav-list a i {
+    margin-right: 8px;
+    font-size: 20px;
+    transition: color 0.3s ease;
+}
+
+.nav-list a:hover i {
+    color: #32f2f8;
+}
+
+.nav-list a:hover {
+    -webkit-text-fill-color: transparent;
+    background: linear-gradient(60deg, #be2edd, #00a8ff, #f79f1f);
+    background-clip: text;
+    box-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
+}
+
+.nav-list img {
+    margin-right: 8px;
+    width: 22px;
+    height: 22px;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
+}
+
+.btn {
+    background-color: #623af3;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background-color: #080808;
+}
+
+/* Dropdown styling */
+.json-select {
+    display: flex;
+    align-items: center; /* Aligns the select box itself */
+}
+
+.json-select select {
+    padding: 8px;
+    background: #1a1a1a;
+    color: white;
+    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    margin-left: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit; /* Helps match the font to the rest of the nav */
+    font-size: 15px; /* Matches the nav link font size */
+}
+
+.json-select select:hover, .json-select select:focus {
+    border: 1px solid #4b06cc;
+    box-shadow: 0 0 15px rgba(75,6,204,0.7);
+    outline: none;
+}
+
+/* Container Centering */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Horizontally centers the tab contents */
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(4, 238, 255, 0.5);
+}
+
+/* Wrapper for Instructions to keep text readable but centered */
+.instructions-wrapper, .widget-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Centering the List while keeping text left-aligned */
+.centered-list {
+    display: inline-block;
+    text-align: left;
+    padding: 0;
+    margin: 1.5rem 0;
+    list-style-position: inside; /* Keeps bullets/numbers aligned with text */
+    color: #e0e0e0;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.centered-list li {
+    margin-bottom: 10px;
+}
+
+/* Widget Card Styling */
+.widget-card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Ensure the button is centered */
+.btn {
+    align-self: center;
+    margin-top: 1rem;
+}
+/* Footer */
+.site-footer {
+    position: relative;
+    padding: 20px 40px;
+    margin-top: auto;
+    background: rgba(28,28,28,0.8);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.4);
+    transition: all 0.5s ease-in-out;
+    border-radius: 15px 15px 0 0;
+}
+
+.site-footer:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.6), 0 -2px 10px rgba(84,238,199,0.5);
+}
+
+.footer-content { 
+    display: flex; 
+    justify-content: space-between; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    color: #ccc; 
+    font-size: 0.9rem; 
+}
+
+.footer-content p { 
+    margin: 0; 
+    font-weight: 300; 
+}
+
+.footer-links { 
+    display: flex; 
+    gap: 20px; 
+}
+
+.footer-links a { 
+    color: var(--secondary-color); 
+    text-decoration: none; 
+    transition: 0.3s; 
+}
+
+.footer-links a:hover { 
+    color: var(--accent-color); 
+    text-shadow: 0 0 8px rgba(84,238,199,0.6); 
+}
+
+/* Responsive Footer */
+@media (max-width: 768px) { 
+    .footer-content { 
+        flex-direction: column; 
+        text-align: center; 
+    } 
+    .footer-links {
+        justify-content: center;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+    </style>
+</head>
+<body>
+    <header class="site-banner">
+    <div class="banner-overlay"></div>
+    <div class="banner-content">
+        <h1>OBS Widget Downloads</h1>
+        <p>Enhance your stream with custom JSON configurations</p>
+        <div class="banner-line"></div>
+    </div>
+</header>
+    <nav id="horizontal-nav" class="horizontal-nav">
+        <ul class="nav-list">
+            <li><a id="nav-coding" href="programming.html"><i class="fas fa-code"></i><span>Programming</span></a></li>
+            <li><a id="nav-streaming" href="schedule.html"><i class="fas fa-video"></i><span>Content</span></a></li>
+            <li><a id="nav-contact" href="contact.html"><i class="fas fa-envelope"></i><span>Contact</span></a></li>
+        </ul>
+
+        <div class="json-select">
             <select id="jsonSections" aria-label="Choose a JSON section">
-              <option value="instructions">Instructions</option>
-              <option value="dnd">DND</option>
-              <option value="photo-border">Photo Border</option>
-              <option value="photo-widget">Photo Widget</option>
+                <option value="instructions">Instructions</option>
+                <option value="dnd">DND</option>
+                <option value="photo-border">Photo Border</option>
+                <option value="photo-widget">Photo Widget</option>
             </select>
-          </div>
-        </nav>
-        
-        <div class="container">
-          <h2>OBS Widgets</h2>
+        </div>
+    </nav>
 
+    <div class="container main-content">
+        <h2>OBS Widgets</h2>
 
-          <div id="dnd" class="tab-content">
-            <h3>DND Widget</h3>
-            <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
-            <button onclick="downloadWidget('DND Widget.json', 'DND Widget.json')">Download</button>
-          </div>
-
-          <div id="photo-border" class="tab-content">
-            <h3>Photo Booth Border</h3>
-            <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
-            <button onclick="downloadWidget('Photo Booth Border.json', 'Photo Booth Border.json')">Download</button>
-          </div>
-
-          <div id="photo-widget" class="tab-content">
-            <h3>Photo Booth Widget</h3>
-            <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
-            <button onclick="downloadWidget('Photo Booth Widget.json', 'Photo Booth Widget.json')">Download</button>
-          </div>
-
-          <div id="instructions" class="tab-content">
+        <div id="instructions" class="tab-content active">
             <h3>Installation Instructions</h3>
             <ol>
-              <li>Download the Source Copy plugin from the 
-                <p>
-                  Visit the <a href="https://obsproject.com/forum/resources/source-copy.1261/" target="_blank" rel="noopener noreferrer">OBS Plugin site</a> for more details.
-                </p>
-              </li>
-              <li>Close OBS before installing the plugin.</li>
-              <li>Follow installation steps on the website.</li>
-              <li>Restart OBS and import the widget JSON.</li>
+                <li>Download the Source Copy plugin from the 
+                    <p>Visit the <a href="https://obsproject.com/forum/resources/source-copy.1261/" target="_blank">OBS Plugin site</a>.</p>
+                </li>
+                <li>Close OBS before installing the plugin.</li>
+                <li>Follow installation steps on the website.</li>
+                <li>Restart OBS and import the widget JSON.</li>
             </ol>
-          </div>
+
+            <section class="instructions-section">
+                <div class="section-video">
+                    <video controls autoplay loop muted>
+                        <source src="videos/obs-installation-guide.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p class="video-caption">Visual guide: How to import widgets into OBS</p>
+                </div>
+            </section>
         </div>
 
-        <section class="instructions-section">
-          <!-- Video for visual instructions -->
-          <div class="section-video" style="display:flex; flex-direction:column; align-items:center; justify-content:center; margin:2rem 0;">
-            <video controls autoplay loop muted 
-                  style="max-width:90%; border-radius:15px; box-shadow:0 8px 30px rgba(0,0,0,0.35);">
-              <source src="videos/obs-installation-guide.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
-            <p style="text-align:center; font-size:0.9rem; color:#ccc; margin-top:0.5rem;">
-              Visual guide: How to import widgets into OBS using the Source Copy plugin
-            </p>
-          </div>
-        </section>
+        <div id="dnd" class="tab-content">
+            <h3>DND Widget</h3>
+            <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
+            <button class="btn" onclick="downloadWidget('DND Widget.json', 'DND Widget.json')">Download</button>
+        </div>
 
+        <div id="photo-border" class="tab-content">
+            <h3>Photo Booth Border</h3>
+            <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
+            <button class="btn" onclick="downloadWidget('Photo Booth Border.json', 'Photo Booth Border.json')">Download</button>
+        </div>
 
+        <div id="photo-widget" class="tab-content">
+            <h3>Photo Booth Widget</h3>
+            <p>Download the JSON and install the Source Copy plugin to use this widget in OBS.</p>
+            <button class="btn" onclick="downloadWidget('Photo Booth Widget.json', 'Photo Booth Widget.json')">Download</button>
+        </div>
+    </div>
 
-        
-        
-  </body>
-  <script src="jscript.js"></script>
-  <footer class="site-footer">
-            <div class="footer-content">
-                <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
-                <div class="footer-links">
-                    <a href="privacy-policy.html">Privacy Policy</a>
-                    <a href="terms-of-service.html">Terms of Service</a>
-                </div>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Caitlin's Creative Space | All Rights Reserved</p>
+            <div class="footer-links">
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms-of-service.html">Terms of Service</a>
             </div>
-  </footer>
+        </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+    
+    /* ===== DROP_DOWN SELECTION ===== */
+    const jsonDropdown = document.getElementById("jsonSections");
+    
+    if (jsonDropdown) {
+        jsonDropdown.addEventListener("change", function() {
+            const selectedValue = this.value;
+
+            // 1. Hide all sections first
+            const allTabs = document.querySelectorAll(".tab-content");
+            allTabs.forEach(tab => {
+                tab.classList.remove("active");
+            });
+
+            // 2. Show the one that matches the dropdown value
+            const targetTab = document.getElementById(selectedValue);
+            if (targetTab) {
+                targetTab.classList.add("active");
+            }
+        });
+    }
+});
+
+/* ===== WIDGET DOWNLOAD ===== */
+function downloadWidget(widgetName, jsonFileName) {
+    // Note: The filePath inside the JSON is for OBS internal reference, 
+    // but the browser will save the actual file to the user's Downloads folder.
+    const jsonContent = {
+        "widgetName": widgetName,
+        "filePath": "C:\\Users\\caitl\\OneDrive\\Desktop\\Coding\\OBS Profile\\" + jsonFileName
+    };
+
+    const dataStr = JSON.stringify(jsonContent, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = jsonFileName;
+    
+    document.body.appendChild(link);
+    link.click();
+    
+    // Cleanup
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+    </script>
+</body>
 </html>
