@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Bloodborne Boss Reveal</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+    /* 1. DEFINE THE CUSTOM FONT */
+    @font-face {
+        font-family: 'fleshandblood';
+        src: local('fleshandblood'),
+             url('fonts/fleshandblood.ttf') format('truetype'); /* Optional: path to font file if local fails */
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        /* 2. APPLY TO ENTIRE DOCUMENT OR SPECIFIC ELEMENTS */
+        font-family: 'fleshandblood', "Cinzel", serif; 
+    }
+
+/* FANCY CORNERS */
+.corner {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #7a7a7a;
+    opacity: 0.8;
+}
+
+/* Creating the "L" shape brackets for each corner */
+.top-left {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.top-right {
+    top: 10px;
+    right: 10px;
+    border-left: none;
+    border-bottom: none;
+}
+
+.bottom-left {
+    bottom: 10px;
+    left: 10px;
+    border-right: none;
+    border-top: none;
+}
+
+.bottom-right {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+/* Adding a small ornate dot/circle to each corner tip */
+.corner::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #aaa;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(255,255,255,0.5);
+}
+
+.top-left::after { top: -4px; left: -4px; }
+.top-right::after { top: -4px; right: -4px; }
+.bottom-left::after { bottom: -4px; left: -4px; }
+.bottom-right::after { bottom: -4px; right: -4px; }
+
+/* REVISED MAIN PANEL (Added border-left/right to complete the frame) */
+#alert-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 40px 80px;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(15, 10, 10, 0.95) 50%,
+        rgba(0, 0, 0, 0.9) 100%
+    );
+    /* Changed to full border for the corner look */
+    border: 1px solid #444; 
+    border-top: 2px solid #7a7a7a;
+    border-bottom: 2px solid #7a7a7a;
+    box-shadow:
+        0 0 60px rgba(0, 0, 0, 1),
+        0 0 120px rgba(0, 0, 0, 0.8) inset;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.7s ease;
+    min-width: 1000px;
+}
+
+    #alert-wrapper.show {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* ORNAMENTS (Top & Bottom) */
+    #alert-wrapper::before, #alert-wrapper::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 420px;
+        height: 40px;
+        background:
+            radial-gradient(circle at center, rgba(200, 200, 200, 0.9) 2px, transparent 2px),
+            linear-gradient(to right, transparent 0%, #888 40%, #888 60%, transparent 100%);
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.6;
+    }
+
+    #alert-wrapper::before { top: -20px; }
+    #alert-wrapper::after { bottom: -20px; }
+
+    /* BOSS IMAGE */
+    .entity-container { margin-right: 40px; }
+    #entity-image {
+        width: 300px;
+        height: 300px;
+        object-fit: contain;
+        opacity: 0;
+        filter: drop-shadow(0 0 20px black) drop-shadow(0 0 40px rgba(0, 0, 0, 0.8));
+    }
+
+    #alert-wrapper.show #entity-image {
+        animation: bossReveal 1.4s ease forwards;
+    }
+
+    @keyframes bossReveal {
+        0% { opacity: 0; transform: translateX(-80px) scale(0.6); }
+        100% { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    /* TEXT CONTENT */
+    .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        /* Ensure all text uses the custom font */
+        font-family: 'fleshandblood', serif;
+    }
+
+    .narrator {
+        font-size: 32px;
+        color: #d0d0d0;
+        letter-spacing: 2px;
+        margin-bottom: 6px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .divider {
+        width: 90%;
+        height: 18px;
+        margin: 8px 0;
+        background: linear-gradient(to right, transparent, #777 20%, #aaa 50%, #777 80%, transparent);
+        opacity: 0.6;
+    }
+
+    .character {
+        font-size: 96px;
+        color: white;
+        letter-spacing: 4px;
+        line-height: 1.1;
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.2), 0 0 60px rgba(255, 255, 255, 0.1);
+        margin-top: -10px;
+        text-transform: capitalize;
+    }
+
+    .personality {
+        font-size: 36px;
+        color: #e6e6e6;
+        letter-spacing: 2px;
+        margin-top: 5px;
+    }
+
+    .status {
+        font-size: 32px;
+        color: #cfcfcf;
+        letter-spacing: 2px;
+        margin-top: 6px;
+    }
+
+    /* AVATAR */
+    .avatar-frame {
+        margin-left: 40px;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        border: 3px solid #7a7a7a;
+        box-shadow: 0 0 20px black, 0 0 30px rgba(0, 0, 0, 0.8);
+        overflow: hidden;
+    }
+
+    .avatar {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+    }
+</style>
+  </head>
+
+  <body>
+<div id="alert-wrapper">
+    <div class="corner top-left"></div>
+    <div class="corner top-right"></div>
+    <div class="corner bottom-left"></div>
+    <div class="corner bottom-right"></div>
+
+    <div class="entity-container">
+        <img id="entity-image" />
+    </div>
+
+    <div class="content">
+        <div id="username" class="narrator"></div>
+        <div class="divider"></div>
+        <div id="char-name" class="character">t</div>
+        <div id="personality" class="personality"></div>
+        <div class="divider"></div>
+        <div id="status" class="status"></div>
+    </div>
+
+    <div class="avatar-frame">
+        <div id="avatar" class="avatar"></div>
+    </div>
+</div>
+
+    <script>
+      /* IMAGE FOLDER */
+
+      const IMG_FOLDER = "BloodBorne/";
+
+      /* ELEMENTS */
+
+      const wrapper = document.getElementById("alert-wrapper");
+      const username = document.getElementById("username");
+      const charName = document.getElementById("char-name");
+      const personality = document.getElementById("personality");
+      const status = document.getElementById("status");
+      const avatar = document.getElementById("avatar");
+      const entity = document.getElementById("entity-image");
+
+      /* STREAMER.BOT WEBSOCKET */
+
+      const params = new URLSearchParams(window.location.search);
+
+      const ws = new WebSocket(
+        `ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`,
+      );
+
+      ws.onopen = () => {
+        ws.send(
+          JSON.stringify({
+            request: "Subscribe",
+            events: { general: ["Custom"] },
+            id: "BloodborneReveal",
+          }),
+        );
+      };
+
+      /* EVENT HANDLER */
+
+      ws.onmessage = async (event) => {
+        const response = JSON.parse(event.data);
+        const d = response.data || response;
+
+        if (d.eventName === "BloodborneReveal") {
+          username.innerText = d.user;
+          charName.innerText = d.characterName;
+          personality.innerText = d.personality;
+          status.innerText = d.status;
+
+          avatar.style.backgroundImage = `url('${d.avatar}')`;
+
+          await loadCharacterImage(d.characterName);
+
+          showAlert();
+        }
+      };
+
+      /* SHOW ALERT */
+
+      function showAlert() {
+        wrapper.classList.add("show");
+
+        setTimeout(() => {
+          wrapper.classList.remove("show");
+        }, 10000);
+      }
+
+      /* LOAD CHARACTER IMAGE */
+
+      async function loadCharacterImage(name) {
+        const extensions = ["png", "webp", "jpg"];
+
+        entity.src = "";
+
+        for (const ext of extensions) {
+          const path = `${IMG_FOLDER}${name}.${ext}`;
+
+          const test = new Image();
+
+          test.src = path;
+
+          await new Promise((res) => {
+            test.onload = () => {
+              entity.src = path;
+              res();
+            };
+
+            test.onerror = () => res();
+          });
+
+          if (entity.src) break;
+        }
+      }
+    </script>
+  </body>
+</html>
