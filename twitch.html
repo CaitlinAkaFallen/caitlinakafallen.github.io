@@ -1198,11 +1198,11 @@
     <div class="clips-section">
       <h2 onclick="toggleClips()">Recent Clips</h2>
       <div id="clipsContainer" class="clips-row">
-       <iframe src="https://clips.twitch.tv/embed?clip=ArbitraryFrigidDiscBabyRage-Y5h_dBp0jr3J373d&parent=localhost" title="Twitch Clip: ArbitraryFrigidDiscBabyRage" allowfullscreen></iframe>
-        <iframe src="https://clips.twitch.tv/embed?clip=EndearingInspiringStinkbugYouWHY-7-ukExW7FN-dX_dk&parent=localhost" title="Twitch Clip: EndearingInspiringStinkbugYouWHY" allowfullscreen></iframe>
-        <iframe src="https://clips.twitch.tv/embed?clip=ThirstyOptimisticTrollFeelsBadMan-VCPPKHW3DaUw9xtT&parent=localhost" title="Twitch Clip: ThirstyOptimisticTrollFeelsBadMan" allowfullscreen></iframe>
-        <iframe src="https://clips.twitch.tv/embed?clip=SlipperySquareKumquatPoooound-gFEPFF5mTYtRKa-i&parent=localhost" title="Twitch Clip: SlipperySquareKumquatPoooound" allowfullscreen></iframe>
-        <iframe src="https://clips.twitch.tv/embed?clip=CalmGleamingFriseeBatChest-yQy2hvT4qq9Nca6c&parent=localhost" title="Twitch Clip: CalmGleamingFriseeBatChest" allowfullscreen></iframe>
+        <iframe src="https://clips.twitch.tv/embed?clip=ArbitraryFrigidDiscBabyRage-Y5h_dBp0jr3J373d&parent=caitlinscreativespace.xyz" title="Twitch Clip: ArbitraryFrigidDiscBabyRage" allowfullscreen></iframe>
+        <iframe src="https://clips.twitch.tv/embed?clip=EndearingInspiringStinkbugYouWHY-7-ukExW7FN-dX_dk&parent=caitlinscreativespace.xyz" title="Twitch Clip: EndearingInspiringStinkbugYouWHY" allowfullscreen></iframe>
+        <iframe src="https://clips.twitch.tv/embed?clip=ThirstyOptimisticTrollFeelsBadMan-VCPPKHW3DaUw9xtT&parent=caitlinscreativespace.xyz" title="Twitch Clip: ThirstyOptimisticTrollFeelsBadMan" allowfullscreen></iframe>
+        <iframe src="https://clips.twitch.tv/embed?clip=SlipperySquareKumquatPoooound-gFEPFF5mTYtRKa-i&parent=caitlinscreativespace.xyz" title="Twitch Clip: SlipperySquareKumquatPoooound" allowfullscreen></iframe>
+        <iframe src="https://clips.twitch.tv/embed?clip=CalmGleamingFriseeBatChest-yQy2hvT4qq9Nca6c&parent=caitlinscreativespace.xyz" title="Twitch Clip: CalmGleamingFriseeBatChest" allowfullscreen></iframe>
       </div>
     </div>
   </div>
@@ -1214,12 +1214,18 @@
 
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
 <script>
-
 /* ==========================
    Full unified JS (replace your existing script block with this)
    Keeps your UI, adds cross-browser login fix, and fixes storage mismatch
    ========================== */
-
+   /* ===== REMOVE .HTML FROM URL ===== */
+          (function hideHtmlInURL() {
+              const pathname = window.location.pathname;
+              if (pathname.endsWith(".html")) {
+                  // Replace URL in browser without reloading the page
+                  window.history.replaceState({}, "", pathname.replace(".html", ""));
+              }
+          })();
 /* ==========================================
    GLOBAL STATE & CONFIGURATION
    ========================================== */
@@ -1234,7 +1240,7 @@ let cachedAvatars = {};
 
 // Login / App credentials (kept as you provided)
 const LOGIN_CLIENT_ID = "iv3dicfghd1hflqzzysljadc8mw1sa";
-const OAUTH_REDIRECT = "https://caitlinscreativespace.xyz/twitch.html";
+const OAUTH_REDIRECT = "https://caitlinscreativespace.xyz/twitch";
 const LOGIN_SCOPE = "user:read:email user:read:follows";
 
 // Main app tokens (kept)
