@@ -3,78 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitch Viking Follower Alert</title>
+    <title>Crystal Heart Follower Alert</title>
     <style>
-        /* [Keeping your beautiful CSS styles from the raid alert] */
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
 
-        body { margin: 0; padding: 40px; background-color: transparent; font-family: 'Inter', sans-serif; overflow: hidden; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        #alert-container {
-            display: inline-flex;
-            align-items: center;
+        body {
+            padding: 50px;
+            background: transparent; 
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        /* ═══════════════════════════════════════
+        TRANSPARENT PURE CSS CRYSTAL HEART
+        ═══════════════════════════════════════ */
+        .avatar-wrapper {
             position: relative;
-            background: radial-gradient(circle at center, rgba(20, 55, 65, 0.98) 0%, rgba(10, 25, 30, 1) 100%);
-            -webkit-backdrop-filter: blur(15px);
-            backdrop-filter: blur(15px);
-            padding: 20px 45px;
-            border-radius: 4px;
-            clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
-            border-left: 5px solid #00f2ff;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2), inset 0 0 20px rgba(0,0,0,0.5);
-            transition: all 0.5s ease;
-            max-width: 850px;
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+            transform: translateX(-300px) rotate(-720deg);
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.4, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #qna-container.show .avatar-wrapper { 
+            transform: translateX(0) rotate(0deg); 
+        }
+
+        .crystal-heart {
+            width: 90%;
+            height: 90%;
+            position: relative;
+            clip-path: url(#heart-clip);
+            background: transparent;
+            filter: drop-shadow(0 0 10px rgba(77, 245, 245, 0.6));
+        }
+
+        .crystal-heart::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, 
+                rgba(240, 98, 146, 0.7) 0%, 
+                rgba(186, 104, 200, 0.7) 50%, 
+                rgba(77, 245, 245, 0.7) 100%);
+            mix-blend-mode: screen;
+        }
+
+        .crystal-heart::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                linear-gradient(60deg, rgba(255,255,255,0.7) 10%, rgba(255,255,255,0) 30%),
+                linear-gradient(-120deg, rgba(255,255,255,0.6) 10%, rgba(255,255,255,0) 40%),
+                linear-gradient(180deg, rgba(0,0,0,0.2) 60%, rgba(255,255,255,0.4) 100%);
+            animation: crystalShine 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes crystalShine {
+            0% { opacity: 0.5; filter: contrast(1.1); }
+            100% { opacity: 1; filter: contrast(1.4); }
+        }
+
+        /* ═══════════════════════════════════════
+        HEART BURST PARTICLES
+        ═══════════════════════════════════════ */
+        .heart-particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 10;
+            animation: heartBurst 1.2s cubic-bezier(0.12, 0, 0.39, 0) forwards;
+        }
+
+        @keyframes heartBurst {
+            0% { transform: translate(0, 0) scale(0); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; }
+        }
+
+        /* ═══════════════════════════════════════
+        ALERT INTERFACE
+        ═══════════════════════════════════════ */
+        #qna-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
             opacity: 0;
-            transform: translateX(-150px) skewX(-10deg);
+            transform: translateX(-50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        .avatar-wrapper { margin-right: 25px; position: relative; z-index: 2; }
+        #qna-container.show { opacity: 1; transform: translateX(0); }
 
-        .follower-avatar {
-            width: 85px; height: 85px; 
-            clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
-            background-size: cover; background-position: center;
-            border: 2px solid #00f2ff;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
-            background-color: #0a191e; /* Dark fill for anonymous */
+        .content-column { display: flex; flex-direction: column; }
+
+        .top-label-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 0 15px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
         }
 
-        .text-group { display: flex; flex-direction: column; transform: skewX(10deg); z-index: 2; }
+        #qna-container.expanded .top-label-row { opacity: 1; transform: translateY(0); }
 
-        .follower-name { 
-            font-family: 'Cinzel', serif; font-size: 1.9rem; font-weight: 900; 
-            color: #ffffff; text-transform: uppercase; letter-spacing: 3px;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.8), 2px 2px 5px rgba(0,0,0,1);
+        .inquiry-label { font-size: 0.65rem; letter-spacing: 2px; color: #f06292; text-transform: uppercase; font-weight: 700; }
+        .user-name { font-size: 1rem; font-weight: 700; color: #ccd6f6; letter-spacing: 1px; }
+
+        .glass-pill {
+            background: rgba(15, 20, 30, 0.85);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            width: 420px; 
+            height: 0; 
+            padding: 0 25px;
+            opacity: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
         }
 
-        .follow-message { 
-            font-size: 1.1rem; font-weight: 600; line-height: 1.3; margin-top: 5px;
-            color: #a0c0c8; text-shadow: 1px 1px 2px black;
+        #qna-container.expanded .glass-pill { height: 70px; opacity: 1; padding: 15px 25px; }
+
+        .question-text { font-size: 1.1rem; color: #ffffff; opacity: 0; transition: opacity 0.3s ease 0.4s; }
+        #qna-container.expanded .question-text { opacity: 1; }
+
+        .bottom-label-row {
+            margin-top: 8px;
+            padding-right: 15px;
+            display: flex;
+            justify-content: flex-end;
+            opacity: 0;
+            transition: opacity 0.4s ease 0.5s;
         }
 
-        .show-alert { animation: valhalla-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .hide-alert { animation: valhalla-out 0.6s ease-in forwards; }
-
-        @keyframes valhalla-in {
-            from { transform: translateX(-150px) skewX(-10deg); opacity: 0; filter: brightness(2); }
-            to { transform: translateX(0) skewX(-10deg); opacity: 1; filter: brightness(1); }
-        }
-
-        @keyframes valhalla-out {
-            from { transform: translateX(0) skewX(-10deg); opacity: 1; }
-            to { transform: translateX(200px) skewX(-10deg); opacity: 0; }
-        }
+        #qna-container.expanded .bottom-label-row { opacity: 1; }
+        .time-stamp { font-size: 0.7rem; color: #4df5f5; font-weight: 700; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-    <div id="alert-container">
-        <div class="avatar-wrapper">
-            <div class="follower-avatar" id="avatar"></div>
+    <svg width="0" height="0" style="position: absolute;">
+        <defs>
+            <clipPath id="heart-clip" clipPathUnits="objectBoundingBox">
+                <path d="M0.5,0.9 C0.4,0.8,0,0.55,0,0.35 C0,0.15,0.15,0,0.3,0 C0.4,0,0.45,0.05,0.5,0.1 C0.55,0.05,0.6,0,0.7,0 C0.85,0,1,0.15,1,0.35 C1,0.55,0.6,0.8,0.5,0.9"></path>
+            </clipPath>
+        </defs>
+    </svg>
+
+    <div id="qna-container">
+        <div class="avatar-wrapper" id="particle-origin">
+            <div class="crystal-heart"></div>
         </div>
-        <div class="text-group">
-            <div class="follower-name" id="username">New Follower</div>
-            <div class="follow-message" id="display-message">A new warrior joins the clan!</div>
+        
+        <div class="content-column">
+            <div class="top-label-row">
+                <div class="inquiry-label">New Follower</div>
+                <div class="user-name" id="username">Loading...</div>
+            </div>
+
+            <div class="glass-pill">
+                <div class="question-text" id="display-message">Just materialized!</div>
+            </div>
+
+            <div class="bottom-label-row">
+                <div class="time-stamp">JUST NOW</div>
+            </div>
         </div>
     </div>
 
@@ -82,50 +189,76 @@
         const params = new URLSearchParams(window.location.search);
         const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
 
+        const colors = ['#f06292', '#ba68c8', '#4df5f5'];
+
+        function createHeartBurst() {
+            const origin = document.getElementById('particle-origin');
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-particle';
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.random() * 12 + 10;
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * 100 + 40;
+                
+                heart.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+                heart.style.left = '45px';
+                heart.style.top = '45px';
+                heart.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+                heart.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+                
+                origin.appendChild(heart);
+                setTimeout(() => heart.remove(), 1200);
+            }
+        }
+
+        // Logic to trigger the alert
+        function triggerFollow(userName, message) {
+            const container = document.getElementById('qna-container');
+            document.getElementById('username').innerText = userName;
+            document.getElementById('display-message').innerText = message;
+
+            // Reset state
+            container.classList.remove('show', 'expanded');
+
+            // Show animation
+            setTimeout(() => {
+                container.classList.add('show');
+                setTimeout(() => {
+                    container.classList.add('expanded');
+                    createHeartBurst();
+                }, 600);
+            }, 100);
+
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                container.classList.remove('expanded');
+                setTimeout(() => {
+                    container.classList.remove('show');
+                }, 600);
+            }, 10000);
+        }
+
+        // WebSocket Listener
         ws.onopen = () => {
             ws.send(JSON.stringify({ 
                 request: "Subscribe", 
                 events: { general: ["Custom"] }, 
-                id: "VikingFollowListener" 
+                id: "FollowAlertListener" 
             }));
         };
 
-       ws.onmessage = (event) => {
+        ws.onmessage = (event) => {
             const response = JSON.parse(event.data);
-            // Check for the correct event name from your Streamer.bot sub-action
             if (response.data && response.data.eventName === "followAlert") {
-                triggerFollow(response.data);
+                triggerFollow(
+                    response.data.user || "Anonymous", 
+                    response.data.message || "Joined the clan!"
+                );
             }
         };
 
-        function triggerFollow(data) {
-            const container = document.getElementById('alert-container');
-            const avatar = document.getElementById('avatar');
-            const userText = document.getElementById('username');
-            const messageText = document.getElementById('display-message');
-
-            // 1. Use actual data from Streamer.bot (or fallback if empty)
-            const followerName = data.user || "A Mysterious Warrior";
-            const customMsg = data.message || "Has stepped out of the mist to join the clan!";
-            
-            userText.innerText = followerName;
-            messageText.innerText = customMsg;
-            
-            // 2. Avatar logic: Use user's profile pic if available, otherwise your Viking silhouette
-            const userImg = data.avatar || "https://i.imgur.com/vHQuUvX.png"; 
-            avatar.style.backgroundImage = `url('${userImg}')`;
-
-            // 3. Animation Logic
-            container.style.opacity = "0"; // Reset before starting
-            container.classList.remove('show-alert', 'hide-alert');
-            void container.offsetWidth; // Force reflow
-            container.classList.add('show-alert');
-
-            setTimeout(() => {
-                container.classList.remove('show-alert');
-                container.classList.add('hide-alert');
-            }, 10000); 
-        }
+        // For manual testing in browser console: triggerFollow("Username", "Message")
     </script>
 </body>
 </html>
