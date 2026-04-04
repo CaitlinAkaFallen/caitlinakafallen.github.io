@@ -55,7 +55,7 @@
           </a>
         </li>
         <li>
-          <a id="nav-coding" href="programming.html">
+          <a id="nav-coding" href="programming-new.html">
             <i class="fas fa-code"></i><span>Programming</span>
           </a>
         </li>
@@ -85,22 +85,18 @@
           </a>
         </li>
          <!-- Hidden User Profile (shows after login) -->
-        <div class="nav-right">
-    <div id="userProfile" style="display: flex; align-items: center; list-style: none;">
-        <a href="javascript:void(0)" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
-            <img
-                id="profilePic"
-                src="images/default-avatar.png"
-                alt="Profile Picture"
-                style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px; object-fit: cover;"
-            >
-            <span id="profileName" style="font-weight: 600;">Username</span>
-        </a>
-        <button id="logoutBtn" style="margin-left: 10px; padding: 4px 12px; border: none; border-radius: 6px; cursor: pointer; background-color: #f0f0f0;">
-            Logout
-        </button>
-    </div>
-</div>
+        <li id="userProfile" style="display:none;">
+            <a href="javascript:void(0)" style="display:flex; align-items:center;">
+                <img
+                    id="profilePic"
+                    src="images/default-avatar.png"
+                    alt="Profile Picture"
+                    style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;"
+                >
+                <span id="profileName" style="font-weight:600;"></span>
+            </a>
+            <button id="logoutBtn" style="margin-left:10px; padding:4px 8px; border:none; border-radius:6px; cursor:pointer;">Logout</button>
+        </li>
       </ul>
     </nav>
 
@@ -265,10 +261,6 @@
 
     </div>
 
-          
-
-    
-   
 
        <footer>
           <p>© 2025 Caitlin's Creative Space | All Rights Reserved</p> 
