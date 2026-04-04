@@ -1,215 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Donation Alert</title>
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Pill Donation Alert</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap");
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-
-        padding: 20px;
-
-        background: transparent;
-
-        font-family: "Inter", sans-serif;
-
-        overflow: hidden;
-      }
-
-      /* ALERT WRAPPER */
-
-      #alert-wrapper {
-        display: flex;
-
-        align-items: center;
-
-        opacity: 0;
-
-        transform: translateX(-100px);
-
-        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      #alert-wrapper.show {
-        opacity: 1;
-
-        transform: translateX(0);
-      }
-
-      /* PILL */
-
-      #pill-container {
-        display: flex;
-
-        align-items: center;
-
-        background: radial-gradient(
-          circle,
-          rgba(20, 55, 65, 0.98) 0%,
-          rgba(10, 25, 30, 1) 100%
-        );
-
-        /* Safari fix */
-
-        -webkit-backdrop-filter: blur(15px);
-
-        backdrop-filter: blur(15px);
-
-        padding: 18px 35px;
-
-        /* safer sizing */
-
-        min-width: 450px;
-
-        max-width: 800px;
-
-        width: auto;
-
-        /* shape */
-
-        clip-path: polygon(4% 0%, 100% 0%, 96% 100%, 0% 100%);
-
-        border-left: 6px solid #00f2ff;
-
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-
-        transform: skewX(-10deg);
-      }
-
-      /* AVATAR */
-
-      .avatar-wrapper {
-        transform: skewX(10deg);
-
-        margin-right: 25px;
-      }
-
-      .donno-avatar {
-        width: 90px;
-
-        height: 90px;
-
-        background-size: cover;
-
-        background-position: center;
-
-        border-radius: 8px;
-
-        border: 3px solid #00f2ff;
-
-        box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
-
-        background-image: url("https://decapi.me/twitch/avatar/fallenoneart");
-      }
-
-      /* TEXT */
-
-      .text-group {
-        display: flex;
-
-        flex-direction: column;
-
-        transform: skewX(10deg);
-
-        color: white;
-
-        max-width: 420px;
-      }
-
-      .user-name {
-        font-family: "Cinzel", serif;
-
-        font-size: 28px;
-
-        font-weight: 900;
-
-        margin: 0;
-
-        text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
-
-        word-break: break-word;
-      }
-
-      .amount-line {
-        font-size: 18px;
-
-        color: #00f2ff;
-
-        font-weight: 600;
-
-        margin-bottom: 6px;
-      }
-
-      .message-line {
-        font-size: 15px;
-
-        color: #a0c0c8;
-
-        font-style: italic;
-
-        border-top: 1px solid rgba(0, 242, 255, 0.2);
-
-        padding-top: 6px;
-
-        word-break: break-word;
-      }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 50px;
+            background: transparent;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        /* ═══════════════════════════════════════
+        MAIN WRAPPER 
+        ═══════════════════════════════════════ */
+        #alert-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        #alert-wrapper.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ═══════════════════════════════════════
+        AVATAR (Round Crystal Style)
+        ═══════════════════════════════════════ */
+        .avatar-wrapper {
+            position: relative;
+            width: 95px;
+            height: 95px;
+            border-radius: 50%;
+            background: #111;
+            border: 3px solid #ba68c8; /* Purple Crystal Border */
+            box-shadow: 0 0 20px rgba(77, 245, 245, 0.4); /* Teal Glow */
+            overflow: hidden;
+            flex-shrink: 0;
+            transform: translateX(-300px) rotate(-720deg);
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.4, 1);
+        }
+
+        #alert-wrapper.show .avatar-wrapper {
+            transform: translateX(0) rotate(0deg);
+        }
+
+        .user-avatar {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* ═══════════════════════════════════════
+        CONTENT COLUMN
+        ═══════════════════════════════════════ */
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .top-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
+        }
+
+        #alert-wrapper.show .top-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .donno-label {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: #f06292; /* Pink Label */
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(186, 104, 200, 0.8);
+        }
+
+        /* ═══════════════════════════════════════
+        THE GLASS PILL
+        ═══════════════════════════════════════ */
+        .glass-pill {
+            background: rgba(15, 10, 25, 0.9);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(77, 245, 245, 0.3); /* Teal Border */
+            border-radius: 20px;
+            width: 480px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            height: 0; 
+            padding: 0 30px;
+            opacity: 0;
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+
+        #alert-wrapper.show .glass-pill {
+            height: 85px;
+            opacity: 1;
+            padding: 0 30px;
+        }
+
+        .message-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #4df5f5; /* Teal Message Text */
+            font-style: italic;
+            width: 65%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ═══════════════════════════════════════
+        STAT SHARD (The Amount Box)
+        ═══════════════════════════════════════ */
+        .stat-shard {
+            background: rgba(186, 104, 200, 0.2);
+            border: 1px solid #ba68c8;
+            padding: 6px 12px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        #donno-amount {
+            display: block;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: #ffffff;
+        }
+
+        #donno-label {
+            display: block;
+            font-size: 0.65rem;
+            color: #f06292;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        /* ═══════════════════════════════════════
+        BOTTOM LABEL
+        ═══════════════════════════════════════ */
+        .bottom-label-row {
+            margin-top: 8px;
+            padding-right: 20px;
+            display: flex;
+            justify-content: flex-end;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
+        }
+
+        #alert-wrapper.show .bottom-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .crystal-footer {
+            font-size: 0.75rem;
+            color: #4df5f5;
+            letter-spacing: 2px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
+
     <div id="alert-wrapper">
-      <div id="pill-container">
         <div class="avatar-wrapper">
-          <div class="donno-avatar" id="avatar"></div>
+            <div class="user-avatar" id="avatar"></div>
         </div>
-        <div class="text-group">
-          <div class="user-name" id="username"></div>
-          <div class="amount-line">just tipped <span id="amount"></span></div>
-          <div class="message-line" id="message"></div>
+        
+        <div class="content-column">
+            <div class="top-label-row">
+                <div class="donno-label">New Support</div>
+                <div class="user-name" id="username">DONOR</div>
+            </div>
+
+            <div class="glass-pill">
+                <div class="message-text" id="message">Supporting the crystal light!</div>
+                <div class="stat-shard">
+                    <span id="donno-amount">$0.00</span>
+                    <span id="donno-label">TIPPED</span>
+                </div>
+            </div>
+
+            <div class="bottom-label-row">
+                <div class="crystal-footer">Treasure Found</div>
+            </div>
         </div>
-      </div>
     </div>
 
     <script>
-      const params = new URLSearchParams(window.location.search);
-      const ws = new WebSocket(
-        `ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`,
-      );
+        const params = new URLSearchParams(window.location.search);
+        const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
 
-      ws.onopen = () => {
-        ws.send(
-          JSON.stringify({
-            request: "Subscribe",
-            events: { general: ["Custom"] },
-            id: "VikingDonno",
-          }),
-        );
-      };
+        let hideTimer = null;
 
-      ws.onmessage = (event) => {
-        const response = JSON.parse(event.data);
-        if (response.data && response.data.eventName === "donnoAlert") {
-          const d = response.data;
-          document.getElementById("username").innerText = d.user;
-          document.getElementById("amount").innerText = d.amount;
-          document.getElementById("message").innerText = d.message;
-          document.getElementById("avatar").style.backgroundImage =
-            `url('${d.avatar}')`;
+        ws.onopen = () => {
+            console.log("Crystal Donation Alert Connected");
+            ws.send(JSON.stringify({ 
+                request: "Subscribe", 
+                events: { general: ["Custom"] }, 
+                id: "CrystalDonnoAlert" 
+            }));
+        };
 
-          const wrapper = document.getElementById("alert-wrapper");
-          wrapper.classList.add("show");
-          setTimeout(() => wrapper.classList.remove("show"), 8000);
+        ws.onmessage = (event) => {
+            const response = JSON.parse(event.data);
+            if (response.data && response.data.eventName === "donnoAlert") {
+                updateUI(response.data);
+            }
+        };
+
+        function updateUI(data) {
+            const wrapper = document.getElementById('alert-wrapper');
+            const avatarElem = document.getElementById('avatar');
+            
+            // Map data
+            document.getElementById('username').innerText = (data.user || "Warrior").toUpperCase(); 
+            document.getElementById('message').innerText = data.message || "Thank you for the support!";
+            document.getElementById('donno-amount').innerText = data.amount || "$0.00";
+            
+            if (data.avatar) {
+                avatarElem.style.backgroundImage = `url('${data.avatar}')`;
+            }
+
+            // Animation Reset
+            if (hideTimer) clearTimeout(hideTimer);
+
+            wrapper.classList.remove('show'); 
+            void wrapper.offsetWidth; 
+            wrapper.classList.add('show');
+
+            // Auto-Hide after 10 seconds
+            hideTimer = setTimeout(() => {
+                wrapper.classList.remove('show');
+            }, 10000);
         }
-      };
     </script>
-  </body>
+</body>
 </html>
