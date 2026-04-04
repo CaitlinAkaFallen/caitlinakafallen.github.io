@@ -1370,37 +1370,29 @@
 <script>
 document.addEventListener("DOMContentLoaded", async function () {
 
-    /* ===== 1. URL & OAUTH TOKEN MANAGEMENT ===== */
-    // We capture tokens IMMEDIATELY before cleaning the URL to prevent "refresh" bugs
-    const captureAuthData = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        
-        // 1. Capture Access Token (Twitch/Google/Discord Token Flow)
-        if (hashParams.has("access_token")) {
-            sessionStorage.setItem("oauthAccessToken", hashParams.get("access_token"));
-        }
-
-        // 2. Capture Discord Code (If using Code Flow)
-        if (urlParams.has("code")) {
-            sessionStorage.setItem("discordAuthCode", urlParams.get("code"));
-        }
-    };
-
-    captureAuthData();
-
     /* ===== REMOVE .HTML FROM URL ===== */
     (function hideHtmlInURL() {
         const pathname = window.location.pathname;
         if (pathname.endsWith("/index.html")) {
+            // Replace URL in browser without reloading the page
             window.history.replaceState({}, "", pathname.replace(".html", ""));
         }
     })();
 
-    /* ===== CLEAN URL BAR ===== */
-    (function cleanURLBar() {
-        if (window.location.hash.includes("access_token") || window.location.search.includes("code")) {
-            const cleanURL = window.location.origin + window.location.pathname;
+    /* ===== CLEAN OAUTH TOKENS FROM URL (Twitch / Discord / Google) ===== */
+    (function cleanOAuthFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+
+        if (hashParams.has("access_token")) {
+            sessionStorage.setItem("oauthAccessToken", hashParams.get("access_token"));
+            history.replaceState(null, "", window.location.pathname);
+        }
+
+        if (urlParams.has("code")) {
+            sessionStorage.setItem("discordAuthCode", urlParams.get("code"));
+            urlParams.delete("code");
+            const cleanURL = window.location.origin + window.location.pathname + (urlParams.toString() ? "?" + urlParams.toString() : "");
             history.replaceState(null, "", cleanURL);
         }
     })();
@@ -1412,7 +1404,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const profileName = document.getElementById("profileName");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    const twitchBtn = document.getElementById("twitchLoginBtn"); 
+    const twitchBtn = document.getElementById("twitchLoginBtn"); // Use the correct ID
     const discordBtn = document.getElementById("discordLoginBtn");
     const youtubeBtn = document.getElementById("youtubeLoginBtn");
 
@@ -1426,7 +1418,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     /* ===== USER PROFILE FUNCTIONS ===== */
     function showUserProfile(user) {
         if (!userProfile || !loginBtn) return;
-        profilePic.src = user.avatar || "images/default-avatar.png";
+        profilePic.src = user.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
         profileName.textContent = user.name || "User";
         userProfile.style.display = "flex";
         loginBtn.style.display = "none";
@@ -1438,24 +1430,34 @@ document.addEventListener("DOMContentLoaded", async function () {
         loginBtn.style.display = "flex";
     }
 
+    /* ===== LOAD SAVED USER ===== */
+    const savedUser = JSON.parse(localStorage.getItem("socialUser"));
+    if (savedUser) showUserProfile(savedUser);
+
+    // ===== Show/Hide LIVE indicator in navbar =====
+    const liveIndicator = document.getElementById("live-indicator");
+    const isLive = false; // 🔴 Change this dynamically or through an API if needed
+
+    if (liveIndicator) {
+        liveIndicator.style.display = isLive ? "inline" : "none";
+    }
+
     /* ===== LOGOUT ===== */
     logoutBtn?.addEventListener("click", () => {
-        localStorage.clear();
-        sessionStorage.clear();
+        localStorage.removeItem("socialUser");
+        localStorage.removeItem("twitchUser");
+        sessionStorage.removeItem("oauthAccessToken");
+        sessionStorage.removeItem("discordAuthCode");
         hideUserProfile();
-        if (typeof updateTwitchAuthUI === "function") updateTwitchAuthUI(false);
-        window.location.reload();
+        updateTwitchAuthUI(false);
+        hideAllProtected?.();
     });
 
-    /* ===== OAUTH CONFIG ===== */
+    /* ===== TWITCH OAUTH CONFIG ===== */
     const twitchClientId = "93zm8q03ri0840ul18y8e7owbl4y01";
     const discordClientId = "1426998908164505600";
     const googleClientId = "323446283951-pqq1ic2ivpnofmfrp7flc83iklc6tjp1.apps.googleusercontent.com";
-    
-    // As you requested: Twitch gets clean path, others get .html
-    const twitchRedirect = encodeURIComponent("https://caitlinscreativespace.xyz/main-page");
-    const standardRedirect = encodeURIComponent("https://caitlinscreativespace.xyz/main-page.html");
-    
+    const redirectUri = encodeURIComponent("https://caitlinscreativespace.xyz/main-page.html","https://caitlinscreativespace.xyz/main-page");
     const broadcasterId = "fallenoneart";
     const twitchScopes = "user:read:email user:read:subscriptions";
 
@@ -1481,19 +1483,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     /* ===== SOCIAL LOGIN BUTTONS ===== */
     twitchBtn?.addEventListener("click", () => {
-        sessionStorage.setItem('loginType', 'twitch');
-        const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${twitchClientId}&redirect_uri=${twitchRedirect}&response_type=token&scope=${encodeURIComponent(twitchScopes)}`;
+        const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${twitchClientId}&redirect_uri=${redirectUri}&response_type=token&scope=${encodeURIComponent(twitchScopes)}`;
         window.location.href = authUrl;
     });
 
     discordBtn?.addEventListener("click", () => {
-        sessionStorage.setItem('loginType', 'discord');
-        window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&redirect_uri=${standardRedirect}&response_type=token&scope=identify%20email`;
+        window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${discordClientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify%20email`;
     });
 
     youtubeBtn?.addEventListener("click", () => {
-        sessionStorage.setItem('loginType', 'google');
-        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${standardRedirect}&response_type=token&scope=profile%20email`;
+        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${redirectUri}&response_type=token&scope=profile%20email`;
     });
 
     /* ===== TWITCH API FUNCTIONS ===== */
@@ -1502,10 +1501,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             const res = await fetch(`https://api.twitch.tv/helix/subscriptions/user?broadcaster_id=${broadcasterId}&user_id=${userId}`, {
                 headers: { Authorization: `Bearer ${token}`, "Client-Id": twitchClientId }
             });
-            if (!res.ok) return false;
+            if (!res.ok) throw new Error("Subscription check failed");
             const data = await res.json();
             return data.data && data.data.length > 0;
         } catch (err) {
+            console.error("Subscription check error:", err);
             return false;
         }
     }
@@ -1516,84 +1516,67 @@ document.addEventListener("DOMContentLoaded", async function () {
                 headers: { Authorization: `Bearer ${token}`, "Client-Id": twitchClientId }
             });
             if (!res.ok) throw new Error("Invalid token");
-            
-            const json = await res.json();
-            
-            // FIX: Check if data exists before reading properties of undefined
-            if (!json.data || json.data.length === 0) {
-                throw new Error("No user data returned from Twitch");
-            }
-
-            const user = json.data[0];
+            const user = (await res.json()).data[0];
             const twitchUserData = { name: user.display_name, avatar: user.profile_image_url, id: user.id };
-            
-            localStorage.setItem("socialUser", JSON.stringify(twitchUserData));
+            localStorage.setItem("twitchUser", JSON.stringify(twitchUserData));
             updateTwitchAuthUI(true, twitchUserData.name, twitchUserData.avatar);
             showUserProfile(twitchUserData);
 
             const isSub = await checkSubscriptionStatus(user.id, token);
-            if (isSub && typeof showProtectedContent === "function") showProtectedContent();
+            if (isSub) showProtectedContent?.();
+            else showSubscriberMessage?.();
         } catch (err) {
             console.error("Twitch auth error:", err);
-            sessionStorage.removeItem("oauthAccessToken");
+            localStorage.removeItem("twitch_access_token");
+            localStorage.removeItem("twitchUser");
             updateTwitchAuthUI(false);
+            hideAllProtected?.();
         }
     }
 
     /* ===== DETECT LOGIN SOURCE ===== */
     async function detectLoginSource() {
-        const accessToken = sessionStorage.getItem("oauthAccessToken");
-        const loginType = sessionStorage.getItem("loginType");
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get("access_token");
+        const discordCode = sessionStorage.getItem("discordAuthCode");
         const savedUser = JSON.parse(localStorage.getItem("socialUser"));
 
         if (savedUser) return showUserProfile(savedUser);
-        if (!accessToken || !loginType) return;
 
-        if (loginType === "twitch") {
+        // Twitch
+        if (accessToken && window.location.href.includes("twitch")) {
+            localStorage.setItem("twitch_access_token", accessToken);
+            window.location.hash = "";
             await fetchTwitchUserAndVerify(accessToken);
         }
 
-        if (loginType === "google") {
-            try {
-                const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-                    headers: { "Authorization": `Bearer ${accessToken}` }
-                });
-                const data = await res.json();
-                if (data.name) {
-                    const user = { name: data.name, avatar: data.picture, platform: "google" };
-                    localStorage.setItem("socialUser", JSON.stringify(user));
-                    showUserProfile(user);
-                }
-            } catch (err) { console.error("Google login error:", err); }
+        // Discord (simulated)
+        if (discordCode) {
+            const user = { name: "Discord User", avatar: "https://cdn.discordapp.com/embed/avatars/0.png", platform: "discord" };
+            localStorage.setItem("socialUser", JSON.stringify(user));
+            showUserProfile(user);
+            sessionStorage.removeItem("discordAuthCode");
         }
 
-        if (loginType === "discord") {
+        // Google / YouTube
+        if (accessToken && (window.location.href.includes("google") || window.location.href.includes("youtube"))) {
             try {
-                const res = await fetch("https://discord.com/api/users/@me", {
+                const res = await fetch("https://www.googleapis.com/oauth2/v1/userinfo?alt=json", {
                     headers: { "Authorization": `Bearer ${accessToken}` }
                 });
                 const data = await res.json();
-                if (data.username) {
-                    const user = { 
-                        name: data.username, 
-                        avatar: `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`, 
-                        platform: "discord" 
-                    };
-                    localStorage.setItem("socialUser", JSON.stringify(user));
-                    showUserProfile(user);
-                }
-            } catch (err) { console.error("Discord login error:", err); }
+                const user = { name: data.name, avatar: data.picture, platform: "google" };
+                localStorage.setItem("socialUser", JSON.stringify(user));
+                showUserProfile(user);
+                history.replaceState(null, "", window.location.pathname);
+            } catch (err) { console.error("Google login error:", err); }
         }
     }
-    
-    await detectLoginSource();
+    detectLoginSource();
 
     /* ===== MODAL HANDLING ===== */
     loginBtn?.addEventListener("click", () => (loginModal.style.display = "flex"));
-
-    const closeModals = () => {
-        [loginModal, tosModal, privacyModal].forEach(m => if(m) m.style.display = "none");
-    };
 
     tosLink?.addEventListener("click", (e) => {
         e.preventDefault();
@@ -1612,12 +1595,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     window.addEventListener("click", (e) => {
-        if (e.target.classList.contains('modal')) e.target.style.display = "none";
+        [loginModal, tosModal, privacyModal].forEach(modal => { if (e.target === modal) modal.style.display = "none"; });
     });
 
-    /* ===== DATE ===== */
+    /* ===== AUTO-DETECT TODAY'S DATE ===== */
+    const today = new Date();
+    const options = { year: "numeric", month: "long", day: "numeric" };
     const dateElement = document.getElementById("revamp-date");
-    if (dateElement) dateElement.textContent = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+    if (dateElement) dateElement.textContent = today.toLocaleDateString(undefined, options);
 
     /* ===== SECTION TOGGLE ===== */
     window.toggleSection = function(sectionId) {
