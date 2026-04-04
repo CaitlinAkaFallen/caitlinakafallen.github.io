@@ -3,205 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitch Viking Glassy Sub</title>
+    <title>Crystal Pill Sub Alert</title>
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
 
-body { 
-    margin: 0; 
-    padding: 40px; 
-    background-color: transparent; 
-    font-family: 'Inter', sans-serif; 
-    overflow: hidden; 
-}
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-#pill-container {
-    display: inline-flex;
-    align-items: center;
-    position: relative;
-    background: radial-gradient(circle at center, rgba(20, 55, 65, 0.98) 0%, rgba(10, 25, 30, 1) 100%);
-    -webkit-backdrop-filter: blur(15px);
-    backdrop-filter: blur(15px);
-    padding: 15px 45px;
-    clip-path: polygon(4% 0%, 100% 0%, 96% 100%, 0% 100%);
-    color: white;
-    border-left: 5px solid #00f2ff;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 242, 255, 0.2);
-    
-    /* --- HIDE BY DEFAULT --- */
-    opacity: 0;
-    transform: skewX(-10deg) translateX(-100px); 
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    
-    min-width: 450px;
-    pointer-events: none; /* Prevents accidental clicks in OBS */
-}
+        body {
+            padding: 50px;
+            background: transparent;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+        }
 
-/* --- SHOW CLASS --- */
-#pill-container.show {
-    opacity: 1;
-    transform: skewX(-10deg) translateX(0);
-    pointer-events: auto;
-}
+        /* ═══════════════════════════════════════
+        MAIN WRAPPER 
+        ═══════════════════════════════════════ */
+        #qna-container {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
 
-#pill-container::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.12;
-    mix-blend-mode: soft-light;
-    pointer-events: none;
-}
+        #qna-container.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
 
-.avatar-wrapper { 
-    margin-right: 20px; 
-    z-index: 2;
-}
+        /* ═══════════════════════════════════════
+        AVATAR (Round Crystal Style)
+        ═══════════════════════════════════════ */
+        .avatar-wrapper {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #111;
+            border: 3px solid #ba68c8; /* Purple Crystal Border */
+            box-shadow: 0 0 20px rgba(77, 245, 245, 0.4); /* Teal Glow */
+            overflow: hidden;
+            flex-shrink: 0;
+            transform: translateX(-300px) rotate(-720deg);
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.4, 1);
+        }
 
-.subber-avatar {
-    width: 70px; 
-    height: 70px; 
-    clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
-    background-size: cover; 
-    background-position: center;
-    border: 2px solid #00f2ff;
-    box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
-}
+        #qna-container.show .avatar-wrapper {
+            transform: translateX(0) rotate(0deg);
+        }
 
-.text-group { 
-    display: flex; 
-    flex-direction: column; 
-    flex-grow: 1; 
-    transform: skewX(10deg); 
-    z-index: 2;
-}
+        .user-avatar {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
 
-.subb-name { 
-    font-family: 'Cinzel', serif;
-    font-size: 1.4rem; 
-    font-weight: 900; 
-    color: #ffffff;
-    text-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
-    margin: 0;
-}
+        /* ═══════════════════════════════════════
+        CONTENT COLUMN
+        ═══════════════════════════════════════ */
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
 
-.sub-message { 
-    font-size: 1rem; 
-    font-weight: 400; 
-    line-height: 1.2; 
-    color: #a0c0c8;
-    font-style: italic;
-}
+        .top-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
+        }
 
-.stat-shard {
-    margin-left: 20px;
-    padding: 8px 15px;
-    background: rgba(0, 242, 255, 0.15);
-    border: 1px solid rgba(0, 242, 255, 0.4);
-    clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);
-    text-align: center;
-    transform: skewX(10deg);
-    z-index: 2;
-    min-width: 80px;
-}
+        #qna-container.show .top-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-#badge-value {
-    display: block;
-    font-family: 'Cinzel', serif;
-    font-weight: 900;
-    font-size: 1.2rem;
-    color: #00f2ff;
-}
+        .inquiry-label {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: #f06292; /* Pink Label */
+            text-transform: uppercase;
+            font-weight: 900;
+        }
 
-#badge-label {
-    display: block;
-    font-size: 0.6rem;
-    letter-spacing: 1px;
-    color: #ffffff;
-    opacity: 0.8;
-}
+        .user-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(186, 104, 200, 0.8); /* Purple Glow */
+        }
 
-.pulse { animation: valhalla-pulse 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* ═══════════════════════════════════════
+        THE GLASS PILL
+        ═══════════════════════════════════════ */
+        .glass-pill {
+            background: rgba(15, 10, 25, 0.85);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(77, 245, 245, 0.3); /* Teal Border */
+            border-radius: 20px;
+            width: 450px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            height: 0; 
+            padding: 0 30px;
+            opacity: 0;
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
 
-@keyframes valhalla-pulse {
-    0% { transform: skewX(-10deg) scale(1); filter: brightness(1); }
-    50% { transform: skewX(-10deg) scale(1.05); filter: brightness(1.4); }
-    100% { transform: skewX(-10deg) scale(1); filter: brightness(1); }
-}
+        #qna-container.show .glass-pill {
+            height: 80px;
+            opacity: 1;
+            padding: 0 30px;
+        }
+
+        .question-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #4df5f5; /* Teal Message Text */
+            font-style: italic;
+            width: 75%;
+        }
+
+        /* ═══════════════════════════════════════
+        STAT SHARD (The Tier/Sub Box)
+        ═══════════════════════════════════════ */
+        .stat-shard {
+            background: rgba(186, 104, 200, 0.2);
+            border: 1px solid #ba68c8;
+            padding: 5px 12px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        #badge-value {
+            display: block;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #ffffff;
+        }
+
+        #badge-label {
+            display: block;
+            font-size: 0.6rem;
+            color: #f06292;
+            font-weight: 700;
+        }
+
+        /* ═══════════════════════════════════════
+        BOTTOM LABEL
+        ═══════════════════════════════════════ */
+        .bottom-label-row {
+            margin-top: 8px;
+            padding-right: 20px;
+            display: flex;
+            justify-content: flex-end;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
+        }
+
+        #qna-container.show .bottom-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .time-stamp {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 
-<div id="pill-container">
-    <div class="avatar-wrapper">
-        <div class="subber-avatar" id="avatar"></div>
+    <div id="qna-container">
+        <div class="avatar-wrapper">
+            <div class="user-avatar" id="avatar"></div>
+        </div>
+        
+        <div class="content-column">
+            <div class="top-label-row">
+                <div class="inquiry-label" id="alert-type">New Subscriber</div>
+                <div class="user-name" id="username">Loading...</div>
+            </div>
+
+            <div class="glass-pill">
+                <div class="question-text" id="display-message">Crystal shields active!</div>
+                <div class="stat-shard">
+                    <span id="badge-value">T1</span>
+                    <span id="badge-label">TIER</span>
+                </div>
+            </div>
+
+            <div class="bottom-label-row">
+                <div class="time-stamp">JUST NOW</div>
+            </div>
+        </div>
     </div>
-    
-    <div class="text-group">
-        <div class="subb-name" id="username">Warrior Name</div>
-        <div class="sub-message" id="display-message">Message here...</div>
-    </div>
 
-    <div class="stat-shard">
-        <span id="badge-value">-</span>
-        <span id="badge-label">-</span>
-    </div>
-</div>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
 
-<script>
-const params = new URLSearchParams(window.location.search);
-const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+        let hideTimer = null;
 
-let hideTimer = null;
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "PillAlert" }));
+        };
 
-ws.onopen = () => {
-    ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "VikingAlert" }));
-};
+        ws.onmessage = (event) => {
+            const response = JSON.parse(event.data);
+            if (response.data && response.data.eventName === "sub_alert") {
+                updateUI(response.data);
+            }
+        };
 
-ws.onmessage = (event) => {
-    const response = JSON.parse(event.data);
-    // Listen for the custom eventName from your C# script
-    if (response.data && response.data.eventName === "sub_alert") {
-        updateUI(response.data);
-    }
-};
+        function updateUI(data) {
+            const container = document.getElementById('qna-container');
+            const avatarElem = document.getElementById('avatar');
+            
+            // Text updates
+            document.getElementById('username').innerText = data.user || "Warrior"; 
+            document.getElementById('display-message').innerText = data.message || "Welcome to the Crystal Clan!";
+            document.getElementById('badge-value').innerText = data.badge || "1";
+            document.getElementById('badge-label').innerText = data.label || "TIER";
+            
+            if (data.avatar) {
+                avatarElem.style.backgroundImage = `url('${data.avatar}')`;
+            }
 
-function updateUI(data) {
-    const pill = document.getElementById('pill-container');
-    const avatarElem = document.getElementById('avatar');
-    
-    // 1. Update text content
-    document.getElementById('username').innerText = data.user; 
-    document.getElementById('display-message').innerText = data.message;
-    document.getElementById('badge-value').innerText = data.badge || "1";
-    document.getElementById('badge-label').innerText = data.label || "TIER";
-    
-    // 2. Update Avatar
-    if (data.avatar) {
-        avatarElem.style.backgroundImage = `url('${data.avatar}')`;
-    }
+            // Animation Logic
+            if (hideTimer) clearTimeout(hideTimer);
 
-    // 3. Reset Timer Logic
-    if (hideTimer) {
-        clearTimeout(hideTimer);
-    }
+            container.classList.remove('show'); 
+            void container.offsetWidth; // Force CSS Reset
+            container.classList.add('show');
 
-    // 4. Trigger Animations and Show
-    pill.classList.remove('show'); // Reset to hidden if quickly triggered
-    void pill.offsetWidth;         // Trigger reflow
-    pill.classList.add('show');
+            // Auto-Hide after 10 seconds
+            hideTimer = setTimeout(() => {
+                container.classList.remove('show');
+            }, 10000);
+        }
 
-    // 5. Pulse Effect
-    pill.classList.remove('pulse');
-    void pill.offsetWidth; 
-    pill.classList.add('pulse');
-
-    // 6. Hide after 8 seconds
-    hideTimer = setTimeout(() => {
-        pill.classList.remove('show');
-    }, 8000);
-}
-</script>
+        // Test Call: trigger by pasting triggerUI({user: "GummyKing", message: "Vibing in the crystal light", badge: "T3"}) in console
+    </script>
 </body>
+</html>
 </html>
