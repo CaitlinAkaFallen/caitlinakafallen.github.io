@@ -129,7 +129,87 @@ header h5 {
   height: 22px;
   filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
 }
+/* =========================
+   User Profile & Nav Right (Added)
+   ========================= */
+.nav-right {
+  position: absolute;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  height: 100%;
+  top: 0;
+}
 
+#userProfile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px 10px 4px 4px; /* Slightly less padding on the left for the image */
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+#userProfile:hover {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: #9a41ff; /* Twitch purple hover accent */
+}
+
+#profilePic {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #9a41ff; 
+  box-shadow: 0 0 8px rgba(154, 65, 255, 0.4);
+}
+
+#profileName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f0f0f0;
+  letter-spacing: 0.5px;
+}
+
+#logoutBtn {
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  padding: 5px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  margin-left: 5px;
+}
+
+#logoutBtn:hover {
+  background: #ff4444;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   Mobile Adjustments for Profile
+   ========================= */
+@media screen and (max-width: 900px) {
+  .nav-right {
+    position: relative; /* Removes absolute positioning so it scrolls with the nav */
+    right: auto;
+    margin-left: 15px;
+    padding-right: 15px;
+  }
+  
+  #profileName {
+    display: none; /* Hides the username on smaller screens to save horizontal space */
+  }
+}
 /* =========================
    Two-Column Layout (Responsive)
    ========================= */
