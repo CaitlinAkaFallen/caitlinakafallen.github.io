@@ -41,8 +41,8 @@
         ═══════════════════════════════════════ */
         .avatar-wrapper {
             position: relative;
-            width: 90px;
-            height: 90px;
+            width: 95px;
+            height: 95px;
             border-radius: 50%;
             background: #111;
             border: 3px solid #ba68c8; /* Purple Crystal Border */
@@ -90,7 +90,7 @@
         }
 
         .bits-label {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             letter-spacing: 2px;
             color: #f06292; /* Pink Label */
             text-transform: uppercase;
@@ -98,8 +98,8 @@
         }
 
         .user-name {
-            font-size: 1.1rem;
-            font-weight: 700;
+            font-size: 1.2rem;
+            font-weight: 800;
             color: #ffffff;
             letter-spacing: 1px;
             text-shadow: 0 0 10px rgba(186, 104, 200, 0.8);
@@ -109,12 +109,12 @@
         THE GLASS PILL
         ═══════════════════════════════════════ */
         .glass-pill {
-            background: rgba(15, 10, 25, 0.85);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(15, 10, 25, 0.9);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(77, 245, 245, 0.3); /* Teal Border */
             border-radius: 20px;
-            width: 480px; 
+            width: 500px; 
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -126,7 +126,7 @@
         }
 
         #alert-wrapper.show .glass-pill {
-            height: 80px;
+            height: 85px;
             opacity: 1;
             padding: 0 30px;
         }
@@ -136,7 +136,7 @@
             font-weight: 500;
             color: #4df5f5; /* Teal Message Text */
             font-style: italic;
-            width: 70%;
+            width: 72%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -148,24 +148,25 @@
         .stat-shard {
             background: rgba(186, 104, 200, 0.2);
             border: 1px solid #ba68c8;
-            padding: 5px 12px;
-            border-radius: 10px;
+            padding: 6px 12px;
+            border-radius: 12px;
             text-align: center;
-            min-width: 90px;
+            min-width: 95px;
         }
 
         #bits-value {
             display: block;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: #ffffff;
         }
 
         #bits-label {
             display: block;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: #f06292;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: 1px;
         }
 
         /* ═══════════════════════════════════════
@@ -187,10 +188,11 @@
         }
 
         .crystal-power {
-            font-size: 0.7rem;
-            color: rgba(77, 245, 245, 0.6);
+            font-size: 0.75rem;
+            color: #4df5f5;
             letter-spacing: 2px;
-            font-weight: 700;
+            font-weight: 800;
+            text-shadow: 0 0 5px rgba(77, 245, 245, 0.5);
         }
     </style>
 </head>
@@ -203,12 +205,12 @@
         
         <div class="content-column">
             <div class="top-label-row">
-                <div class="bits-label">New Cheer</div>
+                <div class="bits-label">Incoming Cheer</div>
                 <div class="user-name" id="username">WARRIOR</div>
             </div>
 
             <div class="glass-pill">
-                <div class="message-text" id="message">Crystal shields active!</div>
+                <div class="message-text" id="message">Loading Message...</div>
                 <div class="stat-shard">
                     <span id="bits-value">0</span>
                     <span id="bits-label">BITS</span>
@@ -228,20 +230,25 @@
         let hideTimer = null;
 
         ws.onopen = () => {
-            console.log("Crystal Bits Connected");
+            console.log("Bits Overlay Connected to Streamer.bot");
+            // Subscribe to the Custom event broadcast
             ws.send(JSON.stringify({ 
                 request: "Subscribe", 
                 events: { general: ["Custom"] }, 
-                id: "CrystalBitsAlert" 
+                id: "BitsPillAlert" 
             }));
         };
 
         ws.onmessage = (event) => {
             const response = JSON.parse(event.data);
             
-            // Check for bitsAlert in custom event data
-            if (response.data && response.data.eventName === "bitsAlert") {
-                updateUI(response.data);
+            // This checks for the "bitsAlert" eventName sent by your C# script
+            let data = null;
+            if (response.eventName === "bitsAlert") data = response;
+            else if (response.data && response.data.eventName === "bitsAlert") data = response.data;
+
+            if (data) {
+                updateUI(data);
             }
         };
 
@@ -249,30 +256,27 @@
             const wrapper = document.getElementById('alert-wrapper');
             const avatarElem = document.getElementById('avatar');
             
-            // Map the data to the UI
-            document.getElementById('username').innerText = (data.user || "Warrior").toUpperCase(); 
-            document.getElementById('message').innerText = data.message || "Sending crystal vibes!";
+            // Map the C# variables to the HTML IDs
+            document.getElementById('username').innerText = (data.user || "A Brave Warrior").toUpperCase(); 
+            document.getElementById('message').innerText = data.message || "Skål!";
             document.getElementById('bits-value').innerText = data.bits || "0";
             
             if (data.avatar) {
                 avatarElem.style.backgroundImage = `url('${data.avatar}')`;
             }
 
-            // Animation Sequence
+            // Reset Animation
             if (hideTimer) clearTimeout(hideTimer);
 
             wrapper.classList.remove('show'); 
-            void wrapper.offsetWidth; // Force Re-flow
+            void wrapper.offsetWidth; // Force CSS re-draw
             wrapper.classList.add('show');
 
-            // Auto-Hide after 8 seconds
+            // Hide after 8 seconds (matching the " Mead Hall" chat vibe)
             hideTimer = setTimeout(() => {
                 wrapper.classList.remove('show');
             }, 8000);
         }
-
-        // Test manually if needed: 
-        // updateUI({user: "CrystalGamer", message: "Love the vibes!", bits: "500", avatar: "URL_HERE"})
     </script>
 </body>
 </html>
