@@ -3,124 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBZ Scouter Overlay</title>
+    <title>DBZ Scouter HUD - Ultimate Edition</title>
     <style>
-        /* Bold, digital-style font */
-        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Orbitron:wght@400;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+        
+        :root {
+            /* Default State (Green - No Threat) */
+            --scouter-color: #00ff00;
+            --scouter-glow: rgba(0, 255, 0, 0.7);
+            --bg-tint: rgba(0, 255, 0, 0.05);
+            --avatar-filter: grayscale(1) sepia(1) hue-rotate(80deg) brightness(1.2) contrast(1.5);
+        }
+
+        /* 8000+ Mode (Greenish Yellow - Semi-Threat) */
+        .warning-mode {
+            --scouter-color: #ccff00 !important;
+            --scouter-glow: rgba(204, 255, 0, 0.7) !important;
+            --bg-tint: rgba(204, 255, 0, 0.1) !important;
+            --avatar-filter: grayscale(1) sepia(1) hue-rotate(40deg) brightness(1.2) contrast(1.5) !important;
+        }
+
+        /* 9000+ Mode (Red - Serious Threat) */
+        .danger-mode {
+            --scouter-color: #ff0000 !important;
+            --scouter-glow: rgba(255, 0, 0, 0.8) !important;
+            --bg-tint: rgba(255, 0, 0, 0.15) !important;
+            --avatar-filter: grayscale(1) sepia(1) hue-rotate(-50deg) brightness(1.1) contrast(1.6) !important;
+        }
 
         body {
-            margin: 0;
-            padding: 50px;
+            margin: 0; padding: 50px;
             background: transparent;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            height: 100vh;
+            display: flex; align-items: center; height: 100vh;
             font-family: 'Orbitron', sans-serif;
         }
 
-        /* SCOUTER CONTAINER */
         #scouter-hud {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            opacity: 0;
-            transform: translateX(-50px);
-            transition: all 0.4s ease-out;
+            display: flex; align-items: center;
+            opacity: 0; 
+            transform: scale(0.5) translateX(-200px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--scouter-color);
         }
 
-        #scouter-hud.show {
-            opacity: 1;
-            transform: translateX(0);
+        #scouter-hud.show { 
+            opacity: 1; 
+            transform: scale(1) translateX(0); 
+            animation: digitalBoot 0.4s ease-out;
+        }
+
+        @keyframes digitalBoot {
+            0% { filter: brightness(5) blur(10px); }
+            100% { filter: brightness(1) blur(0px); }
         }
 
         /* LENS / AVATAR BOX */
         .scouter-lens {
             position: relative;
-            width: 140px;
-            height: 140px;
-            background: rgba(0, 255, 0, 0.1); /* Green Scouter Tint */
-            border: 2px solid rgba(0, 255, 0, 0.5);
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            width: 180px; height: 180px;
+            border: 3px solid var(--scouter-color);
+            background: var(--bg-tint);
             overflow: hidden;
-            clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%);
+            box-shadow: inset 0 0 20px var(--scouter-glow);
         }
 
-        /* Scanline Animation */
-        .scouter-lens::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.03), rgba(0, 0, 255, 0.03));
-            background-size: 100% 4px, 3px 100%;
+        .reticle {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
+            border: 1px solid var(--scouter-color);
+            animation: pulseReticle 2s infinite ease-in-out;
+            opacity: 0.4;
+        }
+
+        @keyframes pulseReticle {
+            0%, 100% { transform: scale(0.9); opacity: 0.2; }
+            50% { transform: scale(1.1); opacity: 0.6; }
         }
 
         .user-avatar {
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            filter: grayscale(0.5) sepia(1) hue-rotate(70deg) saturate(3);
+            width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            filter: var(--avatar-filter);
+            transition: filter 0.5s ease;
         }
 
         /* DATA READOUT PANEL */
         .readout-panel {
-            display: flex;
-            flex-direction: column;
-            padding: 10px 30px;
-            background: rgba(0, 0, 0, 0.6);
-            border-top: 2px solid #00ff00;
-            border-bottom: 2px solid #00ff00;
-            min-width: 350px;
+            padding: 20px 50px;
             position: relative;
+            display: flex; flex-direction: column;
+            background: rgba(0, 0, 0, 0.5);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            border-left: 5px solid var(--scouter-color);
         }
 
-        /* Decorative HUD Brackets */
-        .readout-panel::before {
-            content: "[ SCANNING ]";
-            position: absolute;
-            top: -25px;
-            left: 0;
-            color: #00ff00;
-            font-size: 12px;
-            letter-spacing: 2px;
+        .readout-panel::after {
+            content: ""; position: absolute; right: 0; top: 0; height: 100%; width: 4px;
+            background: linear-gradient(to bottom, transparent, var(--scouter-color), transparent);
         }
 
-        .user-tag {
-            font-size: 18px;
-            color: #00ff00;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            opacity: 0.8;
+        .status-top {
+            font-size: 14px; letter-spacing: 4px;
+            margin-bottom: 5px; text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        .power-container {
+            display: flex; align-items: baseline; gap: 15px;
         }
 
         .power-value {
-            font-size: 64px;
-            color: #fff;
-            font-family: 'Archivo Black', sans-serif;
-            line-height: 1;
-            text-shadow: 0 0 10px #00ff00;
-            font-style: italic;
+            font-size: 90px; font-weight: 900;
+            line-height: 0.8; font-style: italic;
+            text-shadow: 0 0 20px var(--scouter-glow);
         }
 
-        /* Animated "Glitch" Text */
-        .power-value span {
-            font-size: 24px;
-            color: #00ff00;
-            margin-left: 10px;
-            vertical-align: middle;
+        .hud-bar-bg {
+            width: 100%; height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 15px; border-radius: 3px;
+            overflow: hidden;
         }
 
-        /* Intensify animation on show */
+        .hud-bar-fill {
+            height: 100%; width: 0%;
+            background: var(--scouter-color);
+            box-shadow: 0 0 10px var(--scouter-glow);
+            transition: width 1.5s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+
+        .scanlines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, var(--bg-tint) 50%);
+            background-size: 100% 6px; pointer-events: none;
+            z-index: 10; opacity: 0.4;
+        }
+
         #scouter-hud.show .power-value {
-            animation: digitalFlicker 0.1s infinite alternate;
+            animation: jitter 0.15s infinite;
         }
 
-        @keyframes digitalFlicker {
-            from { opacity: 0.95; }
-            to { opacity: 1; text-shadow: 0 0 15px #00ff00; }
+        @keyframes jitter {
+            0% { transform: translate(0,0); }
+            25% { transform: translate(-1px, 1px); }
+            50% { transform: translate(1px, -1px); }
+            75% { transform: translate(-1px, -1px); }
+            100% { transform: translate(0,0); }
         }
     </style>
 </head>
@@ -129,13 +160,19 @@
     <div id="scouter-hud">
         <div class="scouter-lens">
             <div id="avatar" class="user-avatar"></div>
+            <div class="reticle"></div>
+            <div class="scanlines"></div>
         </div>
         
         <div class="readout-panel">
-            <div id="username" class="user-tag">TARGET_IDENTIFIED</div>
-            <div class="power-value">
-                <span>Lv.</span>
-                <span id="power-level">0000</span>              
+            <div class="status-top">Target: <span id="username">---</span></div>
+            <div class="power-container">
+                <span id="power-level" class="power-value">0000</span>
+            </div>
+            <div id="analysis" class="status-top" style="margin-top: 5px; font-size: 11px;">Initializing...</div>
+            
+            <div class="hud-bar-bg">
+                <div id="pwr-bar" class="hud-bar-fill"></div>
             </div>
         </div>
     </div>
@@ -153,28 +190,62 @@
             }));
         };
 
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toString().padStart(4, '0');
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
         ws.onmessage = (event) => {
             const response = JSON.parse(event.data);
             const data = response.data;
 
             if (data && data.eventName === "DBZReveal") {
-                document.getElementById('username').innerText = data.user;
-                document.getElementById('power-level').innerText = data.randomNumber;
+                const container = document.getElementById('scouter-hud');
+                const powerText = document.getElementById('power-level');
+                const analysisText = document.getElementById('analysis');
+                const barFill = document.getElementById('pwr-bar');
+                const pwr = parseInt(data.randomNumber);
                 
+                document.getElementById('username').innerText = data.user;
                 if (data.avatar) {
                     document.getElementById('avatar').style.backgroundImage = `url('${data.avatar}')`;
                 }
 
-                const container = document.getElementById('scouter-hud');
-                if (hideTimer) clearTimeout(hideTimer);
+                container.classList.remove('warning-mode', 'danger-mode');
 
+                // logic for threat levels
+                if (pwr >= 9000) {
+                    container.classList.add('danger-mode');
+                    analysisText.innerText = "Analysis: Serious Threat";
+                } else if (pwr >= 8000) {
+                    container.classList.add('warning-mode');
+                    analysisText.innerText = "Analysis: Semi Threat";
+                } else {
+                    analysisText.innerText = "Analysis: Not a Threat";
+                }
+
+                if (hideTimer) clearTimeout(hideTimer);
                 container.classList.remove('show'); 
                 void container.offsetWidth; 
                 container.classList.add('show');
 
+                animateValue(powerText, 0, pwr, 1500);
+                
+                const barWidth = Math.min((pwr / 10000) * 100, 100);
+                barFill.style.width = '0%';
+                setTimeout(() => { barFill.style.width = barWidth + '%'; }, 100);
+
                 hideTimer = setTimeout(() => {
                     container.classList.remove('show');
-                }, 8000);
+                }, 9000);
             }
         };
     </script>
