@@ -3,181 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Worm Reveal Overlay</title>
+    <title>Sleek Premium Worm Scouter Overlay</title>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Montserrat:wght@100;900&display=swap');
         
         :root {
             --worm-pink: #ff85c2;
-            --worm-dark: #d15c99;
-            --bg-color: rgba(40, 20, 10, 0.9);
-            --text-color: #ffe6f2;
+            --worm-glow: #ff2e97;
+            --worm-dark: #662646;
+            --bg-hud: rgba(15, 5, 10, 0.9);
+            --text-main: #ffffff;
+            --text-data: #ffc9e3;
         }
 
         body {
-            margin: 0; 
-            padding: 0;
+            margin: 0; padding: 0;
             background: transparent;
             overflow: hidden;
-            display: flex; 
-            align-items: flex-end; 
-            justify-content: center;
+            display: flex; align-items: flex-end; justify-content: flex-start; /* Lands left */
             height: 100vh;
-            font-family: 'Fredoka One', cursive;
-            color: var(--text-color);
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-main);
+            perspective: 1000px; /* Crucial for 3D spin */
         }
 
         #worm-hud {
-            display: flex; 
-            align-items: center; 
-            gap: 20px;
-            background: var(--bg-color);
+            display: flex; align-items: center; gap: 20px;
+            background: var(--bg-hud);
             padding: 20px 40px;
-            border-radius: 50px;
-            border: 4px solid var(--worm-pink);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            margin-bottom: 40px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7), 0 0 20px rgba(255, 133, 194, 0.4);
+            margin-bottom: 50px;
+            margin-left: 50px;
+
+            /* ADVANCED SHAPE: Geometric Cut */
+            clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
+            border-left: 5px solid var(--worm-pink);
+            border-right: 5px solid var(--worm-pink);
             
-            /* Animation Entrance */
+            /* Entry Animation: Complex Spin In */
             opacity: 0; 
-            transform: translateY(100px) scale(0.9); 
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(150px) rotateX(45deg) rotateY(-20deg) scale(0.8);
+            transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         #worm-hud.show { 
             opacity: 1; 
-            transform: translateY(0) scale(1); 
+            transform: translateY(0) rotateX(0deg) rotateY(0deg) scale(1); 
+        }
+
+        /* --- THE GAUGED AVATAR --- */
+        .scouter-avatar-group {
+            position: relative;
+            flex-shrink: 0;
+            width: 120px; height: 120px;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .avatar-frame {
-            width: 100px; 
-            height: 100px;
+            width: 90px; height: 90px;
             border-radius: 50%;
-            border: 4px solid var(--text-color);
             overflow: hidden;
             background-color: #000;
-            box-shadow: 0 0 15px var(--worm-pink);
-            flex-shrink: 0; /* Prevents avatar from squishing */
+            z-index: 2;
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        /* Holographic Scanline */
+        .avatar-frame::after {
+            content: '';
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(255,255,255,0) 50%, rgba(255,255,255,0.1) 51%, rgba(255,255,255,0) 52%);
+            background-size: 100% 4px;
+            animation: scanline 4s linear infinite;
+            pointer-events: none;
         }
 
         .user-avatar {
-            width: 100%; 
-            height: 100%;
-            background-size: cover; 
-            background-position: center;
-            background-repeat: no-repeat;
+            width: 100%; height: 100%;
+            background-size: cover; background-position: center;
         }
 
-        .readout-panel {
-            display: flex; 
-            flex-direction: column;
-            min-width: 150px;
+        /* CIRCULAR BIOMETRIC GAUGE */
+        #biometric-gauge {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 50%;
+            /* Starts empty */
+            background: conic-gradient(var(--worm-pink) 0deg, transparent 0deg);
+            z-index: 1;
+            box-shadow: 0 0 15px var(--worm-glow);
+            transition: background 1.2s ease-out;
+        }
+
+        /* Readout Panel */
+        .data-panel {
+            display: flex; flex-direction: column;
+            gap: 2px;
+            transform: rotate(-2deg); /* Sleek angle */
         }
 
         .username {
-            font-size: 26px; 
+            font-family: 'Fredoka One', cursive;
+            font-size: 20px; color: var(--text-data);
+            text-shadow: 0 0 10px rgba(255,133,194,0.6);
             letter-spacing: 1px;
             text-transform: uppercase;
-            color: var(--worm-pink);
-            text-shadow: 2px 2px 0px #000;
-            white-space: nowrap;
+        }
+
+       .level-row {
+            display: flex; 
+            align-items: baseline; /* Aligns the % to the bottom of the numbers naturally */
+            gap: 10px;
         }
 
         .worm-percentage {
-            font-size: 60px; 
+            font-weight: 900; 
+            font-size: 75px; 
             line-height: 1;
-            text-shadow: 3px 3px 0px #000;
-            display: flex; 
-            align-items: baseline; 
-            gap: 5px;
+            color: var(--text-main);
+            text-shadow: 0 0 15px var(--worm-glow);
         }
 
-        .unit { font-size: 30px; color: var(--worm-pink); }
+        .sync-label {
+            font-weight: 900; /* Made it bolder to match your 'FallenOneArt' style */
+            font-size: 24px; 
+            color: var(--worm-pink);
+            text-transform: uppercase;
+            /* Removed writing-mode and transform so it stays horizontal */
+        }
 
-        /* --- ANIMATED WORM --- */
-        .animated-worm {
-            display: flex;
-            align-items: flex-end;
-            margin-left: 15px;
+        /* --- ADVANCED ANIMATED WORM --- */
+        .worm-visual {
+            display: flex; align-items: flex-end;
+            margin-left: 10px;
         }
 
         .worm-segment {
-            width: 35px; 
-            height: 35px;
-            background: var(--worm-pink);
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, var(--worm-pink), var(--worm-dark));
             border-radius: 50%;
-            margin-left: -10px;
-            border: 2px solid var(--worm-dark);
-            animation: squirm 0.8s infinite alternate ease-in-out;
+            margin-left: -12px;
+            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.4);
+            animation: squirm 0.6s infinite alternate ease-in-out;
         }
 
         .worm-segment:nth-child(1) { animation-delay: 0s; z-index: 1;}
-        .worm-segment:nth-child(2) { animation-delay: 0.15s; z-index: 2;}
-        .worm-segment:nth-child(3) { animation-delay: 0.3s; z-index: 3;}
+        .worm-segment:nth-child(2) { animation-delay: 0.1s; z-index: 2;}
+        .worm-segment:nth-child(3) { animation-delay: 0.2s; z-index: 3;}
         
         .worm-head {
-            width: 55px; 
-            height: 55px;
-            background: var(--worm-pink);
+            width: 58px; height: 58px;
+            background: linear-gradient(135deg, var(--worm-pink), var(--worm-dark));
             border-radius: 50%;
-            margin-left: -10px;
-            border: 2px solid var(--worm-dark);
-            position: relative;
-            z-index: 4;
-            animation: squirm 0.8s infinite alternate ease-in-out;
-            animation-delay: 0.45s;
+            margin-left: -12px;
+            border: 2px solid rgba(255,255,255,0.4);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.4), 0 0 10px var(--worm-glow);
+            position: relative; z-index: 4;
+            animation: squirm 0.6s infinite alternate ease-in-out;
+            animation-delay: 0.3s;
         }
 
+        /* Sleeker Eyes */
         .worm-eye {
-            width: 8px; 
-            height: 12px;
-            background: #000;
+            width: 6px; height: 10px;
+            background: #0d0408;
             border-radius: 50%;
-            position: absolute;
-            top: 15px;
-            animation: blink 3s infinite;
+            position: absolute; top: 18px;
         }
-
-        .eye-left { left: 14px; }
-        .eye-right { right: 14px; }
+        .eye-left { left: 19px; }
+        .eye-right { right: 19px; }
 
         .worm-smile {
-            width: 18px; 
-            height: 10px;
-            border-bottom: 3px solid #000;
-            border-radius: 0 0 12px 12px;
-            position: absolute;
-            bottom: 12px; 
-            left: 18px;
+            width: 20px; height: 10px;
+            border-bottom: 4px solid #0d0408;
+            border-radius: 0 0 15px 15px;
+            position: absolute; bottom: 12px; left: 19px;
         }
 
+        /* KEYFRAMES */
         @keyframes squirm {
             0% { transform: translateY(0) scaleY(1); }
-            100% { transform: translateY(-20px) scaleY(1.1); }
+            100% { transform: translateY(-18px) scaleY(1.05); }
         }
 
-        @keyframes blink {
-            0%, 96%, 100% { transform: scaleY(1); }
-            98% { transform: scaleY(0); }
+        @keyframes scanline {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
         }
     </style>
 </head>
 <body>
 
 <div id="worm-hud">
-    <div class="avatar-frame">
-        <div id="avatar-div" class="user-avatar"></div>
-    </div>
-
-    <div class="readout-panel">
-        <div id="username" class="username">---</div>
-        <div class="worm-percentage">
-            <span id="worm-level">0</span><span class="unit">%</span>
+    <div class="scouter-avatar-group">
+        <div id="biometric-gauge"></div>
+        
+        <div class="avatar-frame">
+            <div id="avatar-div" class="user-avatar"></div>
         </div>
     </div>
 
-    <div class="animated-worm">
+<div class="data-panel">
+    <div id="username" class="username">---</div>
+    <div class="level-row">
+        <div class="worm-percentage"><span id="worm-level">0</span></div>
+        <div class="sync-label">%</div>
+    </div>
+</div>
+
+    <div class="worm-visual">
         <div class="worm-segment"></div>
         <div class="worm-segment"></div>
         <div class="worm-segment"></div>
@@ -202,7 +238,6 @@
             events: { general: ["Custom"] },
             id: "wormreveal" 
         }));
-        console.log("Worm Overlay Connected!");
     };
 
     function animateValue(obj, start, end, duration) {
@@ -210,7 +245,8 @@
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            obj.innerHTML = Math.floor(progress * (end - start) + start);
+            const currentVal = Math.floor(progress * (end - start) + start);
+            obj.innerHTML = currentVal;
             if (progress < 1) {
                 window.requestAnimationFrame(step);
             }
@@ -222,16 +258,14 @@
         const response = JSON.parse(event.data);
         const data = response.data;
 
-        // Verify the event matches our ID
         if (data && data.eventName === "wormreveal") {
             const container = document.getElementById('worm-hud');
             const wormText = document.getElementById('worm-level');
+            const gauge = document.getElementById('biometric-gauge');
             const pwr = parseInt(data.randomNumber);
             
-            // Set User Info
+            // Set basic info
             document.getElementById('username').innerText = data.user;
-            
-            // Handle Platform Avatars (Twitch, YT, or Kick)
             if (data.avatar) {
                 document.getElementById('avatar-div').style.backgroundImage = `url('${data.avatar}')`;
             } else {
@@ -240,12 +274,26 @@
 
             if (hideTimer) clearTimeout(hideTimer);
             
+            // Reset state
             container.classList.remove('show'); 
+            gauge.style.background = `conic-gradient(var(--worm-pink) 0deg, transparent 0deg)`; // Empty gauge
             void container.offsetWidth; // Trigger reflow
             
+            // Show HUD (brings it up with the complex spin-in)
             container.classList.add('show');
+
+            // --- ANIMATE THE ADVANCED ELEMENTS ---
+            
+            // 1. Numbers count up
             animateValue(wormText, 0, pwr, 1200);
 
+            // 2. Circular conic gauge fills up smoothly
+            const targetDegrees = (pwr / 100) * 360;
+            setTimeout(() => {
+                gauge.style.background = `conic-gradient(var(--worm-pink) ${targetDegrees}deg, rgba(255,133,194,0.1) ${targetDegrees}deg)`;
+            }, 100);
+
+            // Hide after 8 seconds
             hideTimer = setTimeout(() => {
                 container.classList.remove('show');
             }, 8000);
