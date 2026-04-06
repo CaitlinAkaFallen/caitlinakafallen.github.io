@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Scanner HUD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Montserrat:wght@900&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --id-pink: #ff85c2;
+            --id-blue: #00f3ff;
+            --glass-bg: rgba(15, 5, 10, 0.7);
+            --active-color: var(--id-pink);
+        }
+
+        body {
+            margin: 0; background: transparent; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #scan-hud {
+            display: flex; align-items: center; gap: 30px;
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            padding: 30px; border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            opacity: 0; transform: scale(0.8);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #scan-hud.show { opacity: 1; transform: scale(1); }
+
+        .avatar-wrap {
+            position: relative; width: 120px; height: 120px;
+            border-radius: 15px; border: 2px solid var(--active-color);
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        #avatar-img { width: 100%; height: 100%; background-size: cover; background-position: center; }
+
+        .scan-bar {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--active-color); box-shadow: 0 0 15px var(--active-color);
+            animation: scan 2s infinite ease-in-out;
+        }
+
+        .info { display: flex; flex-direction: column; min-width: 220px; }
+        
+        .label { font-family: 'Share Tech Mono'; font-size: 12px; color: var(--active-color); opacity: 0.8; }
+        
+        .user-name { font-family: 'Fredoka One'; font-size: 28px; color: #fff; text-transform: uppercase; }
+        
+        .result-box {
+            margin-top: 10px; padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--active-color);
+        }
+
+        #result-class { font-size: 40px; font-weight: 900; letter-spacing: 2px; color: #fff; }
+
+        /* Color State for Bots */
+        .is-bot { --active-color: var(--id-blue); }
+
+        @keyframes scan {
+            0%, 100% { top: 0%; }
+            50% { top: 95%; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="scan-hud">
+    <div class="avatar-wrap">
+        <div class="scan-bar"></div>
+        <div id="avatar-img"></div>
+    </div>
+
+    <div class="info">
+        <div class="label" id="type-label">DNA_SEQUENCING...</div>
+        <div id="user-display" class="user-name">---</div>
+        <div class="result-box">
+            <div id="result-class">ANALYZING</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const address = params.get("address") || "localhost";
+    const port = params.get("port") || "8080";
+    const ws = new WebSocket(`ws://${address}:${port}/`);
+    let hideTimer = null;
+
+    ws.onopen = () => {
+        // Updated to Subscribe with the 'humanbot' ID
+        ws.send(JSON.stringify({ 
+            request: "Subscribe", 
+            events: { general: ["Custom"] }, 
+            id: "humanbot" 
+        }));
+        console.log("Connected to Streamer.bot - Human/Bot Scanner Active");
+    };
+
+    ws.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        const data = response.data;
+
+        // Check for the eventName sent from your C# script
+        if (data && data.eventName === "id_scan") {
+            const hud = document.getElementById('scan-hud');
+            
+            // Set visuals based on the scan result
+            document.getElementById('user-display').innerText = data.user;
+            document.getElementById('avatar-img').style.backgroundImage = `url('${data.avatar}')`;
+            document.getElementById('type-label').innerText = data.type + "_SIGNATURE_DETECTED";
+            document.getElementById('result-class').innerText = data.class;
+
+            // Shift theme colors if identified as a BOT
+            if (data.class === "BOT") {
+                hud.classList.add('is-bot');
+            } else {
+                hud.classList.remove('is-bot');
+            }
+
+            // Handle HUD visibility animation
+            if (hideTimer) clearTimeout(hideTimer);
+            hud.classList.remove('show');
+            void hud.offsetWidth; // Trigger reflow
+            hud.classList.add('show');
+
+            hideTimer = setTimeout(() => {
+                hud.classList.remove('show');
+            }, 8000);
+        }
+    };
+</script>
+</body>
+</html>
