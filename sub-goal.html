@@ -6,58 +6,213 @@
     <title>Crystal Pill Sub Alert</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { padding: 50px; background: transparent; font-family: 'Outfit', sans-serif; overflow: hidden; display: flex; align-items: flex-start; }
 
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 50px;
+            background: transparent;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        /* ═══════════════════════════════════════
+        MAIN WRAPPER 
+        ═══════════════════════════════════════ */
         #qna-container {
-            display: flex; align-items: center; gap: 25px;
-            opacity: 0; transform: translateX(-50px);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        #qna-container.show { opacity: 1; transform: translateX(0); }
+        #qna-container.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
 
+        /* ═══════════════════════════════════════
+        AVATAR (Round Crystal Style)
+        ═══════════════════════════════════════ */
         .avatar-wrapper {
-            width: 90px; height: 90px; border-radius: 50%;
-            background: #111; border: 3px solid #ba68c8;
-            box-shadow: 0 0 20px rgba(77, 245, 245, 0.4);
-            overflow: hidden; transform: translateX(-300px) rotate(-720deg);
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #111;
+            border: 3px solid #ba68c8; /* Purple Crystal Border */
+            box-shadow: 0 0 20px rgba(77, 245, 245, 0.4); /* Teal Glow */
+            overflow: hidden;
+            flex-shrink: 0;
+            transform: translateX(-300px) rotate(-720deg);
             transition: transform 1.2s cubic-bezier(0.25, 1, 0.4, 1);
         }
 
-        #qna-container.show .avatar-wrapper { transform: translateX(0) rotate(0deg); }
-
-        .user-avatar { width: 100%; height: 100%; background-size: cover; background-position: center; }
-
-        .glass-pill {
-            background: rgba(15, 10, 25, 0.85); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-            border: 1px solid rgba(77, 245, 245, 0.3); border-radius: 20px;
-            width: 450px; height: 0; padding: 0 30px; display: flex;
-            align-items: center; justify-content: space-between;
-            opacity: 0; transition: height 0.6s ease, opacity 0.3s ease;
+        #qna-container.show .avatar-wrapper {
+            transform: translateX(0) rotate(0deg);
         }
 
-        #qna-container.show .glass-pill { height: 80px; opacity: 1; }
+        .user-avatar {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
 
-        .user-name { font-size: 1.1rem; font-weight: 700; color: #ffffff; text-shadow: 0 0 10px #ba68c8; }
-        .stat-shard { background: rgba(186, 104, 200, 0.2); border: 1px solid #ba68c8; padding: 5px 12px; border-radius: 10px; text-align: center; }
-        #badge-value { display: block; font-weight: 900; color: #fff; }
+        /* ═══════════════════════════════════════
+        CONTENT COLUMN
+        ═══════════════════════════════════════ */
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .top-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
+        }
+
+        #qna-container.show .top-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .inquiry-label {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: #f06292; /* Pink Label */
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        .user-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(186, 104, 200, 0.8); /* Purple Glow */
+        }
+
+        /* ═══════════════════════════════════════
+        THE GLASS PILL
+        ═══════════════════════════════════════ */
+        .glass-pill {
+            background: rgba(15, 10, 25, 0.85);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(77, 245, 245, 0.3); /* Teal Border */
+            border-radius: 20px;
+            width: 450px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            height: 0; 
+            padding: 0 30px;
+            opacity: 0;
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+
+        #qna-container.show .glass-pill {
+            height: 80px;
+            opacity: 1;
+            padding: 0 30px;
+        }
+
+        .question-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #4df5f5; /* Teal Message Text */
+            font-style: italic;
+            width: 75%;
+        }
+
+        /* ═══════════════════════════════════════
+        STAT SHARD (The Tier/Sub Box)
+        ═══════════════════════════════════════ */
+        .stat-shard {
+            background: rgba(186, 104, 200, 0.2);
+            border: 1px solid #ba68c8;
+            padding: 5px 12px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        #badge-value {
+            display: block;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #ffffff;
+        }
+
+        #badge-label {
+            display: block;
+            font-size: 0.6rem;
+            color: #f06292;
+            font-weight: 700;
+        }
+
+        /* ═══════════════════════════════════════
+        BOTTOM LABEL
+        ═══════════════════════════════════════ */
+        .bottom-label-row {
+            margin-top: 8px;
+            padding-right: 20px;
+            display: flex;
+            justify-content: flex-end;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
+        }
+
+        #qna-container.show .bottom-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .time-stamp {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 
     <div id="qna-container">
-        <div class="avatar-wrapper"><div class="user-avatar" id="avatar"></div></div>
+        <div class="avatar-wrapper">
+            <div class="user-avatar" id="avatar"></div>
+        </div>
+        
         <div class="content-column">
-            <div style="margin-bottom:8px; padding:0 20px;">
-                <div id="username" class="user-name">Warrior</div>
+            <div class="top-label-row">
+                <div class="inquiry-label" id="alert-type">New Subscriber</div>
+                <div class="user-name" id="username">Loading...</div>
             </div>
+
             <div class="glass-pill">
-                <div id="display-message" style="color: #4df5f5; font-style: italic; font-size: 0.9rem;">Joined the clan!</div>
+                <div class="question-text" id="display-message">Crystal shields active!</div>
                 <div class="stat-shard">
                     <span id="badge-value">T1</span>
-                    <span id="badge-label" style="font-size:0.6rem; color:#f06292; font-weight:700;">TIER</span>
+                    <span id="badge-label">TIER</span>
                 </div>
+            </div>
+
+            <div class="bottom-label-row">
+                <div class="time-stamp">JUST NOW</div>
             </div>
         </div>
     </div>
@@ -65,34 +220,48 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
         let hideTimer = null;
 
         ws.onopen = () => {
-            ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] } }));
+            ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "SubAlert" }));
         };
 
         ws.onmessage = (event) => {
             const response = JSON.parse(event.data);
-            // LISTEN ONLY FOR CRYSTAL SUB
-            if (response.data && response.data.eventName === "CrystalSub") {
+            if (response.data && response.data.eventName === "subAlert") {
                 updateUI(response.data);
             }
         };
 
         function updateUI(data) {
             const container = document.getElementById('qna-container');
-            document.getElementById('username').innerText = data.user; 
-            document.getElementById('display-message').innerText = data.message;
-            document.getElementById('badge-value').innerText = data.badge;
-            document.getElementById('badge-label').innerText = data.label;
-            document.getElementById('avatar').style.backgroundImage = `url('${data.avatar}')`;
+            const avatarElem = document.getElementById('avatar');
+            
+            // Text updates
+            document.getElementById('username').innerText = data.user || "Warrior"; 
+            document.getElementById('display-message').innerText = data.message || "Welcome to the Crystal Clan!";
+            document.getElementById('badge-value').innerText = data.badge || "1";
+            document.getElementById('badge-label').innerText = data.label || "TIER";
+            
+            if (data.avatar) {
+                avatarElem.style.backgroundImage = `url('${data.avatar}')`;
+            }
 
+            // Animation Logic
             if (hideTimer) clearTimeout(hideTimer);
+
             container.classList.remove('show'); 
-            void container.offsetWidth; 
+            void container.offsetWidth; // Force CSS Reset
             container.classList.add('show');
-            hideTimer = setTimeout(() => container.classList.remove('show'), 10000);
+
+            // Auto-Hide after 10 seconds
+            hideTimer = setTimeout(() => {
+                container.classList.remove('show');
+            }, 10000);
         }
+
+        // Test Call: trigger by pasting triggerUI({user: "GummyKing", message: "Vibing in the crystal light", badge: "T3"}) in console
     </script>
 </body>
 </html>
