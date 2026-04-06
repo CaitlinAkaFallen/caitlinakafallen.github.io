@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Glass Yeet HUD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Montserrat:wght@100;900&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --yeet-pink: #ff85c2;
+            --yeet-glow: #ff2e97;
+            --glass-bg: rgba(15, 5, 10, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --ui-blue: rgba(0, 243, 255, 0.3);
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background: transparent;
+            overflow: hidden;
+            display: flex; align-items: flex-end; justify-content: center;
+            height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* MAIN HUD CONTAINER */
+        #yeet-hud {
+            position: relative;
+            display: flex; align-items: center; gap: 30px;
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            backdrop-filter: blur(16px) saturate(180%);
+            
+            padding: 25px 50px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
+                        inset 0 0 20px rgba(255, 133, 194, 0.05);
+            
+            margin-bottom: 60px;
+            opacity: 0; 
+            transform: translateY(100px) perspective(1000px) rotateX(20deg);
+            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        #yeet-hud.show { 
+            opacity: 1; 
+            transform: translateY(0) perspective(1000px) rotateX(0deg); 
+        }
+
+        /* SCANLINE EFFECT */
+        #yeet-hud::before {
+            content: "";
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            border-radius: 20px;
+        }
+
+        /* AVATAR DEPTH LAYER */
+        .avatar-container {
+            position: relative;
+            padding: 5px;
+        }
+
+        .avatar-frame {
+            width: 120px; height: 120px;
+            border-radius: 15px; 
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #000;
+            box-shadow: 0 0 30px rgba(255, 133, 194, 0.2);
+            z-index: 2;
+            position: relative;
+        }
+
+        .user-avatar { width: 100%; height: 100%; background-size: cover; background-position: center; }
+
+        /* HUD BRACKETS */
+        .bracket {
+            position: absolute; width: 15px; height: 15px;
+            border: 2px solid var(--yeet-pink);
+            filter: drop-shadow(0 0 5px var(--yeet-glow));
+        }
+        .tl { top: -5px; left: -5px; border-right: none; border-bottom: none; }
+        .tr { top: -5px; right: -5px; border-left: none; border-bottom: none; }
+        .bl { bottom: -5px; left: -5px; border-right: none; border-top: none; }
+        .br { bottom: -5px; right: -5px; border-left: none; border-top: none; }
+
+        /* DATA SECTION */
+        .data-content { display: flex; flex-direction: column; min-width: 250px;}
+
+        .status-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px; color: var(--yeet-pink);
+            letter-spacing: 2px; margin-bottom: 5px;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .status-tag::before {
+            content: ""; width: 6px; height: 6px; background: var(--yeet-pink);
+            border-radius: 50%; animation: blink 1s infinite;
+        }
+
+        .username {
+            font-family: 'Fredoka One', cursive;
+            font-size: 26px; color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--yeet-glow);
+        }
+
+        .distance-row { display: flex; align-items: baseline; gap: 10px; margin-top: -5px; }
+
+        .yards {
+            font-size: 95px; font-weight: 900;
+            line-height: 0.8; color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-style: italic;
+        }
+
+        .unit { 
+            font-size: 20px; color: var(--yeet-pink); 
+            font-weight: 100; letter-spacing: 5px; 
+        }
+
+        /* DECORATIVE GAUGE */
+        .side-gauge {
+            width: 6px; height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px; position: relative; overflow: hidden;
+        }
+        .side-gauge::after {
+            content: ""; position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 65%;
+            background: linear-gradient(to top, var(--yeet-glow), var(--yeet-pink));
+            box-shadow: 0 0 15px var(--yeet-glow);
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    </style>
+</head>
+<body>
+
+<div id="yeet-hud">
+    <div class="avatar-container">
+        <div class="bracket tl"></div><div class="bracket tr"></div>
+        <div class="bracket bl"></div><div class="bracket br"></div>
+        <div class="avatar-frame">
+            <div id="avatar-div" class="user-avatar"></div>
+        </div>
+    </div>
+
+    <div class="data-content">
+        <div class="status-tag">TARGET_AQUIRED // TRACKING</div>
+        <div id="username" class="username">---</div>
+        <div class="distance-row">
+            <div class="yards"><span id="distance">0</span></div>
+            <div class="unit">YARDS</div>
+        </div>
+    </div>
+
+    <div class="side-gauge"></div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+    let hideTimer = null;
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "yeetreveal" }));
+    };
+
+    ws.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        const data = response.data;
+
+        if (data && data.eventName === "yeetreveal") {
+            const container = document.getElementById('yeet-hud');
+            const distText = document.getElementById('distance');
+            
+            document.getElementById('username').innerText = data.user;
+            document.getElementById('avatar-div').style.backgroundImage = `url('${data.avatar}')`;
+
+            if (hideTimer) clearTimeout(hideTimer);
+            container.classList.remove('show');
+            void container.offsetWidth; 
+            container.classList.add('show');
+
+            let start = 0;
+            const end = parseInt(data.distance);
+            const duration = 1400;
+            let startTimestamp = null;
+            
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                distText.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+
+            hideTimer = setTimeout(() => { container.classList.remove('show'); }, 10000);
+        }
+    };
+</script>
+</body>
+</html>
