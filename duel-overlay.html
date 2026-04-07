@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Fighter Duel HUD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rock+Salt&family=Press+Start+2P&display=swap');
+        
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --arc-red: #ff3300;
+            --arc-yellow: #ffff00;
+            --arc-blue: #00ccff;
+            --arc-purple: #ba68c8;
+            --arc-pink: #f06292;
+            --bg-glass: rgba(10, 5, 20, 0.9);
+        }
+
+        body {
+            background: transparent;
+            font-family: 'Press Start 2P', cursive;
+            overflow: hidden;
+            height: 100vh; width: 100vw;
+            display: flex; justify-content: center; align-items: center;
+            color: white;
+        }
+
+        #fighter-hud {
+            position: relative;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, #1a0a2a, #0a1a3a, #1a0a2a);
+            background-size: 400% 400%;
+            animation: gradientMove 10s infinite;
+            display: flex; flex-direction: column; justify-content: space-around; align-items: center;
+            opacity: 0; 
+            transition: opacity 0.5s ease, background 0.5s ease;
+        }
+
+        #fighter-hud.show { opacity: 1; }
+        #fighter-hud.winner-state { 
+            background: linear-gradient(90deg, var(--bg-glass), var(--arc-purple)); 
+            animation: none; 
+        }
+
+        .vs-arena {
+            display: flex; align-items: center; gap: 80px;
+            perspective: 2000px;
+        }
+
+        .fighter {
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .fighter.challenger { transform: translateX(-1000px) rotateY(40deg); }
+        .fighter.opponent   { transform: translateX(1000px) rotateY(-40deg); }
+        
+        #fighter-hud.show .fighter.challenger,
+        #fighter-hud.show .fighter.opponent { transform: translateX(0) rotateY(0deg); }
+
+        .avatar-frame {
+            width: 250px; height: 250px;
+            background: #000;
+            border: 8px solid white;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            background-size: cover; background-position: center;
+            transform: skewX(-5deg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-frame::before {
+            content: ''; position: absolute; inset: 0;
+            border: 8px solid transparent;
+            z-index: 5;
+        }
+        
+        .challenger .avatar-frame::before { border-color: var(--arc-red);  box-shadow: 0 0 30px var(--arc-red); }
+        .opponent  .avatar-frame::before  { border-color: var(--arc-blue); box-shadow: 0 0 30px var(--arc-blue); }
+
+        .waiting-pulse .avatar-frame::before {
+            animation: waitPulse 1.5s infinite alternate;
+        }
+        @keyframes waitPulse {
+            0%   { border-color: transparent;    box-shadow: 0 0 10px transparent; }
+            100% { border-color: var(--arc-blue); box-shadow: 0 0 50px var(--arc-blue); }
+        }
+
+        .winner .avatar-frame::before { 
+            border-color: var(--arc-purple) !important; 
+            box-shadow: 0 0 60px var(--arc-purple) !important; 
+            animation: winnerFlash 0.5s infinite alternate;
+        }
+        .loser { opacity: 0.3; filter: grayscale(1) blur(2px); transform: scale(0.9); }
+
+        .fighter-name {
+            font-family: 'Rock Salt', cursive;
+            font-size: 2.2rem; font-weight: 700; color: #fff;
+            text-transform: uppercase;
+            text-shadow: 4px 4px 0 #000, 0 0 20px rgba(255,255,255,0.5);
+            margin-top: -20px; z-index: 10;
+        }
+
+        .weap-hud {
+            font-family: 'Press Start 2P'; font-size: 10px; color: var(--arc-yellow);
+            background: rgba(0,0,0,0.6); padding: 5px 15px; border-radius: 5px;
+            border-bottom: 3px solid var(--arc-yellow);
+        }
+
+        .vs-logo {
+            font-family: 'Rock Salt'; font-size: 7rem; font-weight: 900;
+            color: var(--arc-pink);
+            text-shadow: 0 0 10px var(--arc-pink), 0 0 30px #000, 8px 8px 0 #fff;
+            font-style: italic;
+            position: relative;
+            transform: scale(0) rotate(180deg);
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        #fighter-hud.show .vs-logo { transform: scale(1) rotate(0deg); }
+
+        .arc-pill {
+            background: var(--bg-glass);
+            border: 4px solid white; border-radius: 10px;
+            width: 800px;
+            padding: 25px; text-align: center;
+            opacity: 0; transform: translateY(50px);
+            transition: all 0.5s ease 1s;
+        }
+        #fighter-hud.show .arc-pill { opacity: 1; transform: translateY(0); }
+
+        #result-msg {
+            font-size: 1.2rem; color: #fff; line-height: 1.6;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        @keyframes gradientMove  { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes winnerFlash   { 0% { opacity: 1; } 100% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+
+    <div id="fighter-hud">
+        <div style="font-size: 20px; color: var(--arc-yellow); text-shadow: 0 0 10px #000; padding: 20px;">A NEW FIGHTER APPEARS...</div>
+
+        <div class="vs-arena">
+            <div class="fighter challenger" id="c-wrap">
+                <div class="avatar-frame" id="c-img"></div>
+                <div class="weap-hud">WP: [<span id="c-weap">???</span>]</div>
+                <div class="fighter-name" id="c-name">P1</div>
+            </div>
+
+            <div class="vs-logo">VS</div>
+
+            <div class="fighter opponent" id="o-wrap">
+                <div class="avatar-frame" id="o-img"></div>
+                <div class="weap-hud">WP: [<span id="o-weap">WAITING</span>]</div>
+                <div class="fighter-name" id="o-name">P2</div>
+            </div>
+        </div>
+
+        <div class="arc-pill">
+            <div id="result-msg">Waiting for the fight...</div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+        
+        let inviteTimer = null;
+        let isFighting  = false;
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ 
+                request: "Subscribe", 
+                id: "SF_HUD_SUB",
+                events: { general: ["Custom"] } 
+            }));
+            console.log("Arcade HUD Connected!");
+        };
+
+        ws.onmessage = (event) => {
+            const response = JSON.parse(event.data);
+            const data = response.data;
+            if (!data) return;
+
+            if (data.eventName === "FighterInvite") showInvite(data);
+            if (data.eventName === "FighterDuel")   beginFighterDuel(data);
+        };
+
+        // ── Reset ALL state so every duel starts clean ─────────────────────
+        function resetHUD() {
+            const hud   = document.getElementById('fighter-hud');
+            const cWrap = document.getElementById('c-wrap');
+            const oWrap = document.getElementById('o-wrap');
+            const log   = document.getElementById('result-msg');
+
+            // Remove every state class that a previous duel may have left behind
+            hud.classList.remove('winner-state');
+            cWrap.classList.remove('winner', 'loser', 'waiting-pulse');
+            oWrap.classList.remove('winner', 'loser', 'waiting-pulse');
+
+            // Restore base fighter classes
+            cWrap.className = 'fighter challenger';
+            oWrap.className = 'fighter opponent';
+
+            // Clear avatars so old images never flash through
+            document.getElementById('c-img').style.backgroundImage = '';
+            document.getElementById('o-img').style.backgroundImage = '';
+
+            // Reset weapon labels
+            document.getElementById('c-weap').innerText = '???';
+            document.getElementById('o-weap').innerText = 'WAITING';
+
+            // Reset result pill — remove any inline styles set during a fight
+            log.removeAttribute('style');
+            log.innerText = 'Waiting for the fight...';
+        }
+
+        function showInvite(data) {
+            if (isFighting) return;
+
+            resetHUD(); // ← Always wipe state before showing a new invite
+
+            const hud = document.getElementById('fighter-hud');
+            const log = document.getElementById('result-msg');
+            
+            document.getElementById('o-wrap').classList.add('waiting-pulse');
+
+            document.getElementById('c-name').innerText = data.challenger;
+            document.getElementById('o-name').innerText = data.opponent;
+            document.getElementById('c-weap').innerText = '???';
+            document.getElementById('o-weap').innerText = 'WAITING';
+            
+            document.getElementById('c-img').style.backgroundImage = `url('${data.cAvatar}')`;
+            document.getElementById('o-img').style.backgroundImage = `url('${data.oAvatar}')`;
+
+            log.innerText = `WAITING FOR ${data.opponent.toUpperCase()} TO TYPE !ACCEPT`;
+            hud.classList.add('show');
+
+            if (inviteTimer) clearTimeout(inviteTimer);
+            inviteTimer = setTimeout(() => {
+                hud.classList.remove('show');
+            }, 30000); 
+        }
+
+        async function beginFighterDuel(data) {
+            isFighting = true;
+            if (inviteTimer) clearTimeout(inviteTimer);
+            
+            const hud  = document.getElementById('fighter-hud');
+            const log  = document.getElementById('result-msg');
+            const oWrap = document.getElementById('o-wrap');
+            const cWrap = document.getElementById('c-wrap');
+
+            // Remove waiting pulse, reveal both weapons
+            oWrap.classList.remove('waiting-pulse');
+            document.getElementById('c-weap').innerText = data.cWeapon;
+            document.getElementById('o-weap').innerText = data.oWeapon;
+
+            hud.classList.add('show');
+
+            // BUG FIX: was using data.cCat / data.oCat which don't exist.
+            // Weapons are already shown in the weap-hud labels above, 
+            // so the pill just shows a VS announcement instead.
+            log.innerText = `${data.challenger.toUpperCase()} VS ${data.opponent.toUpperCase()}! FIGHT!`;
+
+            // Wait for entry animation to complete
+            await new Promise(r => setTimeout(r, 4000));
+
+            // Show winner result
+            hud.classList.add('winner-state');
+            log.innerText       = data.message;
+            log.style.color     = 'var(--arc-yellow)';
+            log.style.fontSize  = '1.4rem';
+
+            if (data.winner === data.challenger) {
+                cWrap.classList.add('winner');
+                oWrap.classList.add('loser');
+            } else {
+                oWrap.classList.add('winner');
+                cWrap.classList.add('loser');
+            }
+
+            // Close after 10 seconds and fully reset for next duel
+            setTimeout(() => {
+                hud.classList.remove('show');
+                setTimeout(() => {
+                    isFighting = false;
+                    resetHUD();
+                }, 600); // wait for fade-out transition (0.5s) before wiping
+            }, 10000);
+        }
+    </script>
+</body>
+</html>
