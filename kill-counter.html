@@ -5,147 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sleek Adv. Kill Counter</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@700&display=swap');
 
-        body { 
-            margin: 0; 
-            padding: 20px; 
-            background: transparent; 
-            overflow: hidden; 
-            font-family: 'Share Tech Mono', monospace;
-            display: flex;
-            align-items: center;
-        }
+body { 
+    margin: 0; 
+    padding: 20px; 
+    background: transparent; 
+    overflow: hidden; 
+    font-family: 'Share Tech Mono', monospace;
+    display: flex;
+    align-items: center;
+}
 
-        /* ADVANCED GLASS CONTAINER */
-        #kill-container {
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            background: rgba(0, 0, 0, 0.158); /* Very dark transparent base */
-            
-            /* Glassmorphism Logic */
-            -webkit-backdrop-filter: blur(12px);
-            backdrop-filter: blur(12px);
-            
-            /* Sharp, angled borders */
-            border: 1px solid rgba(255, 20, 20, 0.15); /* Red tinted border */
-            border-top: 1px solid rgba(255, 20, 20, 0.4);
-            border-left: 1px solid rgba(255, 20, 20, 0.3);
-            border-radius: 6px; 
-            
-            /* Dynamic Red Glow */
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6), 
-                        inset 0 0 15px rgba(255, 20, 20, 0.05),
-                        0 0 10px rgba(255, 20, 20, 0.1);
+/* ADVANCED GLASS CONTAINER */
+#kill-container {
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    background: rgba(10, 5, 5, 0.7); 
+    
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    
+    border: 1px solid rgba(255, 20, 20, 0.2); 
+    border-top: 1px solid rgba(255, 20, 20, 0.5);
+    border-left: 1px solid rgba(255, 20, 20, 0.3);
+    border-radius: 8px; 
+    
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 
+                inset 0 0 15px rgba(255, 20, 20, 0.05),
+                0 0 15px rgba(255, 20, 20, 0.1);
 
-            padding: 10px 35px 20px 35px; 
-            width: fit-content; 
-            position: relative;
-            
-            /* TRANSITION LOGIC: Hidden and shifted down by default */
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
-            visibility: hidden;
-            pointer-events: none;
-        }
+    padding: 15px 40px 25px 40px; 
+    width: fit-content; 
+    position: relative;
+    
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+    visibility: hidden;
+    pointer-events: none;
+}
 
-        /* Angled cut-out details */
-        #kill-container::after {
-            content: '';
-            position: absolute;
-            bottom: -8px; left: 10%;
-            width: 80%; height: 2px;
-            background: rgba(255, 20, 20, 0.3);
-            box-shadow: 0 0 10px 1px rgba(255, 20, 20, 0.4);
-        }
+#kill-container::after {
+    content: '';
+    position: absolute;
+    bottom: -6px; left: 15%;
+    width: 70%; height: 2px;
+    background: rgba(255, 20, 20, 0.4);
+    box-shadow: 0 0 12px 1px rgba(255, 20, 20, 0.6);
+}
 
-        /* ACTIVE STATE LOGIC */
-        #kill-container.active {
-            opacity: 1;
-            transform: translateY(0);
-            visibility: visible;
-            pointer-events: auto;
-        }
+#kill-container.active {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    pointer-events: auto;
+}
 
-        .stat-group { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            color: white; 
-            position: relative; 
-            /* Added vertical space around the whole kill group */
-            margin: 15px 0;
-        }
+.stat-group { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    color: white; 
+    position: relative; 
+    margin: 15px 0;
+}
 
-        /* Label with standard terminal glow */
-        .label { 
-            font-size: 0.8rem; 
-            letter-spacing: 5px; 
-            color: #ff4444; /* Blood Red */
-            text-shadow: 0 0 10px rgba(255, 20, 20, 0.6); 
-            text-transform: uppercase;
-            /* FIX 1: Add gap below the label and remove negative margin */
-            margin-top: 0;
-            margin-bottom: 5px; /* Creates the small gap */
-        }
+.label { 
+    font-size: 0.85rem; 
+    letter-spacing: 5px; 
+    color: #ff4444; 
+    text-shadow: 0 0 10px rgba(255, 20, 20, 0.6); 
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
 
-        /* Big, sleek Teko font for numbers */
-        .count { 
-            font-family: 'Teko', sans-serif;
-            font-size: 5rem; 
-            font-weight: 700; 
-            /* FIX 2: Relaxed line-height and removed negative margin */
-            line-height: 1.1; /* Relaxed for big fonts */
-            margin-top: 0; /* REMOVED -10px, crucial for gap */
-            z-index: 2; 
-            /* DEEP RED NEON GLOW */
-            color: #ffffff;
-            text-shadow: 0 0 15px rgba(255, 0, 0, 0.7),
-                         0 0 30px rgba(255, 0, 0, 0.5),
-                         0 0 50px rgba(255, 0, 0, 0.3);
-        }
+.count { 
+    font-family: 'Teko', sans-serif;
+    font-size: 5.5rem; 
+    font-weight: 700; 
+    line-height: 0.9;
+    margin-top: 5px;
+    z-index: 2; 
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(255, 0, 0, 0.8),
+                 0 0 30px rgba(255, 0, 0, 0.5),
+                 0 0 50px rgba(255, 0, 0, 0.3);
+}
 
-        /* Subtle indicator log */
-        .footer-log {
-            font-size: 10px;
-            color: rgb(2, 2, 2);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            /* Added top margin to separate logs slightly from the group */
-            margin-top: 5px;
-            margin-bottom: 0;
-        }
-        
-        #threat-level {
-            color: #ff2222;
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-        }
+.footer-log {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5); 
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: bold;
+    margin-top: 15px;
+}
 
-        /* SHATTER/PULSE ANIMATION ON UPDATE */
-        .shatter { 
-            animation: skull-shatter 0.4s cubic-bezier(0.19, 1, 0.22, 1); 
-        }
+.footer-log:first-child {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
 
-        @keyframes skull-shatter {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.15); 
-                filter: brightness(1.8) drop-shadow(0 0 25px #ff2222); 
-            }
-            100% { transform: scale(1); }
-        }
+#threat-level {
+    color: #ff2222;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    text-shadow: 0 0 8px rgba(255, 34, 34, 0.4);
+}
+
+.shatter { 
+    animation: skull-shatter 0.4s cubic-bezier(0.19, 1, 0.22, 1); 
+}
+
+@keyframes skull-shatter {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.1); filter: brightness(1.5); }
+    100% { transform: scale(1); }
+}
     </style>
 </head>
 <body>
 
 <div id="kill-container">
     <div class="footer-log">FILE_LOG: REQUEM_ACTIVE</div>
+    
     <div class="stat-group" id="kill-group">
         <div class="label">Kills</div>
         <div id="kill-count" class="count">0</div>
     </div>
-    <div class="footer-log">THREAT_LEVEL: <span id="threat-level">VERIFIED</span></div>
+    
+    <div class="footer-log threat-log">
+        THREAT_LEVEL: <span id="threat-level">VERIFIED</span>
+    </div>
 </div>
 
 <script>
