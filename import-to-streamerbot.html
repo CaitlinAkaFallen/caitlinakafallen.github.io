@@ -1296,6 +1296,7 @@
           <option value="cp-timer"> Channel Points Timer</option> <!--19-->
           <option value="coin-flip"> Coin Flip </option> <!--20-->
           <option value="street-fighter-style-duel">Street Fighter Style Duel </option> <!--21-->
+          <option value="wanted-poster"> Wanted Poster </option> <!--22-->
 
         </select>
       </div>
@@ -2610,6 +2611,60 @@
             </video>
           </div>
         </div>
+
+                <!--Wanted Poster-->
+          <div class="grid-item" id="wanted-poster">
+          <h3>Wanted Poster</h3>
+          
+          <div class="main-layout-wrapper">
+              
+              <div class="side-column">
+                  <div class="select-copy-container">
+                      <label for="obs-select-22" style="display: block; margin-bottom: 5px; font-size: 0.9em">Select Overlay to Copy Link:</label>
+                      <select id="obs-select-22" class="code-select-glassy" onchange="copySelectValue(this)">
+                          <option value="" disabled selected>Choose an overlay...</option>
+                          <option value="https://caitlinscreativespace.xyz/wanted-poster-overlay.html">Wanted Poster Overlay</option>
+                      </select>
+                      <p id="copy-status-22" style="font-size: 12px; color: #00ffcc; margin-top: 5px; height: 15px; font-weight: bold;"></p>
+                  </div>
+
+                  <div style="margin-top: 15px"></div>
+
+                  <div class="select-copy-container">
+                      <label for="import-select-22" style="display: block; margin-bottom: 5px; font-size: 0.9em">Select Import Code to Copy:</label>
+                      <select id="import-select-22" class="code-select-glassy" onchange="copySelectValue(this)">
+                          <option value="" disabled selected>Choose a code...</option>
+                          <option value="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">Wanted Poster Script</option>
+                      </select>
+                  </div>
+              </div>
+
+              <div class="center-column">
+                  <p class="instruction-text">
+                      Import the code into Streamer.bot and use the link as an OBS Browser Source.
+                  </p>
+                  <img src="images/wanted-poster.png" alt="Wanted Poster" class="feature-img" />
+              </div>
+
+              <div class="side-column">
+                  <div class="video-container">
+                      <video class="modal-trigger feature-video" data-modal="modal-wanted-poster" data-src="Videos/wanted-poster.mp4" controls>
+                          <source src="Videos/wanted-poster.mp4" type="video/mp4" />
+                      </video>
+                  </div>
+              </div>
+
+          </div> <div id="modal-wanted-poster" class="video-modal">
+              <div class="video-wrapper">
+                  <span class="close">&times;</span>
+                  <video controls>
+                      <source src="Videos/wanted-poster.mp4" type="video/mp4" />
+                  </video>
+              </div>
+          </div>
+
+      </div>
+      
     </section>
 
     <div id="imageModal" class="image-modal">
