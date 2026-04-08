@@ -3,47 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Viking Fart Counter</title>
+    <title>Biohazard Fart Counter</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@700&display=swap');
-        body { margin: 0; padding: 20px; background: transparent; overflow: hidden; font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@700&display=swap');
 
-        #pill-container {
-            display: flex; align-items: center; position: relative;
-            background: linear-gradient(145deg, rgba(30, 30, 10, 1) 0%, rgba(10, 10, 5, 1) 100%);
-            padding: 15px 45px; clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
-            border-left: 6px solid #aaff00; /* Toxic Yellow-Green */
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
-            transform: skewX(-10deg); width: fit-content;
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            background: transparent; 
+            overflow: hidden; 
+            font-family: 'Share Tech Mono', monospace;
+            display: flex;
+            align-items: center;
         }
 
-        /* Gas Cloud Particles */
+        /* TOXIC GLASS CONTAINER */
+        #fart-container {
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            background: rgba(10, 15, 5, 0.7); /* Dark green tint */
+            
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            
+            border: 1px solid rgba(170, 255, 0, 0.2); 
+            border-top: 1px solid rgba(170, 255, 0, 0.5);
+            border-left: 1px solid rgba(170, 255, 0, 0.3);
+            border-radius: 4px; /* Sharper corners for industrial look */
+            
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 
+                        inset 0 0 15px rgba(170, 255, 0, 0.05);
+
+            padding: 20px 40px; 
+            width: fit-content; 
+            position: relative;
+        }
+
+        /* Industrial detail line */
+        #fart-container::before {
+            content: 'BIOHAZARD LEVEL: CRITICAL';
+            position: absolute;
+            top: -18px;
+            left: 0;
+            font-size: 9px;
+            color: #ccff00;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(170, 255, 0, 0.5);
+        }
+
+        .stat-group { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            color: white; 
+            margin: 10px 0;
+        }
+
+        .label { 
+            font-size: 0.9rem; 
+            letter-spacing: 4px; 
+            color: #ccff00; 
+            text-shadow: 0 0 10px rgba(170, 255, 0, 0.6); 
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .count { 
+            font-family: 'Teko', sans-serif;
+            font-size: 5rem; 
+            font-weight: 700; 
+            line-height: 0.9;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(170, 255, 0, 0.8),
+                         0 0 30px rgba(170, 255, 0, 0.4);
+            margin: 0;
+        }
+
+        /* Particle cloud container */
         .gas-cloud {
-            position: absolute; background: rgba(170, 255, 0, 0.2);
-            filter: blur(15px); border-radius: 50%; pointer-events: none;
-            z-index: 1;
+            position: absolute;
+            background: radial-gradient(circle, rgba(170, 255, 0, 0.4) 0%, rgba(170, 255, 0, 0) 70%);
+            filter: blur(10px);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .stat-group { display: flex; flex-direction: column; align-items: center; transform: skewX(10deg); color: white; position: relative; z-index: 2; }
-        .label { font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 3px; color: #d4ff00; text-shadow: 0 0 10px rgba(170, 255, 0, 0.5); }
-        .count { font-size: 3.2rem; font-weight: 900; text-shadow: 0 0 20px rgba(170, 255, 0, 0.3); margin-top: -5px; }
+        /* Animation for the counter when it updates */
+        .wobble { 
+            animation: toxic-vibration 0.4s ease-in-out; 
+        }
 
-        .stink { animation: stink-wobble 0.5s ease-in-out; }
-        @keyframes stink-wobble {
-            0% { transform: skewX(10deg) translate(0, 0); }
-            25% { transform: skewX(10deg) translate(-2px, -2px); filter: hue-rotate(20deg); }
-            75% { transform: skewX(10deg) translate(2px, 2px); }
-            100% { transform: skewX(10deg) translate(0, 0); }
+        @keyframes toxic-vibration {
+            0% { transform: scale(1); filter: brightness(1); }
+            25% { transform: scale(1.1) rotate(2deg); filter: brightness(1.5); }
+            50% { transform: scale(1.1) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .footer-log {
+            font-size: 10px;
+            color: rgba(204, 255, 0, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-<div id="pill-container">
+<div id="fart-container">
     <div class="stat-group" id="fart-group">
-        <div class="label">Farts</div>
+        <div class="label">GAS EMISSIONS</div>
         <div id="fart-count" class="count">0</div>
     </div>
+    <div class="footer-log">SYSTEM_STINK_ACTIVE</div>
 </div>
 
 <script>
@@ -51,25 +126,27 @@
     const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
 
     function releaseGas() {
-        const container = document.getElementById('pill-container');
-        for (let i = 0; i < 5; i++) {
+        const container = document.getElementById('fart-container');
+        for (let i = 0; i < 6; i++) {
             const cloud = document.createElement('div');
             cloud.className = 'gas-cloud';
-            const size = Math.random() * 60 + 40;
+            const size = Math.random() * 80 + 40;
             cloud.style.width = size + 'px';
             cloud.style.height = size + 'px';
-            cloud.style.left = '40%';
-            cloud.style.top = '20%';
+            cloud.style.left = (Math.random() * 60 + 20) + '%';
+            cloud.style.top = '30%';
             container.appendChild(cloud);
 
             cloud.animate([
-                { transform: 'translate(0, 0) scale(1)', opacity: 0.6 },
-                { transform: `translate(${Math.random() * 100 - 50}px, -50px) scale(2)`, opacity: 0 }
-            ], { duration: 1500, easing: 'ease-out' }).onfinish = () => cloud.remove();
+                { transform: 'translate(0, 0) scale(1)', opacity: 0.7 },
+                { transform: `translate(${Math.random() * 140 - 70}px, -80px) scale(2.5)`, opacity: 0 }
+            ], { duration: 2000, easing: 'ease-out' }).onfinish = () => cloud.remove();
         }
     }
 
-    ws.onopen = () => ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "FartStats" }));
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "FartStats" }));
+    };
 
     ws.onmessage = (event) => {
         const d = JSON.parse(event.data).data || JSON.parse(event.data);
@@ -77,14 +154,15 @@
             const countEl = document.getElementById('fart-count');
             const groupEl = document.getElementById('fart-group');
 
+            // If the number increased, release the gas particles
             if (parseInt(d.count) > parseInt(countEl.innerText)) {
                 releaseGas();
             }
 
             countEl.innerText = d.count;
-            groupEl.classList.remove('stink');
+            groupEl.classList.remove('wobble');
             void groupEl.offsetWidth; 
-            groupEl.classList.add('stink');
+            groupEl.classList.add('wobble');
         }
     };
 </script>
