@@ -75,7 +75,8 @@
             align-items: center; 
             color: white; 
             position: relative; 
-            margin-top: 5px;
+            /* Added vertical space around the whole kill group */
+            margin: 15px 0;
         }
 
         /* Label with standard terminal glow */
@@ -85,7 +86,9 @@
             color: #ff4444; /* Blood Red */
             text-shadow: 0 0 10px rgba(255, 20, 20, 0.6); 
             text-transform: uppercase;
-            margin-bottom: -5px;
+            /* FIX 1: Add gap below the label and remove negative margin */
+            margin-top: 0;
+            margin-bottom: 5px; /* Creates the small gap */
         }
 
         /* Big, sleek Teko font for numbers */
@@ -93,24 +96,26 @@
             font-family: 'Teko', sans-serif;
             font-size: 5rem; 
             font-weight: 700; 
-            line-height: 1;
+            /* FIX 2: Relaxed line-height and removed negative margin */
+            line-height: 1.1; /* Relaxed for big fonts */
+            margin-top: 0; /* REMOVED -10px, crucial for gap */
+            z-index: 2; 
             /* DEEP RED NEON GLOW */
             color: #ffffff;
             text-shadow: 0 0 15px rgba(255, 0, 0, 0.7),
                          0 0 30px rgba(255, 0, 0, 0.5),
                          0 0 50px rgba(255, 0, 0, 0.3);
-            margin-top: -10px;
-            z-index: 2; 
         }
 
-             /* Subtle indicator log */
+        /* Subtle indicator log */
         .footer-log {
             font-size: 10px;
-            color: rgba(0, 0, 0, 0.75); /* Added semicolon and adjusted opacity slightly */
+            color: rgba(10, 9, 9, 0.541);
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-top: -5px;
-            font-weight: bold; /* Optional: makes the text clearer on glass */
+            /* Added top margin to separate logs slightly from the group */
+            margin-top: 5px;
+            margin-bottom: 0;
         }
         
         #threat-level {
@@ -193,5 +198,4 @@
     };
 </script>
 </body>
-</html>
 </html>
