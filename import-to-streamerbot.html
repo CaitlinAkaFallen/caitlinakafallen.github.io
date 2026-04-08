@@ -615,15 +615,31 @@
         margin-bottom: 20px;
         text-align: center;
       }
+      
       #codeSections {
-        padding: 10px;
-        font-size: 16px;
-        border: 1px solid var(--border-color);
-        border-radius: 5px;
-        background-color: var(--input-bg);
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.95rem;
+        background: rgba(255, 255, 255, 0.15);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        appearance: none;
         cursor: pointer;
-        color: var(--text-color);
+        min-width: 160px;
+
+        /* --- Add these lines to hide scrollbar --- */
+        scrollbar-width: none; /* For Firefox */
+        -ms-overflow-style: none;  /* For Internet Explorer and Edge */
       }
+
+      /* For Chrome, Safari, and newer Edge */
+      #codeSections::-webkit-scrollbar {
+        display: none;
+      }
+      
       #codeSections:focus {
         outline: none;
         border-color: var(--secondary-color);
