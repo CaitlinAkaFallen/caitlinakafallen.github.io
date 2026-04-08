@@ -3,70 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Viking Burp Counter</title>
+    <title>Sonic Burp Counter</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@700&display=swap');
 
-        body { margin: 0; padding: 20px; background: transparent; overflow: hidden; font-family: 'Inter', sans-serif; }
-
-        #pill-container {
+        body { 
+            margin: 0; 
+            padding: 40px; 
+            background: transparent; 
+            overflow: hidden; 
+            font-family: 'Share Tech Mono', monospace;
             display: flex;
             align-items: center;
+        }
+
+        #burp-container {
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            background: rgba(5, 15, 20, 0.75);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 242, 255, 0.2); 
+            border-top: 1px solid rgba(0, 242, 255, 0.5);
+            border-right: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 
+                        inset 0 0 20px rgba(0, 242, 255, 0.05);
+            padding: 20px 50px; 
+            width: fit-content; 
             position: relative;
-            background: linear-gradient(145deg, rgba(20, 40, 20, 1) 0%, rgba(5, 15, 5, 1) 100%);
-            padding: 15px 40px;
-            clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
-            border-left: 6px solid #b514ff; /* Toxic Neon Green */
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
-            transform: skewX(-10deg);
-            width: fit-content;
+
+            /* --- TRANSITION LOGIC --- */
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            /* Default: transition OUT (15 seconds) */
+            transition: opacity 15s ease-out, transform 15s ease-out;
         }
 
-        /* Stone Texture Overlay */
-        #pill-container::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            opacity: 0.18; mix-blend-mode: overlay; pointer-events: none;
+        /* APPEARANCE LOGIC (Smooth In - 5s) */
+        #burp-container.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            transition: opacity 5s ease-in, transform 5s ease-out;
         }
 
-        .stat-group { display: flex; flex-direction: column; align-items: center; transform: skewX(10deg); color: white; }
-        
+        #burp-container::before {
+            content: 'AUDIO_INPUT: CAPTURED';
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: #00f2ff;
+            color: #000;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 2px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.6);
+        }
+
+        .stat-group { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            color: white; 
+            margin: 10px 0;
+            z-index: 2;
+        }
+
         .label { 
-            font-family: 'Cinzel', serif; 
-            font-size: 0.85rem; 
-            letter-spacing: 3px; 
-            text-transform: uppercase; 
-            color: #14ffe0;
-            text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+            font-size: 0.8rem; 
+            letter-spacing: 6px; 
+            color: #00f2ff; 
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.6); 
+            text-transform: uppercase;
+            margin-bottom: 5px;
         }
 
         .count { 
-            font-size: 3rem; 
-            font-weight: 900; 
-            text-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
-            margin-top: -5px;
+            font-family: 'Teko', sans-serif;
+            font-size: 5.5rem; 
+            font-weight: 700; 
+            line-height: 0.85;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.8),
+                         0 0 30px rgba(0, 242, 255, 0.4);
+            margin: 0;
         }
 
-        .pulse { animation: burp-pulse 0.4s ease-out; }
-        @keyframes burp-pulse {
-            0% { transform: skewX(10deg) scale(1); }
-            50% { transform: skewX(10deg) scale(1.2); filter: hue-rotate(45deg) brightness(1.5); }
-            100% { transform: skewX(10deg) scale(1); }
+        .ripple {
+            position: absolute;
+            border: 2px solid rgba(0, 242, 255, 0.5);
+            border-radius: 12px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .shockwave { 
+            animation: sonic-boom 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+
+        @keyframes sonic-boom {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.05); filter: brightness(1.8) drop-shadow(0 0 15px #00f2ff); }
+            100% { transform: scale(1); }
+        }
+
+        .sonic-bar {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 242, 255, 0.2);
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sonic-bar::after {
+            content: '';
+            position: absolute;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #00f2ff, transparent);
+            animation: sweep 3s infinite linear;
+        }
+
+        @keyframes sweep {
+            100% { left: 100%; }
         }
     </style>
 </head>
 <body>
 
-<div id="pill-container">
+<div id="burp-container">
     <div class="stat-group" id="burp-group">
-        <div class="label">Burps</div>
+        <div class="label">Burp Count</div>
         <div id="burp-count" class="count">0</div>
     </div>
+    <div class="sonic-bar"></div>
 </div>
 
 <script>
     const params = new URLSearchParams(window.location.search);
     const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+    
+    let hideTimeout; // This was missing in your draft
+
+    function triggerRipple() {
+        const container = document.getElementById('burp-container');
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple';
+        const rect = container.getBoundingClientRect();
+        ripple.style.width = rect.width + 'px';
+        ripple.style.height = rect.height + 'px';
+        ripple.style.left = '0px';
+        ripple.style.top = '0px';
+        container.appendChild(ripple);
+
+        ripple.animate([
+            { transform: 'scale(1)', opacity: 0.8 },
+            { transform: 'scale(1.5)', opacity: 0 }
+        ], { duration: 600, easing: 'ease-out' }).onfinish = () => ripple.remove();
+    }
 
     ws.onopen = () => {
         ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "BurpStats" }));
@@ -79,13 +180,27 @@
         if (d.eventName === "updateBurps") {
             const countEl = document.getElementById('burp-count');
             const groupEl = document.getElementById('burp-group');
+            const container = document.getElementById('burp-container');
+
+            if (parseInt(d.count) > parseInt(countEl.innerText)) {
+                triggerRipple();
+            }
 
             countEl.innerText = d.count;
 
-            // Trigger Animation
-            groupEl.classList.remove('pulse');
+            groupEl.classList.remove('shockwave');
             void groupEl.offsetWidth; 
-            groupEl.classList.add('pulse');
+            groupEl.classList.add('shockwave');
+
+            // --- FADE IN / OUT LOGIC ---
+            container.classList.add('active'); // Start 5s Fade In
+            
+            clearTimeout(hideTimeout); // Reset timer if another burp happens
+
+            // Wait 5 seconds (the length of the "In" animation) before starting the "Out" fade
+            hideTimeout = setTimeout(() => {
+                container.classList.remove('active');
+            }, 5000); 
         }
     };
 </script>
