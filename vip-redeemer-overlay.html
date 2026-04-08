@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional VIP ID Overlay</title>
+    <style>
+        /* Define a sleek, tech-focused font */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+        body { 
+            overflow: hidden; 
+            font-family: 'Roboto Mono', monospace;
+            display: flex; 
+            justify-content: flex-start; /* ID sits on the left, near the edge */
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            padding-left: 50px;
+            background: transparent;
+        }
+
+        /* The main ID container - Sleek Glassmorphism look */
+        .vip-id-container {
+            width: 320px;
+            height: 480px;
+            background: rgba(10, 10, 15, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+            
+            /* REQUIRED FOR OBS VISIBILITY: Hidden by default, controls transitions */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-50px);
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.19, 1, 0.22, 1), visibility 0.6s;
+        }
+
+        /* Top Security Header */
+        .id-header {
+            width: 100%;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .system-title { font-size: 10px; text-transform: uppercase; color: rgba(255,255,255,0.5); letter-spacing: 2px; }
+        .id-type { font-size: 20px; font-weight: bold; color: #fff; letter-spacing: 1px; margin-top: 3px; }
+
+        /* The Avatar Area */
+        .avatar-frame {
+            width: 180px;
+            height: 180px;
+            border-radius: 5px;
+            border: 3px solid #fff;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+            filter: contrast(1.1);
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        /* VIEWPOINT Brackets from your reference images */
+        .avatar-frame::after {
+            content: "";
+            position: absolute;
+            top: 10px; left: 10px; bottom: 10px; right: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            pointer-events: none;
+        }
+
+        /* User Details - Standard Text */
+        .user-name { font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; margin-bottom: 5px; color: #fff; }
+        .user-label { font-size: 12px; text-transform: lowercase; color: rgba(255,255,255,0.6); letter-spacing: 1px; }
+
+        /* Status Stamp - White Tag, like image_5.png but sleek */
+        .status-tag {
+            background: #fff;
+            color: #000;
+            font-size: 16px;
+            padding: 5px 20px;
+            display: inline-block;
+            width: fit-content;
+            font-weight: 900;
+            margin: 15px 0;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+
+        /* Terminal Logs style from image_7.png but cleaned up */
+        .id-footer {
+            margin-top: auto;
+            width: 100%;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* ACTIVE STATE LOGIC */
+        .vip-id-container.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="vip-id-container" id="vipIdPoster">
+        <div class="id-header">
+            <div class="system-title">ACCESS MANAGEMENT</div>
+            <div class="id-type">VIP for the day</div>
+        </div>
+        
+        <div class="avatar-frame" id="vipAvatar"></div>
+        
+        <div class="user-label">SUBJECT IDENTIFIED:</div>
+        <div class="user-name" id="vipUser">SUBJECT</div>
+        
+        <div class="status-tag">VERIFIED</div>
+        
+        <div class="id-footer">
+            LOG_ENTRY: VIP_REDEEM<br>
+            STATUS: ACTIVE // DURATION: 24H<br>
+            SYS_REF: 429_VIP_ACT
+        </div>
+    </div>
+
+    <script>
+        // Use the connection logic you used successfully in image_alert.html
+        const params = new URLSearchParams(window.location.search);
+        const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+        let hideTimer = null;
+
+        ws.onopen = () => {
+            // Subscribe to CUSTOM events only (which our C# code will broadcast)
+            ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "VipAlertSubscription" }));
+        };
+
+        ws.onmessage = (event) => {
+            const response = JSON.parse(event.data);
+            // Looking for the "VipAlert" event name from the C# code below
+            if (response.data && response.data.eventName === "VipAlert") {
+                updateID(response.data);
+            }
+        };
+
+        function updateID(data) {
+            // Populate the specific "SUBJECT IDENTIFIED" (user) and "%targetUserProfileImageUrl%" (avatar) fields
+            document.getElementById('vipAvatar').style.backgroundImage = `url('${data.avatar}')`;
+            document.getElementById('vipUser').innerText = data.user;
+            
+            const poster = document.getElementById('vipIdPoster');
+            poster.classList.add('active'); // Toggles visibility and slide-in transition
+
+            if (hideTimer) clearTimeout(hideTimer);
+            hideTimer = setTimeout(() => { 
+                poster.classList.remove('active'); 
+            }, 9000); // 9-second display time matching image_alert.html
+        }
+    </script>
+</body>
+</html>
