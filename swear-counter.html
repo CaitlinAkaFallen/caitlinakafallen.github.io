@@ -17,30 +17,41 @@
             align-items: center;
         }
 
-        /* GLITCH CONTAINER */
         #swear-container {
             display: flex; 
             flex-direction: column;
             align-items: center; 
-            background: rgba(15, 5, 15, 0.8); /* Dark purple-black glass */
-            
+            background: rgba(15, 5, 15, 0.8);
             -webkit-backdrop-filter: blur(12px);
             backdrop-filter: blur(12px);
-            
             border: 1px solid rgba(255, 0, 255, 0.2); 
             border-top: 1px solid rgba(255, 0, 255, 0.5);
             border-right: 1px solid rgba(0, 255, 255, 0.4);
             border-radius: 2px;
-            
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 
                         inset 0 0 20px rgba(255, 0, 255, 0.05);
-
             padding: 15px 45px 20px 45px; 
             width: fit-content; 
             position: relative;
+
+            /* INVISIBLE BY DEFAULT */
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            
+            /* TRANSITION LOGIC */
+            /* Default transition is the OUT state (15s) */
+            transition: opacity 15s ease-out, transform 15s ease-out;
         }
 
-        /* Glitchy "Corrupted" Header */
+        /* APPEARANCE LOGIC (Smooth In - 5s) */
+        #swear-container.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            transition: opacity 5s ease-in, transform 5s ease-out;
+        }
+
         #swear-container::before {
             content: 'DATA_CENSOR: BYPASSED';
             position: absolute;
@@ -78,10 +89,8 @@
             color: #ffffff;
             text-shadow: 3px 3px 0px #ff00ff, -3px -3px 0px #00ffff;
             margin: 0;
-            transition: all 0.1s ease;
         }
 
-        /* Censor bar logic */
         .footer-log {
             font-size: 9px;
             color: rgba(255, 255, 255, 0.4);
@@ -94,7 +103,6 @@
             text-align: center;
         }
 
-        /* HARD GLITCH ANIMATION */
         .glitch-active { 
             animation: hard-glitch 0.3s cubic-bezier(.25,.46,.45,.94) both; 
         }
@@ -103,8 +111,6 @@
             0% { transform: translate(0); clip-path: inset(0 0 0 0); }
             20% { transform: translate(-5px, 2px); color: #ff00ff; clip-path: inset(10% 0 40% 0); }
             40% { transform: translate(5px, -2px); color: #00ffff; clip-path: inset(50% 0 10% 0); }
-            60% { transform: translate(-2px, 5px); color: white; }
-            80% { transform: translate(2px, -5px); }
             100% { transform: translate(0); clip-path: inset(0 0 0 0); }
         }
     </style>
@@ -122,6 +128,8 @@
 <script>
     const params = new URLSearchParams(window.location.search);
     const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+    
+    let hideTimeout;
 
     ws.onopen = () => {
         ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "SwearStats" }));
@@ -132,13 +140,25 @@
         if (d.eventName === "updateSwears") {
             const countEl = document.getElementById('swear-count');
             const groupEl = document.getElementById('swear-group');
+            const container = document.getElementById('swear-container');
 
             countEl.innerText = d.count;
 
-            // Trigger Hard Glitch
+            // Trigger Animation
             groupEl.classList.remove('glitch-active');
             void groupEl.offsetWidth; 
             groupEl.classList.add('glitch-active');
+
+            // 1. Smooth In (starts immediately)
+            container.classList.add('active');
+
+            // 2. Clear previous timer so it stays visible if multiple swears happen
+            clearTimeout(hideTimeout);
+
+            // 3. Start 15s Fade Out AFTER the 5s "In" duration is finished
+            hideTimeout = setTimeout(() => {
+                container.classList.remove('active');
+            }, 5000); 
         }
     };
 </script>
