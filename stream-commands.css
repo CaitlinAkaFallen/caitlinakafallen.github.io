@@ -176,12 +176,6 @@ header h5 {
     color: #cc0000;
 }
 
-/* Kick */
-.kick-link:hover {
-    background-color: transparent;
-    color: #09d82c; /* green icon */
-}
-
 /* Stream Commands */
 .stream-commands-link:hover {
     background-color: transparent;
