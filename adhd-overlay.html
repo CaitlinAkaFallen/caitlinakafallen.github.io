@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADHD Alert - Advanced UI</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-pink: #ff00ff;
+            --glass-bg: rgba(15, 15, 15, 0.75);
+        }
+
+        body { 
+            background: transparent; 
+            overflow: hidden; 
+            font-family: 'Share Tech Mono', monospace; 
+        }
+
+        #adhd-card {
+            position: absolute; 
+            top: 50px; 
+            left: 50px;
+            width: 480px; 
+            padding: 25px;
+            
+            /* ADVANCED GLASSMORPHISM */
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            backdrop-filter: blur(15px) saturate(180%);
+            
+            /* NEON BORDER SYSTEM */
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-left: 4px solid var(--neon-cyan);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 
+                        inset 0 0 20px rgba(0, 242, 255, 0.1);
+            
+            color: white;
+            display: flex; 
+            align-items: center; 
+            gap: 25px;
+            
+            /* INITIAL STATE */
+            transform: skewX(-5deg) translateX(-600px);
+            opacity: 0;
+            transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        #adhd-card.active { 
+            transform: skewX(-5deg) translateX(0); 
+            opacity: 1;
+        }
+
+        /* SCANNING LINE ANIMATION */
+        #adhd-card::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(0, 242, 255, 0.5);
+            box-shadow: 0 0 15px var(--neon-cyan);
+            animation: scan 3s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .avatar-container {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 100px; height: 100px;
+            border: 1px solid var(--neon-cyan);
+            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+            object-fit: cover;
+            filter: contrast(1.1) brightness(1.1);
+        }
+
+        /* CORNER BRACKETS */
+        .avatar-container::before {
+            content: "[";
+            position: absolute; top: -10px; left: -10px;
+            color: var(--neon-cyan); font-size: 2rem;
+        }
+        .avatar-container::after {
+            content: "]";
+            position: absolute; bottom: -10px; right: -10px;
+            color: var(--neon-cyan); font-size: 2rem;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info h2 { 
+            margin: 0; 
+            color: var(--neon-cyan); 
+            text-transform: uppercase; 
+            font-size: 1.4rem; 
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+        }
+
+        .percent { 
+            font-size: 2.8rem; 
+            font-weight: 900; 
+            color: var(--neon-pink); 
+            text-shadow: 3px 0px 0px var(--neon-cyan), 
+                         -3px 0px 0px #ff0000;
+            animation: glitch-text 2s infinite;
+        }
+
+        .label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+
+        @keyframes glitch-text {
+            0% { transform: translate(0); }
+            1% { transform: translate(-2px, 2px); }
+            2% { transform: translate(2px, -2px); }
+            3% { transform: translate(0); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="adhd-card">
+    <div class="avatar-container">
+        <img id="avatar" class="avatar" src="">
+    </div>
+    <div class="info">
+        <div class="label">System Analysis</div>
+        <h2 id="username"></h2>
+        <div class="percent"><span id="val">0</span>% ADHD</div>
+        <div class="label" style="color: var(--neon-cyan)">Overdrive Active</div>
+    </div>
+</div>
+
+<script>
+    const ws = new WebSocket("ws://localhost:8080/");
+    const card = document.getElementById('adhd-card');
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ 
+            request: "Subscribe", 
+            events: { general: ["Custom"] }, 
+            id: "ADHD_Advanced" 
+        }));
+        console.log("Connected to Streamer.bot");
+    };
+
+    ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        // Matching your C# payload eventName
+        if (msg.data && (msg.data.eventName === "ADHDAlert" || msg.data.eventName === "HyperAlert")) {
+            const d = msg.data;
+            document.getElementById('avatar').src = d.avatar;
+            document.getElementById('username').innerText = d.user;
+            
+            // Animate number count up
+            let start = 0;
+            let end = parseInt(d.percent);
+            let duration = 1000;
+            let startTime = null;
+
+            function animateValue(timestamp) {
+                if (!startTime) startTime = timestamp;
+                let progress = Math.min((timestamp - startTime) / duration, 1);
+                document.getElementById('val').innerText = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(animateValue);
+                }
+            }
+            
+            window.requestAnimationFrame(animateValue);
+
+            card.classList.add('active');
+            setTimeout(() => {
+                card.classList.remove('active');
+            }, 8000);
+        }
+    };
+</script>
+</body>
+</html>
