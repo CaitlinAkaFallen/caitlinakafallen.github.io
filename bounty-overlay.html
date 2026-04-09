@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bounty Hunter HUD v4.2</title>
+    <title>Bounty Hunter HUD v4.5</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Changa:wght@400;700&family=Share+Tech+Mono&display=swap');
 
         :root {
             --hull-cyan: #00f2ff;
-            --hull-red: #ff3c3c;
             --hull-gold: #ffb700;
-            --glass: rgba(10, 10, 10, 0.85);
+            --hull-red: #ff3c3c;
+            --glass: rgba(10, 10, 10, 0.9);
         }
 
         body { 
@@ -20,210 +20,148 @@
             color: white; margin: 0; padding: 40px;
         }
 
-        /* MASTER CONTAINER - Minimalist HUD structure */
-        #hud-master {
-            position: absolute; top: 40px; left: 40px;
-            width: 500px;
-            display: flex; flex-direction: column; gap: 15px;
-            opacity: 0; transform: translateY(-20px);
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        #hud-master.active { opacity: 1; transform: translateY(0); }
-
-        /* ADVANCED UI ELEMENTS */
+        /* SHARED GLASS STYLE */
         .glass-panel {
             background: var(--glass);
-            -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
         }
 
-        /* HEADER FRAME */
-        .hud-header {
-            padding: 10px 20px;
-            border-left: 4px solid var(--hull-cyan);
-            display: flex; justify-content: space-between; align-items: center;
+        /* MAIN BOUNTY HUD (Left Side) */
+        #hud-master {
+            position: absolute; top: 40px; left: 40px;
+            width: 500px; display: flex; flex-direction: column; gap: 15px;
+            opacity: 0; transform: translateX(-50px);
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 2;
         }
+        #hud-master.active { opacity: 1; transform: translateX(0); }
 
-        .sys-title {
-            font-family: 'Changa', sans-serif; font-weight: 700;
-            font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px;
-            color: var(--hull-cyan); text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        /* CREDIT CHECK PANEL (Updated to Left Side) */
+        #credit-panel {
+            position: absolute; 
+            top: 220px; /* Positioned below the main HUD if both are active */
+            left: 40px; /* Changed from right to left */
+            width: 350px; padding: 20px;
+            border-left: 4px solid var(--hull-gold); /* Border moved to left side */
+            display: flex; align-items: center; gap: 15px;
+            opacity: 0; 
+            transform: translateX(-50px); /* Slide in from left */
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 1;
         }
+        #credit-panel.active { opacity: 1; transform: translateX(0); }
 
-        .sys-status { font-size: 0.7rem; color: rgba(255, 255, 255, 0.5); }
-
-        /* MAIN BODY FRAME */
-        .hud-body {
-            display: flex; gap: 20px; padding: 20px;
-            border-right: 2px solid rgba(0, 242, 255, 0.2);
-        }
-
-        /* AVATAR FRAME (SLEEK DESIGN) */
-        .target-frame {
-            position: relative; width: 100px; height: 100px;
+        .credit-avatar {
+            width: 60px; height: 60px;
+            clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%);
+            border: 1px solid var(--hull-gold);
             flex-shrink: 0;
         }
 
-        .avatar {
-            width: 100%; height: 100%; object-fit: cover;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
-        }
+        .credit-info .label { font-size: 0.7rem; color: var(--hull-gold); }
+        .credit-info .name { font-size: 1rem; text-transform: uppercase; margin-bottom: 5px; }
+        .credit-info .total { font-size: 1.5rem; color: #fff; font-weight: bold; }
 
-        /* TARGETING GRID ANIMATION */
-        .target-grid {
-            position: absolute; top: -5px; left: -5px; width: 110px; height: 110px;
-            pointer-events: none;
-        }
+        /* BOUNTY STYLING */
+        .hud-header { padding: 10px 20px; border-left: 4px solid var(--hull-cyan); display: flex; justify-content: space-between; align-items: center; }
+        .sys-title { font-family: 'Changa', sans-serif; font-weight: 700; font-size: 1.2rem; color: var(--hull-cyan); text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+        .hud-body { display: flex; gap: 20px; padding: 20px; }
+        .target-frame { position: relative; width: 100px; height: 100px; flex-shrink: 0; }
+        .avatar { width: 100%; height: 100%; object-fit: cover; clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%); }
+        .reward-block { font-size: 1.8rem; font-weight: bold; color: var(--hull-gold); display: none; }
 
-        .target-grid::before, .target-grid::after {
-            content: ""; position: absolute;
-            border-color: var(--hull-cyan); border-style: solid;
-            width: 20px; height: 20px;
-            animation: grid-pulse 2s infinite;
-        }
-
-        .target-grid::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
-        .target-grid::after { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
-
-        @keyframes grid-pulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 0.3; }
-        }
-
-        /* TEXT INFORMATION */
-        .info-block { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-
-        .hunter-name {
-            font-size: 1.1rem; color: #fff; text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* OUTCOME BLOCK (WHERE CHASE DETAILS GO) */
-        .outcome-text {
-            color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;
-            line-height: 1.4; min-height: 40px;
-        }
-
-        /* REWARD / TIMER BLOCK */
-        .reward-block {
-            font-size: 1.8rem; font-weight: bold;
-            display: none; /* Hidden unless successful */
-        }
-
-        .reward-val {
-            color: var(--hull-gold); text-shadow: 0 0 15px rgba(255, 183, 0, 0.5);
-        }
-
-        /* Platform exclusive styles */
-        #hud-master.state-chase .hud-header { border-left-color: var(--hull-gold); }
-        #hud-master.state-chase .sys-title { color: var(--hull-gold); text-shadow: 0 0 10px rgba(255, 183, 0, 0.5); }
-        #hud-master.state-chase .outcome-text { color: var(--hull-gold); font-weight: bold; }
-
-        #hud-master.state-fail .hud-header { border-left-color: var(--hull-red); }
-        #hud-master.state-fail .sys-title { color: var(--hull-red); text-shadow: 0 0 10px rgba(255, 60, 60, 0.5); }
-        #hud-master.state-fail .outcome-text { color: var(--hull-red); }
-
+        /* HUD STATES */
+        .state-chase .hud-header { border-left-color: var(--hull-gold); }
+        .state-chase .sys-title { color: var(--hull-gold); }
+        .state-fail .hud-header { border-left-color: var(--hull-red); }
+        .state-fail .sys-title { color: var(--hull-red); }
     </style>
 </head>
 <body>
 
 <div id="hud-master">
     <div class="hud-header glass-panel">
-        <div class="sys-title" id="hud-title">BOUNTY_INIT</div>
-        <div class="sys-status">SYS_VER::4.2.0 //FALLEN//</div>
+        <div class="sys-title" id="hud-title">BOUNTY_SYSTEM</div>
+        <div class="sys-status">SYS_VER::4.5.0</div>
     </div>
-
     <div class="hud-body glass-panel">
         <div class="target-frame">
-            <img id="hud-avatar" class="avatar" src="https://via.placeholder.com/150">
-            <div class="target-grid"></div>
+            <img id="hud-avatar" class="avatar" src="">
         </div>
-        
         <div class="info-block">
-            <div class="label" style="font-size: 0.6rem; color: rgba(255,255,255,0.4)">HUNTER_ID</div>
-            <div class="hunter-name" id="hud-user">ACTIVE_USER</div>
-            <div class="outcome-text" id="hud-text">Initializing target acquisition sequence...</div>
-            
-            <div class="reward-block" id="hud-reward">
-                +<span class="reward-val" id="hud-reward-val">0</span> CR
-            </div>
+            <div id="hud-user" style="text-transform: uppercase; letter-spacing: 1px;">HUNTER</div>
+            <div id="hud-text" style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-top: 5px;">Awaiting sequence...</div>
+            <div class="reward-block" id="hud-reward">+<span id="hud-reward-val">0</span> CR</div>
         </div>
     </div>
 </div>
 
+<div id="credit-panel" class="glass-panel">
+    <img id="credit-avatar" class="credit-avatar" src="">
+    <div class="credit-info">
+        <div class="label">ACCOUNT_BALANCE</div>
+        <div id="credit-user" class="name">USER</div>
+        <div class="total"><span id="credit-val">0</span> CR</div>
+    </div>
+</div>
+
 <script>
-    // Streamer.bot WS Address
     const ws = new WebSocket("ws://localhost:8080/");
     
-    // UI Elements
     const master = document.getElementById('hud-master');
-    const title = document.getElementById('hud-title');
-    const userText = document.getElementById('hud-user');
-    const outcomeText = document.getElementById('hud-text');
-    const avatar = document.getElementById('hud-avatar');
-    const rewardBlock = document.getElementById('hud-reward');
-    const rewardVal = document.getElementById('hud-reward-val');
+    const creditPanel = document.getElementById('credit-panel');
 
     ws.onopen = () => {
-        // Subscribe to Custom WebsocketBroadcastJson events
         ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "BountyHUD" }));
-        console.log("Bounty HUD Connected");
     };
 
     ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         const data = msg.data;
 
-        // Verify the event is our bounty event
-        if (data && data.eventName === "BountyEvent") {
-            
-            // Platform mapping (using %targetUserProfileImageUrl% logic)
-            userText.innerText = data.user;
-            avatar.src = data.avatar;
+        if (!data) return;
 
-            // Update UI State based on Event Type
+        if (data.eventName === "BountyEvent") {
+            document.getElementById('hud-user').innerText = data.user;
+            document.getElementById('hud-avatar').src = data.avatar;
+
             switch (data.type) {
                 case "INIT":
-                    // Initial deployment
                     master.className = "active state-init";
-                    title.innerText = "BOUNTY_DEPROYED";
-                    outcomeText.innerText = `Target locked. Acquisition sequence initiated. Duration: 10s.`;
-                    rewardBlock.style.display = "none";
+                    document.getElementById('hud-title').innerText = "BOUNTY_DEPROYED";
+                    document.getElementById('hud-text').innerText = "Target locked. Acquisition sequence initiated.";
+                    document.getElementById('hud-reward').style.display = "none";
                     break;
-
                 case "CHASE_INIT":
-                    // Initial evasion (First failure)
                     master.className = "active state-chase";
-                    title.innerText = "CHASE_ACTIVE";
-                    outcomeText.innerText = `ALERT: ${data.evasion} Continuation authorized. Duration: ${data.duration}s.`;
+                    document.getElementById('hud-title').innerText = "CHASE_ACTIVE";
+                    document.getElementById('hud-text').innerText = `ALERT: ${data.evasion}`;
                     break;
-
                 case "SUCCESS":
-                    // Capture (Final Success)
                     master.className = "active state-success";
-                    title.innerText = "TARGET_CAPTURED";
-                    outcomeText.innerText = `Target neutralized. Transferring bounty credits...`;
-                    rewardBlock.style.display = "block";
-                    rewardVal.innerText = data.reward.toLocaleString(); // Format 10,000
-
-                    // Auto-hide after 12 seconds
-                    setTimeout(() => master.classList.remove('active'), 12000);
+                    document.getElementById('hud-title').innerText = "TARGET_CAPTURED";
+                    document.getElementById('hud-reward').style.display = "block";
+                    document.getElementById('hud-reward-val').innerText = data.reward.toLocaleString();
+                    setTimeout(() => master.classList.remove('active'), 8000);
                     break;
-
                 case "FAIL":
-                    // Final evasion (Final Failure)
                     master.className = "active state-fail";
-                    title.innerText = "CHASE_FAILED";
-                    outcomeText.innerText = `CRITICAL: Target lost in sector ${Math.floor(Math.random()*900)+100}. Aborting operation.`;
-                    rewardBlock.style.display = "none";
-
-                    // Auto-hide after 10 seconds
-                    setTimeout(() => master.classList.remove('active'), 10000);
+                    document.getElementById('hud-title').innerText = "CHASE_FAILED";
+                    setTimeout(() => master.classList.remove('active'), 6000);
                     break;
             }
+        }
+
+        if (data.eventName === "CreditCheckEvent") {
+            document.getElementById('credit-user').innerText = data.user;
+            document.getElementById('credit-avatar').src = data.avatar;
+            document.getElementById('credit-val').innerText = data.total.toLocaleString();
+            
+            creditPanel.classList.add('active');
+            setTimeout(() => creditPanel.classList.remove('active'), 7000);
         }
     };
 </script>
