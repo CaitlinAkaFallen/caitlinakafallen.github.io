@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bounty Hunter HUD v4.2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Changa:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --hull-cyan: #00f2ff;
+            --hull-red: #ff3c3c;
+            --hull-gold: #ffb700;
+            --glass: rgba(10, 10, 10, 0.85);
+        }
+
+        body { 
+            background: transparent; overflow: hidden; 
+            font-family: 'Share Tech Mono', monospace; 
+            color: white; margin: 0; padding: 40px;
+        }
+
+        /* MASTER CONTAINER - Minimalist HUD structure */
+        #hud-master {
+            position: absolute; top: 40px; left: 40px;
+            width: 500px;
+            display: flex; flex-direction: column; gap: 15px;
+            opacity: 0; transform: translateY(-20px);
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        #hud-master.active { opacity: 1; transform: translateY(0); }
+
+        /* ADVANCED UI ELEMENTS */
+        .glass-panel {
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        /* HEADER FRAME */
+        .hud-header {
+            padding: 10px 20px;
+            border-left: 4px solid var(--hull-cyan);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .sys-title {
+            font-family: 'Changa', sans-serif; font-weight: 700;
+            font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--hull-cyan); text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+
+        .sys-status { font-size: 0.7rem; color: rgba(255, 255, 255, 0.5); }
+
+        /* MAIN BODY FRAME */
+        .hud-body {
+            display: flex; gap: 20px; padding: 20px;
+            border-right: 2px solid rgba(0, 242, 255, 0.2);
+        }
+
+        /* AVATAR FRAME (SLEEK DESIGN) */
+        .target-frame {
+            position: relative; width: 100px; height: 100px;
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 100%; height: 100%; object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+        }
+
+        /* TARGETING GRID ANIMATION */
+        .target-grid {
+            position: absolute; top: -5px; left: -5px; width: 110px; height: 110px;
+            pointer-events: none;
+        }
+
+        .target-grid::before, .target-grid::after {
+            content: ""; position: absolute;
+            border-color: var(--hull-cyan); border-style: solid;
+            width: 20px; height: 20px;
+            animation: grid-pulse 2s infinite;
+        }
+
+        .target-grid::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
+        .target-grid::after { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
+        @keyframes grid-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+        }
+
+        /* TEXT INFORMATION */
+        .info-block { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+
+        .hunter-name {
+            font-size: 1.1rem; color: #fff; text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* OUTCOME BLOCK (WHERE CHASE DETAILS GO) */
+        .outcome-text {
+            color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;
+            line-height: 1.4; min-height: 40px;
+        }
+
+        /* REWARD / TIMER BLOCK */
+        .reward-block {
+            font-size: 1.8rem; font-weight: bold;
+            display: none; /* Hidden unless successful */
+        }
+
+        .reward-val {
+            color: var(--hull-gold); text-shadow: 0 0 15px rgba(255, 183, 0, 0.5);
+        }
+
+        /* Platform exclusive styles */
+        #hud-master.state-chase .hud-header { border-left-color: var(--hull-gold); }
+        #hud-master.state-chase .sys-title { color: var(--hull-gold); text-shadow: 0 0 10px rgba(255, 183, 0, 0.5); }
+        #hud-master.state-chase .outcome-text { color: var(--hull-gold); font-weight: bold; }
+
+        #hud-master.state-fail .hud-header { border-left-color: var(--hull-red); }
+        #hud-master.state-fail .sys-title { color: var(--hull-red); text-shadow: 0 0 10px rgba(255, 60, 60, 0.5); }
+        #hud-master.state-fail .outcome-text { color: var(--hull-red); }
+
+    </style>
+</head>
+<body>
+
+<div id="hud-master">
+    <div class="hud-header glass-panel">
+        <div class="sys-title" id="hud-title">BOUNTY_INIT</div>
+        <div class="sys-status">SYS_VER::4.2.0 //FALLEN//</div>
+    </div>
+
+    <div class="hud-body glass-panel">
+        <div class="target-frame">
+            <img id="hud-avatar" class="avatar" src="https://via.placeholder.com/150">
+            <div class="target-grid"></div>
+        </div>
+        
+        <div class="info-block">
+            <div class="label" style="font-size: 0.6rem; color: rgba(255,255,255,0.4)">HUNTER_ID</div>
+            <div class="hunter-name" id="hud-user">ACTIVE_USER</div>
+            <div class="outcome-text" id="hud-text">Initializing target acquisition sequence...</div>
+            
+            <div class="reward-block" id="hud-reward">
+                +<span class="reward-val" id="hud-reward-val">0</span> CR
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Streamer.bot WS Address
+    const ws = new WebSocket("ws://localhost:8080/");
+    
+    // UI Elements
+    const master = document.getElementById('hud-master');
+    const title = document.getElementById('hud-title');
+    const userText = document.getElementById('hud-user');
+    const outcomeText = document.getElementById('hud-text');
+    const avatar = document.getElementById('hud-avatar');
+    const rewardBlock = document.getElementById('hud-reward');
+    const rewardVal = document.getElementById('hud-reward-val');
+
+    ws.onopen = () => {
+        // Subscribe to Custom WebsocketBroadcastJson events
+        ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "BountyHUD" }));
+        console.log("Bounty HUD Connected");
+    };
+
+    ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        const data = msg.data;
+
+        // Verify the event is our bounty event
+        if (data && data.eventName === "BountyEvent") {
+            
+            // Platform mapping (using %targetUserProfileImageUrl% logic)
+            userText.innerText = data.user;
+            avatar.src = data.avatar;
+
+            // Update UI State based on Event Type
+            switch (data.type) {
+                case "INIT":
+                    // Initial deployment
+                    master.className = "active state-init";
+                    title.innerText = "BOUNTY_DEPROYED";
+                    outcomeText.innerText = `Target locked. Acquisition sequence initiated. Duration: 10s.`;
+                    rewardBlock.style.display = "none";
+                    break;
+
+                case "CHASE_INIT":
+                    // Initial evasion (First failure)
+                    master.className = "active state-chase";
+                    title.innerText = "CHASE_ACTIVE";
+                    outcomeText.innerText = `ALERT: ${data.evasion} Continuation authorized. Duration: ${data.duration}s.`;
+                    break;
+
+                case "SUCCESS":
+                    // Capture (Final Success)
+                    master.className = "active state-success";
+                    title.innerText = "TARGET_CAPTURED";
+                    outcomeText.innerText = `Target neutralized. Transferring bounty credits...`;
+                    rewardBlock.style.display = "block";
+                    rewardVal.innerText = data.reward.toLocaleString(); // Format 10,000
+
+                    // Auto-hide after 12 seconds
+                    setTimeout(() => master.classList.remove('active'), 12000);
+                    break;
+
+                case "FAIL":
+                    // Final evasion (Final Failure)
+                    master.className = "active state-fail";
+                    title.innerText = "CHASE_FAILED";
+                    outcomeText.innerText = `CRITICAL: Target lost in sector ${Math.floor(Math.random()*900)+100}. Aborting operation.`;
+                    rewardBlock.style.display = "none";
+
+                    // Auto-hide after 10 seconds
+                    setTimeout(() => master.classList.remove('active'), 10000);
+                    break;
+            }
+        }
+    };
+</script>
+</body>
+</html>
