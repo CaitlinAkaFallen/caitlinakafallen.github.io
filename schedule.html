@@ -222,12 +222,6 @@
             color: #cc0000;
           }
 
-          /* Kick */
-          .kick-link:hover {
-            background-color: transparent;
-            color: #09d82c;
-          }
-
           /* Stream Commands */
           .stream-commands-link:hover {
             background-color: transparent;
@@ -240,10 +234,6 @@
             color: #ff6ec4;
           }
 
-          .discord-link:hover {
-            background-color: transparent;
-            color: #7289da;
-          }
 
           /* Hover icon color follows link */
           .nav-link:hover i {
@@ -397,11 +387,7 @@
             color: #ff0000;
             font-weight: bold;
           }
-          .kick-text {
-            color: #09d82c;
-            font-weight: bold;
-          }
-
+      
           /* Responsive nav (Legacy/Duplicated block, ensuring all styles are kept) */
           /* The .horizontal-nav block above covers the main navigation responsiveness. */
           @media (max-width: 600px) {
@@ -497,11 +483,7 @@
             box-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
           }
 
-          .schedule-note .kick {
-            background-color: #09d82c;
-            box-shadow: 0 0 8px rgba(9, 216, 44, 0.7);
-          }
-
+        
           .platform-icons {
             text-align: center;
             margin-bottom: 10px;
@@ -520,9 +502,6 @@
             color: #FF0000;
           }
 
-          .kick-icon {
-            color: #53FC18;
-          }
 
           .divider {
             color: white;
@@ -1131,7 +1110,7 @@
                   Schedule
                 </h2>
                 <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
-                  Welcome to the Schedule Page! Here you can find my streaming schedule, Twitch affiliate info, sub goals, and cheer rewards.
+                  Welcome to the Schedule Page! Here you can find my streaming schedule.
                 </h5>
             </div>
           </header>
@@ -1155,16 +1134,6 @@
                     <i class="fab fa-youtube"></i>
                   </a>
 
-                  <a href="kick.html" class="nav-link kick-link">
-                    <i class="fab fa-kickstarter-k"></i>
-                  </a>
-
-                  <a href="discord.html" class="nav-link discord-link" title="Discord" aria-label="Discord">
-                    <i class="fab fa-discord" aria-hidden="true"></i>
-                    <span class="sr-only">Discord</span>
-                    
-                  </a>
-                  
 
                   <!-- Stream selector dropdown -->
                   <div class="stream-selector-container">
@@ -1175,7 +1144,6 @@
                       <option value="subgoals">Twitch Sub Goals</option>
                       <option value="cheer">Twitch Cheer</option>
                       <option value="youtube-affiliate-section">YouTube Goals</option>
-                      <option value="kick-affiliate-section">Kick Goals</option>
                     </select>
                   </div>
                 </nav>
@@ -1188,8 +1156,6 @@
                     <i class="fab fa-twitch twitch-icon"></i>
                     <span class="divider"></span>
                     <i class="fab fa-youtube youtube-icon"></i>
-                    <span class="divider"></span>
-                    <i class="fab fa-kickstarter-k kick-icon"></i>
                   </div>
 
                   <!-- Title -->
@@ -1248,7 +1214,7 @@
                 </table>
 
                 <p class="schedule-note">
-                  <strong>Note:</strong> These times apply to <span class="platform twitch">Twitch</span>, <span class="platform youtube">YouTube</span>, and <span class="platform kick">Kick</span> streams.
+                  <strong>Note:</strong> These times apply to <span class="platform twitch">Twitch</span> and <span class="platform youtube">YouTube</span> streams.
                 </p>
               </section>
 
@@ -1471,7 +1437,7 @@
       </section>
 
     <script>
-    /* ===== REMOVE .HTML FROM URL ===== */
+        /* ===== REMOVE .HTML FROM URL ===== */
     (function hideHtmlInURL() {
         const pathname = window.location.pathname;
         if (pathname.endsWith(".html")) {
