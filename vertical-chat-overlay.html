@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stream Event Feed</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Share+Tech+Mono&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: transparent;
+    font-family: 'Share Tech Mono', monospace;
+    color: #fff;
+    overflow: hidden;
+    /* Increased top padding from 30px to 60px to prevent cutoff */
+    padding: 60px 30px 30px 30px; 
+}
+
+#event-feed {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 25px; 
+    width: 600px;
+    /* Reduced height slightly to account for the extra padding */
+    height: calc(100vh - 100px); 
+}
+
+/* THE CARD CONTAINER */
+.card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 80px; /* Space for the avatar living outside */
+    padding: 12px 20px 12px 30px;
+    min-height: 80px;
+    
+    /* Sleek Resident Evil Glassmorphism */
+    background: linear-gradient(135deg, rgba(15, 15, 20, 0.95) 0%, rgba(5, 5, 10, 0.8) 100%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    backdrop-filter: blur(15px) saturate(180%);
+    
+    /* Industrial Sharp Borders */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 4px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0,0,0,0.6);
+    
+    animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* OUTSIDE AVATAR - ROUNDED & SLEEK */
+.avatar-wrap {
+    position: absolute;
+    left: -85px; 
+    width: 75px;
+    height: 75px;
+    background: #000;
+    padding: 3px;
+    /* This makes the container round */
+    border-radius: 50%; 
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 20px rgba(0,0,0,1), 0 0 10px rgba(255,255,255,0.1);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.avatar-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* This makes the image round */
+    border-radius: 50%;
+    filter: contrast(1.1) brightness(1.0);
+}
+/* EVENT TYPE COLORS */
+.card.chat     { border-left: 6px solid #2c2fff; }
+.card.sub      { border-left: 6px solid #da70fa; }
+.card.giftsub  { border-left: 6px solid #da70fa; }
+.card.raid     { border-left: 6px solid #ff0000; background: linear-gradient(90deg, rgba(60,0,0,0.4) 0%, rgba(5,5,10,0.8) 100%); }
+.card.bits     { border-left: 6px solid #9b52fc; }
+.card.points   { border-left: 6px solid #dff756; }
+.card.streak   { border-left: 6px solid #2c2fff; }
+.card.dono     { border-left: 6px solid #00ff7f; }
+
+/* TEXT CONTENT */
+.content { flex: 1; min-width: 0; }
+
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.username {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    padding: 1px 12px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 2px;
+}
+
+.event-label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    opacity: 0.6;
+    margin-bottom: 6px;
+}
+
+.event-message {
+    font-size: 1.05rem;
+    line-height: 1.4;
+    color: #ddd;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 6px;
+}
+
+/* TWITCH LOGO - GLOWING */
+.twitch-icon {
+    font-size: 24px;
+    color: #bf94ff;
+    filter: drop-shadow(0 0 8px rgba(145, 70, 255, 0.9));
+    margin-left: 15px;
+}
+
+/* ANIMATIONS */
+@keyframes slideIn {
+    0% { transform: translateX(-60px); opacity: 0; filter: blur(10px); }
+    100% { transform: translateX(0); opacity: 1; filter: blur(0); }
+}
+
+.removing {
+    animation: slideOut 0.4s ease forwards;
+}
+
+@keyframes slideOut {
+    to { transform: translateX(120px); opacity: 0; filter: blur(10px); }
+}
+</style>
+</head>
+
+<body>
+
+<div id="event-feed"></div>
+
+<script>
+// 1. Setup Dynamic WebSocket Connection with Error Handling
+const params = new URLSearchParams(window.location.search);
+const host = params.get("address") || "localhost";
+const port = params.get("port") || "8080";
+
+// Construct the URL and log it for debugging
+const wsUrl = `ws://${host}:${port}/`;
+console.log("Connecting to Streamer.bot at:", wsUrl);
+
+const ws = new WebSocket(wsUrl);
+
+// 2. Theme Configuration
+const THEMES = {
+    CHAT:           { color: "#2c2fff", label: "Neural Link Message", cssClass: "chat" },
+    SUBSCRIPTION:   { color: "#da70fa", label: "Clan Member", cssClass: "sub" },
+    GIFT_SUB:       { color: "#da70fa", label: "Bounty Bestowed", cssClass: "giftsub" },
+    RAID:           { color: "#ff2222", label: "⚔️ THE GATES HAVE FALLEN ⚔️", cssClass: "raid" },
+    BITS:           { color: "#9b52fc", label: "Power Cells Injected", cssClass: "bits" },
+    CHANNEL_POINTS: { color: "#dff756", label: "Tribute Redeemed", cssClass: "points" },
+    WATCH_STREAK:   { color: "#2c2fff", label: "Watch Streak", cssClass: "streak" },
+    DONATION:       { color: "#00ff7f", label: "Credits Received", cssClass: "dono" }
+};
+
+const MAX_CARDS = 8;
+const MAX_CHAT  = 2;
+
+// 3. WebSocket Event Listeners
+ws.onopen = () => {
+    console.log("WebSocket Connection Successful!");
+    ws.send(JSON.stringify({
+        request: "Subscribe",
+        events: { general: ["Custom"] },
+        id: "StreamEventFeed"
+    }));
+};
+
+ws.onerror = (err) => {
+    console.error("WebSocket Error:", err);
+};
+
+ws.onmessage = (event) => {
+    let payload;
+    try {
+        const msg = JSON.parse(event.data);
+        payload = typeof msg.data === "string" ? JSON.parse(msg.data) : msg.data || msg;
+    } catch (e) { 
+        return; 
+    }
+
+    if (payload?.eventName === "StreamEvent") {
+        createCard(payload);
+    }
+};
+
+// 4. Helper to ensure event types match our THEMES keys
+function normalizeType(type) {
+    return (type || "")
+        .toUpperCase()
+        .replace(/\s+/g, "_")
+        .replace(/CHANNELPOINTS/, "CHANNEL_POINTS");
+}
+
+// 5. Card Creation Logic
+function createCard(data) {
+    const feed = document.getElementById("event-feed");
+    if (!feed) return;
+
+    const type = normalizeType(data.type);
+    const theme = THEMES[type] || THEMES["CHAT"];
+    const c = theme.color;
+
+    if (type === "CHAT") {
+        const chats = [...feed.children].filter(e => e.classList.contains("chat"));
+        if (chats.length >= MAX_CHAT) chats[0].remove();
+    }
+
+    const card = document.createElement("div");
+    card.className = `card ${theme.cssClass}`;
+
+    card.innerHTML = `
+        <div class="avatar-wrap">
+            <img src="${data.avatar || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'">
+        </div>
+        <div class="content">
+            <div class="top-row">
+                <span class="username" style="color:${c}">${data.user}</span>
+                ${data.value ? `<span class="badge" style="color:${c}; border:1px solid ${c}">${data.value}</span>` : ""}
+            </div>
+            <div class="event-label" style="color:${c}">${theme.label}</div>
+            ${data.message ? `<div class="event-message">${data.message}</div>` : ""}
+        </div>
+        <i class="fa-brands fa-twitch twitch-icon"></i>
+    `;
+
+    feed.appendChild(card);
+
+    while (feed.children.length > MAX_CARDS) {
+        let removed = false;
+        for (let el of feed.children) {
+            if (el.classList.contains("chat")) {
+                el.remove();
+                removed = true;
+                break;
+            }
+        }
+        if (!removed) feed.removeChild(feed.firstChild);
+    }
+
+    setTimeout(() => {
+        card.classList.add("removing");
+        card.addEventListener("animationend", () => card.remove(), { once: true });
+    }, 25000);
+}
+</script>
+
+</body>
+</html>
