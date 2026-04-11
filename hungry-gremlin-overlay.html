@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hungry Gremlin - Crystal Pill Top-Left</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            /* Positioning: Top Middle-Left */
+            align-items: flex-start; 
+            justify-content: flex-start;
+            padding-top: 120px;
+            padding-left: 150px;
+        }
+
+        /* ═══════════════════════════════════════
+        MAIN WRAPPER 
+        ═══════════════════════════════════════ */
+        #qna-container {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-80px);
+            /* Transition: Slower 1.2s exit for maximum smoothness */
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #qna-container.show {
+            opacity: 1;
+            transform: translateX(0);
+            /* Faster snap-in animation when appearing */
+            transition: opacity 0.5s ease-out, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* ═══════════════════════════════════════
+        AVATAR (Round Crystal Style)
+        ═══════════════════════════════════════ */
+        .avatar-wrapper {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #0a0a0a;
+            border: 3px solid #ba68c8; /* Purple Crystal Border */
+            box-shadow: 0 0 20px rgba(77, 245, 245, 0.6), inset 0 0 10px rgba(186, 104, 200, 0.4); 
+            overflow: hidden;
+            flex-shrink: 0;
+            transform: translateX(-400px) rotate(-720deg);
+            transition: transform 1.5s cubic-bezier(0.25, 1, 0.4, 1);
+        }
+
+        #qna-container.show .avatar-wrapper {
+            transform: translateX(0) rotate(0deg);
+        }
+
+        .user-avatar {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* ═══════════════════════════════════════
+        CONTENT COLUMN
+        ═══════════════════════════════════════ */
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .top-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease 0.6s, transform 0.4s ease 0.6s;
+        }
+
+        #qna-container.show .top-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .inquiry-label {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: #4df5f5; /* Teal Label */
+            text-transform: uppercase;
+            font-weight: 900;
+            text-shadow: 0 0 8px rgba(77, 245, 245, 0.5);
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #6f9bf8b0;
+            letter-spacing: 1px;
+            text-shadow: 0 0 12px rgba(186, 104, 200, 0.9); /* Purple Glow */
+            text-transform: uppercase;
+        }
+
+        /* ═══════════════════════════════════════
+        THE GLASS PILL
+        ═══════════════════════════════════════ */
+        .glass-pill {
+            background: rgba(10, 10, 20, 0.8);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2); /* White hint border */
+            border-left: 4px solid #4df5f5; /* Teal accent edge */
+            border-radius: 15px 40px 40px 15px;
+            width: 480px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            height: 0; 
+            padding: 0 30px;
+            opacity: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: height 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+        }
+
+        #qna-container.show .glass-pill {
+            height: 85px;
+            opacity: 1;
+            padding: 0 30px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #ffffff; /* White text for clarity */
+            font-style: italic;
+            width: 65%;
+        }
+
+        /* ═══════════════════════════════════════
+        STAT SHARD (The Rage Box)
+        ═══════════════════════════════════════ */
+        .stat-shard {
+            background: rgba(186, 104, 200, 0.15); /* Purple tint */
+            border: 2px solid #ba68c8; /* Purple border */
+            padding: 6px 15px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 100px;
+            box-shadow: 0 0 15px rgba(186, 104, 200, 0.3);
+        }
+
+        .rage-number {
+            display: block;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: #4df5f5; /* Teal Numbers */
+            text-shadow: 0 0 10px rgba(77, 245, 245, 0.8); 
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); text-shadow: 0 0 10px rgba(77, 245, 245, 0.8); }
+            100% { transform: scale(1.08); text-shadow: 0 0 20px rgba(77, 245, 245, 1), 0 0 30px rgba(186, 104, 200, 0.5); }
+        }
+
+        #badge-label {
+            display: block;
+            font-size: 0.65rem;
+            color: #ffffff;
+            font-weight: 800;
+            letter-spacing: 2px;
+            opacity: 0.9;
+        }
+
+        /* ═══════════════════════════════════════
+        BOTTOM LABEL
+        ═══════════════════════════════════════ */
+        .bottom-label-row {
+            margin-top: 8px;
+            padding-right: 25px;
+            display: flex;
+            justify-content: flex-end;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.4s ease 0.6s, transform 0.4s ease 0.6s;
+        }
+
+        #qna-container.show .bottom-label-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .time-stamp {
+            font-size: 0.7rem;
+            color: #ba68c8; /* Purple Timestamp */
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="qna-container">
+        <div class="avatar-wrapper">
+            <div class="user-avatar" id="user-avatar"></div>
+        </div>
+        
+        <div class="content-column">
+            <div class="top-label-row">
+                <div class="inquiry-label">Gremlin Protocol</div>
+                <div class="user-name" id="user-name"></div>
+            </div>
+
+            <div class="glass-pill">
+                <div class="question-text">Hungry Rage Detected...</div>
+                <div class="stat-shard">
+                    <span id="rage-val" class="rage-number">0%</span>
+                    <span id="badge-label">RAGE</span>
+                </div>
+            </div>
+
+            <div class="bottom-label-row">
+                <div class="time-stamp">SYSTEM OVERLOAD</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+
+        let hideTimeout = null;
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({
+                request: "Subscribe",
+                id: "HungryGremlinOverlay",
+                events: { general: ["Custom"] }
+            }));
+        };
+
+        ws.onmessage = (event) => {
+            const response = JSON.parse(event.data);
+            const data = response.data;
+            if (data && data.eventName === "HungryGremlin") {
+                triggerOverlay(data.user, data.avatar, data.rageLevel);
+            }
+        };
+
+        function triggerOverlay(user, avatar, rageLevel) {
+            const container = document.getElementById('qna-container');
+            const nameEl = document.getElementById('user-name');
+            const avatarEl = document.getElementById('user-avatar');
+            const rageEl = document.getElementById('rage-val');
+
+            nameEl.innerText = user;
+            avatarEl.style.backgroundImage = `url('${avatar}')`;
+            
+            if (hideTimeout) clearTimeout(hideTimeout);
+
+            container.classList.remove('show');
+            void container.offsetWidth; 
+            
+            container.classList.add('show');
+            animateValue(rageEl, 0, rageLevel, 2000);
+
+            // Extended display time (10 seconds) so viewers can appreciate the transition
+            hideTimeout = setTimeout(() => {
+                container.classList.remove('show');
+            }, 10000);
+        }
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 4);
+                obj.innerHTML = Math.floor(ease * (end - start) + start) + "%";
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerHTML = end + "%";
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+    </script>
+</body>
+</html>
