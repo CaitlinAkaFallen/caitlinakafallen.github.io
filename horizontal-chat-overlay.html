@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sleek Vertical Chat</title>
+<title>Sleek Horizontal Stream Feed</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-/* Clean font stack: Inter for readability, Share Tech for that technical/RE vibe */
+/* Modern, minimal font stack */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Share+Tech+Mono&display=swap');
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -18,28 +18,31 @@ body {
     font-family: 'Inter', sans-serif;
     color: #fff;
     overflow: hidden;
-    padding: 40px 80px; /* Space for floating avatars */
+    padding: 20px 60px; /* Extra horizontal padding for the floating elements */
 }
 
+/* THE HORIZONTAL TRACKER */
 #event-feed {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: 20px; 
-    width: 500px;
-    height: calc(100vh - 80px); 
+    flex-direction: row; 
+    justify-content: flex-start;
+    align-items: center;
+    gap: 65px; /* Increased gap to keep cards from crowding the floating avatars */
+    width: 100vw;
+    height: 100px;
 }
 
-/* THE CARD CONTAINER - MINIMAL GLASSMORPHISM */
+/* THE CARD CONTAINER - SLEEK GLASSMORPHISM */
 .card {
     position: relative;
     display: flex;
     align-items: center;
-    padding: 10px 16px 10px 15px;
-    min-height: 65px;
+    padding: 8px 16px 8px 15px; /* Minimal internal padding now that avatar is pushed out */
+    height: 62px;
+    min-width: 240px;
+    max-width: 450px;
     flex-shrink: 0;
     
-    /* Subtle Glass effect */
     background: linear-gradient(135deg, rgba(15, 15, 20, 0.65) 0%, rgba(5, 5, 10, 0.55) 100%);
     -webkit-backdrop-filter: blur(15px) saturate(150%);
     backdrop-filter: blur(15px) saturate(150%);
@@ -48,21 +51,23 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
     
-    animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* FLOATING AVATAR - Detached with the -60px gap */
+/* FLOATING AVATAR - PUSHED OUT WITH A GAP */
 .avatar-wrap {
     position: absolute;
+    /* This -45px value creates the visible gap between the circle and the card edge */
     left: -60px; 
-    width: 50px;
-    height: 50px;
+    width: 54px;
+    height: 54px;
     background: #000;
     border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
     border: 2px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 0 15px rgba(0,0,0,0.8);
-    z-index: 10;
-    overflow: hidden;
+    z-index: 5;
 }
 
 .avatar-wrap img {
@@ -72,7 +77,7 @@ body {
     filter: contrast(1.1) brightness(1.1);
 }
 
-/* THE EVENT COLOR BAR - GLOWING INDICATOR */
+/* THE EVENT COLOR BAR - BOTTOM GLOW */
 .card::after {
     content: '';
     position: absolute;
@@ -84,7 +89,7 @@ body {
     filter: blur(1px);
 }
 
-/* EVENT COLOR RESPECT - INDICATORS */
+/* EVENT COLOR RESPECT */
 .card.chat::after     { background: #2c2fff; box-shadow: 0 0 10px #2c2fff; }
 .card.sub::after      { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
 .card.giftsub::after  { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
@@ -94,7 +99,7 @@ body {
 .card.streak::after   { background: #2c2fff; box-shadow: 0 0 10px #2c2fff; }
 .card.dono::after     { background: #00ff7f; box-shadow: 0 0 10px #00ff7f; }
 
-/* USERNAME COLORS - DIALED DOWN FOR READABILITY */
+/* USERNAME COLORS */
 .card.chat .username     { color: #7a7cff; }
 .card.sub .username      { color: #e59bff; }
 .card.giftsub .username  { color: #e59bff; }
@@ -105,19 +110,25 @@ body {
 .card.dono .username     { color: #5effad; }
 
 /* TEXT CONTENT */
-.content { flex: 1; min-width: 0; }
+.content { 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0; 
+}
 
 .top-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 2px;
+    white-space: nowrap;
 }
 
 .username {
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: -0.2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .event-label {
@@ -126,38 +137,29 @@ body {
     text-transform: uppercase;
     letter-spacing: 2px;
     opacity: 0.5;
+    color: #fff;
 }
 
 .event-message {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #cecece;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    margin-top: 4px;
-    padding-top: 4px;
-}
-
-/* TWITCH LOGO - ENHANCED VISIBILITY */
-.twitch-icon {
-    font-size: 20px;            /* Slightly larger for better presence */
-    color: #9146FF;             /* Official Twitch Purple */
-    opacity: 0.8;               /* Much more visible than 0.2 */
-    margin-left: 15px;
-    filter: drop-shadow(0 0 8px rgba(145, 70, 255, 0.6)); /* Soft neon glow */
-    transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ANIMATIONS */
-@keyframes slideIn {
-    0% { transform: translateX(-30px); opacity: 0; filter: blur(5px); }
+@keyframes slideInRight {
+    0% { transform: translateX(40px); opacity: 0; filter: blur(5px); }
     100% { transform: translateX(0); opacity: 1; filter: blur(0); }
 }
 
 .removing {
-    animation: slideOut 0.4s ease forwards;
+    animation: slideOutLeft 0.5s ease forwards;
 }
 
-@keyframes slideOut {
-    to { transform: translateX(50px); opacity: 0; filter: blur(10px); }
+@keyframes slideOutLeft {
+    to { transform: scale(0.9) translateX(-30px); opacity: 0; filter: blur(10px); }
 }
 </style>
 </head>
@@ -167,31 +169,31 @@ body {
 <div id="event-feed"></div>
 
 <script>
+// 1. Connection Logic
 const params = new URLSearchParams(window.location.search);
 const host = params.get("address") || "localhost";
 const port = params.get("port") || "8080";
-const wsUrl = `ws://${host}:${port}/`;
+const ws = new WebSocket(`ws://${host}:${port}/`);
 
-const ws = new WebSocket(wsUrl);
-
+// 2. Themes
 const THEMES = {
-    CHAT:           { label: "Neural Link Message", cssClass: "chat" },
-    SUBSCRIPTION:   { label: "Clan Member", cssClass: "sub" },
-    GIFT_SUB:       { label: "Bounty Bestowed", cssClass: "giftsub" },
-    RAID:           { label: "Gate Breach", cssClass: "raid" },
-    BITS:           { label: "Energy Injected", cssClass: "bits" },
-    CHANNEL_POINTS: { label: "Tribute Redeemed", cssClass: "points" },
-    WATCH_STREAK:   { label: "Link Sync", cssClass: "streak" },
-    DONATION:       { label: "Credits Received", cssClass: "dono" }
+    CHAT:           { label: "Neural Link", cssClass: "chat" },
+    SUBSCRIPTION:   { label: "Viking Re-Sub", cssClass: "sub" },
+    GIFT_SUB:       { label: "Clan Gift", cssClass: "giftsub" },
+    RAID:           { label: "Raid Incoming", cssClass: "raid" },
+    BITS:           { label: "Power Cells", cssClass: "bits" },
+    CHANNEL_POINTS: { label: "Redeem", cssClass: "points" },
+    WATCH_STREAK:   { label: "Loyalty Streak", cssClass: "streak" },
+    DONATION:       { label: "Credits", cssClass: "dono" }
 };
 
-const MAX_CARDS = 6;
+const MAX_CARDS = 4; // Keeps the feed from running off the screen
 
 ws.onopen = () => {
     ws.send(JSON.stringify({
         request: "Subscribe",
         events: { general: ["Custom"] },
-        id: "StreamEventFeed"
+        id: "HorizontalFeed"
     }));
 };
 
@@ -207,44 +209,44 @@ ws.onmessage = (event) => {
     }
 };
 
-function normalizeType(type) {
-    return (type || "").toUpperCase().replace(/\s+/g, "_").replace(/CHANNELPOINTS/, "CHANNEL_POINTS");
-}
-
 function createCard(data) {
     const feed = document.getElementById("event-feed");
     if (!feed) return;
 
-    const type = normalizeType(data.type);
-    const theme = THEMES[type] || THEMES["CHAT"];
+    const theme = THEMES[data.type] || THEMES["CHAT"];
 
     const card = document.createElement("div");
     card.className = `card ${theme.cssClass}`;
 
     card.innerHTML = `
         <div class="avatar-wrap">
-            <img src="${data.avatar || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'">
+            <img src="${data.avatar || 'https://via.placeholder.com/50'}">
         </div>
         <div class="content">
             <div class="top-row">
                 <span class="username">${data.user}</span>
                 <span class="event-label">${theme.label}</span>
             </div>
-            ${data.message ? `<div class="event-message">${data.message}</div>` : ""}
+            ${data.message ? `<div class="event-message">${data.message}</div>` : `<div class="event-message">${data.value || ''}</div>`}
         </div>
-        <i class="fa-brands fa-twitch twitch-icon"></i>
     `;
 
     feed.appendChild(card);
 
+    // Manage feed length
     if (feed.children.length > MAX_CARDS) {
-        feed.removeChild(feed.firstChild);
+        const oldest = feed.firstChild;
+        oldest.classList.add("removing");
+        oldest.addEventListener("animationend", () => oldest.remove());
     }
 
+    // Auto-remove after 20 seconds
     setTimeout(() => {
-        card.classList.add("removing");
-        card.addEventListener("animationend", () => card.remove(), { once: true });
-    }, 15000);
+        if (card.parentElement) {
+            card.classList.add("removing");
+            card.addEventListener("animationend", () => card.remove());
+        }
+    }, 20000);
 }
 </script>
 
