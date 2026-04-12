@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kick Q&A - Date Stamp Overlay</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 60px 100px;
+            background: transparent;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        #qa-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; 
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #qa-container.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .user-name {
+            font-size: 1.4rem;
+            color: #ffffff;
+            margin-bottom: 5px;
+            margin-right: 80px; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .message-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .bubble {
+            background-color: #34C759; 
+            color: #ffffff;
+            font-size: 2rem;
+            padding: 16px 22px;
+            border-radius: 20px 20px 4px 20px; 
+            max-width: 500px;
+            word-wrap: break-word;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .avatar-wrap {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: transparent;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .footer-tag {
+            font-size: 1.1rem;
+            color: #dddddd;
+            margin-top: 6px;
+            margin-right: 80px; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+<div id="qa-container">
+    <div id="qa-user" class="user-name"></div>
+    <div class="message-row">
+        <div id="qa-text" class="bubble"></div>
+        <div class="avatar-wrap" id="avatar-container">
+            <img id="qa-avatar" src="">
+        </div>
+    </div>
+    <div id="qa-footer" class="footer-tag"></div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const host = params.get("address") || "localhost";
+    const port = params.get("port") || "8080";
+    const ws = new WebSocket(`ws://${host}:${port}/`);
+    const container = document.getElementById('qa-container');
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({
+            request: "Subscribe",
+            events: { general: ["Custom"] },
+            id: "KickQAOverlay"
+        }));
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const payload = data.data;
+
+        if (payload && payload.eventName === "ShowKickQA") {
+            const avatarImg = document.getElementById('qa-avatar');
+            const avatarContainer = document.getElementById('avatar-container');
+            
+            if (payload.avatar && payload.avatar.trim() !== "") {
+                avatarImg.src = payload.avatar;
+                avatarContainer.style.display = "block";
+            } else {
+                avatarImg.src = ""; 
+                avatarContainer.style.display = "none"; 
+            }
+
+            document.getElementById('qa-user').innerText = payload.user || "";
+            document.getElementById('qa-text').innerText = payload.question || "";
+            
+            // Displays the date passed from the script
+            const messageDate = payload.date || payload.time || "";
+            document.getElementById('qa-footer').innerText = messageDate;
+
+            container.classList.add('active');
+
+            setTimeout(() => {
+                container.classList.remove('active');
+            }, 20000);
+        }
+    };
+</script>
+</body>
+</html>
