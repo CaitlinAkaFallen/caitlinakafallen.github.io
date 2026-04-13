@@ -40,7 +40,7 @@ body {
     padding: 8px 16px 8px 15px; /* Minimal internal padding now that avatar is pushed out */
     height: 62px;
     min-width: 240px;
-    max-width: 450px;
+    max-width: 520px;
     flex-shrink: 0;
     
     background: linear-gradient(135deg, rgba(15, 15, 20, 0.65) 0%, rgba(5, 5, 10, 0.55) 100%);
@@ -90,24 +90,27 @@ body {
 }
 
 /* EVENT COLOR RESPECT */
-.card.chat::after     { background: #2c2fff; box-shadow: 0 0 10px #2c2fff; }
+.card.chat::after     { background: #7945f3; box-shadow: 0 0 10px #7945f3; }
 .card.sub::after      { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
 .card.giftsub::after  { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
 .card.raid::after     { background: #ff2222; box-shadow: 0 0 10px #ff2222; }
-.card.bits::after     { background: #9b52fc; box-shadow: 0 0 10px #9b52fc; }
+.card.bits::after     { background: #e248f7; box-shadow: 0 0 10px #e248f7; }
 .card.points::after   { background: #dff756; box-shadow: 0 0 10px #dff756; }
-.card.streak::after   { background: #2c2fff; box-shadow: 0 0 10px #2c2fff; }
+.card.streak::after   { background: #4afde5; box-shadow: 0 0 10px #4afde5; }
 .card.dono::after     { background: #00ff7f; box-shadow: 0 0 10px #00ff7f; }
 
-/* USERNAME COLORS */
-.card.chat .username     { color: #7a7cff; }
-.card.sub .username      { color: #e59bff; }
-.card.giftsub .username  { color: #e59bff; }
-.card.raid .username     { color: #ff5e5e; }
-.card.bits .username     { color: #b785ff; }
-.card.points .username   { color: #e9f88c; }
-.card.streak .username   { color: #7a7cff; }
-.card.dono .username     { color: #5effad; }
+
+/* USERNAME COLORS WITH NEON GLOW */
+/* USERNAME COLORS: READABLE NEON GLOW */
+.card.chat .username     { color: #8e62f3; text-shadow: 0 0 2px #000, 0 0 5px rgba(142, 98, 243, 0.9), 0 0 10px rgba(142, 98, 243, 0.6); }
+.card.sub .username      { color: #c278ff; text-shadow: 0 0 2px #000, 0 0 5px rgba(194, 120, 255, 0.9), 0 0 10px rgba(194, 120,255, 0.6); }
+.card.giftsub .username  { color: #e59bff; text-shadow: 0 0 2px #000, 0 0 5px rgba(229, 155, 255, 0.9), 0 0 10px rgba(229, 155, 255, 0.6); }
+.card.raid .username     { color: #ff5e5e; text-shadow: 0 0 2px #000, 0 0 5px rgba(255, 94, 94, 0.9), 0 0 10px rgba(255, 94, 94, 0.6); }
+.card.bits .username     { color: #e248f7; text-shadow: 0 0 2px #000, 0 0 5px rgba(226, 72, 247, 0.9), 0 0 10px rgba(226, 72, 247, 0.6); }
+.card.points .username   { color: #e9f88c; text-shadow: 0 0 2px #000, 0 0 5px rgba(233, 248, 140, 0.9), 0 0 10px rgba(233, 248, 140, 0.6); }
+.card.streak .username   { color: #4afde5; text-shadow: 0 0 2px #000, 0 0 5px rgba(74, 253, 229, 0.9), 0 0 10px rgba(74, 253, 229, 0.6); }
+.card.dono .username     { color: #5effad; text-shadow: 0 0 2px #000, 0 0 5px rgba(94, 255, 173, 0.9), 0 0 10px rgba(94, 255, 173, 0.6); }
+ 
 
 /* TEXT CONTENT */
 .content { 
@@ -177,14 +180,14 @@ const ws = new WebSocket(`ws://${host}:${port}/`);
 
 // 2. Themes
 const THEMES = {
-    CHAT:           { label: "Neural Link", cssClass: "chat" },
+    CHAT:           { label: "Chat Message", cssClass: "chat" },
     SUBSCRIPTION:   { label: "Viking Re-Sub", cssClass: "sub" },
     GIFT_SUB:       { label: "Clan Gift", cssClass: "giftsub" },
     RAID:           { label: "Raid Incoming", cssClass: "raid" },
     BITS:           { label: "Power Cells", cssClass: "bits" },
     CHANNEL_POINTS: { label: "Redeem", cssClass: "points" },
     WATCH_STREAK:   { label: "Loyalty Streak", cssClass: "streak" },
-    DONATION:       { label: "Credits", cssClass: "dono" }
+    DONATION:       { label: "Credits", cssClass: "dono" },
 };
 
 const MAX_CARDS = 4; // Keeps the feed from running off the screen
