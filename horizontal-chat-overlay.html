@@ -18,7 +18,7 @@ body {
     font-family: 'Inter', sans-serif;
     color: #fff;
     overflow: hidden;
-    padding: 20px 60px; /* Extra horizontal padding for the floating elements */
+    padding: 20px 60px; 
 }
 
 /* THE HORIZONTAL TRACKER */
@@ -27,17 +27,17 @@ body {
     flex-direction: row; 
     justify-content: flex-start;
     align-items: center;
-    gap: 65px; /* Increased gap to keep cards from crowding the floating avatars */
+    gap: 65px; 
     width: 100vw;
     height: 100px;
 }
 
-/* THE CARD CONTAINER - SLEEK GLASSMORPHISM */
+/* THE CARD CONTAINER */
 .card {
     position: relative;
     display: flex;
     align-items: center;
-    padding: 8px 16px 8px 15px; /* Minimal internal padding now that avatar is pushed out */
+    padding: 8px 16px 8px 15px; 
     height: 62px;
     min-width: 240px;
     max-width: 520px;
@@ -54,10 +54,9 @@ body {
     animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* FLOATING AVATAR - PUSHED OUT WITH A GAP */
+/* FLOATING AVATAR */
 .avatar-wrap {
     position: absolute;
-    /* This -45px value creates the visible gap between the circle and the card edge */
     left: -60px; 
     width: 54px;
     height: 54px;
@@ -77,7 +76,7 @@ body {
     filter: contrast(1.1) brightness(1.1);
 }
 
-/* THE EVENT COLOR BAR - BOTTOM GLOW */
+/* BOTTOM GLOW BARS */
 .card::after {
     content: '';
     position: absolute;
@@ -89,66 +88,73 @@ body {
     filter: blur(1px);
 }
 
-/* EVENT COLOR RESPECT */
-.card.chat::after     { background: #7945f3; box-shadow: 0 0 10px #7945f3; }
-.card.sub::after      { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
-.card.giftsub::after  { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
-.card.raid::after     { background: #ff2222; box-shadow: 0 0 10px #ff2222; }
-.card.bits::after     { background: #e248f7; box-shadow: 0 0 10px #e248f7; }
-.card.points::after   { background: #dff756; box-shadow: 0 0 10px #dff756; }
-.card.streak::after   { background: #4afde5; box-shadow: 0 0 10px #4afde5; }
-.card.dono::after     { background: #00ff7f; box-shadow: 0 0 10px #00ff7f; }
+.card.chat::after      { background: #7945f3; box-shadow: 0 0 10px #7945f3; }
+.card.sub::after       { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
+.card.giftsub::after   { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
+.card.raid::after      { background: #ff2222; box-shadow: 0 0 10px #ff2222; }
+.card.bits::after      { background: #e248f7; box-shadow: 0 0 10px #e248f7; }
+.card.points::after    { background: #dff756; box-shadow: 0 0 10px #dff756; }
+.card.streak::after    { background: #4afde5; box-shadow: 0 0 10px #4afde5; }
+.card.dono::after      { background: #00ff7f; box-shadow: 0 0 10px #00ff7f; }
 
+/* USERNAME NEONS */
+.card.chat .username     { color: #b08fff; text-shadow: 0 0 5px rgba(177, 146, 250, 0.9); }
+.card.sub .username      { color: #c278ff; text-shadow: 0 0 5px rgba(194, 120, 255, 0.9); }
+.card.giftsub .username  { color: #e59bff; text-shadow: 0 0 5px rgba(229, 155, 255, 0.9); }
+.card.raid .username     { color: #ff5e5e; text-shadow: 0 0 5px rgba(255, 94, 94, 0.9); }
+.card.bits .username     { color: #e248f7; text-shadow: 0 0 5px rgba(226, 72, 247, 0.9); }
+.card.points .username   { color: #e9f88c; text-shadow: 0 0 5px rgba(233, 248, 140, 0.9); }
+.card.streak .username   { color: #4afde5; text-shadow: 0 0 5px rgba(74, 253, 229, 0.9); }
+.card.dono .username     { color: #5effad; text-shadow: 0 0 5px rgba(94, 255, 173, 0.9); }
 
-/* USERNAME COLORS WITH NEON GLOW */
-/* USERNAME COLORS: READABLE NEON GLOW */
-.card.chat .username     { color: #8e62f3; text-shadow: 0 0 2px #000, 0 0 5px rgba(142, 98, 243, 0.9), 0 0 10px rgba(142, 98, 243, 0.6); }
-.card.sub .username      { color: #c278ff; text-shadow: 0 0 2px #000, 0 0 5px rgba(194, 120, 255, 0.9), 0 0 10px rgba(194, 120,255, 0.6); }
-.card.giftsub .username  { color: #e59bff; text-shadow: 0 0 2px #000, 0 0 5px rgba(229, 155, 255, 0.9), 0 0 10px rgba(229, 155, 255, 0.6); }
-.card.raid .username     { color: #ff5e5e; text-shadow: 0 0 2px #000, 0 0 5px rgba(255, 94, 94, 0.9), 0 0 10px rgba(255, 94, 94, 0.6); }
-.card.bits .username     { color: #e248f7; text-shadow: 0 0 2px #000, 0 0 5px rgba(226, 72, 247, 0.9), 0 0 10px rgba(226, 72, 247, 0.6); }
-.card.points .username   { color: #e9f88c; text-shadow: 0 0 2px #000, 0 0 5px rgba(233, 248, 140, 0.9), 0 0 10px rgba(233, 248, 140, 0.6); }
-.card.streak .username   { color: #4afde5; text-shadow: 0 0 2px #000, 0 0 5px rgba(74, 253, 229, 0.9), 0 0 10px rgba(74, 253, 229, 0.6); }
-.card.dono .username     { color: #5effad; text-shadow: 0 0 2px #000, 0 0 5px rgba(94, 255, 173, 0.9), 0 0 10px rgba(94, 255, 173, 0.6); }
- 
+/* PRONOUNS TAG */
+.pronouns {
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: #faed7b;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+    vertical-align: middle;
+    text-transform: lowercase;
+    flex-shrink: 0;
+    margin-left: auto; /* This forces it to the absolute right */
+}
 
-/* TEXT CONTENT */
 .content { 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
     min-width: 0; 
 }
 
-.top-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    white-space: nowrap;
+.top-row { 
+    display: flex; 
+    align-items: center; 
+    white-space: nowrap; 
+    width: 100%; 
 }
 
-.username {
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: -0.2px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+
+.username { 
+    font-size: 1.1rem; 
+    font-weight: 700; 
 }
 
-.event-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    opacity: 0.5;
-    color: #fff;
+
+.event-label { 
+    font-family: 'Share Tech Mono', monospace; 
+    font-size: 0.65rem; 
+    text-transform: uppercase; 
+    opacity: 0.5; 
 }
 
-.event-message {
-    font-size: 0.9rem;
-    color: #cecece;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.event-message { 
+    font-size: 0.9rem; 
+    color: #cecece; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
 }
 
 /* ANIMATIONS */
@@ -156,31 +162,22 @@ body {
     0% { transform: translateX(40px); opacity: 0; filter: blur(5px); }
     100% { transform: translateX(0); opacity: 1; filter: blur(0); }
 }
-
-.removing {
-    animation: slideOutLeft 0.5s ease forwards;
-}
-
-@keyframes slideOutLeft {
-    to { transform: scale(0.9) translateX(-30px); opacity: 0; filter: blur(10px); }
-}
+.removing { animation: slideOutLeft 0.5s ease forwards; }
+@keyframes slideOutLeft { to { transform: scale(0.9) translateX(-30px); opacity: 0; filter: blur(10px); } }
 </style>
 </head>
-
 <body>
 
 <div id="event-feed"></div>
 
 <script>
-// 1. Connection Logic
 const params = new URLSearchParams(window.location.search);
 const host = params.get("address") || "localhost";
 const port = params.get("port") || "8080";
 const ws = new WebSocket(`ws://${host}:${port}/`);
 
-// 2. Themes
 const THEMES = {
-    CHAT:           { label: "Chat Message", cssClass: "chat" },
+    CHAT:           { label: "", cssClass: "chat" },
     SUBSCRIPTION:   { label: "Viking Re-Sub", cssClass: "sub" },
     GIFT_SUB:       { label: "Clan Gift", cssClass: "giftsub" },
     RAID:           { label: "Raid Incoming", cssClass: "raid" },
@@ -190,17 +187,37 @@ const THEMES = {
     DONATION:       { label: "Credits", cssClass: "dono" },
 };
 
-const MAX_CARDS = 4; // Keeps the feed from running off the screen
+const MAX_CARDS = 4;
+
+// Cache pronouns to avoid spamming the API for the same user
+const pronounCache = new Map();
+
+async function getPronouns(username) {
+    if (pronounCache.has(username)) return pronounCache.get(username);
+    
+    try {
+        const response = await fetch(`https://pronouns.alejo.io/api/users/${username}`);
+        if (!response.ok) return "";
+        const data = await response.json();
+        
+        // Alejo API returns an array of objects, we need the display value
+        if (data && data.length > 0) {
+            const p = data[0].pronoun_id; // e.g., "hehim"
+            // Simple mapping for common IDs if you want them to look cleaner
+            const map = { "hehim": "he/him", "sheher": "she/her", "theythem": "they/them", "hethey": "he/they", "shethey": "she/they" };
+            const finalPronoun = map[p] || p;
+            pronounCache.set(username, finalPronoun);
+            return finalPronoun;
+        }
+    } catch (e) { console.error("Pronoun error:", e); }
+    return "";
+}
 
 ws.onopen = () => {
-    ws.send(JSON.stringify({
-        request: "Subscribe",
-        events: { general: ["Custom"] },
-        id: "HorizontalFeed"
-    }));
+    ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "HorizontalFeed" }));
 };
 
-ws.onmessage = (event) => {
+ws.onmessage = async (event) => {
     let payload;
     try {
         const msg = JSON.parse(event.data);
@@ -208,42 +225,43 @@ ws.onmessage = (event) => {
     } catch (e) { return; }
 
     if (payload?.eventName === "StreamEvent") {
-        createCard(payload);
+        let pronouns = "";
+        if (payload.type === "CHAT") {
+            pronouns = await getPronouns(payload.user);
+        }
+        createCard(payload, pronouns);
     }
 };
 
-function createCard(data) {
+function createCard(data, pronouns) {
     const feed = document.getElementById("event-feed");
-    if (!feed) return;
-
     const theme = THEMES[data.type] || THEMES["CHAT"];
-
     const card = document.createElement("div");
     card.className = `card ${theme.cssClass}`;
 
-    card.innerHTML = `
-        <div class="avatar-wrap">
-            <img src="${data.avatar || 'https://via.placeholder.com/50'}">
+    const pronounTag = pronouns ? `<span class="pronouns">${pronouns}</span>` : "";
+
+card.innerHTML = `
+    <div class="avatar-wrap">
+        <img src="${data.avatar || 'https://via.placeholder.com/50'}">
+    </div>
+    <div class="content">
+        <div class="top-row">
+            <span class="username">${data.user}</span>
+            ${pronounTag} 
         </div>
-        <div class="content">
-            <div class="top-row">
-                <span class="username">${data.user}</span>
-                <span class="event-label">${theme.label}</span>
-            </div>
-            ${data.message ? `<div class="event-message">${data.message}</div>` : `<div class="event-message">${data.value || ''}</div>`}
-        </div>
-    `;
+        <div class="event-message">${data.message || data.value || ''}</div>
+    </div>
+`;
 
     feed.appendChild(card);
 
-    // Manage feed length
     if (feed.children.length > MAX_CARDS) {
         const oldest = feed.firstChild;
         oldest.classList.add("removing");
         oldest.addEventListener("animationend", () => oldest.remove());
     }
 
-    // Auto-remove after 20 seconds
     setTimeout(() => {
         if (card.parentElement) {
             card.classList.add("removing");
@@ -252,6 +270,5 @@ function createCard(data) {
     }, 20000);
 }
 </script>
-
 </body>
 </html>
