@@ -13,12 +13,13 @@
 
 * { margin:0; padding:0; box-sizing:border-box; }
 
+/* Body Padding - 200px ensures the new badge doesn't hit the screen edge */
 body {
     background: transparent;
     font-family: 'Inter', sans-serif;
     color: #fff;
     overflow: hidden;
-    padding: 20px 60px; 
+    padding: 20px 20px 20px 170px; /* reduced just a little from 200px */
 }
 
 /* THE HORIZONTAL TRACKER */
@@ -27,7 +28,7 @@ body {
     flex-direction: row; 
     justify-content: flex-start;
     align-items: center;
-    gap: 65px; 
+    gap: 100px; 
     width: 100vw;
     height: 100px;
 }
@@ -54,38 +55,62 @@ body {
     animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* FLOATING AVATAR */
+/* FLOATING AVATAR (ANCHOR POINT) */
 .avatar-wrap {
     position: absolute;
-    left: -60px; 
+    left: -62px; /* half the avatar width so it overlaps the card edge */
     width: 54px;
     height: 54px;
     background: #000;
     border-radius: 50%;
     flex-shrink: 0;
-    overflow: hidden;
     border: 2px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 0 15px rgba(0,0,0,0.8);
     z-index: 5;
+    overflow: visible;
 }
 
+/* AVATAR IMAGE */
 .avatar-wrap img {
     width: 100%;
     height: 100%;
+    border-radius: 50%; 
     object-fit: cover;
     filter: contrast(1.1) brightness(1.1);
 }
 
-/* BOTTOM GLOW BARS */
-.card::after {
-    content: '';
+.timestamp {
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: rgb(246, 247, 242);
+    background: rgba(14, 14, 14, 0.377);
+    padding: 1px 5px;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    /* moves it outside the card */
     position: absolute;
-    bottom: 0;
-    left: 5%;
-    right: 5%;
-    height: 3px;
-    border-radius: 3px 3px 0 0;
-    filter: blur(1px);
+    right: calc(100% + 25px);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+
+/* BOTTOM GLOW BARS */
+.card::after { 
+    content: ''; 
+    position: absolute; 
+    bottom: 0; 
+    left: 5%; 
+    right: 5%; 
+    height: 3px; 
+    border-radius: 3px 3px 0 0; 
+    filter: blur(1px); 
 }
 
 .card.chat::after      { background: #7945f3; box-shadow: 0 0 10px #7945f3; }
@@ -118,10 +143,11 @@ body {
     vertical-align: middle;
     text-transform: lowercase;
     flex-shrink: 0;
-    margin-left: auto; /* This forces it to the absolute right */
+    margin-left: auto; 
 }
 
 .content { 
+    flex: 1;
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
@@ -135,18 +161,9 @@ body {
     width: 100%; 
 }
 
-
 .username { 
     font-size: 1.1rem; 
     font-weight: 700; 
-}
-
-
-.event-label { 
-    font-family: 'Share Tech Mono', monospace; 
-    font-size: 0.65rem; 
-    text-transform: uppercase; 
-    opacity: 0.5; 
 }
 
 .event-message { 
@@ -162,8 +179,11 @@ body {
     0% { transform: translateX(40px); opacity: 0; filter: blur(5px); }
     100% { transform: translateX(0); opacity: 1; filter: blur(0); }
 }
+
 .removing { animation: slideOutLeft 0.5s ease forwards; }
+
 @keyframes slideOutLeft { to { transform: scale(0.9) translateX(-30px); opacity: 0; filter: blur(10px); } }
+
 </style>
 </head>
 <body>
@@ -171,88 +191,91 @@ body {
 <div id="event-feed"></div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const host = params.get("address") || "localhost";
-const port = params.get("port") || "8080";
-const ws = new WebSocket(`ws://${host}:${port}/`);
+    const params = new URLSearchParams(window.location.search);
+    const host = params.get("address") || "localhost";
+    const port = params.get("port") || "8080";
+    const ws = new WebSocket(`ws://${host}:${port}/`);
 
-const THEMES = {
-    CHAT:           { label: "", cssClass: "chat" },
-    SUBSCRIPTION:   { label: "Viking Re-Sub", cssClass: "sub" },
-    GIFT_SUB:       { label: "Clan Gift", cssClass: "giftsub" },
-    RAID:           { label: "Raid Incoming", cssClass: "raid" },
-    BITS:           { label: "Power Cells", cssClass: "bits" },
-    CHANNEL_POINTS: { label: "Redeem", cssClass: "points" },
-    WATCH_STREAK:   { label: "Loyalty Streak", cssClass: "streak" },
-    DONATION:       { label: "Credits", cssClass: "dono" },
-};
+    const THEMES = {
+        CHAT:           { label: "", cssClass: "chat" },
+        SUBSCRIPTION:   { label: "Viking Re-Sub", cssClass: "sub" },
+        GIFT_SUB:       { label: "Clan Gift", cssClass: "giftsub" },
+        RAID:           { label: "Raid Incoming", cssClass: "raid" },
+        BITS:           { label: "Power Cells", cssClass: "bits" },
+        CHANNEL_POINTS: { label: "Redeem", cssClass: "points" },
+        WATCH_STREAK:   { label: "Loyalty Streak", cssClass: "streak" },
+        DONATION:       { label: "Credits", cssClass: "dono" },
+    };
 
-const MAX_CARDS = 4;
+    const MAX_CARDS = 4;
 
-// Cache pronouns to avoid spamming the API for the same user
-const pronounCache = new Map();
+    // Cache pronouns to avoid spamming the API for the same user
+    const pronounCache = new Map();
 
-async function getPronouns(username) {
-    if (pronounCache.has(username)) return pronounCache.get(username);
-    
-    try {
-        const response = await fetch(`https://pronouns.alejo.io/api/users/${username}`);
-        if (!response.ok) return "";
-        const data = await response.json();
+    async function getPronouns(username) {
+        if (pronounCache.has(username)) return pronounCache.get(username);
         
-        // Alejo API returns an array of objects, we need the display value
-        if (data && data.length > 0) {
-            const p = data[0].pronoun_id; // e.g., "hehim"
-            // Simple mapping for common IDs if you want them to look cleaner
-            const map = { "hehim": "he/him", "sheher": "she/her", "theythem": "they/them", "hethey": "he/they", "shethey": "she/they" };
-            const finalPronoun = map[p] || p;
-            pronounCache.set(username, finalPronoun);
-            return finalPronoun;
-        }
-    } catch (e) { console.error("Pronoun error:", e); }
-    return "";
-}
-
-ws.onopen = () => {
-    ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "HorizontalFeed" }));
-};
-
-ws.onmessage = async (event) => {
-    let payload;
-    try {
-        const msg = JSON.parse(event.data);
-        payload = typeof msg.data === "string" ? JSON.parse(msg.data) : msg.data || msg;
-    } catch (e) { return; }
-
-    if (payload?.eventName === "StreamEvent") {
-        let pronouns = "";
-        if (payload.type === "CHAT") {
-            pronouns = await getPronouns(payload.user);
-        }
-        createCard(payload, pronouns);
+        try {
+            const response = await fetch(`https://pronouns.alejo.io/api/users/${username}`);
+            if (!response.ok) return "";
+            const data = await response.json();
+            
+            // Alejo API returns an array of objects, we need the display value
+            if (data && data.length > 0) {
+                const p = data[0].pronoun_id; // e.g., "hehim"
+                // Simple mapping for common IDs if you want them to look cleaner
+                const map = { "hehim": "he/him", "sheher": "she/her", "theythem": "they/them", "hethey": "he/they", "shethey": "she/they" };
+                const finalPronoun = map[p] || p;
+                pronounCache.set(username, finalPronoun);
+                return finalPronoun;
+            }
+        } catch (e) { console.error("Pronoun error:", e); }
+        return "";
     }
-};
 
-function createCard(data, pronouns) {
-    const feed = document.getElementById("event-feed");
-    const theme = THEMES[data.type] || THEMES["CHAT"];
-    const card = document.createElement("div");
-    card.className = `card ${theme.cssClass}`;
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "HorizontalFeed" }));
+    };
+
+    ws.onmessage = async (event) => {
+        let payload;
+        try {
+            const msg = JSON.parse(event.data);
+            payload = typeof msg.data === "string" ? JSON.parse(msg.data) : msg.data || msg;
+        } catch (e) { return; }
+
+        if (payload?.eventName === "StreamEvent") {
+            let pronouns = "";
+            if (payload.type === "CHAT") {
+                pronouns = await getPronouns(payload.user);
+            }
+            createCard(payload, pronouns);
+        }
+    };
+
+    function createCard(data, pronouns) {
+        const feed = document.getElementById("event-feed");
+        const theme = THEMES[data.type] || THEMES["CHAT"];
+        const card = document.createElement("div");
+        card.className = `card ${theme.cssClass}`;
 
     const pronounTag = pronouns ? `<span class="pronouns">${pronouns}</span>` : "";
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
 
-card.innerHTML = `
-    <div class="avatar-wrap">
-        <img src="${data.avatar || 'https://via.placeholder.com/50'}">
-    </div>
-    <div class="content">
-        <div class="top-row">
-            <span class="username">${data.user}</span>
-            ${pronounTag} 
+    card.innerHTML = `
+        <div class="avatar-wrap">
+            <span class="timestamp">${timeString}</span>
+            <img src="${data.avatar || 'https://via.placeholder.com/50'}">
         </div>
-        <div class="event-message">${data.message || data.value || ''}</div>
-    </div>
-`;
+        <div class="content">
+            <div class="top-row">
+                <span class="username">${data.user}</span>
+                ${pronounTag} 
+            </div>
+            <div class="event-message">${data.message || data.value || ''}</div>
+        </div>
+    `;
 
     feed.appendChild(card);
 
