@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mug Shot Overlay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Share+Tech+Mono&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* ── Reset & base ─────────────────────────────────────── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --olive:    #b8a46a;
+            --dark:     #1a1a14;
+            --ink:      #0e0e0a;
+            --cream:    #e8dfc0;
+            --red:      #c0392b;
+            --stamp:    rgba(192, 57, 43, 0.85);
+            --rule-bg:  #2a2a1e;
+            --card-w:   460px;
+        }
+
+        body {
+            background: transparent;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* ── Camera flash ─────────────────────────────────────── */
+        #flash {
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        #flash.fire {
+            animation: cameraFlash 0.35s ease-out forwards;
+        }
+        @keyframes cameraFlash {
+            0%   { opacity: 0.95; }
+            100% { opacity: 0; }
+        }
+
+        /* ── Main card ────────────────────────────────────────── */
+        #mugshot-card {
+            position: relative;
+            width: var(--card-w);
+            background: var(--cream);
+            border: 3px solid #6b5f3a;
+            box-shadow:
+                0 0 0 1px #3a3222,
+                8px 8px 0 #3a3222,
+                0 20px 60px rgba(0,0,0,0.9);
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #mugshot-card.visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        #mugshot-card.hidden {
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        /* ── Scanline overlay ─────────────────────────────────── */
+        #mugshot-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.06) 2px,
+                rgba(0,0,0,0.06) 4px
+            );
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        /* ── Noise texture ────────────────────────────────────── */
+        #mugshot-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.35;
+            pointer-events: none;
+            z-index: 21;
+        }
+
+        /* ── Department header ────────────────────────────────── */
+        .dept-header {
+            background: var(--ink);
+            color: var(--olive);
+            text-align: center;
+            padding: 10px 16px 8px;
+            border-bottom: 2px solid #6b5f3a;
+            position: relative;
+            z-index: 10;
+        }
+        .dept-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+        .dept-sub {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 3px;
+            color: #8a7a50;
+            margin-top: 3px;
+        }
+        .dept-rule {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--olive), transparent);
+            margin-top: 6px;
+            opacity: 0.5;
+        }
+
+        /* ── Photo section ────────────────────────────────────── */
+        .photo-area {
+            display: flex;
+            background: #2a2620;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Avatar photo */
+        .suspect-photo {
+            width: 300px;
+            height: 300px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            border-right: 2px solid #6b5f3a;
+        }
+        .suspect-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.1) saturate(0.85) sepia(0.15);
+            display: block;
+        }
+        /* Vignette over photo */
+        .suspect-photo::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+            pointer-events: none;
+        }
+
+        /* Height ruler */
+        .height-ruler {
+            flex: 1;
+            background: var(--rule-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .ruler-label {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.55rem;
+            letter-spacing: 2px;
+            color: #6b6b4a;
+            padding: 6px 0 4px;
+            text-align: center;
+        }
+        .ruler-marks {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+        .ruler-mark {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 6px;
+            gap: 4px;
+        }
+        .ruler-mark span {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.52rem;
+            color: var(--olive);
+            white-space: nowrap;
+        }
+        .ruler-mark .tick {
+            background: var(--olive);
+            height: 1px;
+            opacity: 0.7;
+        }
+        .ruler-mark.major .tick { width: 18px; opacity: 1; }
+        .ruler-mark.minor .tick { width: 10px; opacity: 0.5; }
+        .ruler-mark.major span { opacity: 1; }
+        .ruler-mark.minor span { opacity: 0; }
+
+        /* ── Placard / booking info ───────────────────────────── */
+        .placard {
+            background: var(--ink);
+            border-top: 2px solid #6b5f3a;
+            padding: 12px 16px 14px;
+            position: relative;
+            z-index: 10;
+        }
+        .placard-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 5px;
+        }
+        .placard-row:last-child { margin-bottom: 0; }
+        .placard-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: #6b5f3a;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+        .placard-value {
+            font-family: 'Special Elite', cursive;
+            font-size: 0.9rem;
+            color: var(--cream);
+            line-height: 1.2;
+        }
+        .placard-value.name-val {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.15rem;
+            letter-spacing: 2px;
+            color: #f0e6c0;
+        }
+        .placard-value.crime-val {
+            color: #e8a090;
+            font-size: 0.82rem;
+        }
+
+        /* ── BOOKED stamp ─────────────────────────────────────── */
+        .stamp {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: var(--stamp);
+            border: 3px solid var(--stamp);
+            padding: 2px 8px;
+            transform: rotate(-12deg);
+            opacity: 0;
+            transition: opacity 0.3s 0.7s;
+            z-index: 15;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+        }
+        #mugshot-card.visible .stamp { opacity: 1; }
+
+        /* ── Case number ticker strip ─────────────────────────── */
+        .case-strip {
+            background: #141410;
+            border-top: 1px solid #3a3222;
+            padding: 5px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+        .case-strip span {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.62rem;
+            color: #5a5040;
+            letter-spacing: 1px;
+        }
+        .case-strip .case-num {
+            color: var(--olive);
+            font-size: 0.68rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="flash"></div>
+
+    <div id="mugshot-card">
+        <div class="stamp">BOOKED</div>
+
+        <div class="dept-header">
+            <div class="dept-name">Department of FamUnit</div>
+            <div class="dept-sub">Official Booking Photograph — Do Not Reproduce</div>
+            <div class="dept-rule"></div>
+        </div>
+
+        <div class="photo-area">
+            <div class="suspect-photo">
+                <img id="suspect-img" src="" alt="Suspect">
+            </div>
+            <div class="height-ruler">
+                <div class="ruler-label">HT.</div>
+                <div class="ruler-marks" id="ruler-marks"></div>
+            </div>
+        </div>
+
+        <div class="case-strip">
+            <span>DEPT. OF FAMUNIT // TWITCH DIV.</span>
+            <span class="case-num" id="case-num-strip">CASE #------</span>
+        </div>
+
+        <div class="placard">
+            <div class="placard-row">
+                <span class="placard-label">NAME</span>
+                <span class="placard-value name-val" id="p-name">—</span>
+            </div>
+            <div class="placard-row">
+                <span class="placard-label">CASE NO.</span>
+                <span class="placard-value" id="p-case">—</span>
+            </div>
+            <div class="placard-row">
+                <span class="placard-label">DATE</span>
+                <span class="placard-value" id="p-date">—</span>
+            </div>
+            <div class="placard-row">
+                <span class="placard-label">CHARGE</span>
+                <span class="placard-value crime-val" id="p-crime">—</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── CONFIG ────────────────────────────────────────────────
+        const params      = new URLSearchParams(window.location.search);
+        const address     = params.get("address") || "localhost";
+        const port        = params.get("port")    || "8080";
+        const TARGET_EVENT = "MugShot";
+        const DISPLAY_MS   = 15000;   // how long the card stays up
+        // ─────────────────────────────────────────────────────────
+
+        // Build height ruler marks (6'6" down to 4'0" in 2" steps)
+        const rulerContainer = document.getElementById('ruler-marks');
+        const heights = [];
+        for (let ft = 6; ft >= 4; ft--) {
+            for (let inch = (ft === 6 ? 6 : 10); inch >= 0; inch -= 2) {
+                heights.push({ ft, inch, major: inch % 6 === 0 });
+            }
+        }
+        heights.forEach(h => {
+            const div = document.createElement('div');
+            div.className = `ruler-mark ${h.major ? 'major' : 'minor'}`;
+            div.innerHTML = `<span>${h.ft}'${h.inch}"</span><div class="tick"></div>`;
+            rulerContainer.appendChild(div);
+        });
+
+        // ── WebSocket ─────────────────────────────────────────────
+        let ws, hideTimer;
+
+        function connect() {
+            ws = new WebSocket(`ws://${address}:${port}/`);
+
+            ws.onopen = () => {
+                ws.send(JSON.stringify({
+                    request: "Subscribe",
+                    events: { "General": ["Custom"] },
+                    id: "MugShot-Sub"
+                }));
+                console.log("[MugShot] Connected.");
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.event?.source === "General" && msg.event?.type === "Custom") {
+                        let payload = msg.data;
+                        if (typeof payload === "string") payload = JSON.parse(payload);
+                        if (payload?.eventName === TARGET_EVENT) {
+                            showMugShot(payload);
+                        }
+                    }
+                } catch (err) {
+                    console.error("[MugShot] Parse error:", err);
+                }
+            };
+
+            ws.onerror = (e) => console.error("[MugShot] WS error:", e);
+            ws.onclose = () => {
+                console.warn("[MugShot] Disconnected — retry in 5s");
+                setTimeout(connect, 5000);
+            };
+        }
+
+        connect();
+
+        // ── Show the mug shot card ────────────────────────────────
+        function showMugShot(data) {
+            const card  = document.getElementById('mugshot-card');
+            const flash = document.getElementById('flash');
+
+            // Populate fields
+            document.getElementById('suspect-img').src =
+                data.avatar || 'https://cdn.discordapp.com/embed/avatars/0.png';
+            document.getElementById('suspect-img').onerror = function() {
+                this.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
+            };
+
+            const name   = escHtml(data.user    || "Unknown Suspect");
+            const caseNo = escHtml(data.caseId  || "000000");
+            const crime  = escHtml(data.crime   || "Suspicious Activity");
+            const date   = escHtml(data.date    || new Date().toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            }));
+
+            document.getElementById('p-name').textContent  = name;
+            document.getElementById('p-case').textContent  = `#${caseNo}`;
+            document.getElementById('p-date').textContent  = date;
+            document.getElementById('p-crime').textContent = crime;
+            document.getElementById('case-num-strip').textContent = `CASE #${caseNo}`;
+
+            // Clear previous timers
+            clearTimeout(hideTimer);
+            card.classList.remove('visible', 'hidden');
+
+            // Small delay so CSS transition fires cleanly
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    card.classList.add('visible');
+                    // Fire camera flash
+                    flash.classList.remove('fire');
+                    void flash.offsetWidth; // reflow to restart animation
+                    flash.classList.add('fire');
+                });
+            });
+
+            // Auto-hide after DISPLAY_MS
+            hideTimer = setTimeout(() => {
+                card.classList.remove('visible');
+                card.classList.add('hidden');
+            }, DISPLAY_MS);
+        }
+
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+</body>
+</html>
