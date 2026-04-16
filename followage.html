@@ -3,64 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitch Viking Followage</title>
+    <title>Sleek Expanding Followage</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@700&family=Outfit:wght@500;900&display=swap');
 
-        body { margin: 0; padding: 40px; background-color: transparent; font-family: 'Inter', sans-serif; overflow: hidden; }
-
-        #pill-container {
-            display: inline-flex; align-items: center; position: relative;
-            background: radial-gradient(circle at center, rgba(20, 55, 65, 0.98) 0%, rgba(10, 25, 30, 1) 100%);
-            -webkit-backdrop-filter: blur(15px); backdrop-filter: blur(15px);
-            padding: 15px 45px; clip-path: polygon(4% 0%, 100% 0%, 96% 100%, 0% 100%);
-            color: white; border-left: 5px solid #00f2ff;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 242, 255, 0.2);
-            opacity: 0; transform: skewX(-10deg) translateX(-50px); 
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            min-width: 450px;
+        :root {
+            --glass-bg: rgba(15, 15, 20, 0.9); 
+            --glass-border: rgba(0, 242, 255, 0.3);
+            --accent-color: #00f2ff;
+            /* This is your base glowing teal color */
+            --text-main: #62ffdd; 
+            --text-dim: rgba(255, 255, 255, 0.7);
         }
 
-        #pill-container.show { opacity: 1; transform: skewX(-10deg) translateX(0); }
+        body { 
+            margin: 0; 
+            padding: 100px; 
+            background-color: transparent; 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+        }
 
-        .avatar-wrapper { margin-right: 20px; z-index: 2; }
+        /* MAIN CONTAINER */
+        #alert-wrapper {
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.6s ease;
+        }
+
+        #alert-wrapper.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ROLLING AVATAR - Outside the container */
+        .avatar-wrapper {
+            position: relative;
+            z-index: 10;
+            perspective: 1000px;
+            margin-right: -30px; /* Slight overlap for the sleek look */
+        }
+
         .subber-avatar {
-            width: 70px; height: 70px; 
-            clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%);
-            background-size: cover; background-position: center;
-            border: 2px solid #00f2ff; box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
-            background-color: #111; /* Dark placeholder while loading */
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 4px solid var(--accent-color);
+            background-size: cover;
+            background-position: center;
+            background-color: #111;
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.4);
+            
+            /* Initial State */
+            transform: scale(0) rotate(-180deg);
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .text-group { display: flex; flex-direction: column; transform: skewX(10deg); z-index: 2; }
-        .subb-name { font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 900; color: #fff; text-shadow: 0 0 8px rgba(0, 242, 255, 0.5); margin: 0; }
-        .sub-message { font-size: 1rem; color: #a0c0c8; font-style: italic; margin-top: 2px; }
-
-        .stat-shard { margin-left: 20px; padding: 8px 15px; background: rgba(0, 242, 255, 0.15); border: 1px solid rgba(0, 242, 255, 0.4); clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%); text-align: center; transform: skewX(10deg); z-index: 2; }
-        #badge-value { display: block; font-family: 'Cinzel', serif; font-weight: 900; font-size: 1.2rem; color: #00f2ff; }
-        #badge-label { display: block; font-size: 0.6rem; letter-spacing: 1px; color: #fff; opacity: 0.8; }
-
-        .pulse { animation: valhalla-pulse 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes valhalla-pulse {
-            0% { transform: skewX(-10deg) scale(1); filter: brightness(1); }
-            50% { transform: skewX(-10deg) scale(1.05); filter: brightness(1.4); }
-            100% { transform: skewX(-10deg) scale(1); filter: brightness(1); }
+        #alert-wrapper.show .subber-avatar {
+            transform: scale(1) rotate(0deg);
         }
+
+        /* EXPANDING GLASS PILL */
+        #pill-container {
+            display: flex;
+            align-items: center;
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            
+            /* Expanding logic from Shoutout */
+            width: 0;
+            height: 90px;
+            padding: 0;
+            overflow: hidden;
+            transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1), padding 0.3s ease;
+        }
+
+        #alert-wrapper.expanded #pill-container {
+            width: 500px; /* Adjust based on your text needs */
+            padding: 0 40px 0 50px;
+        }
+
+        /* CONTENT GROUPING */
+        .content-inner {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease 0.4s, transform 0.4s ease 0.4s;
+        }
+
+        #alert-wrapper.expanded .content-inner {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .text-group {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .username {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            /* Layer 1: Black 'ink' for sharpness | Layer 2 & 3: Teal glow */
+            text-shadow: 
+                0px 0px 4px rgba(0, 0, 0, 1), 
+                0px 0px 10px rgba(98, 255, 221, 0.8),
+                0px 0px 20px rgba(98, 255, 221, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+
+        .message {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        /* STAT SHARD */
+        .stat-shard {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 2px solid var(--accent-color);
+            min-width: 100px;
+        }
+
+        #badge-value {
+            display: block;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+        }
+
+        #badge-label {
+            display: block;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        /* DISMISSAL */
+.roll-out {
+    animation: rollOutLeft 2.5s cubic-bezier(0.45, 0, 0.55, 1) forwards !important;
+}
+
+.roll-out .subber-avatar {
+    /* Avatar spins fast to 'drive' the movement */
+    animation: avatarSpinLeft 2.5s cubic-bezier(0.45, 0, 0.55, 1) forwards !important;
+}
+
+@keyframes rollOutLeft {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    20% {
+        /* Slight 'lean' into the roll */
+        transform: translateX(10px); 
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-100vw);
+        opacity: 0;
+    }
+}
+
+@keyframes avatarSpinLeft {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    20% {
+        transform: rotate(20deg) scale(1.1); /* Brief wind-up */
+    }
+    100% {
+        transform: rotate(-1080deg) scale(0.5); /* 3 full rotations for a smoother look */
+    }
+}
+
     </style>
 </head>
 <body>
 
-<div id="pill-container">
+<div id="alert-wrapper">
     <div class="avatar-wrapper">
         <div class="subber-avatar" id="avatar"></div>
     </div>
-    <div class="text-group">
-        <div class="subb-name" id="username">New Warrior!</div>
-        <div id="display-message" class="sub-message">Checking the scrolls...</div>
-    </div>
-    <div class="stat-shard">
-        <span id="badge-value">⚔️</span>
-        <span id="badge-label">LOYAL</span>
+    
+    <div id="pill-container">
+        <div class="content-inner">
+            <div class="text-group">
+                <div class="username" id="username"></div>
+                <div id="display-message" class="message">Joined the journey!</div>
+            </div>
+            
+            <div class="stat-shard">
+                <span id="badge-value">1 YEAR</span>
+                <span id="badge-label">FOLLOWING</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -70,8 +224,11 @@
     let hideTimer;
 
     ws.onopen = () => {
-        // ID set to your OBS Source: Followage
-        ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "Followage" }));
+        ws.send(JSON.stringify({ 
+            request: "Subscribe", 
+            events: { general: ["Custom"] }, 
+            id: "Followage" 
+        }));
     };
 
     ws.onmessage = (event) => {
@@ -82,27 +239,44 @@
     };
 
     function updateUI(data) {
-        const pill = document.getElementById('pill-container');
+        const wrapper = document.getElementById('alert-wrapper');
         const avatarElem = document.getElementById('avatar');
         
-        document.getElementById('username').innerText = data.user; 
-        document.getElementById('display-message').innerText = data.message;
-        document.getElementById('badge-value').innerText = data.badge || "⚔️";
-        document.getElementById('badge-label').innerText = data.label || "LOYAL";
+        // Populate
+        document.getElementById('username').innerText = data.user || "A Brave Soul"; 
+        document.getElementById('display-message').innerText = data.message || "Has joined the community!";
+        document.getElementById('badge-value').innerText = data.badge || "NEW";
+        document.getElementById('badge-label').innerText = data.label || "FOLLOWER";
         
         if (data.avatar) {
-            // Apply image exactly like your working Lurk code
             avatarElem.style.backgroundImage = `url('${data.avatar}')`;
         }
 
+        // 1. Show Wrapper & Avatar
         clearTimeout(hideTimer);
-        pill.classList.remove('show', 'pulse');
-        void pill.offsetWidth; 
-        pill.classList.add('show', 'pulse');
+        wrapper.classList.remove('show', 'expanded', 'roll-out');
+        void wrapper.offsetWidth; 
+        wrapper.classList.add('show');
 
+        // 2. Expand Pill after Avatar rolls in
+        setTimeout(() => {
+            wrapper.classList.add('expanded');
+        }, 500);
+
+        // 3. Stay for 15 seconds then roll out
         hideTimer = setTimeout(() => {
-            pill.classList.remove('show');
-        }, 8000);
+            // Contract first
+            wrapper.classList.remove('expanded');
+            
+            // Then fly away
+            setTimeout(() => {
+                wrapper.classList.add('roll-out');
+            }, 600);
+            
+            setTimeout(() => {
+                wrapper.classList.remove('show', 'roll-out');
+            }, 2000);
+        }, 15000);
     }
 </script>
 </body>
