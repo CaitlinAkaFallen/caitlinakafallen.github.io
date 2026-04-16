@@ -87,15 +87,12 @@ body {
 .card.streak::after    { background: #4afde5; box-shadow: 0 0 10px #4afde5; }
 .card.dono::after      { background: #00ff7f; box-shadow: 0 0 10px #00ff7f; }
 
-/* USERNAME NEONS */
-.card.chat .username     { color: #b08fff; text-shadow: 0 0 5px rgba(177, 146, 250, 0.9); }
-.card.sub .username      { color: #c278ff; text-shadow: 0 0 5px rgba(194, 120, 255, 0.9); }
-.card.giftsub .username  { color: #e59bff; text-shadow: 0 0 5px rgba(229, 155, 255, 0.9); }
-.card.raid .username     { color: #ff5e5e; text-shadow: 0 0 5px rgba(255, 94, 94, 0.9); }
-.card.bits .username     { color: #e248f7; text-shadow: 0 0 5px rgba(226, 72, 247, 0.9); }
-.card.points .username   { color: #e9f88c; text-shadow: 0 0 5px rgba(233, 248, 140, 0.9); }
-.card.streak .username   { color: #4afde5; text-shadow: 0 0 5px rgba(74, 253, 229, 0.9); }
-.card.dono .username     { color: #5effad; text-shadow: 0 0 5px rgba(94, 255, 173, 0.9); }
+.username { font-size: 1.1rem; font-weight: 700; color: #b08fff; }
+.pronouns { font-size: 0.65rem; color: #faed7b; background: rgba(255, 255, 255, 0.08); padding: 1px 5px; border-radius: 3px; margin-left: auto; text-transform: lowercase; }
+.content { flex: 1; min-width: 0; }
+.top-row { display: flex; align-items: center; width: 100%; margin-bottom: 2px; }
+.event-message { font-size: 0.95rem; color: #cecece; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4px; padding-top: 4px; }
+.twitch-icon { font-size: 18px; color: #9146FF; opacity: 0.8; margin-left: 10px; flex-shrink: 0; }
 
 @keyframes slideIn { 0% { transform: translateX(-30px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 .removing { animation: slideOut 0.4s ease forwards; }
