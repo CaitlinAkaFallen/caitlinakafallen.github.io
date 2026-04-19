@@ -3,26 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sleek Horizontal Stream Feed</title>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<title>Horizontal Stream Feed v2.2</title>
 
 <style>
-/* Modern, minimal font stack */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-* { margin:0; padding:0; box-sizing:border-box; }
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
 
-/* Body Padding - 200px ensures the new badge doesn't hit the screen edge */
 body {
     background: transparent;
     font-family: 'Inter', sans-serif;
     color: #fff;
     overflow: hidden;
-    padding: 20px 20px 20px 172px; /* reduced just a little from 200px */
+    padding: 70px 20px 20px 172px; 
 }
 
-/* THE HORIZONTAL TRACKER */
 #event-feed {
     display: flex;
     flex-direction: row; 
@@ -30,97 +29,82 @@ body {
     align-items: center;
     gap: 130px; 
     width: 100vw;
-    height: 100px;
+    height: 150px;
 }
 
-/* THE CARD CONTAINER */
 .card {
     position: relative;
     display: flex;
     align-items: center;
-    padding: 8px 16px 8px 15px; 
-    height: 62px;
+    padding: 0 20px; 
+    height: 50px; /* Slimmer height */
     min-width: 240px;
     max-width: 520px;
     flex-shrink: 0;
     
-    background: linear-gradient(135deg, rgba(15, 15, 20, 0.65) 0%, rgba(5, 5, 10, 0.55) 100%);
-    -webkit-backdrop-filter: blur(15px) saturate(150%);
-    backdrop-filter: blur(15px) saturate(150%);
-    
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    /* Sleek Glassmorphism */
+    background: rgba(29, 29, 29, 0.555); 
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 12px; /* Smoother rounded corners */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
     
     animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    overflow: visible; 
 }
 
-/* FLOATING AVATAR (ANCHOR POINT) */
 .avatar-wrap {
     position: absolute;
-    left: -62px; /* half the avatar width so it overlaps the card edge */
-    width: 54px;
-    height: 54px;
-    background: #000;
+    left: -65px; 
+    width: 52px;
+    height: 52px;
+    background: rgba(0, 0, 0, 0.5);
     border-radius: 50%;
-    flex-shrink: 0;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 15px rgba(0,0,0,0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     z-index: 5;
-    overflow: visible;
 }
 
-/* AVATAR IMAGE */
 .avatar-wrap img {
     width: 100%;
     height: 100%;
     border-radius: 50%; 
     object-fit: cover;
-    filter: contrast(1.1) brightness(1.1);
 }
 
 .timestamp {
-    font-size: 0.65rem;
-    font-weight: 400;
-    color: rgb(246, 247, 242);
-    background: rgba(14, 14, 14, 0.377);
-    padding: 1px 5px;
-    border-radius: 3px;
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
-    white-space: nowrap;
-    flex-shrink: 0;
-
-    /* moves it outside the card */
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
     position: absolute;
-    right: calc(90% + 14px);
+    right: calc(100% + 20px);
     top: 50%;
     transform: translateY(-50%);
-    z-index: 10;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-
-/* BOTTOM GLOW BARS */
+/* Slimmed Down Bottom Accent Bars */
 .card::after { 
     content: ''; 
     position: absolute; 
     bottom: 0; 
-    left: 5%; 
-    right: 5%; 
-    height: 3px; 
-    border-radius: 3px 3px 0 0; 
-    filter: blur(1px); 
+    left: 15px; 
+    right: 15px; 
+    height: 2px; 
+    border-radius: 2px; 
 }
 
-.card.chat::after      { background: #7945f3; box-shadow: 0 0 10px #7945f3; }
-.card.sub::after       { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
-.card.giftsub::after   { background: #c92df8; box-shadow: 0 0 10px #da70fa; }
-.card.raid::after      { background: #ff2222; box-shadow: 0 0 10px #ff2222; }
-.card.bits::after      { background: #e248f7; box-shadow: 0 0 10px #e248f7; }
-.card.points::after    { background: #dff756; box-shadow: 0 0 10px #dff756; }
-.card.streak::after    { background: #4afde5; box-shadow: 0 0 10px #4afde5; }
-.card.dono::after      { background: #00ff7f; box-shadow: 0 0 10px #00ff7f; }
+.card.chat::after      { background: #a970ff; box-shadow: 0 0 8px #a970ff; }
+.card.sub::after       { background: #da70fa; box-shadow: 0 0 8px #da70fa; }
+.card.giftsub::after   { background: #c92df8; box-shadow: 0 0 8px #c92df8; }
+.card.raid::after      { background: #ff4a4a; box-shadow: 0 0 8px #ff4a4a; }
+.card.bits::after      { background: #e248f7; box-shadow: 0 0 8px #e248f7; }
+.card.points::after    { background: #dff756; box-shadow: 0 0 8px #dff756; }
+.card.streak::after    { background: #4afde5; box-shadow: 0 0 8px #4afde5; }
+.card.dono::after      { background: #00ff7f; box-shadow: 0 0 8px #00ff7f; }
 
 /* USERNAME NEONS */
 .card.chat .username     { color: #b08fff; text-shadow: 0 0 5px rgba(177, 146, 250, 0.9); }
@@ -132,46 +116,56 @@ body {
 .card.streak .username   { color: #4afde5; text-shadow: 0 0 5px rgba(74, 253, 229, 0.9); }
 .card.dono .username     { color: #5effad; text-shadow: 0 0 5px rgba(94, 255, 173, 0.9); }
 
-/* PRONOUNS TAG */
-.pronouns {
-    font-size: 0.65rem;
-    font-weight: 400;
-    color: #faed7b;
-    background: rgba(255, 255, 255, 0.08);
-    padding: 1px 5px;
-    border-radius: 3px;
-    vertical-align: middle;
-    text-transform: lowercase;
-    flex-shrink: 0;
-    margin-left: auto; 
-}
-
+/* Main Content Layout */
 .content { 
-    flex: 1;
+    flex: 1; 
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
-    min-width: 0; 
+    min-width: 0;
+    height: 100%;
+}
+
+/* Floating Username with Glow */
+.username { 
+    position: absolute;
+    top: -28px;
+    left: 5px;
+    font-size: 1.1rem; 
+    font-weight: 700; 
+    color: #d1baff; /* Lighter purple for glass look */
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 10px rgba(176, 143, 255, 0.6);
 }
 
 .top-row { 
     display: flex; 
     align-items: center; 
-    white-space: nowrap; 
+    justify-content: flex-end; 
     width: 100%; 
+    position: absolute;
+    right: 12px;
+    top: 6px;
 }
 
-.username { 
-    font-size: 1.1rem; 
-    font-weight: 700; 
+.pronouns { 
+    font-size: 0.65rem; 
+    color: #ffeb77; 
+    background: rgba(80, 80, 80, 0.13); 
+    padding: 1px 6px; 
+    border-radius: 4px; 
+    font-weight: 700;
+    border: 1px solid rgba(251, 255, 0, 0.2);
 }
 
 .event-message { 
-    font-size: 0.9rem; 
-    color: #cecece; 
+    font-size: 0.95rem; 
+    color: rgb(56, 241, 241); 
     overflow: hidden; 
     text-overflow: ellipsis; 
-    white-space: nowrap; 
+    white-space: nowrap;
+    margin-top: 2px;
 }
 
 /* ANIMATIONS */
@@ -183,6 +177,7 @@ body {
 .removing { animation: slideOutLeft 0.5s ease forwards; }
 
 @keyframes slideOutLeft { to { transform: scale(0.9) translateX(-30px); opacity: 0; filter: blur(10px); } }
+
 
 </style>
 </head>
@@ -208,28 +203,22 @@ body {
     };
 
     const MAX_CARDS = 4;
-
-    // Cache pronouns to avoid spamming the API for the same user
     const pronounCache = new Map();
 
     async function getPronouns(username) {
         if (pronounCache.has(username)) return pronounCache.get(username);
-        
         try {
-            const response = await fetch(`https://pronouns.alejo.io/api/users/${username}`);
-            if (!response.ok) return "";
-            const data = await response.json();
-            
-            // Alejo API returns an array of objects, we need the display value
+            const res = await fetch(`https://pronouns.alejo.io/api/users/${username}`);
+            if (!res.ok) return "";
+            const data = await res.json();
             if (data && data.length > 0) {
-                const p = data[0].pronoun_id; // e.g., "hehim"
-                // Simple mapping for common IDs if you want them to look cleaner
+                const p = data[0].pronoun_id;
                 const map = { "hehim": "he/him", "sheher": "she/her", "theythem": "they/them", "hethey": "he/they", "shethey": "she/they" };
-                const finalPronoun = map[p] || p;
-                pronounCache.set(username, finalPronoun);
-                return finalPronoun;
+                const final = map[p] || p;
+                pronounCache.set(username, final);
+                return final;
             }
-        } catch (e) { console.error("Pronoun error:", e); }
+        } catch (e) { }
         return "";
     }
 
@@ -259,39 +248,36 @@ body {
         const card = document.createElement("div");
         card.className = `card ${theme.cssClass}`;
 
-    const pronounTag = pronouns ? `<span class="pronouns">${pronouns}</span>` : "";
-    const now = new Date();
-    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+        const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
 
-    card.innerHTML = `
-        <div class="avatar-wrap">
-            <span class="timestamp">${timeString}</span>
-            <img src="${data.avatar || 'https://via.placeholder.com/50'}">
-        </div>
-        <div class="content">
-            <div class="top-row">
-                <span class="username">${data.user}</span>
-                ${pronounTag} 
+        card.innerHTML = `
+            <div class="avatar-wrap">
+                <span class="timestamp">${timeString}</span>
+                <img src="${data.avatar}">
             </div>
-            <div class="event-message">${data.message || data.value || ''}</div>
-        </div>
-    `;
+            <div class="content">
+                <span class="username">${data.user}</span>
+                <div class="top-row">
+                    ${pronouns ? `<span class="pronouns">${pronouns}</span>` : ""}
+                </div>
+                <div class="event-message">${data.message || data.value || ''}</div>
+            </div>
+        `;
 
-    feed.appendChild(card);
+        feed.appendChild(card);
 
-    if (feed.children.length > MAX_CARDS) {
-        const oldest = feed.firstChild;
-        oldest.classList.add("removing");
-        oldest.addEventListener("animationend", () => oldest.remove());
+        if (feed.children.length > MAX_CARDS) {
+            removeCard(feed.firstChild);
+        }
+
+        setTimeout(() => removeCard(card), 20000);
     }
 
-    setTimeout(() => {
-        if (card.parentElement) {
-            card.classList.add("removing");
-            card.addEventListener("animationend", () => card.remove());
-        }
-    }, 20000);
-}
+    function removeCard(el) {
+        if (!el || el.classList.contains("removing")) return;
+        el.classList.add("removing");
+        el.addEventListener("animationend", () => el.remove());
+    }
 </script>
 </body>
 </html>
