@@ -19,7 +19,7 @@ body {
     font-family: 'Inter', sans-serif;
     color: #fff;
     overflow: hidden;
-    padding: 80px 20px 20px 172px; 
+    padding: 80px 20px 20px 176px; 
 }
 
 #event-feed {
@@ -27,7 +27,8 @@ body {
     flex-direction: row; 
     justify-content: flex-start;
     align-items: flex-start; 
-    gap: 130px; 
+    /* Increased gap to 150px to ensure space between cards and overlapping avatars */
+    gap: 150px; 
     width: 100vw;
     height: 300px;
 }
@@ -53,7 +54,7 @@ body {
     
     animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     overflow: visible; 
-    transition: background 0.3s ease;
+    transition: background 0.3s xase;
 }
 
 /* Highlight for First Time Chatters */
@@ -69,7 +70,7 @@ body {
     top: 0; 
     width: 52px;
     height: 52px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.774);
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.2);
     z-index: 5;
@@ -129,7 +130,7 @@ body {
 .username { 
     font-size: 1.1rem; 
     font-weight: 700; 
-    text-transform: lowercase;
+    text-transform: none; 
     letter-spacing: 0.5px;
 }
 
@@ -144,14 +145,17 @@ body {
 
 .event-badges {
     display: flex;
-    gap: 4px;
+    gap: 6px; 
     align-items: center;
+    margin-left: 97px;
+    flex-shrink: 0;
 }
 
 .event-badges img {
-    height: 18px; 
-    width: 18px;
+    height: 24px; 
+    width: 24px;
     object-fit: contain;
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.5)); 
 }
 
 .content { 
@@ -188,7 +192,7 @@ body {
     font-weight: bold;
     text-transform: uppercase;
     margin-bottom: 2px;
-    display: none; /* Shown via logic */
+    display: none; 
 }
 
 .event-message { 
@@ -219,7 +223,6 @@ body {
     const host = params.get("address") || "localhost";
     const port = params.get("port") || "8080";
     
-    // Config Param for badges
     const showBadges = params.get("showBadges") !== "false"; 
 
     const ws = new WebSocket(`ws://${host}:${port}/`);
@@ -263,13 +266,10 @@ ws.onmessage = async (event) => {
         let payload;
         try {
             const msg = JSON.parse(event.data);
-            // Handle the nested structure from CPH.WebsocketBroadcastJson
             payload = typeof msg.data === "string" ? JSON.parse(msg.data) : msg.data || msg;
         } catch (e) { return; }
 
         if (payload?.eventName === "StreamEvent") {
-            // Priority 1: Use pronouns sent directly from the C# script (Streamer.bot)
-            // Priority 2: Fallback to the Alejo.io API if the script didn't find them
             let finalPronouns = payload.pronouns || "";
             
             if (!finalPronouns && payload.user) {
@@ -288,7 +288,6 @@ ws.onmessage = async (event) => {
 
         const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
 
-        // Logic for handling your specific C# payload structure
         const isFirstMessage = data.message?.firstMessage || false;
         const messageBody = data.message?.text || data.message || "";
         const userAvatar = data.avatar || "https://via.placeholder.com/150";
@@ -297,7 +296,6 @@ ws.onmessage = async (event) => {
             card.classList.add("highlightMessage");
         }
 
-        // Render Badges (handling the List<string> from your C# script)
         let badgesHtml = '';
         if (showBadges && data.badges && Array.isArray(data.badges)) {
             badgesHtml = data.badges.map(url => `<img src="${url}" class="badge" alt="badge">`).join('');
@@ -309,7 +307,7 @@ ws.onmessage = async (event) => {
                 <img src="${userAvatar}" onerror="this.src='https://via.placeholder.com/150'">
             </div>
             <div class="user-header">
-                <span class="username">${data.user}</span>
+                <span class="username">${data.userDisplayName || data.user}</span>
                 <div class="event-badges">${badgesHtml}</div>
             </div>
             <div class="content">
