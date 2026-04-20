@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Horizontal Stream Feed v2.2</title>
+<title>Horizontal Stream Feed v2.5</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
@@ -27,7 +27,6 @@ body {
     flex-direction: row; 
     justify-content: flex-start;
     align-items: flex-start; 
-    /* Increased gap to 150px to ensure space between cards and overlapping avatars */
     gap: 150px; 
     width: 100vw;
     height: 300px;
@@ -44,7 +43,6 @@ body {
     max-width: 520px;
     flex-shrink: 0;
     
-    /* Sleek Glassmorphism */
     background: rgba(29, 29, 29, 0.555); 
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     backdrop-filter: blur(20px) saturate(180%);
@@ -54,10 +52,9 @@ body {
     
     animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     overflow: visible; 
-    transition: background 0.3s xase;
+    transition: background 0.3s ease;
 }
 
-/* Highlight for First Time Chatters */
 .card.highlightMessage {
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.4);
@@ -117,7 +114,6 @@ body {
 .card.streak::after    { background: #4afde5; box-shadow: 0 0 8px #4afde5; }
 .card.dono::after      { background: #00ff7f; box-shadow: 0 0 8px #00ff7f; }
 
-/* Username and Badges Layout */
 .user-header {
     position: absolute;
     top: -28px;
@@ -134,6 +130,7 @@ body {
     letter-spacing: 0.5px;
 }
 
+/* Username Colors */
 .card.chat .username     { color: #b08fff; text-shadow: 0 0 5px rgba(177, 146, 250, 0.9); }
 .card.sub .username      { color: #c278ff; text-shadow: 0 0 5px rgba(194, 120, 255, 0.9); }
 .card.giftsub .username  { color: #e59bff; text-shadow: 0 0 5px rgba(229, 155, 255, 0.9); }
@@ -155,7 +152,6 @@ body {
     height: 24px; 
     width: 24px;
     object-fit: contain;
-    filter: drop-shadow(0 0 2px rgba(0,0,0,0.5)); 
 }
 
 .content { 
@@ -186,13 +182,12 @@ body {
     border: 1px solid rgba(251, 255, 0, 0.2);
 }
 
-.first-message-label {
-    font-size: 0.6rem;
+.event-label {
+    font-size: 0.65rem;
     color: #ffeb77;
     font-weight: bold;
     text-transform: uppercase;
     margin-bottom: 2px;
-    display: none; 
 }
 
 .event-message { 
@@ -203,14 +198,12 @@ body {
     line-height: 1.3;
 }
 
-/* Animations */
 @keyframes slideInRight {
     0% { transform: translateX(40px); opacity: 0; filter: blur(5px); }
     100% { transform: translateX(0); opacity: 1; filter: blur(0); }
 }
 
 .removing { animation: slideOutLeft 0.5s ease forwards; }
-
 @keyframes slideOutLeft { to { transform: scale(0.9) translateX(-30px); opacity: 0; filter: blur(10px); } }
 </style>
 </head>
@@ -222,7 +215,6 @@ body {
     const params = new URLSearchParams(window.location.search);
     const host = params.get("address") || "localhost";
     const port = params.get("port") || "8080";
-    
     const showBadges = params.get("showBadges") !== "false"; 
 
     const ws = new WebSocket(`ws://${host}:${port}/`);
@@ -242,6 +234,7 @@ body {
     const pronounCache = new Map();
 
     async function getPronouns(username) {
+        if (!username) return "";
         if (pronounCache.has(username)) return pronounCache.get(username);
         try {
             const res = await fetch(`https://pronouns.alejo.io/api/users/${username}`);
@@ -262,7 +255,7 @@ body {
         ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "HorizontalFeed" }));
     };
 
-ws.onmessage = async (event) => {
+    ws.onmessage = async (event) => {
         let payload;
         try {
             const msg = JSON.parse(event.data);
@@ -271,11 +264,10 @@ ws.onmessage = async (event) => {
 
         if (payload?.eventName === "StreamEvent") {
             let finalPronouns = payload.pronouns || "";
-            
-            if (!finalPronouns && payload.user) {
-                finalPronouns = await getPronouns(payload.user);
+            // Always try to fetch if pronouns are empty
+            if (!finalPronouns && (payload.userLogin || payload.user)) {
+                finalPronouns = await getPronouns(payload.userLogin || payload.user);
             }
-            
             createCard(payload, finalPronouns);
         }
     };
@@ -287,13 +279,22 @@ ws.onmessage = async (event) => {
         card.className = `card ${theme.cssClass}`;
 
         const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-
-        const isFirstMessage = data.message?.firstMessage || false;
-        const messageBody = data.message?.text || data.message || "";
         const userAvatar = data.avatar || "https://via.placeholder.com/150";
+        const isFirstMessage = data.message?.firstMessage || false;
 
-        if (isFirstMessage) {
-            card.classList.add("highlightMessage");
+        if (isFirstMessage) card.classList.add("highlightMessage");
+
+        // Logic for event text
+        let displayText = "";
+        if (data.type === "RAID") {
+            // Get just the number from "X Raiders" and format it
+            const count = data.eventValue ? data.eventValue.split(' ')[0] : "a bunch of";
+            displayText = `Raid Incoming with the party of ${count}!`;
+        } else if (data.type === "CHAT") {
+            displayText = data.message?.text || "";
+        } else {
+            // Displays Bits, Subs, or Donations (Credits)
+            displayText = data.eventValue || data.message?.text || "";
         }
 
         let badgesHtml = '';
@@ -307,15 +308,15 @@ ws.onmessage = async (event) => {
                 <img src="${userAvatar}" onerror="this.src='https://via.placeholder.com/150'">
             </div>
             <div class="user-header">
-                <span class="username">${data.userDisplayName || data.user}</span>
+                <span class="username">${data.user}</span>
                 <div class="event-badges">${badgesHtml}</div>
             </div>
             <div class="content">
                 <div class="top-row">
                     ${pronouns ? `<span class="pronouns">${pronouns}</span>` : ""}
                 </div>
-                ${isFirstMessage ? `<div class="first-message-label">First Time Chatter</div>` : ""}
-                <div class="event-message">${messageBody}</div>
+                ${(theme.label || isFirstMessage) ? `<div class="event-label">${theme.label || "First Chat"}</div>` : ""}
+                <div class="event-message">${displayText}</div>
             </div>
         `;
 
