@@ -147,14 +147,19 @@ body {
 
 .event-badges {
     display: flex;
-    gap: 4px;
-}
-.event-badges img {
-    height: 18px;
-    width: 18px;
-    object-fit: contain;
+    gap: 0.3rem; /* Using rem for consistent spacing */
+    align-items: center;
 }
 
+.event-badges img {
+    /* Increased size using rem for better visibility */
+    height: 1.50rem; 
+    width: 1.50rem;
+    object-fit: contain;
+    
+    /* Optional: Subtle brightness boost to help them pop against the dark BG */
+    filter: drop-shadow(0 0 2px rgba(255,255,255,0.2)) brightness(1.1);
+}
 /* ════════════════════════════════════════════════
     CONTENT AREA (Pronouns, Label, Message)
 ════════════════════════════════════════════════ */
@@ -196,7 +201,7 @@ body {
 }
 
 .emote {
-    height: 1.3em;
+    height: 1.7em;
     vertical-align: middle;
     margin: 0 2px;
 }
