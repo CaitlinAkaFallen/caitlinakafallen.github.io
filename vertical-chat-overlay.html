@@ -3,187 +3,422 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sleek Vertical Chat v2.2</title>
+<title>Vertical Chat Overlay v3.0 – Neon Edition</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script type="text/javascript" src="https://unpkg.com/@streamerbot/client/dist/streamerbot-client.js"></script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Share+Tech+Mono&display=swap');
+/* ════════════════════════════════════════════════
+   RESET
+════════════════════════════════════════════════ */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-* { margin:0; padding:0; box-sizing:border-box; }
+/* ════════════════════════════════════════════════
+   COLOUR TOKENS
+════════════════════════════════════════════════ */
+:root {
+    --col-chat:     #b08fff;
+    --col-sub:      #c278ff;
+    --col-giftsub:  #e59bff;
+    --col-raid:     #ff5e5e;
+    --col-bits:     #e248f7;
+    --col-points:   #e9f88c;
+    --col-streak:   #4afde5;
+    --col-dono:     #5effad;
 
+    --glow-chat:    rgba(177,146,250,0.9);
+    --glow-sub:     rgba(194,120,255,0.9);
+    --glow-giftsub: rgba(229,155,255,0.9);
+    --glow-raid:    rgba(255,94,94,0.9);
+    --glow-bits:    rgba(226,72,247,0.9);
+    --glow-points:  rgba(233,248,140,0.9);
+    --glow-streak:  rgba(74,253,229,0.9);
+    --glow-dono:    rgba(94,255,173,0.9);
+
+    --bar-chat:     #7945f3;
+    --bar-sub:      #da70fa;
+    --bar-giftsub:  #da70fa;
+    --bar-raid:     #ff2222;
+    --bar-bits:     #e248f7;
+    --bar-points:   #dff756;
+    --bar-streak:   #4afde5;
+    --bar-dono:     #00ff7f;
+}
+
+/* ════════════════════════════════════════════════
+   LAYOUT
+════════════════════════════════════════════════ */
 body {
     background: transparent;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Share Tech Mono', monospace;
     color: #fff;
     overflow: hidden;
-    padding: 40px 80px; 
+    padding: 40px 80px;
 }
 
 #event-feed {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: 20px; 
+    gap: 18px;
     width: 500px;
-    height: calc(100vh - 80px); 
+    height: calc(100vh - 80px);
 }
 
+/* ════════════════════════════════════════════════
+   CARD BASE
+════════════════════════════════════════════════ */
 .card {
     position: relative;
     display: flex;
     align-items: center;
-    padding: 10px 16px 10px 15px;
-    min-height: 65px;
+    padding: 12px 16px 12px 15px;
+    min-height: 80px;
     flex-shrink: 0;
-    background: linear-gradient(135deg, rgba(15, 15, 20, 0.65) 0%, rgba(5, 5, 10, 0.55) 100%);
-    -webkit-backdrop-filter: blur(15px);
-    backdrop-filter: blur(15px) saturate(150%);
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-    animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    background: linear-gradient(
+        135deg,
+        rgba(12, 10, 20, 0.82) 0%,
+        rgba(5,  4, 12, 0.72) 100%
+    );
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow:
+        0 8px 32px rgba(0,0,0,0.65),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+
+    animation: slideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.emote { 
-    height: 1.2em; 
-    vertical-align: middle; 
-    margin: 0 2px;
-    display: inline-block;
-}
-
-.avatar-wrap {
+.card::before {
+    content: '';
     position: absolute;
-    left: -60px; 
-    width: 50px;
-    height: 50px;
-    background: #000;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    z-index: 10;
-    overflow: hidden;
+    left: 0; top: 12%; bottom: 12%;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
 }
-
-.avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
 .card::after {
     content: '';
     position: absolute;
-    bottom: 0;
-    left: 5%;
-    right: 5%;
+    bottom: 0; left: 5%; right: 5%;
     height: 3px;
     border-radius: 3px 3px 0 0;
     filter: blur(1px);
 }
 
-/* Theme Colors */
-.card.chat::after      { background: #7945f3; box-shadow: 0 0 10px #7945f3; }
-.card.sub::after       { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
-.card.giftsub::after   { background: #da70fa; box-shadow: 0 0 10px #da70fa; }
-.card.raid::after      { background: #ff2222; box-shadow: 0 0 10px #ff2222; }
-.card.bits::after      { background: #e248f7; box-shadow: 0 0 10px #e248f7; }
-.card.points::after    { background: #dff756; box-shadow: 0 0 10px #dff756; }
-.card.streak::after    { background: #4afde5; box-shadow: 0 0 10px #4afde5; }
-.card.dono::after      { background: #00ff7f; box-shadow: 0 0 10px #00ff7f; }
+/* Per-type accent colors */
+.card.chat::before, .card.chat::after      { background: var(--bar-chat);    box-shadow: 0 0 10px var(--bar-chat); }
+.card.sub::before, .card.sub::after        { background: var(--bar-sub);     box-shadow: 0 0 10px var(--bar-sub); }
+.card.giftsub::before, .card.giftsub::after { background: var(--bar-giftsub); box-shadow: 0 0 10px var(--bar-giftsub); }
+.card.raid::before, .card.raid::after      { background: var(--bar-raid);    box-shadow: 0 0 10px var(--bar-raid); }
+.card.bits::before, .card.bits::after      { background: var(--bar-bits);    box-shadow: 0 0 10px var(--bar-bits); }
+.card.points::before, .card.points::after  { background: var(--bar-points);  box-shadow: 0 0 10px var(--bar-points); }
+.card.streak::before, .card.streak::after  { background: var(--bar-streak);  box-shadow: 0 0 10px var(--bar-streak); }
+.card.dono::before, .card.dono::after      { background: var(--bar-dono);    box-shadow: 0 0 10px var(--bar-dono); }
 
-.username { font-size: 1.1rem; font-weight: 700; color: #b08fff; }
-.pronouns { font-size: 0.65rem; color: #faed7b; background: rgba(255, 255, 255, 0.08); padding: 1px 5px; border-radius: 3px; margin-left: auto; text-transform: lowercase; }
+/* ════════════════════════════════════════════════
+   AVATAR
+════════════════════════════════════════════════ */
+.avatar-wrap {
+    position: absolute;
+    left: -58px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.25);
+    background: #0a0a14;
+    z-index: 10;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+.card.chat .avatar-wrap     { border-color: var(--col-chat); }
+.card.sub .avatar-wrap      { border-color: var(--col-sub); }
+.card.giftsub .avatar-wrap  { border-color: var(--col-giftsub); }
+.card.raid .avatar-wrap     { border-color: var(--col-raid); }
+.card.bits .avatar-wrap     { border-color: var(--col-bits); }
+.card.points .avatar-wrap   { border-color: var(--col-points); }
+.card.streak .avatar-wrap   { border-color: var(--col-streak); }
+.card.dono .avatar-wrap     { border-color: var(--col-dono); }
+
+/* ════════════════════════════════════════════════
+   CONTENT AREA
+════════════════════════════════════════════════ */
 .content { flex: 1; min-width: 0; }
-.top-row { display: flex; align-items: center; width: 100%; margin-bottom: 2px; }
-.event-message { font-size: 0.95rem; color: #cecece; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4px; padding-top: 4px; }
-.twitch-icon { font-size: 18px; color: #9146FF; opacity: 0.8; margin-left: 10px; flex-shrink: 0; }
+.top-row { display: flex; align-items: center; width: 100%; margin-bottom: 3px; gap: 6px; }
 
-@keyframes slideIn { 0% { transform: translateX(-30px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-.removing { animation: slideOut 0.4s ease forwards; }
-@keyframes slideOut { to { transform: translateX(50px); opacity: 0; } }
+.username {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card.chat .username     { color: var(--col-chat);     text-shadow: 0 0 6px var(--glow-chat); }
+.card.sub .username      { color: var(--col-sub);      text-shadow: 0 0 6px var(--glow-sub); }
+.card.giftsub .username  { color: var(--col-giftsub);  text-shadow: 0 0 6px var(--glow-giftsub); }
+.card.raid .username     { color: var(--col-raid);     text-shadow: 0 0 6px var(--glow-raid); }
+.card.bits .username     { color: var(--col-bits);     text-shadow: 0 0 6px var(--glow-bits); }
+.card.points .username   { color: var(--col-points);   text-shadow: 0 0 6px var(--glow-points); }
+.card.streak .username   { color: var(--col-streak);   text-shadow: 0 0 6px var(--glow-streak); }
+.card.dono .username     { color: var(--col-dono);     text-shadow: 0 0 6px var(--glow-dono); }
+
+.event-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.card.sub .event-badge      { color: var(--col-sub);      border-color: var(--col-sub); }
+.card.giftsub .event-badge  { color: var(--col-giftsub);  border-color: var(--col-giftsub); }
+.card.raid .event-badge     { color: var(--col-raid);     border-color: var(--col-raid); }
+.card.bits .event-badge     { color: var(--col-bits);     border-color: var(--col-bits); }
+.card.points .event-badge   { color: var(--col-points);   border-color: var(--col-points); }
+.card.streak .event-badge   { color: var(--col-streak);   border-color: var(--col-streak); }
+.card.dono .event-badge     { color: var(--col-dono);     border-color: var(--col-dono); }
+
+.pronouns {
+    font-size: 0.6rem;
+    color: #faed7b;
+    background: rgba(255,255,255,0.07);
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: auto;
+    text-transform: lowercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.event-message {
+    font-size: 0.95rem;
+    color: #e8e8e8;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-top: 4px;
+    padding-top: 5px;
+    line-height: 1.6;
+    word-break: break-word;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+}
+
+.emote {
+    height: 1.4em;
+    width: auto;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.twitch-icon {
+    font-size: 16px;
+    color: #9146FF;
+    opacity: 0.6;
+    margin-left: 10px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 2px;
+}
+
+/* ════════════════════════════════════════════════
+   ANIMATIONS
+════════════════════════════════════════════════ */
+@keyframes slideIn {
+    0%   { transform: translateX(-28px) scale(0.97); opacity: 0; }
+    100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+.removing { animation: slideOut 0.38s ease forwards; }
+@keyframes slideOut { to { transform: translateX(55px) scale(0.96); opacity: 0; } }
+
 </style>
 </head>
 <body>
 
 <div id="event-feed"></div>
 
+
 <script>
-const params = new URLSearchParams(window.location.search);
-const host = params.get("address") || "localhost";
-const port = params.get("port") || "8080";
-const ws = new WebSocket(`ws://${host}:${port}/`);
+const params  = new URLSearchParams(window.location.search);
+const WS_HOST = params.get("address") || "localhost";
+const WS_PORT = params.get("port")    || "8080";
+const MAX_CARDS = 6;
+const CARD_LIFETIME = 20000;
 
 const THEMES = {
-    CHAT:           { cssClass: "chat" },
-    SUBSCRIPTION:   { cssClass: "sub" },
-    GIFT_SUB:       { cssClass: "giftsub" },
-    RAID:           { cssClass: "raid" },
-    BITS:           { cssClass: "bits" },
-    CHANNEL_POINTS: { cssClass: "points" },
-    WATCH_STREAK:   { cssClass: "streak" },
-    DONATION:       { cssClass: "dono" },
+    CHAT:           { cssClass: "chat",    badge: "" },
+    SUBSCRIPTION:   { cssClass: "sub",     badge: "Viking Re-Sub" },
+    GIFT_SUB:       { cssClass: "giftsub", badge: "Clan Gift" },
+    RAID:           { cssClass: "raid",    badge: "Raid Incoming" },
+    BITS:           { cssClass: "bits",    badge: "Power Cells" },
+    CHANNEL_POINTS: { cssClass: "points",  badge: "Redeem" },
+    WATCH_STREAK:   { cssClass: "streak",  badge: "Loyalty Streak" },
+    DONATION:       { cssClass: "dono",    badge: "Credits" },
 };
 
-const MAX_CARDS = 6;
+const avatarCache = new Map();
 const pronounCache = new Map();
 
 async function getPronouns(username) {
-    if (pronounCache.has(username)) return pronounCache.get(username);
+    if (!username) return "";
+    const key = username.toLowerCase();
+    if (pronounCache.has(key)) return pronounCache.get(key);
     try {
-        const res = await fetch(`https://pronouns.alejo.io/api/users/${username}`);
-        if (!res.ok) return "";
+        const res = await fetch(`https://pronouns.alejo.io/api/users/${key}`);
         const data = await res.json();
         if (data && data.length > 0) {
-            const p = data[0].pronoun_id;
-            const map = { "hehim": "he/him", "sheher": "she/her", "theythem": "they/them", "hethey": "he/they", "shethey": "she/they" };
-            const final = map[p] || p;
-            pronounCache.set(username, final);
-            return final;
+            const result = data[0].pronoun_id.replace("hehim", "he/him").replace("sheher", "she/her").replace("theythem", "they/them");
+            pronounCache.set(key, result);
+            return result;
         }
-    } catch (e) { }
+    } catch (_) {}
     return "";
 }
 
-ws.onopen = () => ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "VerticalFeed" }));
-
-ws.onmessage = async (event) => {
-    let payload;
+async function getAvatar(username) {
+    if (!username) return "https://via.placeholder.com/48";
+    const key = username.toLowerCase();
+    if (avatarCache.has(key)) return avatarCache.get(key);
     try {
-        const msg = JSON.parse(event.data);
-        payload = typeof msg.data === "string" ? JSON.parse(msg.data) : msg.data || msg;
-    } catch (e) { return; }
+        const res = await fetch(`https://decapi.me/twitch/avatar/${key}`);
+        if (res.ok) {
+            const url = await res.text();
+            avatarCache.set(key, url);
+            return url;
+        }
+    } catch (_) {}
+    return `https://decapi.me/twitch/avatar/${key}`;
+}
 
-    if (payload?.eventName === "StreamEvent") {
-        let pronouns = payload.pronouns;
-        if (!pronouns && payload.type === "CHAT") pronouns = await getPronouns(payload.userLogin);
-        createCard(payload, pronouns);
-    }
-};
+function insertEmotes(data) {
+    if (!data.parts) return data.message?.message || data.message || "";
+    let output = "";
+    data.parts.forEach(part => {
+        if (part.type === "text") output += part.text;
+        else if (part.type === "emote") output += `<img class="emote" src="${part.imageUrl}">`;
+    });
+    return output;
+}
 
-function createCard(data, pronouns) {
+const client = new StreamerbotClient({ host: WS_HOST, port: WS_PORT });
+
+// EVENT LISTENERS
+client.on('Twitch.ChatMessage', async ({ data }) => {
+    const user = data.message.username;
+    const [avatar, pronouns] = await Promise.all([getAvatar(user), getPronouns(user)]);
+    createCard(data, "CHAT", avatar, pronouns);
+});
+
+client.on('Twitch.Cheer', async ({ data }) => {
+    const user = data.user_name;
+    const [avatar, pronouns] = await Promise.all([getAvatar(user), getPronouns(user)]);
+    createCard(data, "BITS", avatar, pronouns, `Flashing ${data.bits} bits!`);
+});
+
+client.on('Streamlabs.Donation', async ({ data }) => {
+    const avatar = await getAvatar(data.name);
+    createCard(data, "DONATION", avatar, "", `Credits Received: ${data.formattedAmount} - ${data.message || ''}`);
+});
+
+client.on('Twitch.Raid', async ({ data }) => {
+    const user = data.from_broadcaster_user_name;
+    const avatar = await getAvatar(user);
+    createCard(data, "RAID", avatar, "", `Charging in with ${data.viewers} Vikings!`);
+});
+
+client.on('Twitch.Sub', async ({ data }) => {
+    const user = data.user_name;
+    const [avatar, pronouns] = await Promise.all([getAvatar(user), getPronouns(user)]);
+    createCard(data, "SUBSCRIPTION", avatar, pronouns, `Joined the Clan!`);
+});
+
+client.on('Twitch.ReSub', async ({ data }) => {
+    const user = data.user_name;
+    const [avatar, pronouns] = await Promise.all([getAvatar(user), getPronouns(user)]);
+    createCard(data, "SUBSCRIPTION", avatar, pronouns, `Returning for month #${data.cumulativeMonths}!`);
+});
+
+client.on('Twitch.GiftSub', async ({ data }) => {
+    const user = data.user_name;
+    const [avatar, pronouns] = await Promise.all([getAvatar(user), getPronouns(user)]);
+    createCard(data, "GIFT_SUB", avatar, pronouns, `Gifted a sub to the community!`);
+});
+
+client.on('Twitch.RewardRedemption', async ({ data }) => {
+    const user = data.user_name;
+    const [avatar, pronouns] = await Promise.all([getAvatar(user), getPronouns(user)]);
+    createCard(data, "CHANNEL_POINTS", avatar, pronouns, `Spent ${data.reward.cost} on ${data.reward.title}`);
+});
+
+client.on('Twitch.WatchStreak', async ({ data }) => {
+    const user = data.user_name;
+    const [avatar, pronouns] = await Promise.all([getAvatar(user), getPronouns(user)]);
+    createCard(data, "WATCH_STREAK", avatar, pronouns, `Returning for stream #${data.streak}!`);
+});
+
+// CORE CARD ENGINE
+function createCard(data, eventKey, avatarUrl, pronouns = "", customMsg = "") {
     const feed = document.getElementById("event-feed");
-    const theme = THEMES[data.type] || THEMES["CHAT"];
+    const theme = THEMES[eventKey] || THEMES.CHAT;
+    const m = data.message || data;
+
     const card = document.createElement("div");
     card.className = `card ${theme.cssClass}`;
 
+    const displayName = m.displayName || m.user_name || m.name || m.from_broadcaster_user_name || "User";
+    const displayText = customMsg || insertEmotes(data);
+    
     card.innerHTML = `
         <div class="avatar-wrap">
-            <img src="${data.avatar}" onerror="this.src='https://via.placeholder.com/50'">
+            <img src="${avatarUrl}" onerror="this.src='https://via.placeholder.com/48'">
         </div>
         <div class="content">
             <div class="top-row">
-                <span class="username">${data.user}</span>
+                <span class="username">${displayName}</span>
+                ${theme.badge ? `<span class="event-badge">${theme.badge}</span>` : ""}
                 ${pronouns ? `<span class="pronouns">${pronouns}</span>` : ""}
             </div>
-            <div class="event-message">${data.message || data.value || ''}</div>
+            <div class="event-message">${displayText}</div>
         </div>
         <i class="fa-brands fa-twitch twitch-icon"></i>
     `;
 
     feed.appendChild(card);
-    if (feed.children.length > MAX_CARDS) {
-        const oldest = feed.firstChild;
-        oldest.classList.add("removing");
-        oldest.onanimationend = () => oldest.remove();
-    }
-    setTimeout(() => { if(card.parentNode) { card.classList.add("removing"); card.onanimationend = () => card.remove(); } }, 20000);
+    if (feed.children.length > MAX_CARDS) removeCard(feed.firstElementChild);
+    card._timer = setTimeout(() => removeCard(card), CARD_LIFETIME);
 }
+
+function removeCard(el) {
+    if (!el || el.classList.contains("removing")) return;
+    el.classList.add("removing");
+    el.addEventListener("animationend", () => el.remove(), { once: true });
+}
+
+
 </script>
 </body>
 </html>
