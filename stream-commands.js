@@ -7,6 +7,20 @@
           }
   })();
 
+document.querySelectorAll('.section-header').forEach(header => {
+    header.addEventListener('click', () => {
+        const content = header.nextElementSibling; // This finds .section-content
+        const icon = header.querySelector('.toggle-icon');
+
+        if (content.style.maxHeight && content.style.maxHeight !== "0px") {
+            content.style.maxHeight = "0px";
+            if (icon) icon.style.transform = "rotate(0deg)";
+        } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+            if (icon) icon.style.transform = "rotate(180deg)";
+        }
+    });
+});
       // Copy text without alert
       function copyText(element) {
           const textToCopy = element.textContent.trim();
