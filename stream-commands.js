@@ -7,6 +7,24 @@
           }
   })();
 
+      // Copy text without alert
+      function copyText(element) {
+          const textToCopy = element.textContent.trim();
+          navigator.clipboard.writeText(textToCopy).catch(err => {
+              console.error('Copy failed:', err);
+          });
+      }
+      function searchCommands() {
+    const query = document.getElementById("commandSearch").value.toLowerCase();
+    
+    // Adjust this selector to match whatever elements hold your commands
+    const commands = document.querySelectorAll(".command-item"); 
+
+    commands.forEach(cmd => {
+        const text = cmd.textContent.toLowerCase();
+        cmd.style.display = text.includes(query) ? "" : "none";
+    });
+}
 // ==========================
       // Filter Commands
       // ==========================
