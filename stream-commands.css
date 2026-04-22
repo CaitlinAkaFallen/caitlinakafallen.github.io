@@ -205,6 +205,12 @@ header h5 {
     color: #cc0000;
 }
 
+/* Kick */
+.kick-link:hover {
+    background-color: transparent;
+    color: #09d82c; /* green icon */
+}
+
 /* Stream Commands */
 .stream-commands-link:hover {
     background-color: transparent;
@@ -303,7 +309,21 @@ header h5 {
     filter: brightness(1.2);
     transform: scale(1.05);
 }
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: var(--glass-bg); /* Use your existing glass variables */
+  padding: 10px 20px;
+  border-radius: 12px;
+}
 
+.section-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
 /* =========================
    Command Sections (Container)
    ========================= */
