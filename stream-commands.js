@@ -1,13 +1,4 @@
- /* ===== REMOVE .HTML FROM URL ===== */
- (function hideHtmlInURL() {
-     const pathname = window.location.pathname;
-         if (pathname.endsWith(".html")) {
-             // Replace URL in browser without reloading the page
-            window.history.replaceState({}, "", pathname.replace(".html", ""));
-          }
-  })();
-
-document.querySelectorAll('.section-header').forEach(header => {
+ document.querySelectorAll('.section-header').forEach(header => {
     header.addEventListener('click', () => {
         const content = header.nextElementSibling; // This finds .section-content
         const icon = header.querySelector('.toggle-icon');
@@ -21,24 +12,15 @@ document.querySelectorAll('.section-header').forEach(header => {
         }
     });
 });
-      // Copy text without alert
-      function copyText(element) {
-          const textToCopy = element.textContent.trim();
-          navigator.clipboard.writeText(textToCopy).catch(err => {
-              console.error('Copy failed:', err);
-          });
-      }
-      function searchCommands() {
-    const query = document.getElementById("commandSearch").value.toLowerCase();
-    
-    // Adjust this selector to match whatever elements hold your commands
-    const commands = document.querySelectorAll(".command-item"); 
+ /* ===== REMOVE .HTML FROM URL ===== */
+ (function hideHtmlInURL() {
+     const pathname = window.location.pathname;
+         if (pathname.endsWith(".html")) {
+             // Replace URL in browser without reloading the page
+            window.history.replaceState({}, "", pathname.replace(".html", ""));
+          }
+  })();
 
-    commands.forEach(cmd => {
-        const text = cmd.textContent.toLowerCase();
-        cmd.style.display = text.includes(query) ? "" : "none";
-    });
-}
 // ==========================
       // Filter Commands
       // ==========================
@@ -77,6 +59,17 @@ document.querySelectorAll('.section-header').forEach(header => {
               console.error('Copy failed:', err);
           });
       }
+      function searchCommands() {
+    const query = document.getElementById("commandSearch").value.toLowerCase();
+    
+    // Adjust this selector to match whatever elements hold your commands
+    const commands = document.querySelectorAll(".command-item"); 
+
+    commands.forEach(cmd => {
+        const text = cmd.textContent.toLowerCase();
+        cmd.style.display = text.includes(query) ? "" : "none";
+    });
+}
 
               // --- Twitch API setup ---
               const clientId = 'gp762nuuoqcoxypju8c569th9wz7q5';
