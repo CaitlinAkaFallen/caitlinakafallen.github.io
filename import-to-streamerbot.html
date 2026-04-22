@@ -1299,6 +1299,7 @@
           <option value="wanted-poster"> Wanted Poster </option> <!--22-->
           <option value="vertical-chat"> Vertical Chat </option> <!--23-->
           <option value="horizontal-chat"> Horizontal Chat </option> <!--24-->
+          <option value="mugshot-overlay"> Mugshot Overlay </option> <!--25-->
 
         </select>
       </div>
@@ -2763,6 +2764,50 @@
           </video>
         </div>
 
+      </div>
+
+      <!---Mug Shot Overlay-->
+      <div class="grid-item" id="mugshot-overlay">
+        <h3>Mug Shot Overlay</h3>
+
+        <div class="main-layout-wrapper">
+          <div class="side-column">
+            <div class="select-copy-container">
+              <label for="obs-select-25" style="display: block; margin-bottom: 5px; font-size: 0.9em">Select Overlay to Copy Link:</label>
+              <select id="obs-select-25" class="code-select-glassy" onchange="copySelectValue(this)">
+                <option value="" disabled selected>Choose an overlay...</option>
+                <option value="https://caitlinscreativespace.xyz/mug-shot.html">Mug Shot Overlay</option>
+              </select>
+              <p id="copy-status-25" style="font-size: 12px; color: #00ffcc; margin-top: 5px; height: 15px; font-weight: bold;"></p>
+            </div>
+
+            <div style="margin-top: 15px"></div>
+
+            <div class="select-copy-container">
+              <label for="import-select-25" style="display: block; margin-bottom: 5px; font-size: 0.9em">Select Import Code to Copy:</label>
+              <select id="import-select-25" class="code-select-glassy" onchange="copySelectValue(this)">
+                <option value="" disabled selected>Choose a code...</option>
+                <option value="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">Mug Shot Script</option>
+                </select>
+                </div>
+
+          </div>
+
+          <div class="center-column">
+            <p class="instruction-text">
+              Import the code into Streamer.bot and use the link as an OBS Browser Source.
+            </p>
+            <img src="images/mugshot.png" alt="Mug Shot Overlay" class="feature-img" />
+          </div>
+
+          <div class="side-column">
+            <div class="video-container">
+              <video class="modal-trigger feature-video" data-modal="modal-mugshot-overlay" data-src="Videos/mugshot-overlay.mp4" controls>
+                <source src="Videos/mugshot-overlay.mp4" type="video/mp4" />
+              </video>
+            </div>
+          </div>
+        </div>
       </div>
       
     </section>
