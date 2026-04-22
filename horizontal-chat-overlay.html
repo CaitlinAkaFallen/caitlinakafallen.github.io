@@ -6795,13 +6795,23 @@ body {
     white-space: normal;    
     line-height: 1.3;
 }
+    
 .emoteWrapper {
     display: inline-block;
     vertical-align: middle;
-    height: 1.4em;
+    /* Increased slightly from 1.4em to 1.8em for better visibility */
+    height: 1.8em; 
     margin: 0 4px;
 }
-.emoteWrapper img { height: 110%; width: auto; }
+
+.emoteWrapper img { 
+    /* Using 1.15rem ensures it feels "perfectly" sized relative to the font */
+    height: 1.15rem; 
+    width: auto;
+    /* Added a very subtle drop shadow to help the emote stand out from the dark background */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+    
 @keyframes slideInRight {
     0% { transform: translateX(40px); opacity: 0; filter: blur(5px); }
     100% { transform: translateX(0); opacity: 1; filter: blur(0); }
