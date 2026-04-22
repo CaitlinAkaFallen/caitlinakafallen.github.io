@@ -114,6 +114,35 @@ header h5 {
 }
 .horizontal-nav::-webkit-scrollbar { display: none; }
 
+.search-bar-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#commandSearch {
+    padding: 6px 32px 6px 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+    width: 180px;
+}
+
+#commandSearch:focus {
+    border-color: #9147ff; /* twitch purple, change to your brand color */
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    color: #aaa;
+    pointer-events: none;
+}
+
 .nav-list {
     list-style: none;
     display: flex;
