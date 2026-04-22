@@ -23,60 +23,56 @@
         </header>
 
         <nav id="horizontal-nav" class="horizontal-nav">
-            <ul class="nav-list">
-                <li>
-                  <a href="schedule.html" class="nav-link home-link" title="Schedule">
-                    <i class="fa fa-calendar" aria-hidden="true"></i> 
-                  </a>
-                </li>
-                <li>            
-                <a href="twitch.html" class="nav-link twitch-link" title="Twitch">
-                    <i class="fab fa-twitch" aria-hidden="true"></i>
-                    <span class="sr-only"></span>
-                    <span id="live-indicator">LIVE</span>
-                </a>
-                </li>
-                <li>
-                  <a href="youtube.html" class="nav-link youtube-link active-tab" title="YouTube">
-                  <i class="fab fa-youtube" aria-hidden="true"></i>
-                    <span class="sr-only"></span>
-                  </a>
-                </li>
-                <li>  
-                <a href="kick.html" class="nav-link kick-link" title="Kick" aria-label="Kick">
-                    <i class="fab fa-kickstarter-k" aria-hidden="true"></i>
-                    <span class="sr-only"></span>
-                  </a>
-                </li>
-                <div class="search-bar-container">
-                    <input 
-                        type="text" 
-                        id="commandSearch" 
-                        placeholder="Search commands..." 
-                        oninput="searchCommands()"
-                        autocomplete="off"
-                    />
-                    <i class="fa fa-search search-icon" aria-hidden="true"></i>
-                </div>
-            </ul>
-
-            <div class="category-filter-container">
-                <label for="categorySelect">Filter by Category:</label>
-                    <select id="categorySelect" onchange="filterCommands()">
-                        <option value="all">All Categories</option>
-                        <option value="General Commands">General</option>
-                        <option value="Fun and Interaction">Fun</option>
-                        <option value="Game and Score Tracking">Game</option>
-                        <option value="Moderation and Utility">Moderation</option>
-                        <option value="Music and Entertainment">Music</option>
-                        <option value="Special Features">Special</option>
-                        <option value="Moderator Commands">Moderator</option>
-                        <option value="VIP Commands">VIP</option>
-                        <option value="Subscriber Commands">Subscriber</option>
-                        <option value="Follower Commands">Follower</option>
-                    </select>
+    <ul class="nav-list">
+        <li>
+            <a href="schedule.html" class="nav-link home-link" title="Schedule">
+                <i class="fa fa-calendar" aria-hidden="true"></i> 
+            </a>
+        </li>
+        <li>            
+            <a href="twitch.html" class="nav-link twitch-link" title="Twitch">
+                <i class="fab fa-twitch" aria-hidden="true"></i>
+                <span class="sr-only"></span>
+                <span id="live-indicator">LIVE</span>
+            </a>
+        </li>
+        <li>
+            <a href="youtube.html" class="nav-link youtube-link active-tab" title="YouTube">
+                <i class="fab fa-youtube" aria-hidden="true"></i>
+                <span class="sr-only"></span>
+            </a>
+        </li>
+        <li>  
+            <div class="search-bar-container">
+                <input 
+                    type="text" 
+                    id="commandSearch" 
+                    placeholder="Search commands..." 
+                    oninput="searchCommands()"
+                    autocomplete="off"
+                />
+                <i class="fa fa-search search-icon" aria-hidden="true"></i>
             </div>
-        </nav>
+        </li>
+    </ul>
+
+    <div class="category-filter-container">
+        <label for="categorySelect">Filter by Category:</label>
+        <select id="categorySelect" onchange="filterCommands()">
+            <option value="all">All Categories</option>
+            <option value="General Commands">General</option>
+            <option value="Fun and Interaction">Fun</option>
+            <option value="Game and Score Tracking">Game</option>
+            <option value="Moderation and Utility">Moderation</option>
+            <option value="Music and Entertainment">Music</option>
+            <option value="Special Features">Special</option>
+            <option value="Moderator Commands">Moderator</option>
+            <option value="VIP Commands">VIP</option>
+            <option value="Subscriber Commands">Subscriber</option>
+            <option value="Follower Commands">Follower</option>
+        </select>
+    </div>
+</nav>
 
             
 
@@ -795,4 +791,3 @@
         <script src="stream-commands.js"></script>
     </body>
 </html>
-

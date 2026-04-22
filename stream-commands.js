@@ -1,4 +1,5 @@
- document.querySelectorAll('.section-header').forEach(header => {
+/* ===== COLLAPSIBLE TOGGLE LOGIC ===== */
+document.querySelectorAll('.section-header').forEach(header => {
     header.addEventListener('click', () => {
         const content = header.nextElementSibling; // This finds .section-content
         const icon = header.querySelector('.toggle-icon');
@@ -12,168 +13,182 @@
         }
     });
 });
- /* ===== REMOVE .HTML FROM URL ===== */
- (function hideHtmlInURL() {
-     const pathname = window.location.pathname;
-         if (pathname.endsWith(".html")) {
-             // Replace URL in browser without reloading the page
-            window.history.replaceState({}, "", pathname.replace(".html", ""));
-          }
-  })();
 
-// ==========================
-      // Filter Commands
-      // ==========================
-      function filterCommands() {
-          const select = document.getElementById('categorySelect');
-          const selectedCategory = select ? select.value : 'all';
-          const sections = document.querySelectorAll('.command-section');
-          const container = document.querySelector('.command-sections');
+/* ===== REMOVE .HTML FROM URL ===== */
+(function hideHtmlInURL() {
+    const pathname = window.location.pathname;
+    if (pathname.endsWith(".html")) {
+        window.history.replaceState({}, "", pathname.replace(".html", ""));
+    }
+})();
 
-          let anyVisible = false;
+/* ===== FILTER COMMANDS BY CATEGORY ===== */
+function filterCommands() {
+    const select = document.getElementById('categorySelect');
+    const selectedCategory = select ? select.value : 'all';
+    const sections = document.querySelectorAll('.command-section');
+    const container = document.querySelector('.command-sections');
 
-          sections.forEach(section => {
-              if (selectedCategory === 'all' || section.dataset.category === selectedCategory) {
-                  section.style.display = 'block';
-                  anyVisible = true;
-              } else {
-                  section.style.display = 'none';
-              }
-          });
+    let anyVisible = false;
 
-          // Count visible sections
-          const visibleSections = Array.from(sections).filter(section => section.style.display === 'block');
+    sections.forEach(section => {
+        if (selectedCategory === 'all' || section.dataset.category === selectedCategory) {
+            section.style.display = 'block';
+            anyVisible = true;
+        } else {
+            section.style.display = 'none';
+        }
+    });
 
-          // Add class if filtered or 2 or fewer sections are visible
-          if ((selectedCategory !== 'all' && anyVisible) || visibleSections.length <= 2) {
-              container.classList.add('filtered');
-          } else {
-              container.classList.remove('filtered');
-          }
-      }
+    const visibleSections = Array.from(sections).filter(section => section.style.display === 'block');
 
-      // Copy text without alert
-      function copyText(element) {
-          const textToCopy = element.textContent.trim();
-          navigator.clipboard.writeText(textToCopy).catch(err => {
-              console.error('Copy failed:', err);
-          });
-      }
-      function searchCommands() {
-    const query = document.getElementById("commandSearch").value.toLowerCase();
-    
-    // Adjust this selector to match whatever elements hold your commands
-    const commands = document.querySelectorAll(".command-item"); 
+    if ((selectedCategory !== 'all' && anyVisible) || visibleSections.length <= 2) {
+        container.classList.add('filtered');
+    } else {
+        container.classList.remove('filtered');
+    }
+}
 
-    commands.forEach(cmd => {
-        const text = cmd.textContent.toLowerCase();
-        cmd.style.display = text.includes(query) ? "" : "none";
+/* ===== SEARCH COMMANDS BY NAME ===== */
+function searchCommands() {
+    const searchInput = document.getElementById('commandSearch').value.toLowerCase();
+    const sections = document.querySelectorAll('.command-section');
+
+    sections.forEach(section => {
+        let hasMatchInSection = false;
+        const items = section.querySelectorAll('.command-item');
+
+        items.forEach(item => {
+            const commandTitle = item.querySelector('.command-subgroup-title');
+            
+            if (commandTitle) {
+                const titleText = commandTitle.textContent.toLowerCase();
+                
+                if (titleText.includes(searchInput)) {
+                    item.style.display = ''; 
+                    hasMatchInSection = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+        });
+
+        const content = section.querySelector('.section-content');
+        const icon = section.querySelector('.toggle-icon');
+
+        if (hasMatchInSection) {
+            section.style.display = ''; 
+            
+            // Auto-expand section if searching
+            if (searchInput.length > 0 && content) {
+                content.style.maxHeight = content.scrollHeight + "px";
+                content.classList.add('expanded');
+                if (icon) icon.style.transform = "rotate(180deg)";
+            }
+        } else {
+            section.style.display = 'none';
+        }
     });
 }
 
-              // --- Twitch API setup ---
-              const clientId = 'gp762nuuoqcoxypju8c569th9wz7q5';
-              const oauthToken = '0s89vmye9hk95jiifrpion53n6cy9p';
-              const username = 'fallenoneart';
+/* ===== COPY TEXT WITHOUT ALERT ===== */
+function copyText(element) {
+    const textToCopy = element.textContent.trim();
+    navigator.clipboard.writeText(textToCopy).catch(err => {
+        console.error('Copy failed:', err);
+    });
+}
 
-              const titleEl = document.getElementById("streamTitle");
-              const gameEl = document.getElementById("streamGame");
-              const viewerCountEl = document.getElementById("viewerCount");
-              const streamTimerEl = document.getElementById("streamTimer");
+/* ===== TWITCH API SETUP ===== */
+const clientId = 'gp762nuuoqcoxypju8c569th9wz7q5';
+const oauthToken = '0s89vmye9hk95jiifrpion53n6cy9p';
+const username = 'fallenoneart';
 
-              let streamSeconds = 0;
-              let streamInterval = null;
+const titleEl = document.getElementById("streamTitle");
+const gameEl = document.getElementById("streamGame");
+const viewerCountEl = document.getElementById("viewerCount");
 
-              async function checkTwitchLive() {
-                try {
-                  const userResp = await fetch(`https://api.twitch.tv/helix/users?login=${username}`, {
-                    headers: { "Client-ID": clientId, "Authorization": `Bearer ${oauthToken}` }
-                  });
-                  const userData = await userResp.json();
-                  const userId = userData.data[0].id;
+async function checkTwitchLive() {
+    try {
+        const userResp = await fetch(`https://api.twitch.tv/helix/users?login=${username}`, {
+            headers: { "Client-ID": clientId, "Authorization": `Bearer ${oauthToken}` }
+        });
+        const userData = await userResp.json();
+        const userId = userData.data[0].id;
 
-                  const channelResp = await fetch(`https://api.twitch.tv/helix/channels?broadcaster_id=${userId}`, {
-                    headers: { "Client-ID": clientId, "Authorization": `Bearer ${oauthToken}` }
-                  });
-                  const channelData = await channelResp.json();
-                  const channelInfo = channelData.data[0];
+        const channelResp = await fetch(`https://api.twitch.tv/helix/channels?broadcaster_id=${userId}`, {
+            headers: { "Client-ID": clientId, "Authorization": `Bearer ${oauthToken}` }
+        });
+        const channelData = await channelResp.json();
+        const channelInfo = channelData.data[0];
 
-                  if (titleEl) titleEl.textContent = ` ${channelInfo.title}`;
-                  if (gameEl) gameEl.textContent = ` ${channelInfo.game_name}`;
+        if (titleEl) titleEl.textContent = ` ${channelInfo.title}`;
+        if (gameEl) gameEl.textContent = ` ${channelInfo.game_name}`;
 
-                  const streamResp = await fetch(`https://api.twitch.tv/helix/streams?user_id=${userId}`, {
-                    headers: { "Client-ID": clientId, "Authorization": `Bearer ${oauthToken}` }
-                  });
-                  const streamData = await streamResp.json();
-                  const isLive = streamData.data && streamData.data.length > 0;
+        const streamResp = await fetch(`https://api.twitch.tv/helix/streams?user_id=${userId}`, {
+            headers: { "Client-ID": clientId, "Authorization": `Bearer ${oauthToken}` }
+        });
+        const streamData = await streamResp.json();
+        const isLive = streamData.data && streamData.data.length > 0;
 
-                  const liveEl = document.getElementById("twitch-live");
-                  if (liveEl) liveEl.classList.toggle("live", isLive);
+        const liveEl = document.getElementById("twitch-live");
+        if (liveEl) liveEl.classList.toggle("live", isLive);
 
-                  // --- Show/Hide LIVE indicator in navbar ---
-                  const liveIndicator = document.getElementById("live-indicator");
-                  if (liveIndicator) {
-                    liveIndicator.style.display = isLive ? "inline" : "none";
-                  }
-                } catch (error) {
-                  console.error("Error checking Twitch live status:", error);
-                }
-              }
+        const liveIndicator = document.getElementById("live-indicator");
+        if (liveIndicator) {
+            liveIndicator.style.display = isLive ? "inline" : "none";
+        }
+    } catch (error) {
+        console.error("Error checking Twitch live status:", error);
+    }
+}
 
-              // Check live status every 60 seconds
-              checkTwitchLive();
-              setInterval(checkTwitchLive, 60000);
+checkTwitchLive();
+setInterval(checkTwitchLive, 60000);
 
-      // Initialize filter on page load
-      window.addEventListener("load", filterCommands);
-      window.addEventListener("change", () => filterCommands()); // updates when category changes
+/* ===== MODAL LOGIC ===== */
+const tosModal = document.getElementById('tos-modal');
+const privacyModal = document.getElementById('privacy-modal');
+const openTos = document.getElementById('open-tos');
+const openPrivacy = document.getElementById('open-privacy');
+const closeButtons = document.querySelectorAll('.modal .close');
 
-      // ==========================
-      // Modal Logic
-      // ==========================
-      const tosModal = document.getElementById('tos-modal');
-      const privacyModal = document.getElementById('privacy-modal');
-      const openTos = document.getElementById('open-tos');
-      const openPrivacy = document.getElementById('open-privacy');
-      const closeButtons = document.querySelectorAll('.modal .close');
+function openModal(modal) { 
+    if (modal) modal.classList.add('show'); 
+}
 
-      function openModal(modal) { 
-          if (modal) modal.classList.add('show'); 
-      }
+function closeModal(modal) { 
+    if (modal) modal.classList.remove('show'); 
+}
 
-      function closeModal(modal) { 
-          if (modal) modal.classList.remove('show'); 
-      }
+if (openTos) {
+    openTos.addEventListener('click', e => {
+        e.preventDefault();
+        openModal(tosModal);
+    });
+}
 
-      // Open buttons
-      if (openTos) {
-          openTos.addEventListener('click', e => {
-              e.preventDefault();
-              openModal(tosModal);
-          });
-      }
+if (openPrivacy) {
+    openPrivacy.addEventListener('click', e => {
+        e.preventDefault();
+        openModal(privacyModal);
+    });
+}
 
-      if (openPrivacy) {
-          openPrivacy.addEventListener('click', e => {
-              e.preventDefault();
-              openModal(privacyModal);
-          });
-      }
+closeButtons.forEach(btn => 
+    btn.addEventListener('click', () => closeModal(btn.closest('.modal')))
+);
 
-      // Close with "x"
-      closeButtons.forEach(btn => 
-          btn.addEventListener('click', () => closeModal(btn.closest('.modal')))
-      );
+window.addEventListener('click', e => { 
+    if (e.target.classList.contains('modal')) closeModal(e.target); 
+});
 
-      // Close when clicking outside
-      window.addEventListener('click', e => { 
-          if (e.target.classList.contains('modal')) closeModal(e.target); 
-      });
+window.addEventListener('keydown', e => { 
+    if (e.key === 'Escape') { 
+        closeModal(tosModal); 
+        closeModal(privacyModal); 
+    } 
+});
 
-      // Close on Escape key
-      window.addEventListener('keydown', e => { 
-          if (e.key === 'Escape') { 
-              closeModal(tosModal); 
-              closeModal(privacyModal); 
-          } 
-      });
+/* ===== INITIALIZATION ===== */
+window.addEventListener("load", filterCommands);
