@@ -201,9 +201,17 @@ body {
 }
 
 .emote {
-    height: 1.7em;
-    vertical-align: middle;
-    margin: 0 2px;
+    /* Increased from 1.7em to 2.0em for better visibility */
+    height: 2.0em; 
+    
+    /* Ensures the emote sits naturally on the text line */
+    vertical-align: middle; 
+    
+    /* Slight increase in horizontal margin to prevent crowding text */
+    margin: 0 4px; 
+    
+    /* Optional: Improves rendering of small icons */
+    object-fit: contain; 
 }
 
 /* ════════════════════════════════════════════════
