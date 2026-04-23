@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hug Overlay</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: transparent;
+        }
+
+        #overlay-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 250px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            width: 100%;
+        }
+
+        #overlay-container.show {
+            opacity: 1;
+        }
+
+        .user-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .avatar-svg {
+            width: 170px;
+            height: 170px;
+            overflow: visible;
+            animation: heartbeat 1.4s infinite ease-in-out;
+            filter: drop-shadow(0 0 10px #ff4d6d) drop-shadow(0 0 22px rgba(255,77,109,0.45));
+        }
+
+        .username {
+            margin-top: 14px;
+            font-size: 30px;
+            font-weight: 900;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow:
+                 2px  2px 0 #000,
+                -2px -2px 0 #000,
+                 2px -2px 0 #000,
+                -2px  2px 0 #000,
+                 0    0  18px #ff4d6d;
+        }
+
+       /* Area where the floating hearts spawn */
+        #particle-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 250px; 
+            height: 200px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart-particle {
+            position: absolute;
+            font-size: 35px;
+            animation: floatAcross 2s linear forwards;
+            opacity: 0;
+        }
+
+        /* Heartbeat pulsing animation for the avatars */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.1); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Floating animation from sender (left) to target (right) */
+        @keyframes floatAcross {
+            0% {
+                left: 0;
+                transform: scale(0.5) translateY(0) rotate(-15deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+                transform: scale(1.2) translateY(-10px) rotate(10deg);
+            }
+            80% {
+                opacity: 1;
+                transform: scale(1) translateY(-20px) rotate(-10deg);
+            }
+            100% {
+                left: 100%;
+                transform: scale(0.5) translateY(-30px) rotate(0deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="overlay-container">
+
+    <div class="user-card">
+        <svg class="avatar-svg" viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <clipPath id="clip-sender">
+                    <path d="M 80 143 C 48 116, 10 92, 10 52 C 10 26, 30 8, 55 8 C 66 8, 76 13, 80 22 C 84 13, 94 8, 105 8 C 130 8, 150 26, 150 52 C 150 92, 112 116, 80 143 Z"/>
+                </clipPath>
+            </defs>
+            <path fill="#ff4d6d"
+                  d="M 80 143 C 48 116, 10 92, 10 52 C 10 26, 30 8, 55 8 C 66 8, 76 13, 80 22 C 84 13, 94 8, 105 8 C 130 8, 150 26, 150 52 C 150 92, 112 116, 80 143 Z"/>
+            <image id="sender-img" href="" x="0" y="0" width="160" height="155"
+                   preserveAspectRatio="xMidYMid slice" clip-path="url(#clip-sender)"/>
+        </svg>
+        <div class="username" id="sender-text">Sender</div>
+    </div>
+
+    <div id="particle-area"></div>
+
+    <div class="user-card">
+        <svg class="avatar-svg" viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <clipPath id="clip-target">
+                    <path d="M 80 143 C 48 116, 10 92, 10 52 C 10 26, 30 8, 55 8 C 66 8, 76 13, 80 22 C 84 13, 94 8, 105 8 C 130 8, 150 26, 150 52 C 150 92, 112 116, 80 143 Z"/>
+                </clipPath>
+            </defs>
+            <path fill="#ff4d6d"
+                  d="M 80 143 C 48 116, 10 92, 10 52 C 10 26, 30 8, 55 8 C 66 8, 76 13, 80 22 C 84 13, 94 8, 105 8 C 130 8, 150 26, 150 52 C 150 92, 112 116, 80 143 Z"/>
+            <image id="target-img" href="" x="0" y="0" width="160" height="155"
+                   preserveAspectRatio="xMidYMid slice" clip-path="url(#clip-target)"/>
+        </svg>
+        <div class="username" id="target-text">Target</div>
+    </div>
+
+</div>
+
+<script>
+    const params    = new URLSearchParams(window.location.search);
+    const wsAddress = params.get("address") || "localhost";
+    const wsPort    = params.get("port")    || "8080";
+
+    const container    = document.getElementById("overlay-container");
+    const senderImg    = document.getElementById("sender-img");
+    const senderText   = document.getElementById("sender-text");
+    const targetImg    = document.getElementById("target-img");
+    const targetText   = document.getElementById("target-text");
+    const particleArea = document.getElementById("particle-area");
+
+    let hideTimeout;
+    let particleInterval;
+    let lastTriggerTime = 0;
+
+    function connect() {
+        let ws;
+        try {
+            ws = new WebSocket(`ws://${wsAddress}:${wsPort}/`);
+        } catch (e) {
+            console.error("[HugOverlay] Connection failed:", e);
+            setTimeout(connect, 5000);
+            return;
+        }
+
+        ws.onopen = () => {
+            console.log("[HugOverlay] WebSocket connected.");
+            ws.send(JSON.stringify({
+                request : "Subscribe",
+                id      : "HUGS_ALERT",
+                events  : { "General": ["Custom"] }
+            }));
+        };
+
+        ws.onmessage = (event) => {
+            let msg;
+            try {
+                msg = JSON.parse(event.data);
+            } catch (err) {
+                console.error("[HugOverlay] JSON parse failed:", err);
+                return;
+            }
+
+            let payload = null;
+
+            // FORMAT A: Raw broadcast from WebsocketBroadcastJson
+            if (msg.eventName === "FighterHug") {
+                payload = msg;
+            }
+            // FORMAT B: Wrapped event from TriggerCodeEvent
+            else if (
+                msg.event?.source === "General" &&
+                msg.event?.type   === "Custom"  &&
+                msg.data?.eventName === "FighterHug"
+            ) {
+                payload = msg.data.eventData || msg.data;
+            }
+
+            if (!payload) return;
+
+            // Deduplicate (prevents double-firing if both broadcast methods are used)
+            const now = Date.now();
+            if (now - lastTriggerTime < 500) return;
+            lastTriggerTime = now;
+
+            triggerHugAnimation(payload);
+        };
+
+        ws.onclose = () => {
+            console.warn("[HugOverlay] WebSocket closed. Reconnecting...");
+            setTimeout(connect, 5000);
+        };
+    }
+
+    connect();
+
+    function triggerHugAnimation(payload) {
+        clearTimeout(hideTimeout);
+        clearInterval(particleInterval);
+        particleArea.innerHTML = "";
+
+        // Set avatar hrefs (using SVG .setAttribute for <image> tags)
+        if (payload.cAvatar) senderImg.setAttribute("href", payload.cAvatar);
+        if (payload.oAvatar) targetImg.setAttribute("href", payload.oAvatar);
+
+        senderText.textContent = payload.challenger || "Sender";
+        targetText.textContent = payload.opponent   || "Target";
+
+        container.classList.add("show");
+
+        let count = 0;
+        particleInterval = setInterval(() => {
+            if (count >= 14) { clearInterval(particleInterval); return; }
+            spawnHeartParticle();
+            count++;
+        }, 200);
+
+        hideTimeout = setTimeout(() => {
+            container.classList.remove("show");
+            setTimeout(() => { particleArea.innerHTML = ""; }, 500);
+        }, 5000);
+    }
+
+    function spawnHeartParticle() {
+        const emojis = ['❤️','💖','💕','💗','💓','💞','💝'];
+        const el = document.createElement("div");
+        el.classList.add("heart-particle");
+        el.textContent             = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left              = `${10 + Math.random() * 80}%`;
+        el.style.top               = `${50 + Math.random() * 40}%`;
+        el.style.fontSize          = `${24 + Math.random() * 20}px`;
+        el.style.animationDuration = `${1.6 + Math.random() * 0.8}s`;
+        particleArea.appendChild(el);
+        el.addEventListener("animationend", () => el.remove());
+    }
+</script>
+
+</body>
+</html>
