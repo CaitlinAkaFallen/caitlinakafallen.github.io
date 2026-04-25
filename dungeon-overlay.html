@@ -1014,9 +1014,9 @@
                 scene.classList.remove("show", "closing");
                 void scene.offsetWidth;
                 scene.classList.add("raise");
-                setTimeout(() => scene.classList.remove("raise"), 1300);
-            }, 2000);
-        }, 8000);
+                setTimeout(() => scene.classList.remove("raise"), 1500);
+            }, 4000);
+        }, 14000);
     }
 
     /* ══════════════════════════════════════════════════════════
@@ -1053,7 +1053,7 @@
             }
         };
 
-        ws.onclose = () => setTimeout(connect, 3000);
+        ws.onclose = () => setTimeout(connect, 10000);
     }
 
     connect();
