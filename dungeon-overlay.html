@@ -9,17 +9,13 @@
         :root {
             --blood:       #6a0000;
             --blood-mid:   #990000;
+            --blood-wet:   #bb0000;
             --gold:        #8a6818;
             --gold-bright: #c8a040;
-            --stone1:      #0f0c09;
-            --stone2:      #191410;
-            --stone3:      #231a12;
             --iron-dark:   #141210;
             --iron-mid:    #282418;
             --iron-hi:     #42382a;
             --text-cream:  #eddfc6;
-            --torch-core:  #fff8c0;
-            --torch-flame: #ff9900;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -38,33 +34,33 @@
         #scene {
             position: absolute;
             top: 50%; left: 50%;
-            transform: translate(-50%, -50%) translateY(-320px) scaleY(0.45);
+            transform: translate(-50%, -50%) translateY(-340px) scaleY(0.4);
             transform-origin: top center;
             width: 1060px;
             opacity: 0;
         }
 
         #scene.show {
-            animation: slamDown 0.65s cubic-bezier(0.14, 0.9, 0.32, 1.1) forwards;
+            animation: slamDown 0.7s cubic-bezier(0.14, 0.9, 0.32, 1.08) forwards;
         }
-        #scene.hide {
-            animation: raiseUp 0.45s ease-in forwards;
+        #scene.raise {
+            animation: raiseUp 1.2s ease-in-out forwards;
         }
 
         @keyframes slamDown {
-            0%   { opacity: 0; transform: translate(-50%, -50%) translateY(-320px) scaleY(0.4); }
-            55%  { opacity: 1; transform: translate(-50%, -50%) translateY(20px)   scaleY(1.05); }
-            78%  { transform: translate(-50%, -50%) translateY(-8px)  scaleY(0.98); }
+            0%   { opacity: 0; transform: translate(-50%, -50%) translateY(-340px) scaleY(0.38); }
+            55%  { opacity: 1; transform: translate(-50%, -50%) translateY(22px)   scaleY(1.06); }
+            78%  { transform: translate(-50%, -50%) translateY(-9px)  scaleY(0.97); }
             100% { opacity: 1; transform: translate(-50%, -50%) translateY(0)      scaleY(1); }
         }
         @keyframes raiseUp {
-            0%   { opacity: 1; transform: translate(-50%, -50%) translateY(0) scaleY(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) translateY(-300px) scaleY(0.4); }
+            0%   { opacity: 1; transform: translate(-50%, -50%) translateY(0)      scaleY(1); }
+            40%  { opacity: 1; transform: translate(-50%, -50%) translateY(-30px)  scaleY(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) translateY(-280px) scaleY(0.5); }
         }
 
-
         /* ════════════════════════════════════════════════════
-           ARCH CAPSTONE (very top strip)
+           ARCH CAPSTONE
         ════════════════════════════════════════════════════ */
         #arch {
             position: relative;
@@ -78,17 +74,14 @@
             border: 3px solid #2e2218;
             border-bottom: none;
             border-radius: 8px 8px 0 0;
-            box-shadow:
-                0 -4px 24px rgba(80,0,0,0.35),
-                inset 0 1px 0 rgba(100,70,20,0.18);
+            box-shadow: 0 -4px 24px rgba(80,0,0,0.35), inset 0 1px 0 rgba(100,70,20,0.18);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 14px;
         }
         .arch-rule {
-            flex: 1;
-            height: 1px;
+            flex: 1; height: 1px;
             background: linear-gradient(90deg, transparent, var(--gold), transparent);
             opacity: 0.4;
         }
@@ -96,10 +89,9 @@
             font-family: 'Cinzel Decorative', cursive;
             font-size: 0.55rem;
             letter-spacing: 0.55em;
-            color: rgba(150, 110, 30, 0.55);
+            color: rgba(150,110,30,0.55);
             white-space: nowrap;
-            position: relative;
-            z-index: 2;
+            position: relative; z-index: 2;
         }
 
         /* ════════════════════════════════════════════════════
@@ -109,7 +101,7 @@
             position: relative;
             height: 56px;
             background: linear-gradient(180deg, #373020 0%, #201c12 55%, #181408 100%);
-            border-left:  3px solid #2e2218;
+            border-left: 3px solid #2e2218;
             border-right: 3px solid #2e2218;
             box-shadow:
                 0 6px 20px rgba(0,0,0,0.85),
@@ -121,8 +113,6 @@
             gap: 16px;
             z-index: 5;
         }
-
-        /* Spike fringe bottom */
         #portcullis::after {
             content: '';
             position: absolute;
@@ -130,8 +120,7 @@
             height: 20px;
             background: linear-gradient(180deg, #181408 0%, transparent 100%);
             clip-path: polygon(
-                0% 0%,
-                4% 0%, 6% 100%, 8% 0%,
+                0% 0%, 4% 0%, 6% 100%, 8% 0%,
                 12% 0%, 14% 100%, 16% 0%,
                 20% 0%, 22% 100%, 24% 0%,
                 28% 0%, 30% 100%, 32% 0%,
@@ -148,7 +137,6 @@
             z-index: 20;
             pointer-events: none;
         }
-
         .rivet {
             width: 11px; height: 11px;
             border-radius: 50%;
@@ -156,7 +144,6 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.9), inset 0 1px rgba(255,255,255,0.04);
             flex-shrink: 0;
         }
-
         .portcullis-title {
             font-family: 'Cinzel Decorative', cursive;
             font-weight: 900;
@@ -171,13 +158,10 @@
         }
 
         /* ════════════════════════════════════════════════════
-           BODY ROW  (left bars | center stone | right bars)
+           BODY ROW
         ════════════════════════════════════════════════════ */
-        #body {
-            display: flex;
-        }
+        #body { display: flex; position: relative; }
 
-        /* ── SIDE BAR COLUMNS ── */
         .bar-wall {
             width: 82px;
             flex-shrink: 0;
@@ -192,42 +176,31 @@
             border-left:  3px solid #2e2218;
             border-right: 3px solid #2e2218;
         }
-
         .bar-col {
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             display: flex;
             justify-content: space-around;
             align-items: flex-start;
             padding: 0 6px;
         }
-
         .vbar {
-            width: 16px;
-            height: 0;
+            width: 16px; height: 0;
             background: linear-gradient(90deg,
-                var(--iron-dark) 0%,
-                var(--iron-mid)  22%,
-                var(--iron-hi)   42%,
-                #504838          50%,
-                var(--iron-hi)   58%,
-                var(--iron-mid)  78%,
+                var(--iron-dark) 0%, var(--iron-mid) 22%,
+                var(--iron-hi) 42%, #504838 50%,
+                var(--iron-hi) 58%, var(--iron-mid) 78%,
                 var(--iron-dark) 100%
             );
             box-shadow:
                 inset 2px 0 5px rgba(0,0,0,0.6),
                 inset -2px 0 5px rgba(0,0,0,0.6),
-                1px 0 rgba(0,0,0,0.8),
-                -1px 0 rgba(0,0,0,0.8);
+                1px 0 rgba(0,0,0,0.8), -1px 0 rgba(0,0,0,0.8);
             border-radius: 0 0 2px 2px;
         }
-
         #scene.show .vbar {
             height: 100%;
             transition: height 0.38s cubic-bezier(0.52, 0, 0.42, 1.35);
         }
-
-        /* Stagger each bar */
         .bar-wall.left  .vbar:nth-child(1) { transition-delay: 0.07s; }
         .bar-wall.left  .vbar:nth-child(2) { transition-delay: 0.03s; }
         .bar-wall.left  .vbar:nth-child(3) { transition-delay: 0.09s; }
@@ -241,6 +214,7 @@
         #center {
             flex: 1;
             position: relative;
+            overflow: hidden;
             background:
                 radial-gradient(ellipse at 0%   50%, rgba(110,55,0,0.15) 0%, transparent 45%),
                 radial-gradient(ellipse at 100% 50%, rgba(110,55,0,0.15) 0%, transparent 45%),
@@ -256,31 +230,113 @@
                 linear-gradient(180deg, #1e1610 0%, #181208 50%, #130e08 100%);
         }
 
-        /* ── HORIZONTAL CROSSBARS ── */
-        .hbar {
+        /* ════════════════════════════════════════════════════
+           DUNGEON DOORS
+        ════════════════════════════════════════════════════ */
+        .door {
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 52%;
+            z-index: 50;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.25) 0%, transparent 70%),
+                repeating-linear-gradient(180deg,
+                    transparent 0, transparent 44px,
+                    rgba(0,0,0,0.65) 44px, rgba(0,0,0,0.65) 47px
+                ),
+                repeating-linear-gradient(90deg,
+                    transparent 0, transparent 110px,
+                    rgba(0,0,0,0.4)  110px, rgba(0,0,0,0.4)  113px
+                ),
+                linear-gradient(180deg, #1a1410 0%, #131009 50%, #0f0c08 100%);
+            transition: transform 1.6s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+        .door::before {
+            content: '';
             position: absolute;
             left: 0; right: 0;
+            height: 26px;
+            background: linear-gradient(180deg,
+                var(--iron-hi) 0%, var(--iron-mid) 25%,
+                var(--iron-dark) 55%, var(--iron-mid) 100%
+            );
+            box-shadow: 0 3px 10px rgba(0,0,0,0.9),
+                inset 0 1px 0 rgba(90,80,45,0.3),
+                inset 0 -1px 0 rgba(0,0,0,0.7);
+        }
+        .door::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: 28%;
             height: 22px;
             background: linear-gradient(180deg,
-                var(--iron-hi)   0%,
-                var(--iron-mid)  28%,
-                var(--iron-dark) 58%,
-                var(--iron-mid)  100%
+                var(--iron-hi) 0%, var(--iron-mid) 25%,
+                var(--iron-dark) 55%, var(--iron-mid) 100%
+            );
+            box-shadow: 0 3px 10px rgba(0,0,0,0.9),
+                inset 0 1px 0 rgba(90,80,45,0.3),
+                inset 0 -1px 0 rgba(0,0,0,0.7);
+        }
+        .door-left::before  { top: 22%; }
+        .door-right::before { top: 22%; }
+        .door-left {
+            left: 0;
+            transform: translateX(-101%);
+            border-right: 4px solid var(--iron-hi);
+            box-shadow: 4px 0 30px rgba(0,0,0,0.9), inset -3px 0 12px rgba(0,0,0,0.6);
+        }
+        .door-right {
+            right: 0;
+            transform: translateX(101%);
+            border-left: 4px solid var(--iron-hi);
+            box-shadow: -4px 0 30px rgba(0,0,0,0.9), inset 3px 0 12px rgba(0,0,0,0.6);
+        }
+        .door-rivets {
+            position: absolute; top: 8%;
+            display: flex; flex-direction: column; gap: 18px;
+        }
+        .door-left  .door-rivets { right: 14px; }
+        .door-right .door-rivets { left: 14px; }
+        .door-rivet {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, var(--iron-hi), #0e0c08);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.9), inset 0 1px rgba(255,255,255,0.05);
+        }
+        #scene.closing .door-left  { transform: translateX(0); }
+        #scene.closing .door-right { transform: translateX(0); }
+
+        .door-shadow {
+            position: absolute; top: 0; bottom: 0;
+            width: 40px;
+            pointer-events: none; z-index: 51;
+            opacity: 0;
+            transition: opacity 0.2s 1.55s;
+        }
+        .door-shadow.left  { left: 50%; background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, transparent 100%); }
+        .door-shadow.right { right: 50%; background: linear-gradient(270deg, rgba(0,0,0,0.7) 0%, transparent 100%); }
+        #scene.closing .door-shadow { opacity: 1; }
+
+        /* ── HORIZONTAL CROSSBARS ── */
+        .hbar {
+            position: absolute; left: 0; right: 0;
+            height: 22px;
+            background: linear-gradient(180deg,
+                var(--iron-hi) 0%, var(--iron-mid) 28%,
+                var(--iron-dark) 58%, var(--iron-mid) 100%
             );
             box-shadow:
                 0 3px 10px rgba(0,0,0,0.85),
                 inset 0 1px 0 rgba(90,80,45,0.28),
                 inset 0 -1px 0 rgba(0,0,0,0.65);
-            z-index: 8;
-            opacity: 0;
+            z-index: 8; opacity: 0;
             transition: opacity 0.1s 0.28s;
         }
-        #scene.show .hbar { opacity: 1; }
-
+        #scene.show .hbar, #scene.closing .hbar { opacity: 1; }
         .hbar::before, .hbar::after {
             content: '';
-            position: absolute;
-            top: 50%; transform: translateY(-50%);
+            position: absolute; top: 50%; transform: translateY(-50%);
             width: 13px; height: 13px;
             border-radius: 50%;
             background: radial-gradient(circle at 35% 30%, var(--iron-hi), var(--iron-dark));
@@ -288,143 +344,165 @@
         }
         .hbar::before { left: 10px; }
         .hbar::after  { right: 10px; }
-
         .hbar.upper { top: 32%; }
         .hbar.lower { top: 70%; }
 
         /* ════════════════════════════════════════════════════
-           CONTENT ZONE  (title + avatar row + message)
+           REALISTIC BLOOD DRIP SYSTEM
+           Each drip has three parts rendered via SVG canvas:
+           1. A seeping pool / stain at the top
+           2. A slow viscous stream that stretches down
+           3. A heavy bulging droplet that grows then falls
         ════════════════════════════════════════════════════ */
-        #content {
-            position: relative;
-            z-index: 15;
-            padding: 26px 36px 30px;
+        #drips {
+            position: absolute;
+            top: 76px;               /* sits right under the portcullis spikes */
+            left: 86px; right: 86px;
+            height: 110px;
+            pointer-events: none;
+            z-index: 22;
+            overflow: visible;
+        }
+
+        /* Individual drip wrapper — positioned by JS */
+        .blood-drip {
+            position: absolute;
+            top: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
         }
 
-        /* ── GOLD RULE LINES ── */
-        .rule-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
+        /* 1 — SEEP STAIN: dark pool at the very top, always visible once shown */
+        .drip-stain {
+            width: 10px;
+            height: 6px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse at 50% 30%,
+                var(--blood-wet) 0%, var(--blood) 55%, #3a0000 100%
+            );
+            filter: blur(0.5px);
+            opacity: 0;
         }
+
+        /* 2 — STREAM: the thin viscous thread pulling down */
+        .drip-stream {
+            width: 4px;
+            height: 0px;
+            margin-top: -1px;
+            background: linear-gradient(180deg,
+                var(--blood-wet) 0%,
+                var(--blood-mid) 40%,
+                var(--blood)     100%
+            );
+            border-radius: 0 0 2px 2px;
+            transform-origin: top center;
+            opacity: 0;
+        }
+
+        /* 3 — DROP: bulging teardrop at the bottom of the stream */
+        .drip-drop {
+            width: 0; height: 0;
+            border-radius: 50% 50% 60% 60%;
+            background: radial-gradient(ellipse at 40% 35%,
+                var(--blood-wet) 0%,
+                var(--blood-mid) 45%,
+                var(--blood)     100%
+            );
+            box-shadow: inset -1px -2px 3px rgba(0,0,0,0.35);
+            margin-top: -2px;
+            opacity: 0;
+            transform-origin: top center;
+        }
+
+        /* 4 — FALLEN DROP: splat that appears on the crossbar */
+        .drip-splat {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 45% 40%,
+                var(--blood-wet) 0%,
+                var(--blood)     55%,
+                #2a0000          100%
+            );
+            opacity: 0;
+            filter: blur(0.8px);
+        }
+
+        /* ════════════════════════════════════════════════════
+           CONTENT ZONE
+        ════════════════════════════════════════════════════ */
+        #content {
+            position: relative; z-index: 15;
+            padding: 26px 36px 30px;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 16px;
+        }
+        .rule-row { display: flex; align-items: center; gap: 10px; width: 100%; }
         .rule-line {
-            flex: 1;
-            height: 1px;
+            flex: 1; height: 1px;
             background: linear-gradient(90deg, transparent, var(--gold), transparent);
             opacity: 0.45;
         }
         .rule-gem {
-            color: var(--gold-bright);
-            font-size: 0.65rem;
-            opacity: 0.65;
+            color: var(--gold-bright); font-size: 0.65rem; opacity: 0.65;
             filter: drop-shadow(0 0 4px rgba(180,130,30,0.45));
         }
         .rule-label {
-            font-size: 0.52rem;
-            letter-spacing: 0.42em;
-            color: rgba(150,110,35,0.48);
-            text-transform: uppercase;
-            white-space: nowrap;
+            font-size: 0.52rem; letter-spacing: 0.42em;
+            color: rgba(150,110,35,0.48); text-transform: uppercase; white-space: nowrap;
         }
 
         /* ════════════════════════════════════════════════════
-           AVATAR ROW  (accuser cell | VS divider | prisoner cell)
+           AVATAR ROW
         ════════════════════════════════════════════════════ */
         #avatar-row {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            gap: 20px;
-            width: 100%;
+            display: flex; align-items: flex-start;
+            justify-content: center; gap: 20px; width: 100%;
         }
-
-        /* ── SINGLE AVATAR CELL ── */
         .avatar-cell {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            max-width: 220px;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 10px;
+            flex: 1; max-width: 220px;
         }
-
-        /* Dungeon stone frame around portrait */
-        .portrait-frame {
-            position: relative;
-            width: 130px;
-            height: 130px;
-        }
-
-        /* Stone border background */
+        .portrait-frame { position: relative; width: 130px; height: 130px; }
         .portrait-frame::before {
             content: '';
-            position: absolute;
-            inset: -8px;
-            background:
-                repeating-linear-gradient(45deg,
-                    #1c1510 0px, #1c1510 8px,
-                    #241c14 8px, #241c14 16px
-                );
+            position: absolute; inset: -8px;
+            background: repeating-linear-gradient(45deg,
+                #1c1510 0px, #1c1510 8px, #241c14 8px, #241c14 16px
+            );
             border: 2px solid var(--iron-hi);
-            box-shadow:
-                0 0 0 1px rgba(0,0,0,0.9),
-                0 6px 18px rgba(0,0,0,0.8);
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.9), 0 6px 18px rgba(0,0,0,0.8);
         }
-
         .portrait-frame img {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            z-index: 2;
+            position: relative; width: 100%; height: 100%;
+            object-fit: cover; display: block; z-index: 2;
             border: 2px solid rgba(50,38,20,0.8);
         }
-
-        /* Dark tint / dungeon lighting over the portrait */
         .portrait-frame::after {
             content: '';
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             background:
                 radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.45) 100%),
                 linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.35) 100%);
-            z-index: 3;
-            pointer-events: none;
+            z-index: 3; pointer-events: none;
         }
-
-        /* ── PRISONER BARS overlay on target portrait ── */
         .portrait-frame.prisoner .bar-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 4;
-            display: flex;
-            justify-content: space-around;
-            padding: 0 6px;
-            pointer-events: none;
+            position: absolute; inset: 0; z-index: 4;
+            display: flex; justify-content: space-around;
+            padding: 0 6px; pointer-events: none;
         }
-
         .bar-overlay .pbar {
-            width: 9px;
-            height: 0;
+            width: 9px; height: 0;
             background: linear-gradient(90deg,
-                rgba(10,8,5,0.9)  0%,
-                rgba(38,33,22,0.9) 30%,
-                rgba(55,48,32,0.85) 50%,
-                rgba(38,33,22,0.9) 70%,
-                rgba(10,8,5,0.9)  100%
+                rgba(10,8,5,0.9) 0%, rgba(38,33,22,0.9) 30%,
+                rgba(55,48,32,0.85) 50%, rgba(38,33,22,0.9) 70%,
+                rgba(10,8,5,0.9) 100%
             );
-            box-shadow:
-                inset 1px 0 3px rgba(0,0,0,0.7),
-                inset -1px 0 3px rgba(0,0,0,0.7);
+            box-shadow: inset 1px 0 3px rgba(0,0,0,0.7), inset -1px 0 3px rgba(0,0,0,0.7);
         }
-
-        #scene.show .portrait-frame.prisoner .pbar {
+        #scene.show .portrait-frame.prisoner .pbar,
+        #scene.closing .portrait-frame.prisoner .pbar {
             height: 100%;
             transition: height 0.3s cubic-bezier(0.5, 0, 0.4, 1.4);
         }
@@ -434,87 +512,43 @@
         #scene.show .pbar:nth-child(4) { transition-delay: 0.42s; }
         #scene.show .pbar:nth-child(5) { transition-delay: 0.36s; }
 
-        /* ── Fallback placeholder when no avatar URL provided ── */
         .avatar-placeholder {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(circle at 40% 35%, #3a2a1a, #1a120a);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            z-index: 2;
+            position: relative; width: 100%; height: 100%;
+            background: radial-gradient(circle at 40% 35%, #3a2a1a, #1a120a);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; z-index: 2;
         }
-
-        /* ── Avatar name label ── */
         .avatar-name {
-            font-family: 'Cinzel', serif;
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-align: center;
-            max-width: 160px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700;
+            letter-spacing: 0.08em; text-align: center;
+            max-width: 160px; overflow: hidden;
+            text-overflow: ellipsis; white-space: nowrap;
         }
-        .avatar-name.accuser-name {
-            color: #e8e0d0;
-            text-shadow: 0 0 10px rgba(255,255,255,0.25), 0 2px 4px rgba(0,0,0,0.9);
-        }
-        .avatar-name.prisoner-name {
-            color: #cc2222;
-            text-shadow: 0 0 14px rgba(180,0,0,0.55), 0 2px 4px rgba(0,0,0,0.9);
-        }
+        .avatar-name.accuser-name  { color: #e8e0d0; text-shadow: 0 0 10px rgba(255,255,255,0.25), 0 2px 4px rgba(0,0,0,0.9); }
+        .avatar-name.prisoner-name { color: #cc2222; text-shadow: 0 0 14px rgba(180,0,0,0.55),     0 2px 4px rgba(0,0,0,0.9); }
 
-        /* ── Role label above portrait ── */
         .role-label {
-            font-size: 0.5rem;
-            letter-spacing: 0.5em;
-            text-transform: uppercase;
-            padding: 3px 10px;
-            border: 1px solid;
-            border-radius: 1px;
+            font-size: 0.5rem; letter-spacing: 0.5em;
+            text-transform: uppercase; padding: 3px 10px;
+            border: 1px solid; border-radius: 1px;
         }
-        .role-label.accuser {
-            color: rgba(200,180,120,0.6);
-            border-color: rgba(140,110,40,0.3);
-            background: rgba(0,0,0,0.4);
-        }
-        .role-label.prisoner {
-            color: rgba(180,40,40,0.8);
-            border-color: rgba(120,20,20,0.4);
-            background: rgba(0,0,0,0.4);
-        }
+        .role-label.accuser  { color: rgba(200,180,120,0.6); border-color: rgba(140,110,40,0.3); background: rgba(0,0,0,0.4); }
+        .role-label.prisoner { color: rgba(180,40,40,0.8);   border-color: rgba(120,20,20,0.4);  background: rgba(0,0,0,0.4); }
 
-        /* ── VS divider ── */
         #vs-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding-top: 30px;
-            flex-shrink: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 8px; padding-top: 30px; flex-shrink: 0;
         }
-        .vs-chain {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-        }
+        .vs-chain { display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .vs-link {
             width: 8px; height: 11px;
-            border: 2px solid var(--iron-hi);
-            border-radius: 50%;
+            border: 2px solid var(--iron-hi); border-radius: 50%;
             background: linear-gradient(135deg, var(--iron-mid), var(--iron-dark));
         }
         .vs-link:nth-child(even) { transform: rotate(90deg); }
         .vs-skull {
-            font-size: 1.3rem;
-            color: rgba(150,110,30,0.65);
+            font-size: 1.3rem; color: rgba(150,110,30,0.65);
             filter: drop-shadow(0 0 5px rgba(140,100,20,0.4));
         }
 
@@ -522,12 +556,9 @@
            MESSAGE BOX
         ════════════════════════════════════════════════════ */
         #dungeon-message {
-            width: 100%;
-            padding: 18px 28px;
-            font-family: 'Cinzel', serif;
-            font-size: 1.4rem;
-            line-height: 1.65;
-            text-align: center;
+            width: 100%; padding: 18px 28px;
+            font-family: 'Cinzel', serif; font-size: 1.4rem;
+            line-height: 1.65; text-align: center;
             color: var(--text-cream);
             text-shadow: 0 2px 8px rgba(0,0,0,1), 0 0 30px rgba(180,100,20,0.12);
             background:
@@ -542,17 +573,8 @@
                 0 5px 22px rgba(0,0,0,0.55);
             position: relative;
         }
-        #dungeon-message::before {
-            content: '✦';
-            position: absolute; top: 7px; left: 10px;
-            font-size: 0.6rem; color: var(--gold); opacity: 0.4;
-        }
-        #dungeon-message::after {
-            content: '✦';
-            position: absolute; bottom: 7px; right: 10px;
-            font-size: 0.6rem; color: var(--gold); opacity: 0.4;
-        }
-
+        #dungeon-message::before { content: '✦'; position: absolute; top: 7px;    left: 10px;  font-size: 0.6rem; color: var(--gold); opacity: 0.4; }
+        #dungeon-message::after  { content: '✦'; position: absolute; bottom: 7px; right: 10px; font-size: 0.6rem; color: var(--gold); opacity: 0.4; }
         .hl-user   { color: #f0e8d8; font-weight: 700; text-shadow: 0 0 16px rgba(255,255,230,0.35), 0 2px 4px rgba(0,0,0,1); }
         .hl-target { color: #dd1a1a; font-weight: 700; text-shadow: 0 0 18px rgba(200,0,0,0.6),       0 2px 4px rgba(0,0,0,1); }
 
@@ -560,8 +582,7 @@
            BOTTOM BASE
         ════════════════════════════════════════════════════ */
         #base {
-            position: relative;
-            height: 38px;
+            position: relative; height: 38px;
             background:
                 repeating-linear-gradient(90deg,
                     transparent 0, transparent 96px,
@@ -575,180 +596,64 @@
                 0 10px 34px rgba(0,0,0,0.9),
                 0 0 0 1px rgba(0,0,0,0.9),
                 inset 0 4px 12px rgba(0,0,0,0.7);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 26px;
+            display: flex; align-items: center;
+            justify-content: space-between; padding: 0 26px;
         }
-        .base-skull {
-            font-size: 1rem;
-            color: rgba(145,108,28,0.5);
-            filter: drop-shadow(0 0 4px rgba(130,95,18,0.35));
-            position: relative; z-index: 2;
-        }
-        .base-motto {
-            font-size: 0.46rem;
-            letter-spacing: 0.52em;
-            color: rgba(130,96,24,0.42);
-            text-transform: uppercase;
-            position: relative; z-index: 2;
-        }
+        .base-skull { font-size: 1rem; color: rgba(145,108,28,0.5); filter: drop-shadow(0 0 4px rgba(130,95,18,0.35)); position: relative; z-index: 2; }
+        .base-motto { font-size: 0.46rem; letter-spacing: 0.52em; color: rgba(130,96,24,0.42); text-transform: uppercase; position: relative; z-index: 2; }
 
         /* ════════════════════════════════════════════════════
-           BLOOD DRIPS (hang from portcullis spikes)
+           TORCHES
         ════════════════════════════════════════════════════ */
-        #drips {
-            position: absolute;
-            top: 86px;
-            left: 86px; right: 86px; /* inside bar walls */
-            height: 68px;
-            pointer-events: none;
-            z-index: 22;
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-start;
-        }
-        .drip {
-            width: 5px;
-            border-radius: 0 0 50% 50%;
-            background: var(--blood-mid);
-            box-shadow: 0 0 4px rgba(130,0,0,0.4);
-            opacity: 0;
-            transform: scaleY(0);
-            transform-origin: top center;
-        }
-        #scene.show .drip { animation: dripFall 0.48s ease-in forwards; }
-
-        #scene.show .drip:nth-child(1)  { height: 30px; animation-delay: 0.52s; }
-        #scene.show .drip:nth-child(2)  { height: 48px; animation-delay: 0.60s; }
-        #scene.show .drip:nth-child(3)  { height: 20px; animation-delay: 0.46s; }
-        #scene.show .drip:nth-child(4)  { height: 58px; animation-delay: 0.64s; }
-        #scene.show .drip:nth-child(5)  { height: 35px; animation-delay: 0.54s; }
-        #scene.show .drip:nth-child(6)  { height: 22px; animation-delay: 0.49s; }
-        #scene.show .drip:nth-child(7)  { height: 50px; animation-delay: 0.62s; }
-        #scene.show .drip:nth-child(8)  { height: 28px; animation-delay: 0.56s; }
-        #scene.show .drip:nth-child(9)  { height: 42px; animation-delay: 0.58s; }
-
-        @keyframes dripFall {
-            0%   { opacity: 0;    transform: scaleY(0); }
-            22%  { opacity: 0.95; }
-            100% { opacity: 0.95; transform: scaleY(1); }
-        }
-
-        /* ════════════════════════════════════════════════════
-           TORCH SCONCES
-        ════════════════════════════════════════════════════ */
-        .torch {
-            position: absolute;
-            top: 48px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 40;
-        }
+        .torch { position: absolute; top: 48px; display: flex; flex-direction: column; align-items: center; z-index: 40; }
         .torch.left  { left: -58px; }
         .torch.right { right: -58px; }
-
-        .torch-bracket {
-            width: 9px; height: 28px;
-            background: linear-gradient(180deg, var(--iron-hi), var(--iron-dark));
-            border-radius: 2px;
-            box-shadow: 1px 0 4px rgba(0,0,0,0.7);
-        }
-        .torch-stick {
-            width: 12px; height: 48px;
-            background: linear-gradient(180deg, #7a5018, #5a3410, #3a2008);
-            border-radius: 1px;
-            box-shadow: inset 1px 0 rgba(255,180,50,0.1);
-            position: relative;
-        }
-        /* Wrap band */
-        .torch-stick::after {
-            content: '';
-            position: absolute;
-            top: 10px; left: -2px; right: -2px;
-            height: 4px;
-            background: var(--iron-mid);
-            border-radius: 2px;
-        }
-
+        .torch-bracket { width: 9px; height: 28px; background: linear-gradient(180deg, var(--iron-hi), var(--iron-dark)); border-radius: 2px; box-shadow: 1px 0 4px rgba(0,0,0,0.7); }
+        .torch-stick { width: 12px; height: 48px; background: linear-gradient(180deg, #7a5018, #5a3410, #3a2008); border-radius: 1px; box-shadow: inset 1px 0 rgba(255,180,50,0.1); position: relative; }
+        .torch-stick::after { content: ''; position: absolute; top: 10px; left: -2px; right: -2px; height: 4px; background: var(--iron-mid); border-radius: 2px; }
         .torch-flame {
-            width: 20px; height: 34px;
-            margin-bottom: -5px;
-            background: radial-gradient(ellipse at 50% 88%,
-                #fffde0 0%, #ffcc44 25%, #ff8800 55%, #ff3300 80%, transparent 96%
-            );
-            border-radius: 60% 60% 38% 38%;
-            filter: blur(3px);
+            width: 20px; height: 34px; margin-bottom: -5px;
+            background: radial-gradient(ellipse at 50% 88%, #fffde0 0%, #ffcc44 25%, #ff8800 55%, #ff3300 80%, transparent 96%);
+            border-radius: 60% 60% 38% 38%; filter: blur(3px);
             animation: flicker 1.5s ease-in-out infinite alternate;
         }
         .torch.right .torch-flame { animation-delay: 0.65s; }
-
         @keyframes flicker {
-            0%   { transform: scaleX(1)   scaleY(1)    skewX(0deg);   opacity: 0.9; }
-            20%  { transform: scaleX(0.88) scaleY(1.1) skewX(-5deg);  opacity: 1;   }
-            45%  { transform: scaleX(1.12) scaleY(0.92) skewX(4deg);  opacity: 0.82;}
-            70%  { transform: scaleX(0.94) scaleY(1.07) skewX(-2deg); opacity: 1;   }
-            100% { transform: scaleX(1.07) scaleY(0.96) skewX(5deg);  opacity: 0.88;}
+            0%   { transform: scaleX(1)    scaleY(1)    skewX(0deg);  opacity: 0.9;  }
+            20%  { transform: scaleX(0.88) scaleY(1.1)  skewX(-5deg); opacity: 1;    }
+            45%  { transform: scaleX(1.12) scaleY(0.92) skewX(4deg);  opacity: 0.82; }
+            70%  { transform: scaleX(0.94) scaleY(1.07) skewX(-2deg); opacity: 1;    }
+            100% { transform: scaleX(1.07) scaleY(0.96) skewX(5deg);  opacity: 0.88; }
         }
-
         .torch-glow {
-            position: absolute;
-            top: -24px; left: 50%;
-            transform: translateX(-50%);
-            width: 140px; height: 130px;
-            border-radius: 50%;
+            position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
+            width: 140px; height: 130px; border-radius: 50%;
             background: radial-gradient(circle, rgba(255,130,15,0.24) 0%, transparent 70%);
             filter: blur(18px);
             animation: glowBreathe 1.5s ease-in-out infinite alternate;
             pointer-events: none;
         }
         .torch.right .torch-glow { animation-delay: 0.65s; }
-
         @keyframes glowBreathe {
             0%   { opacity: 0.55; transform: translateX(-50%) scale(0.95); }
             100% { opacity: 1;    transform: translateX(-50%) scale(1.18); }
         }
 
         /* ════════════════════════════════════════════════════
-           HANGING CHAINS (corner decoration)
+           CHAINS
         ════════════════════════════════════════════════════ */
-        .chain-hang {
-            position: absolute;
-            top: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            z-index: 30;
-        }
+        .chain-hang { position: absolute; top: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; z-index: 30; }
         .chain-hang.left  { left: 24px; }
         .chain-hang.right { right: 24px; }
-        .cl {
-            width: 9px; height: 13px;
-            border: 2.5px solid var(--iron-hi);
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--iron-mid), var(--iron-dark));
-            box-shadow: 0 1px 3px rgba(0,0,0,0.7);
-        }
+        .cl { width: 9px; height: 13px; border: 2.5px solid var(--iron-hi); border-radius: 50%; background: linear-gradient(135deg, var(--iron-mid), var(--iron-dark)); box-shadow: 0 1px 3px rgba(0,0,0,0.7); }
         .cl:nth-child(even) { transform: rotate(90deg); }
-
-        /* ════════════════════════════════════════════════════
-           WS DEBUG
-        ════════════════════════════════════════════════════ */
-        #ws-status {
-            position: fixed; bottom: 8px; right: 8px;
-            font-size: 10px; font-family: monospace;
-            color: rgba(255,255,255,0.22);
-            display: none; /* set to block to debug */
-        }
     </style>
 </head>
 <body>
 
 <div id="scene">
 
-    <!-- Corner chain hangs -->
+    <!-- Corner chains -->
     <div class="chain-hang left">
         <div class="cl"></div><div class="cl"></div><div class="cl"></div>
         <div class="cl"></div><div class="cl"></div><div class="cl"></div>
@@ -760,7 +665,7 @@
         <div class="cl"></div><div class="cl"></div><div class="cl"></div>
     </div>
 
-    <!-- Torch sconces -->
+    <!-- Torches -->
     <div class="torch left">
         <div class="torch-glow"></div>
         <div class="torch-flame"></div>
@@ -774,7 +679,7 @@
         <div class="torch-bracket"></div>
     </div>
 
-    <!-- Stone capstone arch -->
+    <!-- Arch -->
     <div id="arch">
         <div class="arch-rule"></div>
         <span class="arch-label">☠ &nbsp; Castle Dimitrescu &nbsp; ☠</span>
@@ -788,32 +693,41 @@
         <div class="rivet"></div><div class="rivet"></div>
     </div>
 
-    <!-- Blood drips from portcullis spikes -->
-    <div id="drips">
-        <div class="drip"></div><div class="drip"></div><div class="drip"></div>
-        <div class="drip"></div><div class="drip"></div><div class="drip"></div>
-        <div class="drip"></div><div class="drip"></div><div class="drip"></div>
-    </div>
+    <!-- Blood drip container — JS builds drips dynamically -->
+    <div id="drips"></div>
 
-    <!-- Body: left bars | stone center | right bars -->
+    <!-- Body row -->
     <div id="body">
 
         <div class="bar-wall left">
             <div class="bar-col">
-                <div class="vbar"></div>
-                <div class="vbar"></div>
-                <div class="vbar"></div>
-                <div class="vbar"></div>
+                <div class="vbar"></div><div class="vbar"></div>
+                <div class="vbar"></div><div class="vbar"></div>
             </div>
         </div>
 
         <div id="center">
+            <div class="door door-left">
+                <div class="door-rivets">
+                    <div class="door-rivet"></div><div class="door-rivet"></div>
+                    <div class="door-rivet"></div><div class="door-rivet"></div>
+                    <div class="door-rivet"></div>
+                </div>
+            </div>
+            <div class="door door-right">
+                <div class="door-rivets">
+                    <div class="door-rivet"></div><div class="door-rivet"></div>
+                    <div class="door-rivet"></div><div class="door-rivet"></div>
+                    <div class="door-rivet"></div>
+                </div>
+            </div>
+            <div class="door-shadow left"></div>
+            <div class="door-shadow right"></div>
+
             <div class="hbar upper"></div>
             <div class="hbar lower"></div>
 
             <div id="content">
-
-                <!-- Top rule -->
                 <div class="rule-row">
                     <div class="rule-line"></div>
                     <span class="rule-gem">✦</span>
@@ -822,20 +736,15 @@
                     <div class="rule-line"></div>
                 </div>
 
-                <!-- Avatar row -->
                 <div id="avatar-row">
-
-                    <!-- ACCUSER (command sender) -->
                     <div class="avatar-cell" id="cell-accuser">
                         <span class="role-label accuser">Sent by</span>
                         <div class="portrait-frame" id="frame-accuser">
                             <div class="avatar-placeholder" id="ph-accuser">⚔️</div>
-                            <!-- img injected by JS -->
                         </div>
                         <span class="avatar-name accuser-name" id="name-accuser">…</span>
                     </div>
 
-                    <!-- VS / chain divider -->
                     <div id="vs-col">
                         <div class="vs-chain">
                             <div class="vs-link"></div><div class="vs-link"></div>
@@ -848,72 +757,62 @@
                         </div>
                     </div>
 
-                    <!-- PRISONER (broadcaster / target) -->
                     <div class="avatar-cell" id="cell-prisoner">
                         <span class="role-label prisoner">Imprisoned</span>
                         <div class="portrait-frame prisoner" id="frame-prisoner">
                             <div class="avatar-placeholder" id="ph-prisoner">🔒</div>
-                            <!-- img injected by JS -->
                             <div class="bar-overlay">
-                                <div class="pbar"></div>
-                                <div class="pbar"></div>
-                                <div class="pbar"></div>
-                                <div class="pbar"></div>
+                                <div class="pbar"></div><div class="pbar"></div>
+                                <div class="pbar"></div><div class="pbar"></div>
                                 <div class="pbar"></div>
                             </div>
                         </div>
                         <span class="avatar-name prisoner-name" id="name-prisoner">…</span>
                     </div>
+                </div>
 
-                </div><!-- /#avatar-row -->
-
-                <!-- Message text -->
                 <div id="dungeon-message">Awaiting the Lady's command…</div>
 
-                <!-- Bottom rule -->
                 <div class="rule-row">
                     <div class="rule-line"></div>
                     <span class="rule-gem">☠</span>
                     <div class="rule-line"></div>
                 </div>
-
-            </div><!-- /#content -->
-        </div><!-- /#center -->
-
-        <div class="bar-wall right">
-            <div class="bar-col">
-                <div class="vbar"></div>
-                <div class="vbar"></div>
-                <div class="vbar"></div>
-                <div class="vbar"></div>
             </div>
         </div>
 
-    </div><!-- /#body -->
+        <div class="bar-wall right">
+            <div class="bar-col">
+                <div class="vbar"></div><div class="vbar"></div>
+                <div class="vbar"></div><div class="vbar"></div>
+            </div>
+        </div>
 
-    <!-- Stone base -->
+    </div>
+
     <div id="base">
         <span class="base-skull">☠</span>
         <span class="base-motto">No escape from the dungeon below</span>
         <span class="base-skull">☠</span>
     </div>
-
-</div><!-- /#scene -->
-
-<div id="ws-status">WS: connecting…</div>
+</div>
 
 <script>
-    const params   = new URLSearchParams(window.location.search);
-    const wsHost   = params.get("address") || "localhost";
-    const wsPort   = params.get("port")    || "8080";
+    /* ══════════════════════════════════════════════════════════
+       WEBSOCKET SETUP
+    ══════════════════════════════════════════════════════════ */
+    const params  = new URLSearchParams(window.location.search);
+    const wsHost  = params.get("address") || "localhost";
+    const wsPort  = params.get("port")    || "8080";
 
-    const scene    = document.getElementById("scene");
-    const msgEl    = document.getElementById("dungeon-message");
-    const statusEl = document.getElementById("ws-status");
+    const scene   = document.getElementById("scene");
+    const msgEl   = document.getElementById("dungeon-message");
+    const dripsEl = document.getElementById("drips");
 
-    let hideTimer  = null;
+    let closeTimer = null;
+    let raiseTimer = null;
+    let dripTimers = [];
 
-    /* ── HTML-escape to prevent injection ───────────────────── */
     function esc(s) {
         return String(s)
             .replace(/&/g,"&amp;")
@@ -921,74 +820,212 @@
             .replace(/>/g,"&gt;");
     }
 
-    /* ── Load an avatar image into a portrait frame ─────────── */
     function setAvatar(frameId, placeholderId, imageUrl) {
         const frame = document.getElementById(frameId);
         const ph    = document.getElementById(placeholderId);
-
-        // Remove old injected image if any
-        const old = frame.querySelector("img.injected");
+        const old   = frame.querySelector("img.injected");
         if (old) old.remove();
-
-        if (!imageUrl || imageUrl.trim() === "") {
-            ph.style.display = "flex";
-            return;
-        }
-
+        if (!imageUrl || imageUrl.trim() === "") { ph.style.display = "flex"; return; }
         ph.style.display = "none";
-
         const img = document.createElement("img");
         img.className = "injected";
         img.src       = imageUrl;
         img.alt       = "";
         img.onerror   = () => { ph.style.display = "flex"; img.remove(); };
-
-        // Insert before the bar-overlay (if any) so bars sit on top
         const overlay = frame.querySelector(".bar-overlay");
-        if (overlay) {
-            frame.insertBefore(img, overlay);
-        } else {
-            frame.appendChild(img);
-        }
+        if (overlay) frame.insertBefore(img, overlay);
+        else         frame.appendChild(img);
     }
 
-    /* ── Trigger the dungeon drop ───────────────────────────── */
-    function showDungeon(user, userAvatar, target, targetAvatar) {
+    /* ══════════════════════════════════════════════════════════
+       REALISTIC BLOOD DRIP SYSTEM
+       Each drip goes through these phases with JS animation:
+         Phase 1 — seep:   stain appears, stream starts growing   (~0.8s)
+         Phase 2 — flow:   stream slowly extends, drop grows      (~2.0s)
+         Phase 3 — bulge:  drop swells heavy at the tip           (~0.6s)
+         Phase 4 — fall:   drop detaches and falls off screen     (~0.5s)
+         Phase 5 — splat:  tiny splat mark left on crossbar       (stays)
+         Phase 6 — repeat: whole cycle repeats with slight delay
+    ══════════════════════════════════════════════════════════ */
 
-        // Populate names
+    /* Config: positions as % of drip container width, sizes */
+    const DRIP_CONFIGS = [
+        { left: '7%',   streamH: 42, dropW: 7,  dropH: 10, delay: 0.5  },
+        { left: '16%',  streamH: 65, dropW: 9,  dropH: 13, delay: 1.2  },
+        { left: '27%',  streamH: 30, dropW: 6,  dropH: 9,  delay: 0.1  },
+        { left: '38%',  streamH: 78, dropW: 11, dropH: 15, delay: 0.8  },
+        { left: '50%',  streamH: 48, dropW: 8,  dropH: 11, delay: 0.3  },
+        { left: '61%',  streamH: 35, dropW: 7,  dropH: 10, delay: 1.5  },
+        { left: '72%',  streamH: 72, dropW: 10, dropH: 14, delay: 0.6  },
+        { left: '83%',  streamH: 55, dropW: 9,  dropH: 12, delay: 1.0  },
+        { left: '93%',  streamH: 40, dropW: 7,  dropH: 10, delay: 0.4  },
+    ];
+
+    function buildDrip(cfg) {
+        const wrap = document.createElement('div');
+        wrap.className = 'blood-drip';
+        wrap.style.left = cfg.left;
+
+        const stain  = document.createElement('div');
+        stain.className = 'drip-stain';
+
+        const stream = document.createElement('div');
+        stream.className = 'drip-stream';
+
+        const drop   = document.createElement('div');
+        drop.className = 'drip-drop';
+
+        wrap.appendChild(stain);
+        wrap.appendChild(stream);
+        wrap.appendChild(drop);
+        dripsEl.appendChild(wrap);
+
+        return { wrap, stain, stream, drop, cfg };
+    }
+
+    function animateDrip(drip) {
+        const { stain, stream, drop, cfg } = drip;
+
+        /* ── reset ── */
+        stain.style.opacity  = '0';
+        stream.style.height  = '0px';
+        stream.style.opacity = '0';
+        drop.style.width     = '0px';
+        drop.style.height    = '0px';
+        drop.style.opacity   = '0';
+
+        /* Randomise the stream height and drop size slightly each cycle */
+        const sh  = cfg.streamH + (Math.random() * 14 - 7) | 0;
+        const dw  = cfg.dropW  + (Math.random() * 2  - 1) | 0;
+        const dh  = cfg.dropH  + (Math.random() * 3  - 1) | 0;
+
+        /* ── Total duration of one drip cycle in ms ── */
+        const seepDur   = 700  + Math.random() * 300;   // stain appears
+        const flowDur   = 1800 + Math.random() * 700;   // stream grows + drop grows
+        const bulgeDur  = 500  + Math.random() * 200;   // drop swells
+        const fallDur   = 400;                           // drop falls
+        const pauseDur  = 2000 + Math.random() * 2500;  // gap between cycles
+
+        /* ─── PHASE 1: seep ─── */
+        // Stain fades in
+        requestAnimationFrame(() => {
+            stain.style.transition  = `opacity ${seepDur * 0.6}ms ease-out`;
+            stain.style.opacity     = '0.9';
+            // Stream starts inching down
+            stream.style.transition = `opacity 200ms, height ${flowDur}ms cubic-bezier(0.2, 0, 0.6, 1)`;
+            stream.style.opacity    = '1';
+
+            setTimeout(() => {
+                // ─── PHASE 2: flow — stream extends ───
+                stream.style.height = sh + 'px';
+
+                // Drop starts forming halfway through the stream extension
+                setTimeout(() => {
+                    drop.style.transition = `width ${bulgeDur * 0.7}ms ease-in, height ${bulgeDur}ms ease-in, opacity 200ms`;
+                    drop.style.opacity    = '1';
+                    drop.style.width      = dw + 'px';
+                    drop.style.height     = dh + 'px';
+
+                    // ─── PHASE 3: bulge — drop swells ───
+                    setTimeout(() => {
+                        drop.style.transition = `width ${bulgeDur}ms cubic-bezier(0.3, 0, 0.7, 1), height ${bulgeDur}ms cubic-bezier(0.3, 0, 0.7, 1)`;
+                        drop.style.width  = (dw * 1.5) + 'px';
+                        drop.style.height = (dh * 1.4) + 'px';
+
+                        // ─── PHASE 4: fall — drop detaches ───
+                        setTimeout(() => {
+                            drop.style.transition = `transform ${fallDur}ms cubic-bezier(0.4, 0, 1, 1), opacity ${fallDur * 0.7}ms ${fallDur * 0.4}ms ease-in`;
+                            drop.style.transform  = `translateY(${110 - sh - dh}px) scaleY(1.2)`;
+                            drop.style.opacity    = '0';
+
+                            // Stream thins after drop falls
+                            stream.style.transition = `width ${fallDur * 0.5}ms ease-out`;
+                            stream.style.width      = '2px';
+
+                            // ─── PHASE 5: pause then restart ───
+                            setTimeout(() => {
+                                drop.style.transition  = '';
+                                drop.style.transform   = '';
+                                stream.style.transition = '';
+                                stream.style.width     = '4px';
+                                animateDrip(drip); // loop
+                            }, pauseDur);
+
+                        }, bulgeDur + 100);
+                    }, flowDur * 0.55); // bulge starts when stream is mostly extended
+
+                }, flowDur * 0.45); // drop appears mid-flow
+            }, seepDur);
+        });
+    }
+
+    function startBloodDrips() {
+        /* Clear any old drip elements */
+        dripsEl.innerHTML = '';
+
+        DRIP_CONFIGS.forEach(cfg => {
+            const drip = buildDrip(cfg);
+            /* Stagger start of each drip's first cycle */
+            const t = setTimeout(() => animateDrip(drip), cfg.delay * 1000 + 500);
+            dripTimers.push(t);
+        });
+    }
+
+    function stopBloodDrips() {
+        dripTimers.forEach(t => clearTimeout(t));
+        dripTimers = [];
+        dripsEl.innerHTML = '';
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       SHOW / HIDE DUNGEON
+    ══════════════════════════════════════════════════════════ */
+    function showDungeon(user, userAvatar, target, targetAvatar) {
+        clearTimeout(closeTimer);
+        clearTimeout(raiseTimer);
+        stopBloodDrips();
+
+        scene.classList.remove("show", "closing", "raise");
+        void scene.offsetWidth;
+
         document.getElementById("name-accuser").textContent  = user   || "Unknown";
         document.getElementById("name-prisoner").textContent = target || "Unknown";
-
-        // Populate avatars
         setAvatar("frame-accuser",  "ph-accuser",  userAvatar);
         setAvatar("frame-prisoner", "ph-prisoner", targetAvatar);
 
-        // Populate message text
         msgEl.innerHTML =
             `<span class="hl-user">${esc(user || "Someone")}</span>` +
             ` has cast ` +
             `<span class="hl-target">${esc(target || "the broadcaster")}</span>` +
             `<br>into the dungeon — for destroying everything!`;
 
-        // Replay animation
-        scene.classList.remove("show", "hide");
-        void scene.offsetWidth;
         scene.classList.add("show");
 
-        clearTimeout(hideTimer);
-        hideTimer = setTimeout(() => {
-            scene.classList.remove("show");
-            scene.classList.add("hide");
-            setTimeout(() => scene.classList.remove("hide"), 550);
-        }, 10000);
+        /* Blood drips start ~half a second after slam lands */
+        setTimeout(startBloodDrips, 600);
+
+        /* After 8 seconds: close doors */
+        closeTimer = setTimeout(() => {
+            scene.classList.add("closing");
+
+            /* After doors close + pause: raise and fade */
+            raiseTimer = setTimeout(() => {
+                stopBloodDrips();
+                scene.classList.remove("show", "closing");
+                void scene.offsetWidth;
+                scene.classList.add("raise");
+                setTimeout(() => scene.classList.remove("raise"), 1300);
+            }, 2000);
+        }, 8000);
     }
 
-    /* ── WebSocket ──────────────────────────────────────────── */
+    /* ══════════════════════════════════════════════════════════
+       WEBSOCKET
+    ══════════════════════════════════════════════════════════ */
     function connect() {
         const ws = new WebSocket(`ws://${wsHost}:${wsPort}/`);
 
         ws.onopen = () => {
-            statusEl.textContent = "WS: connected";
             ws.send(JSON.stringify({
                 request: "Subscribe",
                 events: { general: ["Custom"] },
@@ -1000,41 +1037,28 @@
             let msg;
             try { msg = JSON.parse(evt.data); } catch { return; }
 
-            // Pattern A — CPH.WebsocketBroadcastJson sends the raw payload
             if (msg?.eventName === "DungeonDrop") {
-                showDungeon(msg.user, msg.userAvatar, msg.target, msg.targetAvatar);
-                return;
+                showDungeon(msg.user, msg.userAvatar, msg.target, msg.targetAvatar); return;
             }
-
-            // Pattern B — Streamer.bot wraps it as a Custom event object
             if (msg?.data?.eventName === "DungeonDrop") {
                 const d = msg.data;
-                showDungeon(d.user, d.userAvatar, d.target, d.targetAvatar);
-                return;
+                showDungeon(d.user, d.userAvatar, d.target, d.targetAvatar); return;
             }
-
-            // Pattern C — data is a JSON string (some SB versions)
             if (msg?.data && typeof msg.data === "string") {
                 try {
                     const d = JSON.parse(msg.data);
-                    if (d?.eventName === "DungeonDrop") {
+                    if (d?.eventName === "DungeonDrop")
                         showDungeon(d.user, d.userAvatar, d.target, d.targetAvatar);
-                    }
                 } catch { /* skip */ }
             }
         };
 
-        ws.onerror = () => { statusEl.textContent = "WS: error"; };
-        ws.onclose = () => {
-            statusEl.textContent = "WS: reconnecting…";
-            setTimeout(connect, 3000);
-        };
+        ws.onclose = () => setTimeout(connect, 3000);
     }
 
     connect();
 
-    
-    
+
 </script>
 
 </body>
