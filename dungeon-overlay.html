@@ -4,27 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Castle Dimitrescu Dungeon Overlay</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --blood:      #5b0000;
-            --blood-bright: #990000;
-            --gold-old:   #8a6e35;
-            --gold-light: #c2ac6a;
-            --stone-deep: #0e0b09;
-            --stone-mid:  #1d1a18;
-            --brick-red: #3d1f1f;
-            --iron-core:  #111111;
-            --iron-rust:  #2f2924;
-            --text-old:   #e0d0b8;
-            /* Fire colors */
-            --fire-core: #ffffff;
-            --fire-yellow: #ffea00;
-            --fire-orange: #ff9100;
-            --fire-red: #ff4000;
-            --smoke-light: rgba(200, 200, 200, 0.08);
-            --smoke-dark: rgba(50, 50, 50, 0.15);
+            --blood:       #6a0000;
+            --blood-mid:   #990000;
+            --gold:        #8a6818;
+            --gold-bright: #c8a040;
+            --stone1:      #0f0c09;
+            --stone2:      #191410;
+            --stone3:      #231a12;
+            --iron-dark:   #141210;
+            --iron-mid:    #282418;
+            --iron-hi:     #42382a;
+            --text-cream:  #eddfc6;
+            --torch-core:  #fff8c0;
+            --torch-flame: #ff9900;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -34,710 +29,1013 @@
             overflow: hidden;
             width: 1920px;
             height: 1080px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Cinzel', serif;
         }
 
-        /* ─── MAIN WRAPPER ─── */
-        #dungeon-container {
-            position: relative;
-            width: 1000px;
-            opacity: 0;
-            transform: scaleY(0.7);
-            transform-origin: top center;
-            pointer-events: none;
-            z-index: 100;
-        }
-
-        #dungeon-container.show {
-            animation: dungeonDrop 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        #dungeon-container.hide {
-            animation: dungeonRise 0.6s ease-in forwards;
-        }
-
-        @keyframes dungeonDrop {
-            0%   { opacity: 0; transform: scaleY(0.5); }
-            60%  { opacity: 1; transform: translateY(20px) scaleY(1.05); }
-            80%  { transform: translateY(-10px) scaleY(0.98); }
-            100% { opacity: 1; transform: translateY(0) scaleY(1); }
-        }
-
-        @keyframes dungeonRise {
-            0%   { opacity: 1; transform: translateY(0) scaleY(1); }
-            100% { opacity: 0; transform: scaleY(0.5); }
-        }
-
-        /* ─── THE FULL DUNGEON CHAMBER PANEL ─── */
-        #dungeon-chamber {
-            position: relative;
-            border-radius: 4px;
-            overflow: hidden;
-            background:
-                radial-gradient(circle at 50% 120%, rgba(255,100,0,0.06) 0%, transparent 80%),
-                radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.9) 100%),
-                linear-gradient(90deg, 
-                    rgba(0,0,0,0.8) 0%, 
-                    transparent 10%, transparent 20%, 
-                    rgba(0,0,0,0.5) 25%, rgba(0,0,0,0.5) 30%, 
-                    transparent 35%, transparent 65%, 
-                    rgba(0,0,0,0.5) 70%, rgba(0,0,0,0.5) 75%, 
-                    transparent 80%, transparent 90%, 
-                    rgba(0,0,0,0.8) 100%
-                ),
-                repeating-linear-gradient(
-                    0deg,
-                    transparent 0px, transparent 40px,
-                    rgba(20, 15, 12, 0.9) 40px, rgba(20, 15, 12, 0.9) 44px
-                ),
-                #1a1512;
-            border: 6px solid #2a221a;
-            border-top: 8px solid #3d3126;
-            box-shadow:
-                0 10px 40px rgba(0,0,0,0.9),
-                inset 0 0 100px rgba(0,0,0,0.9),
-                inset 0 4px 0 rgba(255,180,80,0.08);
-            padding-bottom: 20px;
-        }
-
-        /* ─── IRON CAGE BARS ─── */
-        #bars-wrapper {
+        /* ════════════════════════════════════════════════════
+           SCENE ROOT
+        ════════════════════════════════════════════════════ */
+        #scene {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) translateY(-320px) scaleY(0.45);
+            transform-origin: top center;
+            width: 1060px;
+            opacity: 0;
+        }
+
+        #scene.show {
+            animation: slamDown 0.65s cubic-bezier(0.14, 0.9, 0.32, 1.1) forwards;
+        }
+        #scene.hide {
+            animation: raiseUp 0.45s ease-in forwards;
+        }
+
+        @keyframes slamDown {
+            0%   { opacity: 0; transform: translate(-50%, -50%) translateY(-320px) scaleY(0.4); }
+            55%  { opacity: 1; transform: translate(-50%, -50%) translateY(20px)   scaleY(1.05); }
+            78%  { transform: translate(-50%, -50%) translateY(-8px)  scaleY(0.98); }
+            100% { opacity: 1; transform: translate(-50%, -50%) translateY(0)      scaleY(1); }
+        }
+        @keyframes raiseUp {
+            0%   { opacity: 1; transform: translate(-50%, -50%) translateY(0) scaleY(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) translateY(-300px) scaleY(0.4); }
+        }
+
+
+        /* ════════════════════════════════════════════════════
+           ARCH CAPSTONE (very top strip)
+        ════════════════════════════════════════════════════ */
+        #arch {
+            position: relative;
+            height: 32px;
+            background:
+                repeating-linear-gradient(90deg,
+                    transparent 0, transparent 92px,
+                    rgba(0,0,0,0.55) 92px, rgba(0,0,0,0.55) 95px
+                ),
+                linear-gradient(180deg, #0d0a07 0%, #1c1610 100%);
+            border: 3px solid #2e2218;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            box-shadow:
+                0 -4px 24px rgba(80,0,0,0.35),
+                inset 0 1px 0 rgba(100,70,20,0.18);
             display: flex;
-            justify-content: space-around;
-            padding: 0 40px;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+        }
+        .arch-rule {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0.4;
+        }
+        .arch-label {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 0.55rem;
+            letter-spacing: 0.55em;
+            color: rgba(150, 110, 30, 0.55);
+            white-space: nowrap;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ════════════════════════════════════════════════════
+           PORTCULLIS HEADER BAR
+        ════════════════════════════════════════════════════ */
+        #portcullis {
+            position: relative;
+            height: 56px;
+            background: linear-gradient(180deg, #373020 0%, #201c12 55%, #181408 100%);
+            border-left:  3px solid #2e2218;
+            border-right: 3px solid #2e2218;
+            box-shadow:
+                0 6px 20px rgba(0,0,0,0.85),
+                inset 0 -5px 14px rgba(0,0,0,0.7),
+                inset 0 1px 0 rgba(110,80,25,0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
             z-index: 5;
         }
 
-        .bar {
-            width: 32px;
-            height: 0%;
-            background: linear-gradient(
-                90deg,
-                #111111 0%,
-                #1a1816 15%,
-                #2f2924 30%,
-                #26211d 50%,
-                #2f2924 70%,
-                #1a1816 85%,
-                #111111 100%
+        /* Spike fringe bottom */
+        #portcullis::after {
+            content: '';
+            position: absolute;
+            bottom: -20px; left: 0; right: 0;
+            height: 20px;
+            background: linear-gradient(180deg, #181408 0%, transparent 100%);
+            clip-path: polygon(
+                0% 0%,
+                4% 0%, 6% 100%, 8% 0%,
+                12% 0%, 14% 100%, 16% 0%,
+                20% 0%, 22% 100%, 24% 0%,
+                28% 0%, 30% 100%, 32% 0%,
+                36% 0%, 38% 100%, 40% 0%,
+                44% 0%, 46% 100%, 48% 0%,
+                52% 0%, 54% 100%, 56% 0%,
+                60% 0%, 62% 100%, 64% 0%,
+                68% 0%, 70% 100%, 72% 0%,
+                76% 0%, 78% 100%, 80% 0%,
+                84% 0%, 86% 100%, 88% 0%,
+                92% 0%, 94% 100%, 96% 0%,
+                100% 0%, 100% 0%, 0% 0%
             );
-            border-left:  2px solid rgba(80,70,50,0.3);
-            border-right: 2px solid rgba(10,8,6,0.9);
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .rivet {
+            width: 11px; height: 11px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, var(--iron-hi), var(--iron-dark));
+            box-shadow: 0 1px 4px rgba(0,0,0,0.9), inset 0 1px rgba(255,255,255,0.04);
+            flex-shrink: 0;
+        }
+
+        .portcullis-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-weight: 900;
+            font-size: 1.65rem;
+            letter-spacing: 0.22em;
+            color: var(--gold-bright);
+            text-shadow:
+                0 0 28px rgba(180,130,30,0.75),
+                0 0 60px rgba(180,100,0,0.28),
+                0 2px 5px rgba(0,0,0,1);
+            white-space: nowrap;
+        }
+
+        /* ════════════════════════════════════════════════════
+           BODY ROW  (left bars | center stone | right bars)
+        ════════════════════════════════════════════════════ */
+        #body {
+            display: flex;
+        }
+
+        /* ── SIDE BAR COLUMNS ── */
+        .bar-wall {
+            width: 82px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            background:
+                repeating-linear-gradient(180deg,
+                    transparent 0, transparent 52px,
+                    rgba(0,0,0,0.55) 52px, rgba(0,0,0,0.55) 55px
+                ),
+                linear-gradient(180deg, #181410 0%, #0f0c09 100%);
+            border-left:  3px solid #2e2218;
+            border-right: 3px solid #2e2218;
+        }
+
+        .bar-col {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding: 0 6px;
+        }
+
+        .vbar {
+            width: 16px;
+            height: 0;
+            background: linear-gradient(90deg,
+                var(--iron-dark) 0%,
+                var(--iron-mid)  22%,
+                var(--iron-hi)   42%,
+                #504838          50%,
+                var(--iron-hi)   58%,
+                var(--iron-mid)  78%,
+                var(--iron-dark) 100%
+            );
             box-shadow:
-                inset 3px 0 6px rgba(0,0,0,0.7),
-                inset -3px 0 6px rgba(0,0,0,0.7),
-                4px 0 12px rgba(0,0,0,0.6);
-            transition: height 0s;
+                inset 2px 0 5px rgba(0,0,0,0.6),
+                inset -2px 0 5px rgba(0,0,0,0.6),
+                1px 0 rgba(0,0,0,0.8),
+                -1px 0 rgba(0,0,0,0.8);
+            border-radius: 0 0 2px 2px;
         }
 
-        #dungeon-container.show .bar {
+        #scene.show .vbar {
             height: 100%;
-            transition: height 0.45s cubic-bezier(0.55, 0, 0.45, 1.3);
+            transition: height 0.38s cubic-bezier(0.52, 0, 0.42, 1.35);
         }
 
-        /* Staggering delay */
-        #dungeon-container.show .bar:nth-child(1)  { transition-delay: 0.15s; }
-        #dungeon-container.show .bar:nth-child(2)  { transition-delay: 0.08s; }
-        #dungeon-container.show .bar:nth-child(3)  { transition-delay: 0.02s; }
-        #dungeon-container.show .bar:nth-child(4)  { transition-delay: 0.09s; }
-        #dungeon-container.show .bar:nth-child(5)  { transition-delay: 0.04s; }
-        #dungeon-container.show .bar:nth-child(6)  { transition-delay: 0.12s; }
-        #dungeon-container.show .bar:nth-child(7)  { transition-delay: 0.00s; }
-        #dungeon-container.show .bar:nth-child(8)  { transition-delay: 0.10s; }
-        #dungeon-container.show .bar:nth-child(9)  { transition-delay: 0.05s; }
-        #dungeon-container.show .bar:nth-child(10) { transition-delay: 0.16s; }
+        /* Stagger each bar */
+        .bar-wall.left  .vbar:nth-child(1) { transition-delay: 0.07s; }
+        .bar-wall.left  .vbar:nth-child(2) { transition-delay: 0.03s; }
+        .bar-wall.left  .vbar:nth-child(3) { transition-delay: 0.09s; }
+        .bar-wall.left  .vbar:nth-child(4) { transition-delay: 0.01s; }
+        .bar-wall.right .vbar:nth-child(1) { transition-delay: 0.02s; }
+        .bar-wall.right .vbar:nth-child(2) { transition-delay: 0.08s; }
+        .bar-wall.right .vbar:nth-child(3) { transition-delay: 0.04s; }
+        .bar-wall.right .vbar:nth-child(4) { transition-delay: 0.10s; }
 
-        .crossbar {
+        /* ── STONE CENTER ── */
+        #center {
+            flex: 1;
+            position: relative;
+            background:
+                radial-gradient(ellipse at 0%   50%, rgba(110,55,0,0.15) 0%, transparent 45%),
+                radial-gradient(ellipse at 100% 50%, rgba(110,55,0,0.15) 0%, transparent 45%),
+                radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.7)     0%, transparent 55%),
+                repeating-linear-gradient(180deg,
+                    transparent 0, transparent 54px,
+                    rgba(0,0,0,0.48) 54px, rgba(0,0,0,0.48) 57px
+                ),
+                repeating-linear-gradient(90deg,
+                    transparent 0, transparent 128px,
+                    rgba(0,0,0,0.25) 128px, rgba(0,0,0,0.25) 131px
+                ),
+                linear-gradient(180deg, #1e1610 0%, #181208 50%, #130e08 100%);
+        }
+
+        /* ── HORIZONTAL CROSSBARS ── */
+        .hbar {
             position: absolute;
             left: 0; right: 0;
-            height: 30px;
-            background: linear-gradient(
-                180deg,
-                #4a4035 0%,
-                #2f2924 35%,
-                #1a1714 50%,
-                #2f2924 65%,
-                #4a4035 100%
+            height: 22px;
+            background: linear-gradient(180deg,
+                var(--iron-hi)   0%,
+                var(--iron-mid)  28%,
+                var(--iron-dark) 58%,
+                var(--iron-mid)  100%
             );
             box-shadow:
-                0 4px 10px rgba(0,0,0,0.8),
-                inset 0 1px 0 rgba(120,100,70,0.3),
-                inset 0 -1px 0 rgba(0,0,0,0.7);
-            z-index: 6;
+                0 3px 10px rgba(0,0,0,0.85),
+                inset 0 1px 0 rgba(90,80,45,0.28),
+                inset 0 -1px 0 rgba(0,0,0,0.65);
+            z-index: 8;
             opacity: 0;
-            transition: opacity 0.15s;
+            transition: opacity 0.1s 0.28s;
         }
+        #scene.show .hbar { opacity: 1; }
 
-        #dungeon-container.show .crossbar { opacity: 1; }
-        .crossbar.top    { top: 25%; }
-        .crossbar.mid    { top: 50%; transform: translateY(-50%); }
-        .crossbar.bottom { top: 75%; }
-
-        .crossbar::before,
-        .crossbar::after {
+        .hbar::before, .hbar::after {
             content: '';
             position: absolute;
             top: 50%; transform: translateY(-50%);
-            width: 14px; height: 14px;
+            width: 13px; height: 13px;
             border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #5d5349, #1a1714);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.1);
+            background: radial-gradient(circle at 35% 30%, var(--iron-hi), var(--iron-dark));
+            box-shadow: 0 1px 4px rgba(0,0,0,0.9);
         }
-        .crossbar::before { left: 80px; }
-        .crossbar::after  { right: 80px; }
+        .hbar::before { left: 10px; }
+        .hbar::after  { right: 10px; }
 
-        /* ─── PANEL CONTENT ─── */
-        #panel-content {
+        .hbar.upper { top: 32%; }
+        .hbar.lower { top: 70%; }
+
+        /* ════════════════════════════════════════════════════
+           CONTENT ZONE  (title + avatar row + message)
+        ════════════════════════════════════════════════════ */
+        #content {
             position: relative;
-            z-index: 20;
-            padding: 40px 100px 40px;
+            z-index: 15;
+            padding: 26px 36px 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 16px;
         }
 
-        .medieval-text {
-            color: var(--gold-old);
-            text-shadow:
-                0 0 10px rgba(138,110,53,0.7),
-                0 4px 5px rgba(0,0,0,0.9),
-                -1px -1px 0px rgba(255,255,255,0.1);
-        }
-
-        .header-bar {
+        /* ── GOLD RULE LINES ── */
+        .rule-row {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 25px;
+            gap: 10px;
             width: 100%;
         }
-
-        .header-divider {
+        .rule-line {
             flex: 1;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--gold-old) 30%, var(--gold-old) 70%, transparent);
-            box-shadow: 0 1px 0 rgba(255,255,255,0.1);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0.45;
         }
-
-        .title-text {
-            font-family: 'Cinzel Decorative', cursive;
-            font-weight: 900;
-            font-size: 2.2rem;
-            letter-spacing: 0.2em;
+        .rule-gem {
+            color: var(--gold-bright);
+            font-size: 0.65rem;
+            opacity: 0.65;
+            filter: drop-shadow(0 0 4px rgba(180,130,30,0.45));
+        }
+        .rule-label {
+            font-size: 0.52rem;
+            letter-spacing: 0.42em;
+            color: rgba(150,110,35,0.48);
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
-        .skull {
-            font-size: 1.8rem;
-            filter: drop-shadow(0 0 10px rgba(138,110,53,0.6));
-        }
-
-        .subtitle {
-            font-family: 'Cinzel', serif;
-            font-size: 0.8rem;
-            letter-spacing: 0.4em;
-            color: rgba(180,160,130,0.6);
-            text-align: center;
-            text-transform: uppercase;
-            margin-bottom: 30px;
-            max-width: 80%;
-        }
-
-        #dungeon-message {
-            font-family: 'Cinzel', serif;
-            font-size: 1.8rem;
-            line-height: 1.6;
-            text-align: center;
-            padding: 30px 40px;
-            background: 
-                radial-gradient(circle at 50% 50%, rgba(20,15,10,0.5) 0%, rgba(10,5,0,0.9) 100%),
-                rgba(0,0,0,0.6);
-            border: 2px solid #3d3126;
-            border-radius: 2px;
-            box-shadow: 
-                0 10px 30px rgba(0,0,0,0.8),
-                inset 0 0 50px rgba(0,0,0,0.8);
-            position: relative;
-            max-width: 90%;
-        }
-
-        #dungeon-message::before,
-        #dungeon-message::after {
-            content: '♦';
-            position: absolute;
-            font-size: 0.9rem;
-            color: var(--gold-old);
-            opacity: 0.6;
-        }
-        #dungeon-message::before { top: 10px;  left:  12px; }
-        #dungeon-message::after  { bottom: 10px; right: 12px; }
-
-        .highlight-user {
-            color: #ffffff;
-            font-weight: 600;
-            text-shadow: 0 0 15px rgba(255,255,255,0.6), 0 3px 5px rgba(0,0,0,1);
-        }
-
-        .highlight-target {
-            color: var(--blood-bright);
-            font-weight: 700;
-            text-shadow: 0 0 20px rgba(153,0,0,0.8), 0 3px 5px rgba(0,0,0,1);
-        }
-
-        /* ─── BLOOD DRIPS ─── */
-        #blood-drips {
-            position: absolute;
-            top: 25%;
-            left: 0; right: 0;
-            height: 400px;
-            z-index: 70;
-            pointer-events: none;
+        /* ════════════════════════════════════════════════════
+           AVATAR ROW  (accuser cell | VS divider | prisoner cell)
+        ════════════════════════════════════════════════════ */
+        #avatar-row {
             display: flex;
             align-items: flex-start;
-            justify-content: space-around;
-            padding: 0 40px;
-        }
-
-        .drip-container {
-            position: relative;
-            width: 32px;
-            height: 100%;
-            display: flex;
             justify-content: center;
-        }
-
-        .blood-stain {
-            position: absolute;
-            top: 0;
+            gap: 20px;
             width: 100%;
-            height: 15px;
-            background: var(--blood);
-            border-radius: 0 0 50% 50%;
-            filter: blur(1px);
         }
 
-        .drip-drop {
-            position: absolute;
-            top: 0;
-            width: 4px;
-            background: linear-gradient(to bottom, var(--blood), var(--blood-bright));
-            border-radius: 0 0 4px 4px;
-            transform-origin: top center;
-            opacity: 0;
-        }
-
-        .drip-drop::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 10px;
-            height: 12px;
-            background: radial-gradient(circle at 35% 35%, var(--blood-bright), var(--blood));
-            border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5), inset -1px -1px 3px rgba(0,0,0,0.6);
-        }
-
-        #dungeon-container.show .drip-drop {
-            animation: bloodViscosity 5s infinite;
-        }
-
-        .drip-container:nth-child(1) .drip-drop { animation-delay: 0.5s; height: 120px; }
-        .drip-container:nth-child(3) .drip-drop { animation-delay: 2.2s; height: 180px; }
-        .drip-container:nth-child(5) .drip-drop { animation-delay: 1.1s; height: 140px; }
-        .drip-container:nth-child(7) .drip-drop { animation-delay: 3.5s; height: 200px; }
-        .drip-container:nth-child(9) .drip-drop { animation-delay: 0.2s; height: 160px; }
-
-        @keyframes bloodViscosity {
-            0% { transform: scaleY(0); opacity: 0; }
-            5% { opacity: 1; transform: scaleY(0.1); }
-            30% { transform: scaleY(0.8); width: 6px; }
-            45% { transform: scaleY(1.1); width: 2px; opacity: 1; }
-            55% { transform: scaleY(1.1) translateY(300px); width: 2px; opacity: 0; }
-            100% { transform: scaleY(0) translateY(300px); opacity: 0; }
-        }
-
-        /* ─── TORCH ─── */
-        .torch-wrap {
-            position: absolute;
-            bottom: -30px;
+        /* ── SINGLE AVATAR CELL ── */
+        .avatar-cell {
             display: flex;
             flex-direction: column;
             align-items: center;
-            z-index: 200;
+            gap: 10px;
+            flex: 1;
+            max-width: 220px;
         }
-        .torch-wrap.left  { left: 50px; }
-        .torch-wrap.right { right: 50px; }
 
-        .torch-holder {
-            width: 44px; height: 18px;
-            background: linear-gradient(180deg, #3d2f26, #221a15);
-            border-radius: 2px 2px 10px 10px;
-            border: 1px solid #1a1512;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+        /* Dungeon stone frame around portrait */
+        .portrait-frame {
             position: relative;
-            z-index: 10;
+            width: 130px;
+            height: 130px;
+        }
+
+        /* Stone border background */
+        .portrait-frame::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            background:
+                repeating-linear-gradient(45deg,
+                    #1c1510 0px, #1c1510 8px,
+                    #241c14 8px, #241c14 16px
+                );
+            border: 2px solid var(--iron-hi);
+            box-shadow:
+                0 0 0 1px rgba(0,0,0,0.9),
+                0 6px 18px rgba(0,0,0,0.8);
+        }
+
+        .portrait-frame img {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            z-index: 2;
+            border: 2px solid rgba(50,38,20,0.8);
+        }
+
+        /* Dark tint / dungeon lighting over the portrait */
+        .portrait-frame::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.45) 100%),
+                linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.35) 100%);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* ── PRISONER BARS overlay on target portrait ── */
+        .portrait-frame.prisoner .bar-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 4;
             display: flex;
-            justify-content: center;
+            justify-content: space-around;
+            padding: 0 6px;
+            pointer-events: none;
         }
 
-        .torch-base {
-            width: 14px; height: 70px;
-            background: linear-gradient(180deg, #3d2f26, #1d1a18, #0e0b09);
-            border-left: 1px solid rgba(80,70,50,0.2);
-            border-right: 1px solid rgba(0,0,0,0.5);
-            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.6);
+        .bar-overlay .pbar {
+            width: 9px;
+            height: 0;
+            background: linear-gradient(90deg,
+                rgba(10,8,5,0.9)  0%,
+                rgba(38,33,22,0.9) 30%,
+                rgba(55,48,32,0.85) 50%,
+                rgba(38,33,22,0.9) 70%,
+                rgba(10,8,5,0.9)  100%
+            );
+            box-shadow:
+                inset 1px 0 3px rgba(0,0,0,0.7),
+                inset -1px 0 3px rgba(0,0,0,0.7);
+        }
+
+        #scene.show .portrait-frame.prisoner .pbar {
+            height: 100%;
+            transition: height 0.3s cubic-bezier(0.5, 0, 0.4, 1.4);
+        }
+        #scene.show .pbar:nth-child(1) { transition-delay: 0.40s; }
+        #scene.show .pbar:nth-child(2) { transition-delay: 0.44s; }
+        #scene.show .pbar:nth-child(3) { transition-delay: 0.38s; }
+        #scene.show .pbar:nth-child(4) { transition-delay: 0.42s; }
+        #scene.show .pbar:nth-child(5) { transition-delay: 0.36s; }
+
+        /* ── Fallback placeholder when no avatar URL provided ── */
+        .avatar-placeholder {
             position: relative;
-            z-index: 8;
-        }
-
-        .torch-cage {
-            width: 32px; height: 42px;
-            background: linear-gradient(180deg, transparent 40%, #3d2f26 85%), transparent;
-            border: 3px solid #1d1a18;
-            border-bottom: 5px solid #0e0b09;
-            border-radius: 5px;
-            margin-bottom: -6px;
-            position: relative;
-            z-index: 12; 
-        }
-
-        .fire-container {
-            position: absolute;
-            bottom: -2px; 
-            width: 24px;
-            height: 45px;
-            transform-origin: bottom center;
-            filter: blur(5.5px); 
-            z-index: 9;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 40% 35%, #3a2a1a, #1a120a);
             display: flex;
+            align-items: center;
             justify-content: center;
+            font-size: 3rem;
+            z-index: 2;
         }
 
-        .fire-smoke {
-            position: absolute;
-            bottom: 45px;
-            width: 30px;
-            height: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 13;
+        /* ── Avatar name label ── */
+        .avatar-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-align: center;
+            max-width: 160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .avatar-name.accuser-name {
+            color: #e8e0d0;
+            text-shadow: 0 0 10px rgba(255,255,255,0.25), 0 2px 4px rgba(0,0,0,0.9);
+        }
+        .avatar-name.prisoner-name {
+            color: #cc2222;
+            text-shadow: 0 0 14px rgba(180,0,0,0.55), 0 2px 4px rgba(0,0,0,0.9);
         }
 
-        .smoke-particle {
-            position: absolute;
+        /* ── Role label above portrait ── */
+        .role-label {
+            font-size: 0.5rem;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border: 1px solid;
+            border-radius: 1px;
+        }
+        .role-label.accuser {
+            color: rgba(200,180,120,0.6);
+            border-color: rgba(140,110,40,0.3);
+            background: rgba(0,0,0,0.4);
+        }
+        .role-label.prisoner {
+            color: rgba(180,40,40,0.8);
+            border-color: rgba(120,20,20,0.4);
+            background: rgba(0,0,0,0.4);
+        }
+
+        /* ── VS divider ── */
+        #vs-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding-top: 30px;
+            flex-shrink: 0;
+        }
+        .vs-chain {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .vs-link {
+            width: 8px; height: 11px;
+            border: 2px solid var(--iron-hi);
             border-radius: 50%;
-            animation: smokeRise infinite ease-out;
+            background: linear-gradient(135deg, var(--iron-mid), var(--iron-dark));
+        }
+        .vs-link:nth-child(even) { transform: rotate(90deg); }
+        .vs-skull {
+            font-size: 1.3rem;
+            color: rgba(150,110,30,0.65);
+            filter: drop-shadow(0 0 5px rgba(140,100,20,0.4));
+        }
+
+        /* ════════════════════════════════════════════════════
+           MESSAGE BOX
+        ════════════════════════════════════════════════════ */
+        #dungeon-message {
+            width: 100%;
+            padding: 18px 28px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            line-height: 1.65;
+            text-align: center;
+            color: var(--text-cream);
+            text-shadow: 0 2px 8px rgba(0,0,0,1), 0 0 30px rgba(180,100,20,0.12);
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(70,45,5,0.2) 0%, transparent 55%),
+                rgba(0,0,0,0.58);
+            border: 1px solid rgba(65,48,18,0.55);
+            border-top-color: rgba(95,72,24,0.35);
+            border-radius: 2px;
+            box-shadow:
+                inset 0 0 40px rgba(0,0,0,0.65),
+                inset 0 1px 0 rgba(80,60,15,0.12),
+                0 5px 22px rgba(0,0,0,0.55);
+            position: relative;
+        }
+        #dungeon-message::before {
+            content: '✦';
+            position: absolute; top: 7px; left: 10px;
+            font-size: 0.6rem; color: var(--gold); opacity: 0.4;
+        }
+        #dungeon-message::after {
+            content: '✦';
+            position: absolute; bottom: 7px; right: 10px;
+            font-size: 0.6rem; color: var(--gold); opacity: 0.4;
+        }
+
+        .hl-user   { color: #f0e8d8; font-weight: 700; text-shadow: 0 0 16px rgba(255,255,230,0.35), 0 2px 4px rgba(0,0,0,1); }
+        .hl-target { color: #dd1a1a; font-weight: 700; text-shadow: 0 0 18px rgba(200,0,0,0.6),       0 2px 4px rgba(0,0,0,1); }
+
+        /* ════════════════════════════════════════════════════
+           BOTTOM BASE
+        ════════════════════════════════════════════════════ */
+        #base {
+            position: relative;
+            height: 38px;
+            background:
+                repeating-linear-gradient(90deg,
+                    transparent 0, transparent 96px,
+                    rgba(0,0,0,0.42) 96px, rgba(0,0,0,0.42) 99px
+                ),
+                linear-gradient(180deg, #181410 0%, #0f0c09 100%);
+            border: 3px solid #2e2218;
+            border-top: 4px solid #3e3020;
+            border-radius: 0 0 6px 6px;
+            box-shadow:
+                0 10px 34px rgba(0,0,0,0.9),
+                0 0 0 1px rgba(0,0,0,0.9),
+                inset 0 4px 12px rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 26px;
+        }
+        .base-skull {
+            font-size: 1rem;
+            color: rgba(145,108,28,0.5);
+            filter: drop-shadow(0 0 4px rgba(130,95,18,0.35));
+            position: relative; z-index: 2;
+        }
+        .base-motto {
+            font-size: 0.46rem;
+            letter-spacing: 0.52em;
+            color: rgba(130,96,24,0.42);
+            text-transform: uppercase;
+            position: relative; z-index: 2;
+        }
+
+        /* ════════════════════════════════════════════════════
+           BLOOD DRIPS (hang from portcullis spikes)
+        ════════════════════════════════════════════════════ */
+        #drips {
+            position: absolute;
+            top: 86px;
+            left: 86px; right: 86px; /* inside bar walls */
+            height: 68px;
+            pointer-events: none;
+            z-index: 22;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+        .drip {
+            width: 5px;
+            border-radius: 0 0 50% 50%;
+            background: var(--blood-mid);
+            box-shadow: 0 0 4px rgba(130,0,0,0.4);
             opacity: 0;
-            filter: blur(10px);
+            transform: scaleY(0);
+            transform-origin: top center;
+        }
+        #scene.show .drip { animation: dripFall 0.48s ease-in forwards; }
+
+        #scene.show .drip:nth-child(1)  { height: 30px; animation-delay: 0.52s; }
+        #scene.show .drip:nth-child(2)  { height: 48px; animation-delay: 0.60s; }
+        #scene.show .drip:nth-child(3)  { height: 20px; animation-delay: 0.46s; }
+        #scene.show .drip:nth-child(4)  { height: 58px; animation-delay: 0.64s; }
+        #scene.show .drip:nth-child(5)  { height: 35px; animation-delay: 0.54s; }
+        #scene.show .drip:nth-child(6)  { height: 22px; animation-delay: 0.49s; }
+        #scene.show .drip:nth-child(7)  { height: 50px; animation-delay: 0.62s; }
+        #scene.show .drip:nth-child(8)  { height: 28px; animation-delay: 0.56s; }
+        #scene.show .drip:nth-child(9)  { height: 42px; animation-delay: 0.58s; }
+
+        @keyframes dripFall {
+            0%   { opacity: 0;    transform: scaleY(0); }
+            22%  { opacity: 0.95; }
+            100% { opacity: 0.95; transform: scaleY(1); }
         }
 
-        .smoke-particle:nth-child(1) { width: 15px; height: 15px; background: var(--smoke-light); animation-duration: 2.5s; }
-        .smoke-particle:nth-child(2) { width: 20px; height: 20px; background: var(--smoke-dark);  animation-duration: 3s;   }
-        .smoke-particle:nth-child(3) { width: 12px; height: 12px; background: var(--smoke-light); animation-duration: 2s;   }
-
-        @keyframes smokeRise {
-            0% { transform: translateY(0) scale(0.8); opacity: 0; }
-            20% { opacity: 0.2; }
-            100% { transform: translateY(-60px) scale(1.5); opacity: 0; }
-        }
-
-        .flame-layer {
+        /* ════════════════════════════════════════════════════
+           TORCH SCONCES
+        ════════════════════════════════════════════════════ */
+        .torch {
             position: absolute;
-            bottom: 0;
-            border-radius: 50% 50% 20% 20%;
-            transform-origin: bottom center;
+            top: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 40;
         }
+        .torch.left  { left: -58px; }
+        .torch.right { right: -58px; }
 
-        .flame-layer.main {
-            width: 18px;
-            height: 35px;
-            animation: flameFlickerMain infinite alternate ease-in-out;
-            box-shadow: 0 0 20px var(--fire-yellow), inset 0 0 15px var(--fire-orange);
-            opacity: 0.75;
-            z-index: 10;
+        .torch-bracket {
+            width: 9px; height: 28px;
+            background: linear-gradient(180deg, var(--iron-hi), var(--iron-dark));
+            border-radius: 2px;
+            box-shadow: 1px 0 4px rgba(0,0,0,0.7);
         }
-
-        .flame-layer.main:nth-child(2) { animation-duration: 0.7s; animation-delay: 0.1s; width: 14px; }
-        .flame-layer.main:nth-child(3) { animation-duration: 1.2s; animation-delay: 0.3s; width: 20px; }
-
-        .flame-layer.core {
-            width: 8px;
-            height: 20px;
-            background: var(--fire-core);
-            animation: flameRiseCore infinite ease-in;
-            box-shadow: 0 0 12px var(--fire-core);
-            opacity: 0.8;
-            z-index: 11;
+        .torch-stick {
+            width: 12px; height: 48px;
+            background: linear-gradient(180deg, #7a5018, #5a3410, #3a2008);
+            border-radius: 1px;
+            box-shadow: inset 1px 0 rgba(255,180,50,0.1);
+            position: relative;
         }
-
-        .flame-layer.ember {
+        /* Wrap band */
+        .torch-stick::after {
+            content: '';
             position: absolute;
-            bottom: 5px;
-            border-radius: 50%;
-            background: var(--fire-orange);
-            animation: flameRiseEmber infinite ease-out;
-            z-index: 12;
-            filter: blur(1px);
+            top: 10px; left: -2px; right: -2px;
+            height: 4px;
+            background: var(--iron-mid);
+            border-radius: 2px;
         }
 
-        .flame-layer.ember:nth-child(5) { width: 3px; height: 3px; animation-duration: 0.8s; left: 2px; }
-        .flame-layer.ember:nth-child(6) { width: 4px; height: 4px; animation-duration: 1.2s; right: 2px; }
-
-        @keyframes flameRiseCore {
-            0%, 100% { transform: scaleY(1) translateY(0); opacity: 1; }
-            50% { transform: scaleY(1.1) translateY(-1px); opacity: 0.6; }
+        .torch-flame {
+            width: 20px; height: 34px;
+            margin-bottom: -5px;
+            background: radial-gradient(ellipse at 50% 88%,
+                #fffde0 0%, #ffcc44 25%, #ff8800 55%, #ff3300 80%, transparent 96%
+            );
+            border-radius: 60% 60% 38% 38%;
+            filter: blur(3px);
+            animation: flicker 1.5s ease-in-out infinite alternate;
         }
+        .torch.right .torch-flame { animation-delay: 0.65s; }
 
-        @keyframes flameFlickerMain {
-            0% { transform: scale(1) translateY(0); background: radial-gradient(ellipse at 50% 100%, var(--fire-yellow) 0%, var(--fire-orange) 60%, transparent 95%); }
-            100% { transform: scale(1.1, 0.9) translateY(-6px); background: radial-gradient(ellipse at 50% 100%, var(--fire-yellow) 0%, var(--fire-red) 80%, transparent 95%); }
-        }
-
-        @keyframes flameRiseEmber {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-40px) scale(0); opacity: 0; }
+        @keyframes flicker {
+            0%   { transform: scaleX(1)   scaleY(1)    skewX(0deg);   opacity: 0.9; }
+            20%  { transform: scaleX(0.88) scaleY(1.1) skewX(-5deg);  opacity: 1;   }
+            45%  { transform: scaleX(1.12) scaleY(0.92) skewX(4deg);  opacity: 0.82;}
+            70%  { transform: scaleX(0.94) scaleY(1.07) skewX(-2deg); opacity: 1;   }
+            100% { transform: scaleX(1.07) scaleY(0.96) skewX(5deg);  opacity: 0.88;}
         }
 
         .torch-glow {
             position: absolute;
-            top: -60px; left: 50%;
+            top: -24px; left: 50%;
             transform: translateX(-50%);
-            width: 250px; height: 250px;
+            width: 140px; height: 130px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,80,0,0.25) 0%, transparent 75%);
-            animation: glowPulse 3s infinite alternate;
+            background: radial-gradient(circle, rgba(255,130,15,0.24) 0%, transparent 70%);
+            filter: blur(18px);
+            animation: glowBreathe 1.5s ease-in-out infinite alternate;
             pointer-events: none;
-            z-index: 1;
-            filter: blur(20px);
+        }
+        .torch.right .torch-glow { animation-delay: 0.65s; }
+
+        @keyframes glowBreathe {
+            0%   { opacity: 0.55; transform: translateX(-50%) scale(0.95); }
+            100% { opacity: 1;    transform: translateX(-50%) scale(1.18); }
         }
 
-        @keyframes glowPulse {
-            0%   { opacity: 0.4; transform: translateX(-50%) scale(0.9); }
-            100% { opacity: 0.6; transform: translateX(-50%) scale(1.1); }
-        }
-
-        /* ─── CHAINS ─── */
-        .chains-side {
+        /* ════════════════════════════════════════════════════
+           HANGING CHAINS (corner decoration)
+        ════════════════════════════════════════════════════ */
+        .chain-hang {
             position: absolute;
-            top: -150px;
-            height: calc(100% + 150px);
+            top: 0;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            z-index: 1; 
+            align-items: center;
+            gap: 2px;
+            z-index: 30;
         }
-        .chains-side.left { left: 20px; }
-        .chains-side.right { right: 20px; }
-
-        .chain-link {
-            width: 16px; height: 22px;
-            border: 3px solid #2f2924;
+        .chain-hang.left  { left: 24px; }
+        .chain-hang.right { right: 24px; }
+        .cl {
+            width: 9px; height: 13px;
+            border: 2.5px solid var(--iron-hi);
             border-radius: 50%;
-            background: linear-gradient(135deg, #1d1a18, #3d2f26);
-            box-shadow: 0 3px 5px rgba(0,0,0,0.7);
+            background: linear-gradient(135deg, var(--iron-mid), var(--iron-dark));
+            box-shadow: 0 1px 3px rgba(0,0,0,0.7);
         }
+        .cl:nth-child(even) { transform: rotate(90deg); }
 
-        /* ─── RED AMBIENT GLOW ─── */
-        #ambient-glow {
-            position: absolute;
-            inset: -80px;
-            border-radius: 12px;
-            background: radial-gradient(ellipse at 50% 20%, rgba(91,0,0,0.4) 0%, transparent 60%);
-            pointer-events: none;
-            opacity: 0;
-            z-index: -1;
-            transition: opacity 0.5s;
-            animation: ominousFlicker 6s infinite alternate;
-        }
-        #dungeon-container.show #ambient-glow { opacity: 1; }
-
-        @keyframes ominousFlicker {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
+        /* ════════════════════════════════════════════════════
+           WS DEBUG
+        ════════════════════════════════════════════════════ */
+        #ws-status {
+            position: fixed; bottom: 8px; right: 8px;
+            font-size: 10px; font-family: monospace;
+            color: rgba(255,255,255,0.22);
+            display: none; /* set to block to debug */
         }
     </style>
 </head>
 <body>
 
-    <div id="dungeon-container">
-        <div id="ambient-glow"></div>
+<div id="scene">
 
-        <div class="chains-side left">
-            <div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div>
-            <div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div>
-            <div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div>
-        </div>
-        <div class="chains-side right">
-            <div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div>
-            <div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div>
-            <div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div>
-        </div>
-
-        <div id="dungeon-chamber">
-            <div id="bars-wrapper">
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div>
-            </div>
-
-            <div class="crossbar top"></div>
-            <div class="crossbar mid"></div>
-            <div class="crossbar bottom"></div>
-
-            <div id="blood-drips">
-                <div class="drip-container"><div class="blood-stain"></div><div class="drip-drop"></div></div>
-                <div class="drip-container"></div> <div class="drip-container"><div class="blood-stain"></div><div class="drip-drop"></div></div>
-                <div class="drip-container"></div>
-                <div class="drip-container"><div class="blood-stain"></div><div class="drip-drop"></div></div>
-                <div class="drip-container"></div>
-                <div class="drip-container"><div class="blood-stain"></div><div class="drip-drop"></div></div>
-                <div class="drip-container"></div>
-                <div class="drip-container"><div class="blood-stain"></div><div class="drip-drop"></div></div>
-                <div class="drip-container"></div>
-            </div>
-
-            <div id="panel-content" class="medieval-text">
-                <div class="header-bar">
-                    <div class="header-divider"></div>
-                    <span class="skull">☠</span>
-                    <div class="title-text">Castle Dimitrescu</div>
-                    <span class="skull">☠</span>
-                    <div class="header-divider"></div>
-                </div>
-
-                <div class="subtitle">Deep within the torture chambers beneath the castle</div>
-
-                <div id="dungeon-message">
-                    Awaiting the Lady's final command…
-                </div>
-            </div>
-        </div>
-
-        <div class="torch-wrap left">
-            <div class="torch-glow"></div>
-            <div class="fire-smoke">
-                <div class="smoke-particle"></div>
-                <div class="smoke-particle"></div>
-                <div class="smoke-particle"></div>
-            </div>
-            <div class="torch-holder">
-                <div class="fire-container">
-                    <div class="flame-layer core"></div>
-                    <div class="flame-layer main"></div>
-                    <div class="flame-layer main"></div>
-                    <div class="flame-layer ember"></div>
-                    <div class="flame-layer ember"></div>
-                </div>
-            </div>
-            <div class="torch-cage"></div>
-            <div class="torch-base"></div>
-        </div>
-
-        <div class="torch-wrap right">
-            <div class="torch-glow"></div>
-            <div class="fire-smoke">
-                <div class="smoke-particle"></div>
-                <div class="smoke-particle"></div>
-                <div class="smoke-particle"></div>
-            </div>
-            <div class="torch-holder">
-                <div class="fire-container">
-                    <div class="flame-layer core"></div>
-                    <div class="flame-layer main"></div>
-                    <div class="flame-layer main"></div>
-                    <div class="flame-layer ember"></div>
-                    <div class="flame-layer ember"></div>
-                </div>
-            </div>
-            <div class="torch-cage"></div>
-            <div class="torch-base"></div>
-        </div>
+    <!-- Corner chain hangs -->
+    <div class="chain-hang left">
+        <div class="cl"></div><div class="cl"></div><div class="cl"></div>
+        <div class="cl"></div><div class="cl"></div><div class="cl"></div>
+        <div class="cl"></div><div class="cl"></div><div class="cl"></div>
+    </div>
+    <div class="chain-hang right">
+        <div class="cl"></div><div class="cl"></div><div class="cl"></div>
+        <div class="cl"></div><div class="cl"></div><div class="cl"></div>
+        <div class="cl"></div><div class="cl"></div><div class="cl"></div>
     </div>
 
-    <script>
-        const params   = new URLSearchParams(window.location.search);
-        const wsHost   = params.get("address") || "localhost";
-        const wsPort   = params.get("port")    || "8080";
+    <!-- Torch sconces -->
+    <div class="torch left">
+        <div class="torch-glow"></div>
+        <div class="torch-flame"></div>
+        <div class="torch-stick"></div>
+        <div class="torch-bracket"></div>
+    </div>
+    <div class="torch right">
+        <div class="torch-glow"></div>
+        <div class="torch-flame"></div>
+        <div class="torch-stick"></div>
+        <div class="torch-bracket"></div>
+    </div>
 
-        const container = document.getElementById("dungeon-container");
-        const messageEl = document.getElementById("dungeon-message");
+    <!-- Stone capstone arch -->
+    <div id="arch">
+        <div class="arch-rule"></div>
+        <span class="arch-label">☠ &nbsp; Castle Dimitrescu &nbsp; ☠</span>
+        <div class="arch-rule"></div>
+    </div>
 
-        let hideTimer    = null;
+    <!-- Portcullis header -->
+    <div id="portcullis">
+        <div class="rivet"></div><div class="rivet"></div>
+        <span class="portcullis-title">⛓ &nbsp; The Dungeon &nbsp; ⛓</span>
+        <div class="rivet"></div><div class="rivet"></div>
+    </div>
 
-        function showDungeon(user, target) {
-            messageEl.innerHTML =
-                `<span class="highlight-user">${escHtml(user)}</span> ` +
-                `has cast ` +
-                `<span class="highlight-target">${escHtml(target)}</span> ` +
-                `into the dungeon...<br>for destroying everything!`;
+    <!-- Blood drips from portcullis spikes -->
+    <div id="drips">
+        <div class="drip"></div><div class="drip"></div><div class="drip"></div>
+        <div class="drip"></div><div class="drip"></div><div class="drip"></div>
+        <div class="drip"></div><div class="drip"></div><div class="drip"></div>
+    </div>
 
-            container.classList.remove("show", "hide");
-            void container.offsetWidth; 
+    <!-- Body: left bars | stone center | right bars -->
+    <div id="body">
 
-            container.classList.add("show");
+        <div class="bar-wall left">
+            <div class="bar-col">
+                <div class="vbar"></div>
+                <div class="vbar"></div>
+                <div class="vbar"></div>
+                <div class="vbar"></div>
+            </div>
+        </div>
 
-            clearTimeout(hideTimer);
-            hideTimer = setTimeout(() => {
-                container.classList.remove("show");
-                container.classList.add("hide");
-                setTimeout(() => container.classList.remove("hide"), 600);
-            }, 8000);
+        <div id="center">
+            <div class="hbar upper"></div>
+            <div class="hbar lower"></div>
+
+            <div id="content">
+
+                <!-- Top rule -->
+                <div class="rule-row">
+                    <div class="rule-line"></div>
+                    <span class="rule-gem">✦</span>
+                    <span class="rule-label">By order of Lady Dimitrescu</span>
+                    <span class="rule-gem">✦</span>
+                    <div class="rule-line"></div>
+                </div>
+
+                <!-- Avatar row -->
+                <div id="avatar-row">
+
+                    <!-- ACCUSER (command sender) -->
+                    <div class="avatar-cell" id="cell-accuser">
+                        <span class="role-label accuser">Sent by</span>
+                        <div class="portrait-frame" id="frame-accuser">
+                            <div class="avatar-placeholder" id="ph-accuser">⚔️</div>
+                            <!-- img injected by JS -->
+                        </div>
+                        <span class="avatar-name accuser-name" id="name-accuser">…</span>
+                    </div>
+
+                    <!-- VS / chain divider -->
+                    <div id="vs-col">
+                        <div class="vs-chain">
+                            <div class="vs-link"></div><div class="vs-link"></div>
+                            <div class="vs-link"></div><div class="vs-link"></div>
+                        </div>
+                        <span class="vs-skull">☠</span>
+                        <div class="vs-chain">
+                            <div class="vs-link"></div><div class="vs-link"></div>
+                            <div class="vs-link"></div><div class="vs-link"></div>
+                        </div>
+                    </div>
+
+                    <!-- PRISONER (broadcaster / target) -->
+                    <div class="avatar-cell" id="cell-prisoner">
+                        <span class="role-label prisoner">Imprisoned</span>
+                        <div class="portrait-frame prisoner" id="frame-prisoner">
+                            <div class="avatar-placeholder" id="ph-prisoner">🔒</div>
+                            <!-- img injected by JS -->
+                            <div class="bar-overlay">
+                                <div class="pbar"></div>
+                                <div class="pbar"></div>
+                                <div class="pbar"></div>
+                                <div class="pbar"></div>
+                                <div class="pbar"></div>
+                            </div>
+                        </div>
+                        <span class="avatar-name prisoner-name" id="name-prisoner">…</span>
+                    </div>
+
+                </div><!-- /#avatar-row -->
+
+                <!-- Message text -->
+                <div id="dungeon-message">Awaiting the Lady's command…</div>
+
+                <!-- Bottom rule -->
+                <div class="rule-row">
+                    <div class="rule-line"></div>
+                    <span class="rule-gem">☠</span>
+                    <div class="rule-line"></div>
+                </div>
+
+            </div><!-- /#content -->
+        </div><!-- /#center -->
+
+        <div class="bar-wall right">
+            <div class="bar-col">
+                <div class="vbar"></div>
+                <div class="vbar"></div>
+                <div class="vbar"></div>
+                <div class="vbar"></div>
+            </div>
+        </div>
+
+    </div><!-- /#body -->
+
+    <!-- Stone base -->
+    <div id="base">
+        <span class="base-skull">☠</span>
+        <span class="base-motto">No escape from the dungeon below</span>
+        <span class="base-skull">☠</span>
+    </div>
+
+</div><!-- /#scene -->
+
+<div id="ws-status">WS: connecting…</div>
+
+<script>
+    const params   = new URLSearchParams(window.location.search);
+    const wsHost   = params.get("address") || "localhost";
+    const wsPort   = params.get("port")    || "8080";
+
+    const scene    = document.getElementById("scene");
+    const msgEl    = document.getElementById("dungeon-message");
+    const statusEl = document.getElementById("ws-status");
+
+    let hideTimer  = null;
+
+    /* ── HTML-escape to prevent injection ───────────────────── */
+    function esc(s) {
+        return String(s)
+            .replace(/&/g,"&amp;")
+            .replace(/</g,"&lt;")
+            .replace(/>/g,"&gt;");
+    }
+
+    /* ── Load an avatar image into a portrait frame ─────────── */
+    function setAvatar(frameId, placeholderId, imageUrl) {
+        const frame = document.getElementById(frameId);
+        const ph    = document.getElementById(placeholderId);
+
+        // Remove old injected image if any
+        const old = frame.querySelector("img.injected");
+        if (old) old.remove();
+
+        if (!imageUrl || imageUrl.trim() === "") {
+            ph.style.display = "flex";
+            return;
         }
 
-        function escHtml(str) {
-            return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+        ph.style.display = "none";
+
+        const img = document.createElement("img");
+        img.className = "injected";
+        img.src       = imageUrl;
+        img.alt       = "";
+        img.onerror   = () => { ph.style.display = "flex"; img.remove(); };
+
+        // Insert before the bar-overlay (if any) so bars sit on top
+        const overlay = frame.querySelector(".bar-overlay");
+        if (overlay) {
+            frame.insertBefore(img, overlay);
+        } else {
+            frame.appendChild(img);
         }
+    }
 
-        function connect() {
-            const ws = new WebSocket(`ws://${wsHost}:${wsPort}/`);
+    /* ── Trigger the dungeon drop ───────────────────────────── */
+    function showDungeon(user, userAvatar, target, targetAvatar) {
 
-            ws.onopen = () => {
-                ws.send(JSON.stringify({
-                    request: "Subscribe",
-                    events: { general: ["Custom"] },
-                    id: "DungeonSub"
-                }));
-            };
+        // Populate names
+        document.getElementById("name-accuser").textContent  = user   || "Unknown";
+        document.getElementById("name-prisoner").textContent = target || "Unknown";
 
-            ws.onmessage = (event) => {
-                let msg;
-                try { msg = JSON.parse(event.data); }
-                catch { return; }
+        // Populate avatars
+        setAvatar("frame-accuser",  "ph-accuser",  userAvatar);
+        setAvatar("frame-prisoner", "ph-prisoner", targetAvatar);
 
-                if (msg.eventName === "DungeonDrop") {
-                    showDungeon(msg.user, msg.target);
-                    return;
-                }
+        // Populate message text
+        msgEl.innerHTML =
+            `<span class="hl-user">${esc(user || "Someone")}</span>` +
+            ` has cast ` +
+            `<span class="hl-target">${esc(target || "the broadcaster")}</span>` +
+            `<br>into the dungeon — for destroying everything!`;
 
-                if (msg?.data?.eventName === "DungeonDrop") {
-                    showDungeon(msg.data.user, msg.data.target);
-                    return;
-                }
+        // Replay animation
+        scene.classList.remove("show", "hide");
+        void scene.offsetWidth;
+        scene.classList.add("show");
 
-                if (msg?.data && typeof msg.data === "string") {
-                    try {
-                        const inner = JSON.parse(msg.data);
-                        if (inner?.eventName === "DungeonDrop") {
-                            showDungeon(inner.user, inner.target);
-                        }
-                    } catch { }
-                }
-            };
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => {
+            scene.classList.remove("show");
+            scene.classList.add("hide");
+            setTimeout(() => scene.classList.remove("hide"), 550);
+        }, 10000);
+    }
 
-            ws.onclose = () => {
-                setTimeout(connect, 3000);
-            };
-        }
+    /* ── WebSocket ──────────────────────────────────────────── */
+    function connect() {
+        const ws = new WebSocket(`ws://${wsHost}:${wsPort}/`);
 
-        connect();
-    </script>
+        ws.onopen = () => {
+            statusEl.textContent = "WS: connected";
+            ws.send(JSON.stringify({
+                request: "Subscribe",
+                events: { general: ["Custom"] },
+                id: "DungeonSub"
+            }));
+        };
+
+        ws.onmessage = (evt) => {
+            let msg;
+            try { msg = JSON.parse(evt.data); } catch { return; }
+
+            // Pattern A — CPH.WebsocketBroadcastJson sends the raw payload
+            if (msg?.eventName === "DungeonDrop") {
+                showDungeon(msg.user, msg.userAvatar, msg.target, msg.targetAvatar);
+                return;
+            }
+
+            // Pattern B — Streamer.bot wraps it as a Custom event object
+            if (msg?.data?.eventName === "DungeonDrop") {
+                const d = msg.data;
+                showDungeon(d.user, d.userAvatar, d.target, d.targetAvatar);
+                return;
+            }
+
+            // Pattern C — data is a JSON string (some SB versions)
+            if (msg?.data && typeof msg.data === "string") {
+                try {
+                    const d = JSON.parse(msg.data);
+                    if (d?.eventName === "DungeonDrop") {
+                        showDungeon(d.user, d.userAvatar, d.target, d.targetAvatar);
+                    }
+                } catch { /* skip */ }
+            }
+        };
+
+        ws.onerror = () => { statusEl.textContent = "WS: error"; };
+        ws.onclose = () => {
+            statusEl.textContent = "WS: reconnecting…";
+            setTimeout(connect, 3000);
+        };
+    }
+
+    connect();
+
+    
+    
+</script>
+
 </body>
 </html>
