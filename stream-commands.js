@@ -16,12 +16,14 @@ document.querySelectorAll('.section-header').forEach(header => {
 
 /* ===== REMOVE .HTML FROM URL ===== */
 (function hideHtmlInURL() {
+    const hostname = window.location.hostname;
     const pathname = window.location.pathname;
-    if (pathname.endsWith(".html")) {
-        window.history.replaceState({}, "", pathname.replace(".html", ""));
+
+    // Only strip .html on the live domain, not localhost / VS Code Live Server
+    if (hostname === 'caitlinscreativespace.xyz' && pathname.endsWith('.html')) {
+        window.history.replaceState({}, '', pathname.replace('.html', ''));
     }
 })();
-
 /* ===== FILTER COMMANDS BY CATEGORY ===== */
 function filterCommands() {
     const select = document.getElementById('categorySelect');
