@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Glass Poll Overlay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue:  #00f2ff;
+            --neon-pink:  #ff00e5;
+            --neon-green: #00ff9d;
+            --neon-warn:  #ffb300;
+            --glass-bg:   rgba(10, 12, 18, 0.78);
+            --border-glow:rgba(0, 242, 255, 0.45);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            width: 1920px; height: 1080px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* ── Panel ───────────────────────────────────────────── */
+        #poll-container {
+            margin-left: 50px;
+            width: 520px;
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-left: 5px solid var(--neon-blue);
+            box-shadow:
+                0 0 40px rgba(0,0,0,0.6),
+                0 0 18px var(--border-glow),
+                inset 0 0 20px rgba(0,242,255,0.04);
+            padding: 28px 30px 24px;
+            border-radius: 6px;
+            opacity: 0;
+            transform: translateX(-120px);
+            transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1),
+                        transform 0.55s cubic-bezier(0.16,1,0.3,1);
+            position: relative;
+        }
+        #poll-container.active { opacity: 1; transform: translateX(0); }
+
+        /* ── Header row ──────────────────────────────────────── */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .header-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--neon-blue);
+            opacity: 0.7;
+            font-weight: 600;
+        }
+
+        /* ── Timer ───────────────────────────────────────────── */
+        #timer-wrap { display: flex; align-items: center; gap: 8px; }
+
+        #timer-ring-svg {
+            width: 36px; height: 36px;
+            transform: rotate(-90deg);
+            flex-shrink: 0;
+        }
+        #timer-ring-bg  { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 3; }
+        #timer-ring-arc {
+            fill: none;
+            stroke: var(--neon-blue);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 87.96;   /* 2π × 14 */
+            stroke-dashoffset: 0;
+            filter: drop-shadow(0 0 4px var(--neon-blue));
+            transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+        }
+        #timer-ring-arc.warn   { stroke: var(--neon-warn); filter: drop-shadow(0 0 4px var(--neon-warn)); }
+        #timer-ring-arc.urgent { stroke: var(--neon-pink); filter: drop-shadow(0 0 5px var(--neon-pink)); }
+
+        #timer-text {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 20px;
+            letter-spacing: 1px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px var(--neon-blue);
+            min-width: 44px;
+            transition: color 0.5s, text-shadow 0.5s;
+        }
+        #timer-text.warn   { color: var(--neon-warn);  text-shadow: 0 0 8px var(--neon-warn); }
+        #timer-text.urgent { color: var(--neon-pink);  text-shadow: 0 0 8px var(--neon-pink); }
+
+        /* ── Title ───────────────────────────────────────────── */
+        #poll-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 36px;
+            letter-spacing: 2px;
+            margin: 6px 0 18px 0;
+            color: #fff;
+            text-shadow: 0 0 12px var(--neon-blue);
+            line-height: 1.1;
+        }
+
+        /* ── Hint bar: shows  [1] ChoiceName  [2] ChoiceName ── */
+        #vote-hint {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 10px 14px;
+            background: rgba(0,242,255,0.06);
+            border: 1px solid rgba(0,242,255,0.18);
+            border-radius: 4px;
+            align-items: center;
+        }
+        .hint-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.45);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-right: 4px;
+        }
+        .hint-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        .hint-num {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 16px;
+            width: 22px; height: 22px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 3px;
+            background: rgba(0,242,255,0.18);
+            border: 1px solid rgba(0,242,255,0.5);
+            color: var(--neon-blue);
+            text-shadow: 0 0 6px var(--neon-blue);
+            flex-shrink: 0;
+        }
+        .hint-name {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.75);
+        }
+
+        /* ── Choices ─────────────────────────────────────────── */
+        .choice-container { margin-bottom: 18px; }
+        .choice-container:last-child { margin-bottom: 0; }
+
+        .choice-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+        }
+        .choice-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        /* Number badge */
+        .choice-num {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 18px;
+            width: 28px; height: 28px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 4px;
+            background: rgba(0,242,255,0.14);
+            border: 1px solid rgba(0,242,255,0.4);
+            color: var(--neon-blue);
+            text-shadow: 0 0 6px var(--neon-blue);
+            flex-shrink: 0;
+        }
+        .choice-name {
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .choice-right {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .choice-percent {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 22px;
+            letter-spacing: 1px;
+            color: var(--neon-blue);
+        }
+        .choice-votes {
+            font-size: 11px;
+            color: rgb(192, 250, 56);
+            margin-bottom: 2px;
+        }
+        .progress-bg {
+            width: 100%; height: 10px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .progress-bar {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+            box-shadow: 0 0 14px var(--neon-blue);
+            border-radius: 20px;
+            transition: width 0.9s cubic-bezier(0.25,1,0.5,1);
+        }
+
+        /* ── Footer ──────────────────────────────────────────── */
+        .footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+        #total-votes {
+            font-size: 12px;
+            color: rgb(48, 243, 233);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #status-badge {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+        #status-badge.live {
+            background: rgba(0,255,157,0.15);
+            border: 1px solid rgba(0,255,157,0.45);
+            color: var(--neon-green);
+            text-shadow: 0 0 8px var(--neon-green);
+        }
+        #status-badge.ended {
+            background: rgba(255,0,229,0.1);
+            border: 1px solid rgba(255,0,229,0.3);
+            color: var(--neon-pink);
+        }
+
+        /* ── Scanline ─────────────────────────────────────────── */
+        #poll-container::after {
+            content: '';
+            pointer-events: none;
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(
+                0deg, transparent, transparent 2px,
+                rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px
+            );
+            border-radius: 6px;
+        }
+
+        /* ── Urgent pulse ─────────────────────────────────────── */
+        @keyframes urgentPulse {
+            0%,100% { border-left-color: var(--neon-pink); }
+            50%      { border-left-color: rgba(255,0,229,0.25); }
+        }
+        #poll-container.urgent { animation: urgentPulse 1s ease-in-out infinite; }
+    </style>
+</head>
+<body>
+
+<div id="poll-container">
+    <div class="header-row">
+        <span class="header-label">Stream Poll</span>
+        <div id="timer-wrap">
+            <svg id="timer-ring-svg" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                <circle id="timer-ring-bg"  cx="18" cy="18" r="14"/>
+                <circle id="timer-ring-arc" cx="18" cy="18" r="14"/>
+            </svg>
+            <span id="timer-text">--:--</span>
+        </div>
+    </div>
+
+    <h1 id="poll-title">Loading…</h1>
+
+    <div id="vote-hint">
+        <span class="hint-label">Type in chat →</span>
+        <!-- filled dynamically -->
+    </div>
+
+    <div id="choices-list"></div>
+
+    <div class="footer-row">
+        <span id="total-votes">Total Votes: 0</span>
+        <span id="status-badge" class="live">● LIVE</span>
+    </div>
+</div>
+
+<script>
+    const container   = document.getElementById('poll-container');
+    const titleEl     = document.getElementById('poll-title');
+    const listEl      = document.getElementById('choices-list');
+    const totalEl     = document.getElementById('total-votes');
+    const hintEl      = document.getElementById('vote-hint');
+    const statusBadge = document.getElementById('status-badge');
+    const timerText   = document.getElementById('timer-text');
+    const timerArc    = document.getElementById('timer-ring-arc');
+
+    const CIRC = 87.96; // 2π × r=14
+    let hideTimer      = null;
+    let countdownTimer = null;
+    let pollEndMs      = 0;
+    let pollDurationMs = 0;
+
+    // ── Countdown ─────────────────────────────────────────────────
+    function startCountdown(endMs, totalMs) {
+        pollEndMs      = endMs;
+        pollDurationMs = totalMs;
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(tick, 1000);
+        tick();
+    }
+
+    function stopCountdown() {
+        if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+        timerText.textContent = '';
+        timerText.className   = '';
+        timerArc.style.strokeDashoffset = CIRC;
+        timerArc.className    = '';
+        container.classList.remove('urgent');
+    }
+
+    function tick() {
+        const remaining = pollEndMs - Date.now();
+        if (remaining <= 0) { stopCountdown(); return; }
+
+        const secs = Math.ceil(remaining / 1000);
+        const m    = Math.floor(secs / 60);
+        const s    = secs % 60;
+        timerText.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+        const ratio  = Math.max(0, Math.min(1, remaining / pollDurationMs));
+        timerArc.style.strokeDashoffset = CIRC * (1 - ratio);
+
+        if (remaining < 30000) {
+            timerText.className = 'urgent';
+            timerArc.className  = 'urgent';
+            container.classList.add('urgent');
+        } else if (remaining < 60000) {
+            timerText.className = 'warn';
+            timerArc.className  = 'warn';
+            container.classList.remove('urgent');
+        } else {
+            timerText.className = '';
+            timerArc.className  = '';
+            container.classList.remove('urgent');
+        }
+    }
+
+    // ── Hint bar: [1] Name  [2] Name  [3] Name ────────────────────
+    function renderHint(choices) {
+        hintEl.innerHTML = '<span class="hint-label">Type in chat →</span>';
+        choices.forEach((choice, idx) => {
+            const item = document.createElement('div');
+            item.className = 'hint-item';
+            item.innerHTML = `
+                <span class="hint-num">${idx + 1}</span>
+                <span class="hint-name">${escHtml(choice.title)}</span>
+            `;
+            hintEl.appendChild(item);
+        });
+    }
+
+    // ── Main render ───────────────────────────────────────────────
+    function updatePoll(data) {
+        if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+
+        titleEl.textContent = data.title;
+        const total = parseInt(data.totalVotes) || 0;
+        totalEl.textContent = `Total Votes: ${total.toLocaleString()}`;
+
+        if (data.isActive) {
+            statusBadge.className   = 'live';
+            statusBadge.textContent = '● LIVE';
+
+            if (data.endTime && data.endTime > 0) {
+                const remaining = data.endTime - Date.now();
+                if (remaining > 0) {
+                    if (countdownTimer && pollEndMs !== data.endTime) {
+                        // addtime updated — just update the end target
+                        pollEndMs      = data.endTime;
+                        pollDurationMs = Math.max(pollDurationMs, remaining);
+                    } else if (!countdownTimer) {
+                        startCountdown(data.endTime, remaining);
+                    }
+                }
+            }
+        } else {
+            statusBadge.className   = 'ended';
+            statusBadge.textContent = '✓ ENDED';
+            stopCountdown();
+        }
+
+        renderHint(data.choices);
+
+        listEl.innerHTML = '';
+        data.choices.forEach((choice, idx) => {
+            const pct = total > 0 ? (choice.votes / total) * 100 : 0;
+            const div = document.createElement('div');
+            div.className = 'choice-container';
+            div.innerHTML = `
+                <div class="choice-info">
+                    <div class="choice-left">
+                        <div class="choice-num">${idx + 1}</div>
+                        <span class="choice-name">${escHtml(choice.title)}</span>
+                    </div>
+                    <div class="choice-right">
+                        <span class="choice-percent">${Math.round(pct)}%</span>
+                        <span class="choice-votes">${choice.votes.toLocaleString()} vote${choice.votes !== 1 ? 's' : ''}</span>
+                    </div>
+                </div>
+                <div class="progress-bg">
+                    <div class="progress-bar" style="width:0%"></div>
+                </div>
+            `;
+            listEl.appendChild(div);
+            requestAnimationFrame(() => {
+                const bar = div.querySelector('.progress-bar');
+                if (bar) bar.style.width = pct + '%';
+            });
+        });
+
+        container.classList.add('active');
+
+        if (!data.isActive && total > 0) {
+            hideTimer = setTimeout(() => container.classList.remove('active'), 10000);
+        }
+    }
+
+    function escHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── WebSocket ─────────────────────────────────────────────────
+    function connect() {
+        const ws = new WebSocket('ws://localhost:8080/');
+        ws.onopen = () => ws.send(JSON.stringify({
+            request: 'Subscribe',
+            events:  { general: ['Custom'] },
+            id:      'TwitchPoll'
+        }));
+        ws.onmessage = (event) => {
+            try {
+                const r = JSON.parse(event.data);
+                if (!r.data) return;
+                const d = typeof r.data === 'string' ? JSON.parse(r.data) : r.data;
+                if (d.eventName === 'TwitchPollUpdate') updatePoll(d);
+            } catch(e) { console.warn('[Poll]', e); }
+        };
+        ws.onerror = () => {};
+        ws.onclose = () => setTimeout(connect, 3000);
+    }
+    connect();
+</script>
+</body>
+</html>
