@@ -12,6 +12,7 @@
             --neon-pink:  #ff00e5;
             --neon-green: #00ff9d;
             --neon-warn:  #ffb300;
+            --neon-red:   #ff003c;
             --glass-bg:   rgba(10, 12, 18, 0.78);
             --border-glow:rgba(0, 242, 255, 0.45);
         }
@@ -29,6 +30,70 @@
             font-family: 'Inter', sans-serif;
             color: #fff;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Alert Container (Voter Notifications) ───────────── */
+        #alert-container {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .vote-alert {
+            display: flex;
+            align-items: center;
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-left: 4px solid var(--neon-blue);
+            padding: 8px 20px 8px 8px;
+            border-radius: 50px;
+            box-shadow: 
+                0 0 20px rgba(0,0,0,0.6),
+                0 0 10px rgba(0,242,255,0.2);
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: 
+                alertSlideIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards, 
+                alertFadeOut 0.4s ease-in forwards 3.5s;
+        }
+
+        @keyframes alertSlideIn {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes alertFadeOut {
+            to { opacity: 0; transform: translateY(-15px) scale(0.95); }
+        }
+
+        .alert-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 1px solid rgba(0,242,255,0.5);
+            object-fit: cover;
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .alert-text {
+            font-size: 14px;
+            color: rgba(255,255,255,0.85);
+            white-space: nowrap;
+        }
+
+        .alert-username {
+            font-weight: 700;
+            color: var(--neon-blue);
+            text-shadow: 0 0 6px rgba(0,242,255,0.4);
+            margin-right: 4px;
+            letter-spacing: 0.5px;
         }
 
         /* ── Panel ───────────────────────────────────────────── */
@@ -49,12 +114,12 @@
             opacity: 0;
             transform: translateX(-120px);
             transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1),
-                        transform 0.55s cubic-bezier(0.16,1,0.3,1);
+                        transform 0.55s cubic-bezier(0.16,1,0.3,1),
+                        border-left-color 0.5s ease;
             position: relative;
         }
         #poll-container.active { opacity: 1; transform: translateX(0); }
 
-        /* ── Header row ──────────────────────────────────────── */
         .header-row {
             display: flex;
             justify-content: space-between;
@@ -70,7 +135,6 @@
             font-weight: 600;
         }
 
-        /* ── Timer ───────────────────────────────────────────── */
         #timer-wrap { display: flex; align-items: center; gap: 8px; }
 
         #timer-ring-svg {
@@ -84,13 +148,15 @@
             stroke: var(--neon-blue);
             stroke-width: 3;
             stroke-linecap: round;
-            stroke-dasharray: 87.96;   /* 2π × 14 */
+            stroke-dasharray: 87.96; 
             stroke-dashoffset: 0;
             filter: drop-shadow(0 0 4px var(--neon-blue));
-            transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+            transition: stroke-dashoffset 1s linear, stroke 0.5s ease, filter 0.5s ease;
         }
-        #timer-ring-arc.warn   { stroke: var(--neon-warn); filter: drop-shadow(0 0 4px var(--neon-warn)); }
-        #timer-ring-arc.urgent { stroke: var(--neon-pink); filter: drop-shadow(0 0 5px var(--neon-pink)); }
+        
+        #timer-ring-arc.warn     { stroke: var(--neon-warn); filter: drop-shadow(0 0 4px var(--neon-warn)); }
+        #timer-ring-arc.urgent   { stroke: var(--neon-pink); filter: drop-shadow(0 0 5px var(--neon-pink)); }
+        #timer-ring-arc.critical { stroke: var(--neon-red);  filter: drop-shadow(0 0 6px var(--neon-red)); }
 
         #timer-text {
             font-family: 'Bebas Neue', cursive;
@@ -101,10 +167,11 @@
             min-width: 44px;
             transition: color 0.5s, text-shadow 0.5s;
         }
-        #timer-text.warn   { color: var(--neon-warn);  text-shadow: 0 0 8px var(--neon-warn); }
-        #timer-text.urgent { color: var(--neon-pink);  text-shadow: 0 0 8px var(--neon-pink); }
+        
+        #timer-text.warn     { color: var(--neon-warn);  text-shadow: 0 0 8px var(--neon-warn); }
+        #timer-text.urgent   { color: var(--neon-pink);  text-shadow: 0 0 8px var(--neon-pink); }
+        #timer-text.critical { color: var(--neon-red);   text-shadow: 0 0 8px var(--neon-red); }
 
-        /* ── Title ───────────────────────────────────────────── */
         #poll-title {
             font-family: 'Bebas Neue', cursive;
             font-size: 36px;
@@ -115,7 +182,6 @@
             line-height: 1.1;
         }
 
-        /* ── Hint bar: shows  [1] ChoiceName  [2] ChoiceName ── */
         #vote-hint {
             display: flex;
             gap: 6px;
@@ -159,7 +225,6 @@
             color: rgba(255,255,255,0.75);
         }
 
-        /* ── Choices ─────────────────────────────────────────── */
         .choice-container { margin-bottom: 18px; }
         .choice-container:last-child { margin-bottom: 0; }
 
@@ -174,7 +239,6 @@
             align-items: center;
             gap: 10px;
         }
-        /* Number badge */
         .choice-num {
             font-family: 'Bebas Neue', cursive;
             font-size: 18px;
@@ -225,7 +289,6 @@
             transition: width 0.9s cubic-bezier(0.25,1,0.5,1);
         }
 
-        /* ── Footer ──────────────────────────────────────────── */
         .footer-row {
             display: flex;
             justify-content: space-between;
@@ -260,7 +323,6 @@
             color: var(--neon-pink);
         }
 
-        /* ── Scanline ─────────────────────────────────────────── */
         #poll-container::after {
             content: '';
             pointer-events: none;
@@ -272,15 +334,22 @@
             border-radius: 6px;
         }
 
-        /* ── Urgent pulse ─────────────────────────────────────── */
         @keyframes urgentPulse {
             0%,100% { border-left-color: var(--neon-pink); }
             50%      { border-left-color: rgba(255,0,229,0.25); }
         }
+        @keyframes criticalPulse {
+            0%,100% { border-left-color: var(--neon-red); box-shadow: 0 0 40px rgba(0,0,0,0.6), 0 0 25px rgba(255,0,60,0.5), inset 0 0 20px rgba(255,0,60,0.1); }
+            50%      { border-left-color: rgba(255,0,60,0.25); box-shadow: 0 0 40px rgba(0,0,0,0.6), 0 0 10px rgba(255,0,60,0.2), inset 0 0 10px rgba(255,0,60,0.05); }
+        }
         #poll-container.urgent { animation: urgentPulse 1s ease-in-out infinite; }
+        #poll-container.critical { animation: criticalPulse 0.5s ease-in-out infinite; }
+
     </style>
 </head>
 <body>
+
+<div id="alert-container"></div>
 
 <div id="poll-container">
     <div class="header-row">
@@ -298,7 +367,6 @@
 
     <div id="vote-hint">
         <span class="hint-label">Type in chat →</span>
-        <!-- filled dynamically -->
     </div>
 
     <div id="choices-list"></div>
@@ -318,14 +386,41 @@
     const statusBadge = document.getElementById('status-badge');
     const timerText   = document.getElementById('timer-text');
     const timerArc    = document.getElementById('timer-ring-arc');
+    const alertBox    = document.getElementById('alert-container');
 
-    const CIRC = 87.96; // 2π × r=14
+    const CIRC = 87.96; 
     let hideTimer      = null;
     let countdownTimer = null;
     let pollEndMs      = 0;
     let pollDurationMs = 0;
 
-    // ── Countdown ─────────────────────────────────────────────────
+    // Default Twitch fallback avatar
+    const DEFAULT_AVATAR = 'https://static-cdn.jtvnw.net/user-default-pictures-uv/13e5aa74-def3-11e9-b8e5-784f43822e80-profile_image-70x70.png';
+
+    // ── Voter Alert Notification ───────────────────────────────────
+    function triggerVoteAlert(username, avatarUrl) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'vote-alert';
+        
+        // Robust avatar fallback logic
+        const finalAvatar = (avatarUrl && avatarUrl.trim() !== "") ? avatarUrl : DEFAULT_AVATAR;
+        
+        alertDiv.innerHTML = `
+            <img class="alert-avatar" src="${finalAvatar}" onerror="this.src='${DEFAULT_AVATAR}'" alt="avatar">
+            <div class="alert-text">
+                <span class="alert-username">${escHtml(username)}</span> has voted!
+            </div>
+        `;
+        
+        alertBox.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.parentNode.removeChild(alertDiv);
+            }
+        }, 4000);
+    }
+
     function startCountdown(endMs, totalMs) {
         pollEndMs      = endMs;
         pollDurationMs = totalMs;
@@ -340,7 +435,7 @@
         timerText.className   = '';
         timerArc.style.strokeDashoffset = CIRC;
         timerArc.className    = '';
-        container.classList.remove('urgent');
+        container.classList.remove('urgent', 'critical');
     }
 
     function tick() {
@@ -355,22 +450,23 @@
         const ratio  = Math.max(0, Math.min(1, remaining / pollDurationMs));
         timerArc.style.strokeDashoffset = CIRC * (1 - ratio);
 
-        if (remaining < 30000) {
+        if (remaining <= 10000) {
+            timerText.className = 'critical';
+            timerArc.className  = 'critical';
+            container.classList.remove('urgent');
+            container.classList.add('critical');
+        } else if (remaining < 30000) {
             timerText.className = 'urgent';
             timerArc.className  = 'urgent';
+            container.classList.remove('critical');
             container.classList.add('urgent');
         } else if (remaining < 60000) {
             timerText.className = 'warn';
             timerArc.className  = 'warn';
-            container.classList.remove('urgent');
-        } else {
-            timerText.className = '';
-            timerArc.className  = '';
-            container.classList.remove('urgent');
+            container.classList.remove('urgent', 'critical');
         }
     }
 
-    // ── Hint bar: [1] Name  [2] Name  [3] Name ────────────────────
     function renderHint(choices) {
         hintEl.innerHTML = '<span class="hint-label">Type in chat →</span>';
         choices.forEach((choice, idx) => {
@@ -384,7 +480,6 @@
         });
     }
 
-    // ── Main render ───────────────────────────────────────────────
     function updatePoll(data) {
         if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
 
@@ -400,7 +495,6 @@
                 const remaining = data.endTime - Date.now();
                 if (remaining > 0) {
                     if (countdownTimer && pollEndMs !== data.endTime) {
-                        // addtime updated — just update the end target
                         pollEndMs      = data.endTime;
                         pollDurationMs = Math.max(pollDurationMs, remaining);
                     } else if (!countdownTimer) {
@@ -451,11 +545,11 @@
     }
 
     function escHtml(s) {
+        if (typeof s !== 'string') return '';
         return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')
                 .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    // ── WebSocket ─────────────────────────────────────────────────
     function connect() {
         const ws = new WebSocket('ws://localhost:8080/');
         ws.onopen = () => ws.send(JSON.stringify({
@@ -468,10 +562,15 @@
                 const r = JSON.parse(event.data);
                 if (!r.data) return;
                 const d = typeof r.data === 'string' ? JSON.parse(r.data) : r.data;
-                if (d.eventName === 'TwitchPollUpdate') updatePoll(d);
+                
+                if (d.eventName === 'TwitchPollUpdate') {
+                    updatePoll(d);
+                } 
+                else if (d.eventName === 'TwitchVoteEvent') {
+                    triggerVoteAlert(d.voterName, d.voterAvatar);
+                }
             } catch(e) { console.warn('[Poll]', e); }
         };
-        ws.onerror = () => {};
         ws.onclose = () => setTimeout(connect, 3000);
     }
     connect();
