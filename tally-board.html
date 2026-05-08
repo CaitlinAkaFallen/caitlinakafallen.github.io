@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tally Board</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: transparent;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 48px;
+        }
+
+        #board {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 780px;
+            transform: translateY(300px);
+            opacity: 0;
+            transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                        opacity  0.5s ease;
+            position: relative;
+        }
+
+        #board.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ── Status strip ─────────────────────────────────────── */
+        #status-bar {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 46px;
+            background: #0d0d0d;
+            border-top: 3px solid #cc0000;
+        }
+
+        #badge {
+            background: #cc0000;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: #fff;
+            padding: 0 22px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            animation: badge-pulse 1.4s ease-in-out infinite;
+        }
+
+        @keyframes badge-pulse {
+            0%, 100% { background: #cc0000; }
+            50%       { background: #ff1a1a; }
+        }
+
+        #badge.final-badge {
+            background: #ffcc00 !important;
+            color: #000 !important;
+            animation: none !important;
+        }
+
+        #status-text {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+            color: #e0e0e0;
+            text-transform: uppercase;
+            padding: 0 20px;
+            flex: 1;
+        }
+
+        #goal-badge {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            color: #ffcc00;
+            background: rgba(255, 204, 0, 0.12);
+            border-left: 2px solid #ffcc00;
+            padding: 0 18px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            text-transform: uppercase;
+        }
+
+        #goal-badge.hidden { display: none; }
+
+        /* ── Score panel ──────────────────────────────────────── */
+        #scorepanel {
+            display: flex;
+            width: 100%;
+            height: 130px;
+            background: #111;
+            border-bottom: 3px solid #222;
+        }
+
+        /* ── STREAMER SIDE ────────────────────────────────────── */
+        .side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .side.streamer {
+            background: linear-gradient(160deg, #1a0a0a 0%, #111 60%);
+            border-right: 1px solid #2a2a2a;
+            flex-direction: row;
+        }
+
+        /* Red diagonal glow accent */
+        .side.streamer::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(204,0,0,0.07) 0%, transparent 55%);
+            pointer-events: none;
+        }
+
+        /* Avatar column */
+        .streamer-avatar-col {
+            width: 96px;
+            flex-shrink: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-left: 16px;
+            padding-right: 10px;
+            position: relative;
+            overflow: hidden;   /* hard clip — nothing escapes the column */
+        }
+
+        /* Diagonal separator */
+        .streamer-avatar-col::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: 0;
+            width: 28px;
+            height: 100%;
+            background: linear-gradient(165deg, #1a0808 0%, #111 100%);
+            clip-path: polygon(100% 0, 100% 100%, 0 100%);
+            z-index: 2;
+        }
+
+        /* Avatar wrapper */
+        .avatar-wrap {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+
+        #streamer-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            border: 2px solid #cc0000;
+            box-shadow:
+                0 0 0 3px rgba(204, 0, 0, 0.15),
+                0 0 14px rgba(204, 0, 0, 0.45),
+                0 4px 12px rgba(0,0,0,0.7);
+            background: #1a0a0a;
+        }
+
+        /* Pulsing outer ring */
+        .avatar-ring {
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 2px solid rgba(204, 0, 0, 0.45);
+            animation: ring-pulse 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes ring-pulse {
+            0%, 100% { transform: scale(1);    opacity: 0.55; }
+            50%       { transform: scale(1.13); opacity: 0;    }
+        }
+
+        /* Text column */
+        .streamer-text-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 10px 8px 6px;
+            gap: 2px;
+        }
+
+        /* ── CHAT SIDE ────────────────────────────────────────── */
+        .side.chat {
+            background: linear-gradient(200deg, #0a0a1a 0%, #111 60%);
+            border-left: 1px solid #2a2a2a;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 0 8px;
+            gap: 2px;
+        }
+
+        /* ── Shared typography ────────────────────────────────── */
+        .side-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #666;
+        }
+
+        .side-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .streamer .side-name { color: #ff4444; }
+        .chat     .side-name { color: #4488ff; }
+
+        .side-score {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 5.5rem;
+            line-height: 1;
+            letter-spacing: -2px;
+            color: #ffffff;
+        }
+
+        .score-underline {
+            width: 50px;
+            height: 3px;
+            border-radius: 2px;
+            margin-top: 2px;
+        }
+
+        .streamer .score-underline { background: #cc0000; }
+        .chat     .score-underline { background: #2255cc; }
+
+        /* ── VS divider ───────────────────────────────────────── */
+        #vs-divider {
+            width: 72px;
+            flex-shrink: 0;
+            background: #0d0d0d;
+            border-left:  1px solid #2a2a2a;
+            border-right: 1px solid #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        #vs-text {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            color: #444;
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        .vs-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #cc0000;
+            animation: vs-blink 1.2s ease-in-out infinite;
+        }
+
+        .vs-dot:nth-child(3) { animation-delay: 0.4s; }
+        .vs-dot:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes vs-blink {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50%       { opacity: 1;   transform: scale(1.2); }
+        }
+
+        /* ── Lead bar ─────────────────────────────────────────── */
+        #lead-bar {
+            width: 100%;
+            height: 6px;
+            background: #0d0d0d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #lead-fill {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: left 0.6s ease, width 0.6s ease, background 0.4s ease;
+        }
+
+        /* ══════════════════════════════════════════════════════
+           WINNER OVERLAY
+        ══════════════════════════════════════════════════════ */
+        #winner-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        #winner-overlay.show { opacity: 1; }
+
+        #winner-overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.82);
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+        }
+
+        #winner-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        #winner-inner::after {
+            content: '';
+            position: absolute;
+            inset: -20px;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(0,0,0,0.15) 3px,
+                rgba(0,0,0,0.15) 4px
+            );
+            pointer-events: none;
+        }
+
+        #winner-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            color: #ffcc00;
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: none;
+        }
+        #winner-label.animate { animation: fade-drop 0.4s 0.1s ease forwards; }
+
+        #winner-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 5.2rem;
+            letter-spacing: 4px;
+            line-height: 0.95;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255,204,0,0.6), 0 0 60px rgba(255,204,0,0.3), 0 4px 20px rgba(0,0,0,0.8);
+            opacity: 0;
+            transform: scale(0.7);
+            animation: none;
+        }
+        #winner-name.animate { animation: name-pop 0.5s 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+        #winner-sub {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: #ffcc00;
+            margin-top: 6px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: none;
+        }
+        #winner-sub.animate { animation: fade-rise 0.4s 0.6s ease forwards; }
+
+        #winner-score-line {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 4px;
+            margin-top: 8px;
+            opacity: 0;
+            transform: translateY(8px);
+            animation: none;
+        }
+        #winner-score-line.animate { animation: fade-rise 0.4s 0.75s ease forwards; }
+        #winner-score-line .w-score { color: #ffcc00; }
+        #winner-score-line .sep     { color: #555; margin: 0 8px; }
+        #winner-score-line .l-score { color: #888; }
+
+        #trophy {
+            font-size: 3.2rem;
+            line-height: 1;
+            filter: drop-shadow(0 0 12px rgba(255,204,0,0.7));
+            opacity: 0;
+            transform: translateY(-6px) rotate(-8deg);
+            animation: none;
+        }
+        #trophy.animate { animation: trophy-drop 0.5s 0.05s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+        #winner-bar {
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ffcc00, transparent);
+            margin-top: 10px;
+            animation: none;
+        }
+        #winner-bar.animate { animation: bar-grow 0.5s 0.5s ease forwards; }
+
+        #winner-overlay .corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            opacity: 0;
+            animation: none;
+        }
+        #winner-overlay .corner.tl { top: 8px;    left: 8px;   border-top: 3px solid #ffcc00;    border-left: 3px solid #ffcc00; }
+        #winner-overlay .corner.tr { top: 8px;    right: 8px;  border-top: 3px solid #ffcc00;    border-right: 3px solid #ffcc00; }
+        #winner-overlay .corner.bl { bottom: 8px; left: 8px;   border-bottom: 3px solid #ffcc00; border-left: 3px solid #ffcc00; }
+        #winner-overlay .corner.br { bottom: 8px; right: 8px;  border-bottom: 3px solid #ffcc00; border-right: 3px solid #ffcc00; }
+        #winner-overlay .corner.animate { animation: corner-show 0.4s 0.2s ease forwards; }
+
+        @keyframes fade-drop   { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fade-rise   { to { opacity: 1; transform: translateY(0); } }
+        @keyframes name-pop    { to { opacity: 1; transform: scale(1); } }
+        @keyframes trophy-drop { to { opacity: 1; transform: translateY(0) rotate(0deg); } }
+        @keyframes bar-grow    { to { width: 260px; } }
+        @keyframes corner-show { to { opacity: 1; } }
+
+        #winner-overlay.winner-streamer #winner-name  { color: #ff4444; text-shadow: 0 0 30px rgba(255,68,68,0.6), 0 0 60px rgba(255,68,68,0.3), 0 4px 20px rgba(0,0,0,0.8); }
+        #winner-overlay.winner-streamer .corner        { border-color: #ff4444 !important; }
+        #winner-overlay.winner-streamer #winner-bar    { background: linear-gradient(90deg, transparent, #ff4444, transparent); }
+        #winner-overlay.winner-streamer #winner-label  { color: #ff4444; }
+        #winner-overlay.winner-streamer #winner-sub    { color: #ff4444; }
+        #winner-overlay.winner-streamer #winner-score-line .w-score { color: #ff4444; }
+
+        #winner-overlay.winner-chat #winner-name  { color: #4488ff; text-shadow: 0 0 30px rgba(68,136,255,0.6), 0 0 60px rgba(68,136,255,0.3), 0 4px 20px rgba(0,0,0,0.8); }
+        #winner-overlay.winner-chat .corner        { border-color: #4488ff !important; }
+        #winner-overlay.winner-chat #winner-bar    { background: linear-gradient(90deg, transparent, #4488ff, transparent); }
+        #winner-overlay.winner-chat #winner-label  { color: #4488ff; }
+        #winner-overlay.winner-chat #winner-sub    { color: #4488ff; }
+        #winner-overlay.winner-chat #winner-score-line .w-score { color: #4488ff; }
+    </style>
+</head>
+<body>
+
+<div id="board">
+
+    <div id="status-bar">
+        <div id="badge">LIVE</div>
+        <div id="status-text">SCORE UPDATE</div>
+        <div id="goal-badge" class="hidden">FIRST TO <span id="goal-num">10</span></div>
+    </div>
+
+    <div id="scorepanel">
+
+        <div class="side streamer">
+            <div class="streamer-avatar-col">
+                <div class="avatar-wrap">
+                    <div class="avatar-ring"></div>
+                    <img id="streamer-avatar" src="" alt="">
+                </div>
+            </div>
+            <div class="streamer-text-col">
+                <div class="side-label">STREAMER</div>
+                <div class="side-name" id="streamer-name">—</div>
+                <div class="side-score" id="streamer-score">0</div>
+                <div class="score-underline"></div>
+            </div>
+        </div>
+
+        <div id="vs-divider">
+            <div class="vs-dot"></div>
+            <div id="vs-text">VS</div>
+            <div class="vs-dot"></div>
+        </div>
+
+        <div class="side chat">
+            <div class="side-label">CHAT</div>
+            <div class="side-name" id="chat-name">CHAT</div>
+            <div class="side-score" id="chat-score">0</div>
+            <div class="score-underline"></div>
+        </div>
+
+    </div>
+
+    <div id="lead-bar"><div id="lead-fill"></div></div>
+
+    <div id="winner-overlay">
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+        <div id="winner-inner">
+            <div id="trophy">🏆</div>
+            <div id="winner-label">WINNER</div>
+            <div id="winner-name">—</div>
+            <div id="winner-bar"></div>
+            <div id="winner-sub">GOAL REACHED</div>
+            <div id="winner-score-line">
+                <span class="w-score" id="ws-val">0</span>
+                <span class="sep">—</span>
+                <span class="l-score" id="ls-val">0</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ── URL params ────────────────────────────────────────────────────────────
+    const params        = new URLSearchParams(window.location.search);
+    const WS_HOST       = params.get("address")  || "localhost";
+    const WS_PORT       = params.get("port")      || "8080";
+    const DEFAULT_SNAME = (params.get("streamer") || "").toUpperCase();
+    const DEFAULT_CNAME = (params.get("chat")     || "Chat").toUpperCase();
+
+    // ── DOM refs ──────────────────────────────────────────────────────────────
+    const board         = document.getElementById('board');
+    const badgeEl       = document.getElementById('badge');
+    const statusTextEl  = document.getElementById('status-text');
+    const goalBadge     = document.getElementById('goal-badge');
+    const goalNum       = document.getElementById('goal-num');
+    const sNameEl       = document.getElementById('streamer-name');
+    const cNameEl       = document.getElementById('chat-name');
+    const sScoreEl      = document.getElementById('streamer-score');
+    const cScoreEl      = document.getElementById('chat-score');
+    const leadFill      = document.getElementById('lead-fill');
+    const avatarImg     = document.getElementById('streamer-avatar');
+    const winnerOverlay = document.getElementById('winner-overlay');
+    const winnerNameEl  = document.getElementById('winner-name');
+    const winnerLabelEl = document.getElementById('winner-label');
+    const winnerBarEl   = document.getElementById('winner-bar');
+    const winnerSubEl   = document.getElementById('winner-sub');
+    const trophyEl      = document.getElementById('trophy');
+    const wsValEl       = document.getElementById('ws-val');
+    const lsValEl       = document.getElementById('ls-val');
+    const winnerCorners = document.querySelectorAll('#winner-overlay .corner');
+
+    // ── Defaults ──────────────────────────────────────────────────────────────
+    if (DEFAULT_SNAME) sNameEl.innerText = DEFAULT_SNAME;
+    cNameEl.innerText = DEFAULT_CNAME;
+
+    // ── Persistent state ──────────────────────────────────────────────────────
+    let cachedStreamerName = DEFAULT_SNAME || null;
+    let cachedChatName    = DEFAULT_CNAME || "CHAT";
+    let cachedAvatar      = null;           // persists the BEST avatar URL we've seen
+    let hideTimer         = null;
+    let winnerHideTimer   = null;
+    const VALID_EVENTS    = ["tally_board", "tally_update", "tally_reset"];
+
+    // ── Avatar resolution ─────────────────────────────────────────────────────
+    //
+    // Priority chain (stops at first success):
+    //   1. data.broadcastUserProfileImageUrl  — direct URL from broadcaster sub-action
+    //   2. data.avatar                        — URL passed explicitly by C# script
+    //   3. cachedAvatar                       — best URL seen in any prior event
+    //   4. decapi.me/twitch/avatar/{login}    — fetches real Twitch pic by username
+    //
+    // decapi.me returns the actual CDN image URL as plain text — we fetch it,
+    // read the text, then set that as the img src.  Once a real pic is cached
+    // it is reused on every subsequent event so we don't hammer the API.
+
+    function isBadAvatar(url) {
+        if (!url) return true;
+        if (url.includes("user-default-pictures")) return true;
+        if (url.startsWith("User not found")) return true;
+        if (!url.startsWith("http")) return true;
+        return false;
+    }
+
+    // decapi.me URLs are API endpoints that return a plain-text image URL —
+    // they cannot be used directly as <img src>.  Any URL containing decapi.me
+    // must be fetched first and the response text used as the real src.
+    function isDecapiUrl(url) {
+        return url && url.includes("decapi.me");
+    }
+
+    // Apply a confirmed direct image URL to the avatar element.
+    // Never call this with a decapi.me URL — use fetchAndSetDecapi instead.
+    function setAvatarSrc(url) {
+        if (isBadAvatar(url) || isDecapiUrl(url)) return;
+        avatarImg.src = url;
+        cachedAvatar  = url;
+        console.log("[TallyBoard] Avatar set →", url);
+    }
+
+    // Fetch a decapi.me endpoint, read the plain-text response (which IS the
+    // real CDN image URL), then apply it.  A flight-lock stops duplicate calls.
+    let decapiFetchInFlight = false;
+    function fetchAndSetDecapi(decapiUrl) {
+        if (!decapiUrl || decapiFetchInFlight) return;
+        // If we already have a good non-decapi cached avatar, don't overwrite it
+        if (!isBadAvatar(cachedAvatar) && !isDecapiUrl(cachedAvatar)) return;
+        decapiFetchInFlight = true;
+        console.log("[TallyBoard] Fetching decapi →", decapiUrl);
+        fetch(decapiUrl)
+            .then(r => r.text())
+            .then(text => {
+                decapiFetchInFlight = false;
+                const resolved = text.trim();
+                if (!isBadAvatar(resolved) && !isDecapiUrl(resolved)) {
+                    console.log("[TallyBoard] decapi resolved →", resolved);
+                    // setAvatarSrc is safe now — resolved is a real CDN URL
+                    avatarImg.src = resolved;
+                    cachedAvatar  = resolved;
+                } else {
+                    console.warn("[TallyBoard] decapi returned unusable value:", resolved);
+                }
+            })
+            .catch(err => {
+                decapiFetchInFlight = false;
+                console.warn("[TallyBoard] decapi fetch failed:", err);
+            });
+    }
+
+    function resolveAvatar(data) {
+        // Helper: route a URL through the right setter depending on its type
+        function applyUrl(url) {
+            if (!url) return false;
+            if (isDecapiUrl(url)) { fetchAndSetDecapi(url); return true; }
+            if (!isBadAvatar(url)) { setAvatarSrc(url); return true; }
+            return false;
+        }
+
+        // 1. broadcastUserProfileImageUrl — best source, direct from sub-action
+        if (applyUrl(data.broadcastUserProfileImageUrl)) return;
+
+        // 2. avatar field from C# payload
+        if (applyUrl(data.avatar)) return;
+
+        // 3. Cached good avatar from a prior event
+        if (!isBadAvatar(cachedAvatar)) {
+            if (isDecapiUrl(cachedAvatar)) fetchAndSetDecapi(cachedAvatar);
+            else avatarImg.src = cachedAvatar;
+            return;
+        }
+
+        // 4. Nothing at all yet — build decapi URL from streamer login name
+        if (cachedStreamerName) {
+            fetchAndSetDecapi(`https://decapi.me/twitch/avatar/${cachedStreamerName.toLowerCase()}`);
+        }
+    }
+
+    // ── Streamer name resolution ──────────────────────────────────────────────
+    function resolveStreamerName(data) {
+        if (data.streamerName && data.streamerName.trim())
+            return data.streamerName.trim().toUpperCase();
+        if (data.broadcastUserName && data.broadcastUserName.trim())
+            return data.broadcastUserName.trim().toUpperCase();
+        if (cachedStreamerName)
+            return cachedStreamerName;
+        return DEFAULT_SNAME || "STREAMER";
+    }
+
+    // ── Lead bar ──────────────────────────────────────────────────────────────
+    function updateLeadBar(s, c) {
+        const total = s + c;
+        if (total === 0) { leadFill.style.width = '0%'; return; }
+        if (s > c) {
+            leadFill.style.left       = '0%';
+            leadFill.style.width      = (s / total * 100) + '%';
+            leadFill.style.background = '#cc0000';
+        } else if (c > s) {
+            const pct = c / total * 100;
+            leadFill.style.left       = (100 - pct) + '%';
+            leadFill.style.width      = pct + '%';
+            leadFill.style.background = '#2255cc';
+        } else {
+            leadFill.style.left       = '25%';
+            leadFill.style.width      = '50%';
+            leadFill.style.background = '#888';
+        }
+    }
+
+    // ── Score animation ───────────────────────────────────────────────────────
+    function animateScore(el, target) {
+        const from  = parseInt(el.innerText) || 0;
+        if (from === target) return;
+        const diff  = target - from;
+        const steps = Math.min(Math.abs(diff), 8);
+        let   step  = 0;
+        const t = setInterval(() => {
+            step++;
+            el.innerText = from + Math.round(diff * step / steps);
+            if (step >= steps) { el.innerText = target; clearInterval(t); }
+        }, 60);
+    }
+
+    // ── Winner overlay ────────────────────────────────────────────────────────
+    function showWinner(winnerName, winnerScore, loserScore, side) {
+        if (winnerHideTimer) clearTimeout(winnerHideTimer);
+
+        [winnerLabelEl, winnerNameEl, winnerSubEl, winnerBarEl, trophyEl, ...winnerCorners]
+            .forEach(el => el.classList.remove('animate'));
+
+        winnerOverlay.classList.remove('winner-streamer', 'winner-chat');
+        winnerOverlay.classList.add(side === 'streamer' ? 'winner-streamer' : 'winner-chat');
+
+        winnerNameEl.innerText = winnerName;
+        wsValEl.innerText      = winnerScore;
+        lsValEl.innerText      = loserScore;
+        winnerOverlay.classList.add('show');
+
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            trophyEl.classList.add('animate');
+            winnerLabelEl.classList.add('animate');
+            winnerNameEl.classList.add('animate');
+            winnerBarEl.classList.add('animate');
+            winnerSubEl.classList.add('animate');
+            winnerCorners.forEach(c => c.classList.add('animate'));
+        }));
+
+        winnerHideTimer = setTimeout(() => hideWinner(), 12000);
+    }
+
+    function hideWinner() {
+        winnerOverlay.classList.remove('show');
+        if (winnerHideTimer) { clearTimeout(winnerHideTimer); winnerHideTimer = null; }
+    }
+
+    function checkGoal(sScore, cScore, target, sName, cName) {
+        if (!target || target <= 0) return;
+        if (sScore >= target)      showWinner(sName, sScore, cScore, 'streamer');
+        else if (cScore >= target) showWinner(cName, cScore, sScore, 'chat');
+    }
+
+    // ── Payload extractor ─────────────────────────────────────────────────────
+    function extractTallyData(raw) {
+        let msg;
+        try { msg = typeof raw === 'string' ? JSON.parse(raw) : raw; }
+        catch { return null; }
+
+        const isTally  = o => o && typeof o === 'object' && VALID_EVENTS.includes(o.eventName);
+        const tryParse = v => { try { return JSON.parse(v); } catch { return v; } };
+
+        if (isTally(msg))                       return msg;
+        if (isTally(msg.data))                  return msg.data;
+        const d1 = tryParse(msg.data);
+        if (isTally(d1))                        return d1;
+        if (msg.data && isTally(msg.data.data)) return msg.data.data;
+        const d2 = msg.data && tryParse(msg.data.data);
+        if (isTally(d2))                        return d2;
+        if (d1 && isTally(d1.data))             return d1.data;
+        return null;
+    }
+
+    // ── Render ────────────────────────────────────────────────────────────────
+    function updateBoard(data) {
+        if (data.eventName === 'tally_reset') hideWinner();
+
+        if (hideTimer) clearTimeout(hideTimer);
+        board.classList.remove('visible');
+
+        setTimeout(() => {
+            const sScore = data.streamerScore ?? 0;
+            const cScore = data.chatScore     ?? 0;
+            const isOver = !!data.isGameOver;
+            const target = data.targetScore   ?? 0;
+
+            // Names
+            cachedStreamerName = resolveStreamerName(data);
+            if (data.chatName && data.chatName.trim())
+                cachedChatName = data.chatName.trim().toUpperCase();
+
+            sNameEl.innerText = cachedStreamerName;
+            cNameEl.innerText = cachedChatName || "CHAT";
+
+            // Avatar — resolve using the full fallback chain
+            resolveAvatar(data);
+
+            // Badge + status
+            if (isOver) {
+                badgeEl.innerText = "FINAL";
+                badgeEl.classList.add('final-badge');
+            } else {
+                badgeEl.innerText = "LIVE";
+                badgeEl.classList.remove('final-badge');
+            }
+            statusTextEl.innerText = (data.status || "SCORE UPDATE").toUpperCase();
+
+            animateScore(sScoreEl, sScore);
+            animateScore(cScoreEl, cScore);
+            updateLeadBar(sScore, cScore);
+
+            if (target > 0) {
+                goalNum.innerText = target;
+                goalBadge.classList.remove('hidden');
+            } else {
+                goalBadge.classList.add('hidden');
+            }
+
+            board.classList.add('visible');
+            console.log("[TallyBoard]", cachedStreamerName, sScore, "vs", cachedChatName, cScore, "| target:", target, "| avatar:", cachedAvatar || "none yet");
+
+            // Winner check
+            if (target > 0 && (sScore >= target || cScore >= target)) {
+                setTimeout(() => checkGoal(sScore, cScore, target, cachedStreamerName, cachedChatName), 700);
+            } else if (isOver) {
+                const side  = sScore >= cScore ? 'streamer' : 'chat';
+                const wName = sScore >= cScore ? cachedStreamerName : cachedChatName;
+                const wScr  = sScore >= cScore ? sScore : cScore;
+                const lScr  = sScore >= cScore ? cScore : sScore;
+                setTimeout(() => showWinner(wName, wScr, lScr, side), 700);
+            }
+
+            if (!isOver) {
+                hideTimer = setTimeout(() => {
+                    board.classList.remove('visible');
+                    hideWinner();
+                }, 10000);
+            }
+        }, 150);
+    }
+
+    // ── WebSocket ─────────────────────────────────────────────────────────────
+    function connect() {
+        const ws = new WebSocket(`ws://${WS_HOST}:${WS_PORT}/`);
+
+        ws.onopen = () => {
+            console.log("[TallyBoard] Connected →", `ws://${WS_HOST}:${WS_PORT}/`);
+            ws.send(JSON.stringify({ request: "Subscribe", events: { general: ["Custom"] }, id: "TallyBoard" }));
+        };
+
+        ws.onmessage = (event) => {
+            console.log("[TallyBoard] RAW >>>", event.data);
+            const data = extractTallyData(event.data);
+            if (!data) return;
+            console.log("[TallyBoard] Matched:", data.eventName, data);
+            updateBoard(data);
+        };
+
+        ws.onerror = e  => console.error("[TallyBoard] WS error:", e);
+        ws.onclose = () => { console.warn("[TallyBoard] Reconnecting in 3s…"); setTimeout(connect, 3000); };
+    }
+
+    connect();
+</script>
+</body>
+</html>
