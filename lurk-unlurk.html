@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sleek Glassmorphism Lurk and Unlurk Overlay</title>
+    <title>Lo-Fi Synthwave Lurk and Unlurk Overlay</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;1,9..40,300&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700;1,900&family=DM+Sans:ital,opsz,wght@0,9..40,300;1,9..40,300&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent-solid: #c8a2ff;
-            --accent: rgba(200, 162, 255, 0.22);
+            --g1: #f472b6;
+            --g2: #a78bfa;
+            --g3: #818cf8;
+            --glow1: rgba(244, 114, 182, 0.28);
+            --glow2: rgba(167, 139, 250, 0.18);
+            --bloom: rgba(244, 114, 182, 0.13);
+            --accent-text: #f472b6;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,90 +24,129 @@
             background: transparent;
             overflow: hidden;
             padding: 32px;
-            font-family: 'DM Sans', sans-serif;
         }
 
+        /* ── Wrapper animation ── */
         #alert-wrapper {
             display: inline-flex;
             opacity: 0;
-            transform: translateY(20px) scale(0.96);
-            transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateY(18px) scale(0.96);
+            transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
             pointer-events: none;
         }
-
         #alert-wrapper.show {
             opacity: 1;
             transform: translateY(0) scale(1);
         }
-
         #alert-wrapper.hide {
             opacity: 0;
-            transform: translateY(-12px) scale(0.96);
+            transform: translateY(-10px) scale(0.97);
         }
 
+        /* ── Gradient border ring (Synthwave) ── */
+        #gradient-ring {
+            padding: 1.5px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, var(--g1), var(--g2), var(--g3));
+            box-shadow:
+                0 0 28px var(--glow1),
+                0 0 60px var(--glow2),
+                0 16px 48px rgba(0, 0, 0, 0.55);
+            transition: background 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        /* ── Card (Lo-Fi pill shape) ── */
         #card {
             position: relative;
             display: flex;
             align-items: center;
-            gap: 18px;
-            padding: 18px 28px 18px 18px;
-            border-radius: 20px;
-            background: rgba(20, 15, 30, 0.5);
-            -webkit-backdrop-filter: blur(28px) saturate(160%);
-            backdrop-filter: blur(28px) saturate(160%);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow:
-                0 12px 40px rgba(0, 0, 0, 0.5),
-                0 1px 0 rgba(255, 255, 255, 0.05) inset;
-            min-width: 320px;
+            gap: 14px;
+            padding: 14px 24px 14px 16px;
+            border-radius: 58px;
+            background: rgba(14, 7, 26, 0.84);
+            -webkit-backdrop-filter: blur(32px) saturate(170%);
+            backdrop-filter: blur(32px) saturate(170%);
+            min-width: 300px;
             overflow: hidden;
         }
 
+        /* Colour bloom */
         #card::before {
             content: '';
             position: absolute;
-            inset: -40px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            inset: 0;
+            background: radial-gradient(ellipse at 20% 50%, var(--bloom) 0%, transparent 65%);
             pointer-events: none;
             z-index: 0;
-            transition: background 0.4s ease;
+            transition: background 0.5s ease;
         }
 
+        /* Shimmer sweep */
+        .shimmer {
+            position: absolute;
+            inset: 0;
+            border-radius: 58px;
+            background: linear-gradient(
+                105deg,
+                transparent 35%,
+                rgba(255, 255, 255, 0.045) 50%,
+                transparent 65%
+            );
+            background-size: 200% 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        #alert-wrapper.show .shimmer {
+            animation: shimmerMove 2.2s ease-in-out forwards;
+        }
+        @keyframes shimmerMove {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ── Avatar (Lo-Fi circle + Synthwave gradient ring) ── */
         .avatar-ring {
             position: relative;
             flex-shrink: 0;
+            width: 60px;
+            height: 60px;
             z-index: 1;
         }
-
         .avatar-ring::before {
             content: '';
             position: absolute;
             inset: -2px;
             border-radius: 50%;
-            background: conic-gradient(
-                var(--accent-solid),
-                rgba(255,255,255,0.1),
-                var(--accent-solid)
-            );
-            z-index: -1;
+            background: conic-gradient(var(--g1), var(--g2), var(--g3), var(--g1));
             animation: spin 4s linear infinite;
+            z-index: -1;
+            transition: background 0.5s ease;
         }
-
+        .avatar-ring::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            box-shadow: 0 0 14px var(--glow1), 0 0 28px var(--glow2);
+            pointer-events: none;
+            transition: box-shadow 0.5s ease;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         #avatar {
-            width: 62px;
-            height: 62px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background-size: cover;
             background-position: center;
-            background-color: rgba(255,255,255,0.05);
+            background-color: rgba(255, 255, 255, 0.04);
             display: block;
             position: relative;
+            z-index: 1;
         }
 
+        /* ── Text ── */
         .text-group {
             display: flex;
             flex-direction: column;
@@ -112,98 +156,120 @@
         }
 
         .label {
-            font-size: 0.7rem;
-            font-weight: 500;
-            letter-spacing: 0.15em;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.65rem;
+            font-style: italic;
+            font-weight: 300;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
-            color: var(--accent-solid);
-            opacity: 0.95;
-            transition: color 0.4s ease;
+            color: var(--accent-text);
+            opacity: 0.92;
+            transition: color 0.5s ease;
         }
 
-           #username {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #6affff;
-            line-height: 1.1;
-            letter-spacing: -0.02em;
+        #username {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 900;
+            font-style: italic;
+            background: linear-gradient(90deg, var(--g1), var(--g2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.15;
+            transition: background 0.5s ease;
         }
 
         #extra {
-            font-size: 0.82rem;
-            color: rgb(67, 249, 255);
-            font-weight: 300;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
             font-style: italic;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.38);
             max-width: 240px;
             min-height: 1em;
         }
-        
-        .accent-bar {
-            position: absolute;
-            left: 0; top: 20px; bottom: 20px;
-            width: 3px;
-            border-radius: 0 4px 4px 0;
-            background: var(--accent-solid);
-            box-shadow: 0 0 15px var(--accent-solid);
-            transition: background 0.4s ease, box-shadow 0.4s ease;
-        }
 
+        /* ── Floating particles (Lo-Fi) ── */
         .dot {
             position: absolute;
-            width: 3px;
-            height: 3px;
+            width: 4px;
+            height: 4px;
             border-radius: 50%;
-            background: var(--accent-solid);
+            background: var(--g2);
             opacity: 0;
+            pointer-events: none;
+            z-index: 3;
         }
-
         #alert-wrapper.show .dot {
-            animation: floatDot 2.8s ease-in-out forwards;
+            animation: floatUp 2.6s ease-out forwards;
+        }
+        .dot:nth-child(1) { left: 18%; animation-delay: 0.15s; }
+        .dot:nth-child(2) { left: 44%; animation-delay: 0.42s; }
+        .dot:nth-child(3) { left: 70%; animation-delay: 0.28s; }
+
+        @keyframes floatUp {
+            0%   { opacity: 0; bottom: 0; transform: scale(0); }
+            25%  { opacity: 0.75; transform: scale(1); }
+            100% { opacity: 0; bottom: 76px; transform: scale(0.4); }
         }
 
-        .dot:nth-child(1) { left: 20%; animation-delay: 0.1s; }
-        .dot:nth-child(2) { left: 45%; animation-delay: 0.4s; }
-        .dot:nth-child(3) { left: 70%; animation-delay: 0.2s; }
-
-        @keyframes floatDot {
-            0%   { opacity: 0; bottom: 0; transform: scale(0); }
-            30%  { opacity: 0.8; transform: scale(1); }
-            100% { opacity: 0; bottom: 70px; transform: scale(0.4); }
+        /* Username entry breath */
+        #alert-wrapper.show #username {
+            animation: breathIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes breathIn {
+            0%   { letter-spacing: 0.08em; opacity: 0.6; }
+            100% { letter-spacing: 0; opacity: 1; }
         }
     </style>
 </head>
 <body>
 
 <div id="alert-wrapper">
-    <div id="card">
-        <div class="accent-bar"></div>
-        <div class="particles">
+    <div id="gradient-ring">
+        <div id="card">
+            <div class="shimmer"></div>
             <div class="dot"></div>
             <div class="dot"></div>
             <div class="dot"></div>
-        </div>
 
-        <div class="avatar-ring">
-            <div id="avatar"></div>
-        </div>
+            <div class="avatar-ring">
+                <div id="avatar"></div>
+            </div>
 
-        <div class="text-group">
-            <span class="label" id="status-label">HEADING TO THE SHADOWS...</span>
-            <div id="username">FallenOneArt</div>
-            <div id="extra"></div>
+            <div class="text-group">
+                <span class="label" id="status-label">Drifting Away...</span>
+                <div id="username">FallenOneArt</div>
+                <div id="extra"></div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // ─── THEME COLORS ────────────────────────────────────
-    // Lurk   → light purple  #c8a2ff
-    // Unlurk → soft cyan     #7de8c8
-    // d.color from the WebSocket is intentionally ignored
-    // ─────────────────────────────────────────────────────
-    const LURK_THEME   = { solid: '#c8a2ff', bloom: 'rgba(200, 162, 255, 0.22)' };
-    const UNLURK_THEME = { solid: '#7de8c8', bloom: 'rgba(125, 232, 200, 0.22)' };
+    // ─── THEME COLORS ─────────────────────────────────────────
+    // Lurk   → rose pink + soft violet   #f472b6 / #a78bfa
+    // Unlurk → warm teal + mint green    #7dd4cf / #34d399
+    // ─────────────────────────────────────────────────────────
+    const LURK_THEME = {
+        g1:     '#f472b6',
+        g2:     '#a78bfa',
+        g3:     '#818cf8',
+        glow1:  'rgba(244, 114, 182, 0.28)',
+        glow2:  'rgba(167, 139, 250, 0.18)',
+        bloom:  'rgba(244, 114, 182, 0.13)',
+        accent: '#f472b6'
+    };
+    const UNLURK_THEME = {
+        g1:     '#7dd4cf',
+        g2:     '#34d399',
+        g3:     '#a78bfa',
+        glow1:  'rgba(125, 212, 207, 0.28)',
+        glow2:  'rgba(52, 211, 153, 0.18)',
+        bloom:  'rgba(125, 212, 207, 0.13)',
+        accent: '#7dd4cf'
+    };
 
     const params = new URLSearchParams(window.location.search);
     const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
@@ -222,19 +288,48 @@
             if (wrapper.classList.contains('show')) {
                 wrapper.classList.remove('show');
                 clearTimeout(hideTimeout);
-                setTimeout(() => triggerAlert(d), 400);
+                setTimeout(() => triggerAlert(d), 440);
             } else {
                 triggerAlert(d);
             }
         }
     };
 
+    function applyTheme(theme) {
+        const ring = document.getElementById('gradient-ring');
+        const card = document.getElementById('card');
+        const av   = document.querySelector('.avatar-ring');
+
+        // Gradient ring border
+        ring.style.background  = `linear-gradient(135deg, ${theme.g1}, ${theme.g2}, ${theme.g3})`;
+        ring.style.boxShadow   = `0 0 28px ${theme.glow1}, 0 0 60px ${theme.glow2}, 0 16px 48px rgba(0,0,0,0.55)`;
+
+        // Card bloom
+        card.style.setProperty('--bloom', theme.bloom);
+
+        // Avatar ring
+        av.style.setProperty('--g1',    theme.g1);
+        av.style.setProperty('--g2',    theme.g2);
+        av.style.setProperty('--g3',    theme.g3);
+        av.style.setProperty('--glow1', theme.glow1);
+        av.style.setProperty('--glow2', theme.glow2);
+
+        // Label colour
+        document.getElementById('status-label').style.color = theme.accent;
+
+        // Username gradient
+        const un = document.getElementById('username');
+        un.style.backgroundImage = `linear-gradient(90deg, ${theme.g1}, ${theme.g2})`;
+
+        // Particles colour
+        document.querySelectorAll('.dot').forEach(d => d.style.background = theme.g2);
+    }
+
     function triggerAlert(d) {
         const wrapper = document.getElementById('alert-wrapper');
-        const card    = document.getElementById('card');
 
         document.getElementById('username').innerText     = d.user   || 'FallenOneArt';
-        document.getElementById('status-label').innerText = d.status || 'HEADING TO THE SHADOWS...';
+        document.getElementById('status-label').innerText = d.status || 'drifting into the static...';
         document.getElementById('extra').innerText        = d.input  ? `"${d.input}"` : '';
         document.getElementById('avatar').style.backgroundImage = d.avatar ? `url('${d.avatar}')` : '';
 
@@ -243,10 +338,20 @@
         const isUnlurk = statusLower.includes('unlurk') ||
                          statusLower.includes('back')   ||
                          statusLower.includes('return');
-        const theme = isUnlurk ? UNLURK_THEME : LURK_THEME;
+        applyTheme(isUnlurk ? UNLURK_THEME : LURK_THEME);
 
-        card.style.setProperty('--accent-solid', theme.solid);
-        card.style.setProperty('--accent',       theme.bloom);
+        // Reset animations so they replay cleanly
+        ['shimmer', 'dot'].forEach(cls => {
+            document.querySelectorAll(`.${cls}`).forEach(el => {
+                el.style.animation = 'none';
+                void el.offsetWidth;
+                el.style.animation = '';
+            });
+        });
+        const un = document.getElementById('username');
+        un.style.animation = 'none';
+        void un.offsetWidth;
+        un.style.animation = '';
 
         wrapper.classList.remove('hide');
         wrapper.classList.add('show');
