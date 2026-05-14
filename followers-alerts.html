@@ -106,20 +106,38 @@
         #qna-container.show { opacity: 1; transform: translateX(0); }
         .content-column { display: flex; flex-direction: column; }
 
+          /* Top label */
         .top-label-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            padding: 0 15px;
+            align-items: center;
+            margin-bottom: 7px;
+            padding: 0 18px;
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(8px);
             transition: opacity 0.4s ease 0.5s, transform 0.4s ease 0.5s;
         }
-
         #qna-container.expanded .top-label-row { opacity: 1; transform: translateY(0); }
-
-        .inquiry-label { font-size: 0.7rem; letter-spacing: 2px; color: #f06292; text-transform: uppercase; font-style: italic; }
-        .user-name { font-size: 1.15rem; color: #f48fb1; font-family: 'Playfair Display', serif; font-style: italic; }
+ 
+        .inquiry-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.60rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: rgba(244, 114, 182, 0.85);
+            font-style: italic;
+        }
+        .user-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            font-style: italic;
+            background: linear-gradient(90deg, #f472b6, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+ 
 
         .glass-pill {
             background: linear-gradient(#110c1a, #110c1a) padding-box,
