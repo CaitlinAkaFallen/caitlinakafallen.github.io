@@ -27,13 +27,10 @@
             height: 100px;
             flex-shrink: 0;
             border-radius: 50%;
-            /* Dark center with a neon gradient border */
             border: 3px solid transparent;
             background: linear-gradient(#0d0a14, #0d0a14) padding-box,
                         linear-gradient(135deg, #4df5f5, #ba68c8, #f06292) border-box;
             box-shadow: 0 0 20px rgba(186, 104, 200, 0.3);
-            
-            /* Animation state */
             transform: translateX(-300px) rotate(-720deg);
             transition: transform 1.2s cubic-bezier(0.25, 1, 0.4, 1);
             display: flex;
@@ -42,12 +39,10 @@
             z-index: 2;
         }
 
-        #qna-container.show .avatar-wrapper { 
-            transform: translateX(0) rotate(0deg); 
-        }
+        #qna-container.show .avatar-wrapper { transform: translateX(0) rotate(0deg); }
 
         .crystal-heart {
-            width: 55%; /* Scaled to fit perfectly in the circle */
+            width: 55%; 
             height: 55%;
             position: relative;
             clip-path: url(#heart-clip);
@@ -83,9 +78,6 @@
             100% { opacity: 1; filter: contrast(1.4); }
         }
 
-        /* ═══════════════════════════════════════
-        HEART BURST PARTICLES
-        ═══════════════════════════════════════ */
         .heart-particle {
             position: absolute;
             pointer-events: none;
@@ -112,7 +104,6 @@
         }
 
         #qna-container.show { opacity: 1; transform: translateX(0); }
-
         .content-column { display: flex; flex-direction: column; }
 
         .top-label-row {
@@ -127,26 +118,10 @@
 
         #qna-container.expanded .top-label-row { opacity: 1; transform: translateY(0); }
 
-        .inquiry-label { 
-            font-size: 0.7rem; 
-            letter-spacing: 2px; 
-            color: #f06292; 
-            text-transform: uppercase; 
-            font-weight: 500; 
-            font-style: italic;
-        }
-        
-        .user-name { 
-            font-size: 1.15rem; 
-            font-weight: 600; 
-            color: #f48fb1; 
-            letter-spacing: 1px; 
-            font-family: 'Playfair Display', serif; 
-            font-style: italic;
-        }
+        .inquiry-label { font-size: 0.7rem; letter-spacing: 2px; color: #f06292; text-transform: uppercase; font-style: italic; }
+        .user-name { font-size: 1.15rem; color: #f48fb1; font-family: 'Playfair Display', serif; font-style: italic; }
 
         .glass-pill {
-            /* Synthwave Pill with Glowing Border */
             background: linear-gradient(#110c1a, #110c1a) padding-box,
                         linear-gradient(90deg, #f06292, #ba68c8, #4df5f5) border-box;
             border: 2px solid transparent;
@@ -164,14 +139,7 @@
 
         #qna-container.expanded .glass-pill { height: 70px; opacity: 1; padding: 15px 25px; }
 
-        .question-text { 
-            font-size: 1.1rem; 
-            color: #e2e8f0; 
-            opacity: 0; 
-            font-style: italic;
-            transition: opacity 0.3s ease 0.4s; 
-        }
-        
+        .question-text { font-size: 1.1rem; color: #e2e8f0; opacity: 0; font-style: italic; transition: opacity 0.3s ease 0.4s; }
         #qna-container.expanded .question-text { opacity: 1; }
 
         .bottom-label-row {
@@ -184,14 +152,7 @@
         }
 
         #qna-container.expanded .bottom-label-row { opacity: 1; }
-        
-        .time-stamp { 
-            font-size: 0.75rem; 
-            color: #4df5f5; 
-            font-weight: 700; 
-            letter-spacing: 1px; 
-            font-style: italic;
-        }
+        .time-stamp { font-size: 0.75rem; color: #4df5f5; font-weight: 700; letter-spacing: 1px; font-style: italic; }
     </style>
 </head>
 <body>
@@ -212,11 +173,11 @@
         <div class="content-column">
             <div class="top-label-row">
                 <div class="inquiry-label">New Follower</div>
-                <div class="user-name" id="username">Loading...</div>
+                <div class="user-name" id="username">...</div>
             </div>
 
             <div class="glass-pill">
-                <div class="question-text" id="display-message">Just materialized!</div>
+                <div class="question-text" id="display-message">...</div>
             </div>
 
             <div class="bottom-label-row">
@@ -251,37 +212,23 @@
 
         function triggerFollow(userName, message) {
             const container = document.getElementById('qna-container');
-
             document.getElementById('username').innerText = userName;
             document.getElementById('display-message').innerText = message;
 
-            // 1. Enter Animation
             container.classList.add('show');
             setTimeout(() => {
                 container.classList.add('expanded');
                 createHeartBurst();
             }, 600);
 
-            // 2. Hide Timer (6 seconds)
-            setTimeout(() => {
-                hideFollow();
-            }, 6000); 
+            setTimeout(() => hideFollow(), 8000); 
         }
 
         function hideFollow() {
             const container = document.getElementById('qna-container');
-            
-            // Reverse: Shrink pill first
             container.classList.remove('expanded');
-            
-            // Then slide the heart back out
-            setTimeout(() => {
-                container.classList.remove('show');
-            }, 600);
+            setTimeout(() => container.classList.remove('show'), 600);
         }
-
-        // Display on load
-        setTimeout(() => triggerFollow("DreamDrifter", "just drifted into the static ✨"), 500);
     </script>
 </body>
 </html>
