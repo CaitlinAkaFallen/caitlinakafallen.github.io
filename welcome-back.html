@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lo-Fi Synthwave — Welcome Back</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700;1,900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+    <style>
+        /* ═══════════════════════════════════════════════════
+           RESET & BASE
+        ═══════════════════════════════════════════════════ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: transparent;
+            overflow: hidden;
+            padding: 32px;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           QUEUE STACK — multiple alerts stack vertically
+        ═══════════════════════════════════════════════════ */
+        #alert-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           SINGLE ALERT WRAPPER
+        ═══════════════════════════════════════════════════ */
+        .alert-wrapper {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            opacity: 0;
+            transform: translateX(-40px) scale(0.96);
+            transition:
+                opacity  0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+        }
+        .alert-wrapper.show {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+        .alert-wrapper.hide {
+            opacity: 0;
+            transform: translateX(40px) scale(0.96);
+            transition:
+                opacity  0.45s cubic-bezier(0.55, 0, 0.78, 0),
+                transform 0.45s cubic-bezier(0.55, 0, 0.78, 0);
+        }
+
+        /* ═══════════════════════════════════════════════════
+           AVATAR  — circular, spinning gradient ring
+        ═══════════════════════════════════════════════════ */
+        .avatar-wrap {
+            position: relative;
+            width: 62px;
+            height: 62px;
+            flex-shrink: 0;
+            z-index: 2;
+            margin-right: -18px; /* overlaps pill edge */
+        }
+
+        /* Spinning conic gradient border ring */
+        .avatar-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -2.5px;
+            border-radius: 50%;
+            background: conic-gradient(#f472b6, #a78bfa, #7dd4cf, #f472b6);
+            animation: spin 4s linear infinite;
+            z-index: 0;
+        }
+        /* Soft outer glow */
+        .avatar-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            box-shadow:
+                0 0 16px rgba(244, 114, 182, 0.40),
+                0 0 36px rgba(167, 139, 250, 0.20);
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .avatar-img {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: #2a1040 center / cover no-repeat;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           PILL  — gradient border + glassmorphism interior
+        ═══════════════════════════════════════════════════ */
+        .gradient-ring {
+            padding: 1.5px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #f472b6, #a78bfa, #7dd4cf);
+            box-shadow:
+                0 0 22px rgba(244, 114, 182, 0.25),
+                0 0 52px rgba(167, 139, 250, 0.14),
+                0 12px 40px rgba(0, 0, 0, 0.55);
+            flex-shrink: 0;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 22px 12px 30px; /* extra left padding for avatar overlap */
+            border-radius: 58px;
+            background: rgba(14, 7, 26, 0.84);
+            -webkit-backdrop-filter: blur(32px) saturate(170%);
+            backdrop-filter: blur(32px) saturate(170%);
+            min-width: 260px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Colour bloom */
+        .pill::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                ellipse at 18% 50%,
+                rgba(244, 114, 182, 0.11) 0%,
+                transparent 65%
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Shimmer sweep on entry */
+        .pill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 58px;
+            background: linear-gradient(
+                105deg,
+                transparent 35%,
+                rgba(255, 255, 255, 0.045) 50%,
+                transparent 65%
+            );
+            background-size: 200% 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .alert-wrapper.show .pill::after {
+            animation: shimmerMove 2.2s ease-in-out 0.2s forwards;
+        }
+        @keyframes shimmerMove {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ═══════════════════════════════════════════════════
+           TEXT CONTENT
+        ═══════════════════════════════════════════════════ */
+        .text-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            position: relative;
+            z-index: 2;
+            min-width: 0;
+        }
+
+        .welcome-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.60rem;
+            font-style: italic;
+            font-weight: 300;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(244, 114, 182, 0.85);
+            line-height: 1;
+        }
+
+        .username {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.22rem;
+            font-weight: 900;
+            font-style: italic;
+            background: linear-gradient(90deg, #f472b6, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            white-space: nowrap;
+        }
+
+        .sub-message {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.76rem;
+            font-weight: 300;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.40);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 220px;
+            min-height: 1em;
+        }
+
+        /* Username breath-in on entry */
+        .alert-wrapper.show .username {
+            animation: breathIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+        }
+        @keyframes breathIn {
+            0%   { letter-spacing: 0.08em; opacity: 0.5; }
+            100% { letter-spacing: 0;      opacity: 1;   }
+        }
+
+        /* ═══════════════════════════════════════════════════
+           FLOATING PARTICLES
+        ═══════════════════════════════════════════════════ */
+        .dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #a78bfa;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+        }
+        .alert-wrapper.show .dot {
+            animation: floatUp 2.6s ease-out forwards;
+        }
+        .dot:nth-child(1) { left: 22%; animation-delay: 0.18s; }
+        .dot:nth-child(2) { left: 48%; animation-delay: 0.44s; }
+        .dot:nth-child(3) { left: 72%; animation-delay: 0.30s; }
+
+        @keyframes floatUp {
+            0%   { opacity: 0;    bottom: 0;    transform: scale(0); }
+            25%  { opacity: 0.75;              transform: scale(1); }
+            100% { opacity: 0;    bottom: 72px; transform: scale(0.4); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="alert-stack"></div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════
+        //  WEBSOCKET — Streamer.bot connection
+        // ═══════════════════════════════════════════════════════
+        const params = new URLSearchParams(window.location.search);
+        const ws = new WebSocket(
+            `ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`
+        );
+
+        ws.onopen = () => {
+            console.log("[WelcomeBack] Connected to Streamer.bot");
+            ws.send(JSON.stringify({
+                request : "Subscribe",
+                events  : { general: ["Custom"] },
+                id      : "WelcomeBack"
+            }));
+        };
+
+        // ═══════════════════════════════════════════════════════
+        //  MESSAGE HANDLER — unwraps Streamer.bot's envelope
+        //
+        //  Streamer.bot wraps CPH.WebsocketBroadcastJson payloads
+        //  inside a nested structure. The actual custom data lives at:
+        //
+        //    msg.data.data   ← your JSON string, already parsed by SB
+        //
+        //  Full envelope shape:
+        //  {
+        //    "timeStamp": "...",
+        //    "event": { "source": "General", "type": "Custom" },
+        //    "data": {
+        //      "data": {           ← THIS is your broadcasted payload
+        //        "eventName": "welcome_back",
+        //        "user":    "SomeViewer",
+        //        "message": "drifting back into the static...",
+        //        "avatar":  "https://..."
+        //      }
+        //    }
+        //  }
+        //
+        //  The code below drills through every nesting level so it
+        //  works whether SB gives us the inner object already parsed
+        //  or as a raw JSON string.
+        // ═══════════════════════════════════════════════════════
+        ws.onmessage = (rawEvent) => {
+            let msg;
+            try {
+                msg = JSON.parse(rawEvent.data);
+            } catch (e) {
+                console.warn("[WelcomeBack] Could not parse WebSocket message:", e);
+                return;
+            }
+
+            console.log("[WelcomeBack] Raw message received:", msg);
+
+            // ── Drill to the inner payload ────────────────────────────────────
+            // Layer 1: msg itself might already be the payload (direct broadcast)
+            // Layer 2: msg.data is the Streamer.bot event wrapper
+            // Layer 3: msg.data.data is your CPH.WebsocketBroadcastJson object
+            //          (SB may deliver it pre-parsed OR as a JSON string)
+
+            let payload = null;
+
+            const candidates = [
+                msg,                              // direct / already unwrapped
+                msg?.data,                        // one level deep
+                msg?.data?.data,                  // two levels — most common SB shape
+            ];
+
+            for (const candidate of candidates) {
+                if (!candidate) continue;
+
+                // If the candidate is a string, try parsing it
+                let obj = candidate;
+                if (typeof obj === "string") {
+                    try { obj = JSON.parse(obj); } catch (_) { continue; }
+                }
+
+                if (obj && obj.eventName === "welcome_back") {
+                    payload = obj;
+                    break;
+                }
+            }
+
+            if (!payload) {
+                // Not our event — ignore silently
+                return;
+            }
+
+            console.log("[WelcomeBack] Payload resolved:", payload);
+
+            // ── Pull fields — user + avatar come from C# TryGetArg/broadcast ──
+            // "user"   → set by CPH.TryGetArg("user") in C#
+            // "avatar" → set by CPH.TryGetArg("targetUserProfileImageUrl") in C#
+            //            with fallback to decapi.me in C# if arg is empty
+            // "message"→ hardcoded flavour text in C#
+
+            const user    = (payload.user    || "").trim();
+            const avatar  = (payload.avatar  || "").trim();
+            const message = (payload.message || "Welcome Back to Chat!").trim();
+
+            if (!user) {
+                console.warn("[WelcomeBack] Received welcome_back event but 'user' was empty — skipping.");
+                return;
+            }
+
+            triggerWelcome({ user, avatar, message });
+        };
+
+        ws.onerror = (err) => console.warn("[WelcomeBack] WebSocket error:", err);
+        ws.onclose = ()    => console.log("[WelcomeBack] WebSocket closed.");
+
+        // ═══════════════════════════════════════════════════════
+        //  ALERT LIFECYCLE
+        // ═══════════════════════════════════════════════════════
+        const DISPLAY_MS = 7000;
+        const HIDE_MS    = 500;
+
+        function triggerWelcome({ user, message, avatar }) {
+            const stack   = document.getElementById("alert-stack");
+            const wrapper = buildAlert(user, message, avatar);
+            stack.appendChild(wrapper);
+
+            void wrapper.offsetWidth; // force reflow before transition
+            wrapper.classList.add("show");
+
+            setTimeout(() => dismissAlert(wrapper), DISPLAY_MS);
+        }
+
+        function dismissAlert(wrapper) {
+            wrapper.classList.remove("show");
+            wrapper.classList.add("hide");
+            setTimeout(() => wrapper.remove(), HIDE_MS + 50);
+        }
+
+        // ═══════════════════════════════════════════════════════
+        //  BUILD ALERT DOM
+        // ═══════════════════════════════════════════════════════
+        function buildAlert(user, message, avatarUrl) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "alert-wrapper";
+
+            // ── Avatar ──────────────────────────────────────────
+            const avWrap = document.createElement("div");
+            avWrap.className = "avatar-wrap";
+
+            const avImg = document.createElement("div");
+            avImg.className = "avatar-img";
+
+            // avatarUrl comes from Twitch via C# TryGetArg("targetUserProfileImageUrl")
+            // C# falls back to decapi.me if the arg is empty, so this should always
+            // have a value — but we guard anyway.
+            if (avatarUrl) {
+                avImg.style.backgroundImage = `url('${avatarUrl}')`;
+            }
+
+            avWrap.appendChild(avImg);
+
+            // ── Pill ─────────────────────────────────────────────
+            const ring = document.createElement("div");
+            ring.className = "gradient-ring";
+
+            const pill = document.createElement("div");
+            pill.className = "pill";
+
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement("div");
+                dot.className = "dot";
+                pill.appendChild(dot);
+            }
+
+            const textGroup = document.createElement("div");
+            textGroup.className = "text-group";
+
+            const label = document.createElement("span");
+            label.className = "welcome-label";
+            label.textContent = "welcome back";
+
+            // user — pulled from C# TryGetArg("user"), broadcast in payload
+            const nameEl = document.createElement("div");
+            nameEl.className = "username";
+            nameEl.textContent = user;
+
+            // message — flavour text set in C# ("drifting back into the static...")
+            const msgEl = document.createElement("div");
+            msgEl.className = "sub-message";
+            msgEl.textContent = message;
+
+            textGroup.appendChild(label);
+            textGroup.appendChild(nameEl);
+            textGroup.appendChild(msgEl);
+            pill.appendChild(textGroup);
+            ring.appendChild(pill);
+
+            wrapper.appendChild(avWrap);
+            wrapper.appendChild(ring);
+
+            return wrapper;
+        }
+    </script>
+</body>
+</html>
