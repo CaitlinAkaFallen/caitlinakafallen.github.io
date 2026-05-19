@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waffle Time Alert</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: transparent;
+        }
+
+        #alert-wrapper {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease-in;
+        }
+
+        #alert-wrapper.active {
+            opacity: 1;
+        }
+
+        /* ================================================================
+           AVATAR
+           Revealed behind the waffle as it breaks apart
+        ================================================================ */
+        #avatar-container {
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 6px solid #f5c842;
+            box-shadow:
+                0 0 30px rgba(245, 185, 30, 0.65),
+                0 0  6px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            transform: scale(0.6);
+            opacity: 0;
+            transition: all 0.5s 0.35s ease-out;
+        }
+
+        #alert-wrapper.active #avatar-container {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        #avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ================================================================
+           WAFFLE HALVES
+           Full waffle: 320 × 320 px centered inside the 400 × 400 wrapper
+             → 40 px margin on all sides
+           Top half:    left 40px | top 40px  | 320 × 160 px
+           Bottom half: left 40px | top 200px | 320 × 160 px
+
+           Grid cell = 32 × 32 px
+           160 = 5 × 32  →  grid seams line up perfectly across the break
+
+           Background layer order (first = on top):
+             1  Horizontal ridge highlights  (bright 3px stripe at leading edge)
+             2  Vertical ridge highlights
+             3  Horizontal ridge shadows     (dark 4px stripe at trailing edge)
+             4  Vertical ridge shadows
+             5  Butter / syrup sheen         (soft elliptical glow, top area)
+             6  Baked radial gradient        (different per-half so center aligns)
+        ================================================================ */
+
+        .waffle-half {
+            position: absolute;
+            left: 40px;
+            width: 320px;
+            height: 160px;
+            z-index: 5;
+            transition: transform 0.88s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            background-color: #c87a10;
+        }
+
+        /* ---- Top half ---- */
+        #waffle-top {
+            top: 40px;
+            border-radius: 16px 16px 0 0;
+            border-bottom: 4px solid #3e1a00;
+
+            /*
+             * Baked gradient: center of the full waffle is at this element's
+             * bottom-center → at 160px 160px (i.e. 160px from left, 160px from top)
+             */
+            background-image:
+                /* 1. Horizontal ridge highlight */
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255, 242, 150, 0.60)  0px, rgba(255, 242, 150, 0.60)  3px,
+                    transparent                 3px, transparent                32px
+                ),
+                /* 2. Vertical ridge highlight */
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(255, 242, 150, 0.60)  0px, rgba(255, 242, 150, 0.60)  3px,
+                    transparent                 3px, transparent                32px
+                ),
+                /* 3. Horizontal ridge shadow */
+                repeating-linear-gradient(
+                    0deg,
+                    transparent           0px, transparent          28px,
+                    rgba(70, 30, 0, 0.65) 28px, rgba(70, 30, 0, 0.65) 32px
+                ),
+                /* 4. Vertical ridge shadow */
+                repeating-linear-gradient(
+                    90deg,
+                    transparent           0px, transparent          28px,
+                    rgba(70, 30, 0, 0.65) 28px, rgba(70, 30, 0, 0.65) 32px
+                ),
+                /* 5. Butter sheen — centered toward top of waffle */
+                radial-gradient(
+                    ellipse 220px 80px at 160px 35px,
+                    rgba(255, 248, 190, 0.26) 0%, transparent 100%
+                ),
+                /* 6. Baked gradient — center at bottom-center of this half */
+                radial-gradient(
+                    ellipse 360px 360px at 160px 160px,
+                    #f7dc6a  0%,
+                    #eaaa22 22%,
+                    #cc7e12 48%,
+                    #9e5408 74%,
+                    #7c3a05 100%
+                );
+
+            box-shadow:
+                0 -6px 24px rgba(0, 0, 0, 0.50),
+                inset 0 -10px 16px rgba(0,   0,   0,   0.30),
+                inset 0   5px 10px rgba(255, 230, 110, 0.14);
+        }
+
+        /* ---- Bottom half ---- */
+        #waffle-bottom {
+            top: 200px; /* 40 + 160 */
+            border-radius: 0 0 16px 16px;
+            border-top: 4px solid #3e1a00;
+
+            /*
+             * Baked gradient: center of the full waffle is at this element's
+             * top-center → at 160px 0px
+             */
+            background-image:
+                /* 1. Horizontal ridge highlight */
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255, 242, 150, 0.60)  0px, rgba(255, 242, 150, 0.60)  3px,
+                    transparent                 3px, transparent                32px
+                ),
+                /* 2. Vertical ridge highlight */
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(255, 242, 150, 0.60)  0px, rgba(255, 242, 150, 0.60)  3px,
+                    transparent                 3px, transparent                32px
+                ),
+                /* 3. Horizontal ridge shadow */
+                repeating-linear-gradient(
+                    0deg,
+                    transparent           0px, transparent          28px,
+                    rgba(70, 30, 0, 0.65) 28px, rgba(70, 30, 0, 0.65) 32px
+                ),
+                /* 4. Vertical ridge shadow */
+                repeating-linear-gradient(
+                    90deg,
+                    transparent           0px, transparent          28px,
+                    rgba(70, 30, 0, 0.65) 28px, rgba(70, 30, 0, 0.65) 32px
+                ),
+                /* 5. Butter sheen — very faint on the bottom half */
+                radial-gradient(
+                    ellipse 220px 80px at 160px 20px,
+                    rgba(255, 248, 190, 0.10) 0%, transparent 100%
+                ),
+                /* 6. Baked gradient — center at top-center of this half */
+                radial-gradient(
+                    ellipse 360px 360px at 160px 0px,
+                    #f7dc6a  0%,
+                    #eaaa22 22%,
+                    #cc7e12 48%,
+                    #9e5408 74%,
+                    #7c3a05 100%
+                );
+
+            box-shadow:
+                0  6px 24px rgba(0, 0, 0, 0.50),
+                inset 0  10px 16px rgba(0,   0,   0,   0.30),
+                inset 0  -5px 10px rgba(255, 230, 110, 0.12);
+        }
+
+        /* ================================================================
+           BREAKING ANIMATION
+           Top flips upward with a counter-clockwise twist
+           Bottom drops downward with a clockwise twist
+        ================================================================ */
+        #alert-wrapper.active #waffle-top {
+            transform: translateY(-165px) rotate(-13deg);
+        }
+
+        #alert-wrapper.active #waffle-bottom {
+            transform: translateY(165px) rotate(13deg);
+        }
+
+        /* ================================================================
+           INFO BANNER
+        ================================================================ */
+        #ui-wrap {
+            position: absolute;
+            bottom: -80px;
+            background: rgba(70, 32, 0, 0.93);
+            color: #fff;
+            padding: 10px 30px;
+            border-radius: 50px;
+            border: 4px solid #f5c842;
+            text-align: center;
+            z-index: 10;
+            transition: all 0.6s 0.6s ease-out;
+            opacity: 0;
+        }
+
+        #alert-wrapper.active #ui-wrap {
+            bottom: 20px;
+            opacity: 1;
+        }
+
+        .user-name {
+            font-size: 26px;
+            font-weight: 900;
+            color: #f5c842;
+            margin: 0;
+        }
+
+        .total-count {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="alert-wrapper">
+
+        <!-- Avatar revealed behind the breaking waffle -->
+        <div id="avatar-container">
+            <img id="avatar-img" src=" " alt="User avatar">
+        </div>
+
+        <!-- Waffle top and bottom halves -->
+        <div id="waffle-top"    class="waffle-half"></div>
+        <div id="waffle-bottom" class="waffle-half"></div>
+
+        <!-- Name + count banner -->
+        <div id="ui-wrap">
+            <p id="user-display" class="user-name">NAME</p>
+            <p class="total-count">Total: <span id="count-display">0</span> 🧇</p>
+        </div>
+
+    </div>
+
+    <script>
+        // ── WebSocket setup ─────────────────────────────────────────────
+        // Usage: overlay.html?address=localhost&port=8080
+        const params = new URLSearchParams(window.location.search);
+        const ws     = new WebSocket(
+            `ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`
+        );
+
+        // ── DOM refs ────────────────────────────────────────────────────
+        const wrapper      = document.getElementById('alert-wrapper');
+        const avatarImg    = document.getElementById('avatar-img');
+        const userDisplay  = document.getElementById('user-display');
+        const countDisplay = document.getElementById('count-display');
+
+        const DEFAULT_AVATAR =
+            'https://static-cdn.jtvnw.net/user-default-pictures-uv/' +
+            'cdd517ae-def4-11e9-948e-784f43822e80-profile_image-300x300.png';
+
+        let hideTimer = null;
+
+        // ── Streamer.bot connection ──────────────────────────────────────
+        ws.onopen = () => {
+            console.log('[Waffle Time] Connected to Streamer.bot');
+            ws.send(JSON.stringify({
+                request: "Subscribe",
+                events:  { general: ["Custom"] },
+                id:      "WaffleRedeem"
+            }));
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const response = JSON.parse(event.data);
+                if (response.event?.type === "Custom") {
+                    const data = response.data;
+                    if (data.eventName === "WaffleRedeem") {
+                        triggerWaffleAlert(data);
+                    }
+                }
+            } catch (e) {
+                console.error('[Waffle Time] Failed to parse message:', e);
+            }
+        };
+
+        ws.onerror = (err) => console.error('[Waffle Time] WebSocket error:', err);
+        ws.onclose = ()    => console.warn('[Waffle Time] WebSocket closed — overlay disconnected');
+
+        // ── Alert trigger ────────────────────────────────────────────────
+        function triggerWaffleAlert(data) {
+            // Cancel any in-progress hide timer so rapid redeems don't cut short
+            if (hideTimer) clearTimeout(hideTimer);
+
+            // Reset instantly before re-animating (remove → force reflow → add)
+            wrapper.classList.remove('active');
+            void wrapper.offsetWidth; // force reflow
+
+            // Populate content
+            userDisplay.innerText  = data.user  || 'Anonymous';
+            countDisplay.innerText = data.count || '1';
+            avatarImg.src          = data.avatar || DEFAULT_AVATAR;
+
+            // Play animation
+            wrapper.classList.add('active');
+
+            // Auto-hide after 8 seconds
+            hideTimer = setTimeout(() => {
+                wrapper.classList.remove('active');
+            }, 8000);
+        }
+    </script>
+</body>
+</html>
