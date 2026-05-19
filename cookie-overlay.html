@@ -5,133 +5,232 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSS Breaking Cookie</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: 'Courier New', Courier, monospace; /* Pixel feel */
-            background-color: transparent;
-        }
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: transparent;
+}
 
-        #alert-wrapper {
-            position: relative;
-            width: 400px;
-            height: 400px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.4s ease-in;
-        }
+#alert-wrapper {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.4s ease-in;
+}
 
-        #alert-wrapper.active {
-            opacity: 1;
-        }
+#alert-wrapper.active {
+    opacity: 1;
+}
 
-        /* --- THE AVATAR (Hidden Behind) --- */
-        #avatar-container {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 6px solid #f1c40f; /* Gold ring */
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            z-index: 1; /* Lowest z-index *;
-            
-            /* Hidden initially, pops forward */
-            transform: scale(0.6);
-            opacity: 0;
-            transition: all 0.5s 0.3s ease-out;
-        }
+/* --- THE AVATAR --- */
+#avatar-container {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 6px solid #f1c40f;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    z-index: 1;
+    transform: scale(0.6);
+    opacity: 0;
+    transition: all 0.5s 0.3s ease-out;
+}
 
-        #alert-wrapper.active #avatar-container {
-            transform: scale(1);
-            opacity: 1;
-        }
+#alert-wrapper.active #avatar-container {
+    transform: scale(1);
+    opacity: 1;
+}
 
-        #avatar-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+#avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-        /* --- THE CSS COOKIE (Left & Right Halves) --- */
-        .cookie-half {
-            position: absolute;
-            width: 200px;
-            height: 400px;
-            background-color: #d2691e; /* Light chocolate */
-            background-image: 
-                radial-gradient(circle at 50px 100px, #8e44ad 15px, transparent 16px), /* Purple chip */
-                radial-gradient(circle at 120px 250px, #3d2610 20px, transparent 21px), /* Dark chip */
-                radial-gradient(circle at 160px 50px, #8e44ad 12px, transparent 13px); /* Purple chip */
-            z-index: 5;
-            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
-        }
+/* --- THE COOKIE HALVES --- */
+/*
+    The full cookie is a circle: 400px diameter.
+    Each half is 200px wide × 400px tall.
+    The cookie center sits at the flat (inner) edge of each half:
+      - Left half:  right edge  → gradient origin at (200px, 200px)
+      - Right half: left edge   → gradient origin at (0px,   200px)
+    This makes the baked gradient read as one unified circle.
+*/
 
-        /* Left Half Base (Rounded edge on left) */
-        #cookie-left {
-            left: 0;
-            border-radius: 200px 0 0 200px;
-            border-right: 4px solid #3d2610; /* Darker line for crack */
-            background-position: left center;
-        }
+.cookie-half {
+    position: absolute;
+    width: 200px;
+    height: 400px;
+    z-index: 5;
+    transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
 
-        /* Right Half Base (Rounded edge on right) */
-        #cookie-right {
-            right: 0;
-            border-radius: 0 200px 200px 0;
-            border-left: 4px solid #3d2610; /* Darker line for crack */
-            background-position: right center;
-        }
+/* ---- LEFT HALF ---- */
+#cookie-left {
+    left: 0;
+    border-radius: 200px 0 0 200px;
 
-        /* --- THE BREAKING ANIMATION --- */
-        #alert-wrapper.active #cookie-left {
-            transform: translateX(-150px) rotate(-15deg);
-        }
+    background-image:
+        /* === CHOCOLATE CHIPS (rendered on top of the base) === */
 
-        #alert-wrapper.active #cookie-right {
-            transform: translateX(150px) rotate(15deg);
-        }
+        /* Chip 1 — upper left, large dark chip */
+        radial-gradient(circle at 55px 90px,
+            #0d0500 0px, #1a0a00 7px, #2d1200 12px, transparent 13px),
 
-        /* --- INFO BANNER --- */
-        #ui-wrap {
-            position: absolute;
-            bottom: -80px;
-            background: rgba(61, 38, 16, 0.9);
-            color: #fff;
-            padding: 10px 30px;
-            border-radius: 50px;
-            border: 4px solid #e67e22;
-            text-align: center;
-            z-index: 10;
-            transition: all 0.6s 0.6s ease-out;
-            opacity: 0;
-        }
+        /* Chip 2 — mid left, medium chip with highlight */
+        radial-gradient(circle at 80px 185px,
+            #0d0500 0px, #1a0a00 9px, #3d1a00 14px, transparent 15px),
 
-        #alert-wrapper.active #ui-wrap {
-            bottom: 20px;
-            opacity: 1;
-        }
+        /* Chip 3 — upper area, smaller chip */
+        radial-gradient(circle at 140px 130px,
+            #0d0500 0px, #1a0a00 6px, #2d1200 10px, transparent 11px),
 
-        .user-name {
-            font-size: 26px;
-            font-weight: 900;
-            color: #f1c40f;
-            margin: 0;
-        }
+        /* Chip 4 — lower left */
+        radial-gradient(circle at 60px 295px,
+            #0d0500 0px, #1a0a00 8px, #3d1a00 13px, transparent 14px),
 
-        .total-count {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0;
-        }
+        /* Chip 5 — lower center-ish */
+        radial-gradient(circle at 130px 330px,
+            #0d0500 0px, #1a0a00 7px, #2d1200 11px, transparent 12px),
+
+        /* Chip 6 — tiny accent chip */
+        radial-gradient(circle at 100px 55px,
+            #1a0a00 0px, #2d1200 6px, transparent 7px),
+
+        /* Chip 7 — mid lower */
+        radial-gradient(circle at 45px 370px,
+            #0d0500 0px, #1a0a00 5px, #2d1200 9px, transparent 10px),
+
+        /* === SURFACE SPECULAR HIGHLIGHT (top-center subtle sheen) === */
+        radial-gradient(ellipse 80px 50px at 100px 80px,
+            rgba(255, 220, 140, 0.18) 0%, transparent 100%),
+
+        /* === BAKED GRADIENT — center of full cookie at right edge (200px, 200px) === */
+        /*   Lightest at center, darkening toward the outer rim, darkest at the crust  */
+        radial-gradient(circle 200px at 200px 200px,
+            #f5d080 0%,      /* pale golden center */
+            #e8a83a 18%,     /* warm amber */
+            #cf8520 38%,     /* medium baked brown */
+            #b06618 60%,     /* deeper biscuit brown */
+            #8a4a0e 80%,     /* dark crust edge */
+            #6b3208 100%);   /* deepest crust */
+
+    /* Crack edge: dark inner border + inset shadow for depth */
+    border-right: 3px solid #3a1800;
+    box-shadow:
+        -5px 0 18px rgba(0, 0, 0, 0.45),           /* outer drop shadow */
+        inset -6px 0 12px rgba(0, 0, 0, 0.35),     /* inner crack shadow */
+        inset 4px 4px 10px rgba(255, 200, 80, 0.1); /* faint inner highlight */
+}
+
+/* ---- RIGHT HALF ---- */
+#cookie-right {
+    right: 0;
+    border-radius: 0 200px 200px 0;
+
+    background-image:
+        /* === CHOCOLATE CHIPS === */
+
+        /* Chip 1 — upper right */
+        radial-gradient(circle at 145px 80px,
+            #0d0500 0px, #1a0a00 7px, #2d1200 12px, transparent 13px),
+
+        /* Chip 2 — mid area */
+        radial-gradient(circle at 110px 190px,
+            #0d0500 0px, #1a0a00 9px, #3d1a00 14px, transparent 15px),
+
+        /* Chip 3 — upper inner edge */
+        radial-gradient(circle at 55px 125px,
+            #0d0500 0px, #1a0a00 6px, #2d1200 10px, transparent 11px),
+
+        /* Chip 4 — lower right */
+        radial-gradient(circle at 140px 310px,
+            #0d0500 0px, #1a0a00 8px, #3d1a00 13px, transparent 14px),
+
+        /* Chip 5 — lower center */
+        radial-gradient(circle at 70px 355px,
+            #0d0500 0px, #1a0a00 7px, #2d1200 11px, transparent 12px),
+
+        /* Chip 6 — tiny accent */
+        radial-gradient(circle at 90px 48px,
+            #1a0a00 0px, #2d1200 6px, transparent 7px),
+
+        /* Chip 7 — mid lower inner */
+        radial-gradient(circle at 155px 250px,
+            #0d0500 0px, #1a0a00 5px, #2d1200 9px, transparent 10px),
+
+        /* === SURFACE SPECULAR HIGHLIGHT === */
+        radial-gradient(ellipse 80px 50px at 100px 80px,
+            rgba(255, 220, 140, 0.18) 0%, transparent 100%),
+
+        /* === BAKED GRADIENT — center of full cookie at left edge (0px, 200px) === */
+        radial-gradient(circle 200px at 0px 200px,
+            #f5d080 0%,
+            #e8a83a 18%,
+            #cf8520 38%,
+            #b06618 60%,
+            #8a4a0e 80%,
+            #6b3208 100%);
+
+    border-left: 3px solid #3a1800;
+    box-shadow:
+        5px 0 18px rgba(0, 0, 0, 0.45),
+        inset 6px 0 12px rgba(0, 0, 0, 0.35),
+        inset -4px 4px 10px rgba(255, 200, 80, 0.1);
+}
+
+/* --- BREAKING ANIMATION --- */
+#alert-wrapper.active #cookie-left {
+    transform: translateX(-150px) rotate(-15deg);
+}
+
+#alert-wrapper.active #cookie-right {
+    transform: translateX(150px) rotate(15deg);
+}
+
+/* --- INFO BANNER --- */
+#ui-wrap {
+    position: absolute;
+    bottom: -80px;
+    background: rgba(61, 38, 16, 0.9);
+    color: #fff;
+    padding: 10px 30px;
+    border-radius: 50px;
+    border: 4px solid #e67e22;
+    text-align: center;
+    z-index: 10;
+    transition: all 0.6s 0.6s ease-out;
+    opacity: 0;
+}
+
+#alert-wrapper.active #ui-wrap {
+    bottom: 20px;
+    opacity: 1;
+}
+
+.user-name {
+    font-size: 26px;
+    font-weight: 900;
+    color: #f1c40f;
+    margin: 0;
+}
+
+.total-count {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
     </style>
 </head>
 <body>
