@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stream Boss</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@400;600;700&display=swap');
+
+  :root {
+    --neon-cyan:   #00f5ff;
+    --neon-pink:   #ff2d78;
+    --neon-gold:   #ffd700;
+    --neon-purple: #b44dff;
+    --neon-green:  #39ff14;
+    --neon-orange: #ff8c00;
+    --neon-blue:   #00c8ff;
+    --panel-bg:    rgba(8, 8, 18, 0.95);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: transparent;
+    width: 420px;
+    font-family: 'Exo 2', sans-serif;
+    overflow: hidden;
+  }
+
+  /* ── Main panel ── */
+  #boss-panel {
+    display: none;
+    position: relative;
+    width: 100%;
+    background: var(--panel-bg);
+    border: 1px solid var(--neon-cyan);
+    box-shadow:
+      0 0 10px rgba(0,245,255,0.4),
+      0 0 28px rgba(0,245,255,0.08),
+      inset 0 0 20px rgba(0,245,255,0.02);
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+    padding: 10px 12px 8px;
+    transition: border-color 0.4s, box-shadow 0.4s;
+  }
+
+  #boss-panel.healing {
+    border-color: var(--neon-green);
+    box-shadow:
+      0 0 14px rgba(57,255,20,0.5),
+      0 0 36px rgba(57,255,20,0.12),
+      inset 0 0 20px rgba(57,255,20,0.03);
+  }
+
+  #boss-panel.visible {
+    display: block;
+    animation: panelIn 0.5s cubic-bezier(0.34,1.4,0.64,1) both;
+  }
+
+  @keyframes panelIn {
+    from { opacity:0; transform: translateY(-14px) scaleY(0.88); }
+    to   { opacity:1; transform: translateY(0) scaleY(1); }
+  }
+
+  /* scanline texture */
+  #boss-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 3px,
+      rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px
+    );
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* ── Header row ── */
+  .boss-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
+  }
+
+  /* ── Avatar ── */
+  .avatar-wrap { position: relative; flex-shrink: 0; }
+
+  .boss-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--neon-pink);
+    box-shadow: 0 0 12px var(--neon-pink), 0 0 30px rgba(255,45,120,0.2);
+    object-fit: cover;
+    display: block;
+    animation: avatarPulse 2.2s ease-in-out infinite;
+  }
+
+  .boss-avatar.healing-flash {
+    animation: avatarHealPulse 0.6s ease-out forwards !important;
+  }
+
+  @keyframes avatarPulse {
+    0%,100% { box-shadow: 0 0 12px var(--neon-pink), 0 0 28px rgba(255,45,120,0.2); }
+    50%     { box-shadow: 0 0 22px var(--neon-pink), 0 0 50px rgba(255,45,120,0.4); }
+  }
+  @keyframes avatarHealPulse {
+    0%   { box-shadow: 0 0 12px var(--neon-green), 0 0 28px rgba(57,255,20,0.3);  border-color: var(--neon-green); }
+    50%  { box-shadow: 0 0 32px var(--neon-green), 0 0 65px rgba(57,255,20,0.55); border-color: var(--neon-green); }
+    100% { box-shadow: 0 0 12px var(--neon-pink),  0 0 28px rgba(255,45,120,0.2); border-color: var(--neon-pink); }
+  }
+
+  .avatar-ring {
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,45,120,0.3);
+    animation: ringOut 2.2s ease-out infinite;
+  }
+  .avatar-ring-heal {
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 2px solid var(--neon-green);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .avatar-ring-heal.pop { animation: healRingOut 0.8s ease-out forwards; }
+
+  @keyframes ringOut {
+    0%   { transform: scale(1);   opacity: 0.65; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+  @keyframes healRingOut {
+    0%   { opacity: 0.85; transform: scale(1); }
+    100% { opacity: 0;    transform: scale(1.9); }
+  }
+
+  /* ── Boss info ── */
+  .boss-info { flex: 1; min-width: 0; }
+
+  .boss-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 7px;
+    letter-spacing: 4px;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 2px;
+  }
+
+  .boss-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 17px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 10px var(--neon-pink), 0 0 28px rgba(255,45,120,0.4);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.05;
+    margin-bottom: 3px;
+  }
+
+  .boss-badge {
+    display: inline-block;
+    font-family: 'Orbitron', monospace;
+    font-size: 6px;
+    letter-spacing: 2px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    margin-left: 6px;
+    vertical-align: middle;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .boss-badge.healing-badge {
+    background: rgba(57,255,20,0.12);
+    border: 1px solid rgba(57,255,20,0.45);
+    color: var(--neon-green);
+    opacity: 1;
+  }
+
+  .boss-stats {
+    font-size: 9px;
+    color: var(--neon-gold);
+    letter-spacing: 1.5px;
+    font-weight: 600;
+  }
+  .boss-stats span { color: #fff; }
+
+  #regen-ticker {
+    display: inline-block;
+    font-size: 8px;
+    color: var(--neon-green);
+    letter-spacing: 1px;
+    margin-left: 6px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  #regen-ticker.visible { opacity: 1; }
+
+  /* ── HP bar ── */
+  .hp-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+
+  .hp-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 7px;
+    letter-spacing: 2px;
+    color: var(--neon-pink);
+    flex-shrink: 0;
+    width: 18px;
+    transition: color 0.4s;
+  }
+  .hp-label.healing { color: var(--neon-green); }
+
+  .hp-track {
+    flex: 1;
+    height: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,45,120,0.22);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.4s;
+  }
+  .hp-track.healing { border-color: rgba(57,255,20,0.3); }
+
+  .hp-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ff2d78, #ff6fa8);
+    box-shadow: 0 0 8px var(--neon-pink);
+    border-radius: 2px;
+    transition: width 0.85s cubic-bezier(0.22,1,0.36,1), background 0.5s, box-shadow 0.5s;
+    position: relative;
+    overflow: hidden;
+  }
+  .hp-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 50% 0;
+    background: rgba(255,255,255,0.12);
+  }
+  .hp-fill::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; width: 35px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+    animation: sheen 2.2s linear infinite;
+  }
+  @keyframes sheen { from { left: -35px; } to { left: 100%; } }
+
+  .hp-gain-bar {
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    background: linear-gradient(90deg, rgba(57,255,20,0), rgba(57,255,20,0.5));
+    border-radius: 2px;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 3;
+  }
+  .hp-gain-bar.flash { animation: gainFlash 1.1s ease-out forwards; }
+  @keyframes gainFlash {
+    0%   { opacity: 1; }
+    70%  { opacity: 0.6; }
+    100% { opacity: 0; }
+  }
+
+  .hp-nums {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: #fff;
+    flex-shrink: 0;
+    min-width: 82px;
+    text-align: right;
+  }
+  .hp-nums .cur { color: var(--neon-pink); font-weight: 700; transition: color 0.4s; }
+  .hp-nums .cur.healing { color: var(--neon-green); }
+
+  /* ── Attack log — hidden by default, slides in on events ── */
+  .attack-log {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.35s cubic-bezier(0.22,1,0.36,1),
+                opacity 0.25s ease,
+                margin-top 0.35s ease;
+    margin-top: 0;
+  }
+  .attack-log.open {
+    max-height: 50px;
+    opacity: 1;
+    margin-top: 7px;
+  }
+
+  .attack-entry {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    background: rgba(255,255,255,0.022);
+    border-left: 2px solid var(--ec, var(--neon-cyan));
+    padding: 3px 7px;
+    border-radius: 0 2px 2px 0;
+    animation: entryIn 0.3s cubic-bezier(0.34,1.5,0.64,1) both;
+  }
+  .attack-entry.is-heal {
+    background: rgba(57,255,20,0.04);
+    border-left-color: var(--neon-green) !important;
+  }
+  @keyframes entryIn {
+    from { opacity:0; transform: translateX(-8px); }
+    to   { opacity:1; transform: translateX(0); }
+  }
+
+  .entry-avatar {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--ec, var(--neon-cyan));
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .entry-icon  { font-size: 12px; flex-shrink: 0; }
+  .entry-text  { color: rgba(255,255,255,0.8); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .entry-text strong { color: #fff; }
+
+  .entry-dmg {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ec, var(--neon-cyan));
+    flex-shrink: 0;
+  }
+  .entry-dmg.heal { color: var(--neon-green) !important; }
+
+  .boss-self-tag {
+    font-size: 7px;
+    letter-spacing: 1px;
+    color: var(--neon-green);
+    background: rgba(57,255,20,0.1);
+    border: 1px solid rgba(57,255,20,0.3);
+    border-radius: 2px;
+    padding: 1px 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── Damage / heal pop ── */
+  #dmg-pop {
+    position: fixed;
+    top: 22px; right: 16px;
+    font-family: 'Orbitron', monospace;
+    font-size: 34px;
+    font-weight: 900;
+    pointer-events: none;
+    display: none;
+    z-index: 50;
+  }
+  #dmg-pop.go      { display: block; animation: dmgAnim  1.5s ease-out forwards; }
+  #dmg-pop.go-heal { display: block; animation: healAnim 1.5s ease-out forwards; }
+
+  @keyframes dmgAnim {
+    0%   { opacity:1; transform: scale(0.4) translateY(0); }
+    20%  { opacity:1; transform: scale(1.1) translateY(-10px); }
+    65%  { opacity:1; transform: scale(1)   translateY(-20px); }
+    100% { opacity:0; transform: scale(0.85) translateY(-50px); }
+  }
+  @keyframes healAnim {
+    0%   { opacity:1; transform: scale(0.35) translateY(0); }
+    20%  { opacity:1; transform: scale(1.15) translateY(8px); }
+    65%  { opacity:1; transform: scale(1)    translateY(18px); }
+    100% { opacity:0; transform: scale(0.85) translateY(44px); }
+  }
+
+  /* ── Boss takeover flash ── */
+  #takeover-flash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(255,215,0,0.35) 0%, transparent 70%);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 90;
+  }
+  #takeover-flash.pop { animation: takeoverPop 0.7s ease-out forwards; }
+  @keyframes takeoverPop {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ── Defeated screen ── */
+  #defeated {
+    display: none;
+    position: fixed;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: rgba(0,0,0,0.5);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+  }
+  #defeated.show { display: flex; animation: fadeIn 0.35s ease both; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  .defeated-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 38px;
+    font-weight: 900;
+    color: var(--neon-gold);
+    text-shadow: 0 0 18px var(--neon-gold), 0 0 50px rgba(255,215,0,0.35);
+    animation: defPop 0.5s cubic-bezier(0.34,1.5,0.64,1) both;
+    text-align: center;
+  }
+  @keyframes defPop {
+    from { transform: scale(0.2); opacity:0; }
+    to   { transform: scale(1);   opacity:1; }
+  }
+  .defeated-sub {
+    margin-top: 6px;
+    font-size: 13px;
+    letter-spacing: 2.5px;
+    color: rgba(255,255,255,0.55);
+    text-align: center;
+  }
+
+  /* ── Particles ── */
+  .ptcl {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: ptclFly var(--d,1s) ease-out forwards;
+  }
+  @keyframes ptclFly {
+    0%   { opacity:1; transform: translate(0,0) scale(1); }
+    100% { opacity:0; transform: translate(var(--tx),var(--ty)) scale(0); }
+  }
+</style>
+</head>
+<body>
+
+<div id="boss-panel">
+  <div class="boss-header">
+    <div class="avatar-wrap">
+      <img class="boss-avatar" id="boss-avatar" src=" " alt="" />
+      <div class="avatar-ring"></div>
+      <div class="avatar-ring-heal" id="heal-ring"></div>
+    </div>
+    <div class="boss-info">
+      <div class="boss-label">
+        Stream Boss
+        <span class="boss-badge" id="boss-badge">SELF-HEALING</span>
+      </div>
+      <div class="boss-name" id="boss-name">???</div>
+      <div class="boss-stats">
+        KILLS: <span id="boss-kills">0</span>
+        <span id="regen-ticker"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hp-row">
+    <div class="hp-label" id="hp-label">HP</div>
+    <div class="hp-track" id="hp-track">
+      <div class="hp-fill" id="hp-fill"></div>
+      <div class="hp-gain-bar" id="hp-gain-bar"></div>
+    </div>
+    <div class="hp-nums">
+      <span class="cur" id="hp-cur">1000</span>
+      <span style="color:rgba(255,255,255,0.3)"> / </span>
+      <span id="hp-max">1000</span>
+    </div>
+  </div>
+
+  <!-- Hidden by default; slides open when events fire -->
+  <div class="attack-log" id="attack-log"></div>
+</div>
+
+<div id="dmg-pop"></div>
+<div id="takeover-flash"></div>
+
+<div id="defeated">
+  <div class="defeated-title" id="defeated-title">BOSS DEFEATED!</div>
+  <div class="defeated-sub"   id="defeated-sub"></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════ */
+const CFG = {
+  damage: {
+    follow:   50,
+    sub:      200,
+    resub:    150,   // × cumulative months
+    giftsub:  200,   // × gift count
+    cheer:    1,     // × bits
+    donation: 10,    // × dollars
+  },
+  baseHP:        1000,
+  defeatedMs:    4000,   // how long "defeated" screen shows before new boss spawns
+  maxLogEntries: 1,      // only show the most recent event
+  logHideMs:     4000,   // how long before the log auto-hides
+  healGlowMs:    2500,
+};
+
+const EVENT_META = {
+  follow:   { icon:'💚', label:'followed the channel', col:'#39ff14' },
+  sub:      { icon:'💜', label:'subscribed!',          col:'#b44dff' },
+  resub:    { icon:'🔵', label:'re-subbed',            col:'#00c8ff' },
+  giftsub:  { icon:'🎁', label:'gifted subs',          col:'#ff8c00' },
+  cheer:    { icon:'⭐', label:'cheered',              col:'#ffd700' },
+  donation: { icon:'💸', label:'donated',              col:'#ff2d78' },
+};
+
+const DEFAULT_AVATAR =
+  'https://static-cdn.jtvnw.net/user-default-pictures-uv/' +
+  'cdd517ae-def4-11e9-948e-784f43822e80-profile_image-300x300.png';
+
+/* ═══════════════════════════════════════════════
+   DOM
+═══════════════════════════════════════════════ */
+const panel         = document.getElementById('boss-panel');
+const bossAvatar    = document.getElementById('boss-avatar');
+const bossNameEl    = document.getElementById('boss-name');
+const bossKills     = document.getElementById('boss-kills');
+const hpFill        = document.getElementById('hp-fill');
+const hpGainBar     = document.getElementById('hp-gain-bar');
+const hpCur         = document.getElementById('hp-cur');
+const hpMax         = document.getElementById('hp-max');
+const hpLabel       = document.getElementById('hp-label');
+const hpTrack       = document.getElementById('hp-track');
+const attackLog     = document.getElementById('attack-log');
+const dmgPop        = document.getElementById('dmg-pop');
+const defeated      = document.getElementById('defeated');
+const defeatedTitle = document.getElementById('defeated-title');
+const defeatedSb    = document.getElementById('defeated-sub');
+const takeoverFlash = document.getElementById('takeover-flash');
+const healRing      = document.getElementById('heal-ring');
+const bossBadge     = document.getElementById('boss-badge');
+const regenTicker   = document.getElementById('regen-ticker');
+
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let boss           = null;
+let defeatedTimer  = null;
+let healGlowTimer  = null;
+let logHideTimer   = null;
+
+// Tracks the last non-boss attacker so they can take over on kill
+let lastAttacker       = null;
+let lastAttackerAvatar = DEFAULT_AVATAR;
+
+/* ═══════════════════════════════════════════════
+   BOSS LOGIC
+═══════════════════════════════════════════════ */
+function spawnBoss(name, avatar, power, isTakeover) {
+  clearTimeout(defeatedTimer);
+  clearTimeout(healGlowTimer);
+  clearTimeout(logHideTimer);
+  defeated.classList.remove('show');
+  clearHealingVisuals();
+  hideLog();
+
+  const hp = CFG.baseHP + (power || 0);
+
+  boss = {
+    name,
+    username:     name,
+    avatar:       avatar || DEFAULT_AVATAR,
+    hp,
+    maxHp:        hp,
+    kills:        boss ? boss.kills : 0,   // carry kill count across takeovers
+    totalHealed:  0,
+    totalDamaged: 0,
+  };
+
+  lastAttacker       = null;
+  lastAttackerAvatar = DEFAULT_AVATAR;
+
+  bossNameEl.textContent = name;
+  bossAvatar.src         = boss.avatar;
+  bossAvatar.onerror     = () => { bossAvatar.src = DEFAULT_AVATAR; };
+  bossKills.textContent  = boss.kills;
+  regenTicker.classList.remove('visible');
+  regenTicker.textContent = '';
+  attackLog.innerHTML    = '';
+  renderHP();
+
+  if (isTakeover) {
+    // Gold flash for takeover
+    takeoverFlash.classList.remove('pop');
+    void takeoverFlash.offsetWidth;
+    takeoverFlash.classList.add('pop');
+    takeoverFlash.addEventListener('animationend', () => {
+      takeoverFlash.classList.remove('pop');
+    }, { once: true });
+  }
+
+  panel.classList.remove('visible');
+  void panel.offsetWidth;
+  panel.classList.add('visible');
+}
+
+function renderHP(isHeal) {
+  if (!boss) return;
+  const pct = Math.max(0, (boss.hp / boss.maxHp) * 100);
+  hpFill.style.width = pct + '%';
+  hpCur.textContent  = Math.max(0, Math.round(boss.hp));
+  hpMax.textContent  = Math.round(boss.maxHp);
+
+  if (isHeal) {
+    hpFill.style.background = 'linear-gradient(90deg,#1a8f00,#39ff14)';
+    hpFill.style.boxShadow  = '0 0 10px var(--neon-green)';
+  } else {
+    if      (pct > 50) { hpFill.style.background = 'linear-gradient(90deg,#ff2d78,#ff6fa8)'; hpFill.style.boxShadow = '0 0 8px var(--neon-pink)'; }
+    else if (pct > 25) { hpFill.style.background = 'linear-gradient(90deg,#ff7700,#ffaa40)'; hpFill.style.boxShadow = '0 0 8px #ff8c00'; }
+    else               { hpFill.style.background = 'linear-gradient(90deg,#ff2000,#ff5500)'; hpFill.style.boxShadow = '0 0 8px #ff4400'; }
+  }
+}
+
+/* ─── DAMAGE ─── */
+function applyDamage(type, name, avatar, amount) {
+  if (!boss) return;
+  const dmg = (CFG.damage[type] || 0) * (amount || 1);
+  boss.hp  -= dmg;
+  boss.totalDamaged += dmg;
+
+  // Track who last attacked the boss (for takeover)
+  lastAttacker       = name;
+  lastAttackerAvatar = avatar || DEFAULT_AVATAR;
+
+  const meta = EVENT_META[type] || { icon:'⚡', label:type, col:'#00f5ff' };
+  addLogEntry({ type, meta, name, avatar, value: dmg, amount, isHeal: false });
+  popValue(dmg, meta.col, false);
+  burst(meta.col);
+  clearHealingVisuals();
+  renderHP(false);
+
+  if (boss.hp <= 0) {
+    boss.hp = 0;
+    renderHP(false);
+    setTimeout(doBossDefeated, 400);
+  }
+}
+
+/* ─── HEAL ─── */
+function applyHeal(type, name, avatar, amount) {
+  if (!boss) return;
+  const gain    = (CFG.damage[type] || 0) * (amount || 1);
+  const prevPct = boss.hp / boss.maxHp;
+  boss.hp       = Math.min(boss.maxHp, boss.hp + gain);
+  boss.totalHealed += gain;
+  const newPct  = boss.hp / boss.maxHp;
+
+  showGainBar(prevPct, newPct);
+  const meta = EVENT_META[type] || { icon:'⚡', label:type, col:'#39ff14' };
+  addLogEntry({ type, meta, name, avatar, value: gain, amount, isHeal: true });
+  popValue(gain, '#39ff14', true);
+  burst('#39ff14');
+  triggerHealingVisuals();
+  renderHP(true);
+}
+
+/* ─── Route to damage or heal ─── */
+function applyEvent(type, name, avatar, amount) {
+  if (!boss) return;
+  const isBoss = name.toLowerCase().trim() === boss.username.toLowerCase().trim();
+  if (isBoss) applyHeal(type, name, avatar, amount);
+  else        applyDamage(type, name, avatar, amount);
+}
+
+/* ─── Gain bar ─── */
+function showGainBar(fromPct, toPct) {
+  const gainPct = (toPct - fromPct) * 100;
+  if (gainPct <= 0) return;
+  hpGainBar.style.left  = (fromPct * 100) + '%';
+  hpGainBar.style.width = gainPct + '%';
+  hpGainBar.classList.remove('flash');
+  void hpGainBar.offsetWidth;
+  hpGainBar.classList.add('flash');
+}
+
+/* ─── Healing visuals ─── */
+function triggerHealingVisuals() {
+  panel.classList.add('healing');
+  hpTrack.classList.add('healing');
+  hpLabel.classList.add('healing');
+  hpCur.classList.add('healing');
+  bossBadge.classList.add('healing-badge');
+
+  bossAvatar.classList.remove('healing-flash');
+  void bossAvatar.offsetWidth;
+  bossAvatar.classList.add('healing-flash');
+  bossAvatar.addEventListener('animationend', () => {
+    bossAvatar.classList.remove('healing-flash');
+  }, { once: true });
+
+  healRing.classList.remove('pop');
+  void healRing.offsetWidth;
+  healRing.classList.add('pop');
+  healRing.addEventListener('animationend', () => {
+    healRing.classList.remove('pop');
+  }, { once: true });
+
+  regenTicker.textContent = `⚕ +${Math.round(boss.totalHealed)} HEALED`;
+  regenTicker.classList.add('visible');
+
+  clearTimeout(healGlowTimer);
+  healGlowTimer = setTimeout(clearHealingVisuals, CFG.healGlowMs);
+}
+
+function clearHealingVisuals() {
+  panel.classList.remove('healing');
+  hpTrack.classList.remove('healing');
+  hpLabel.classList.remove('healing');
+  hpCur.classList.remove('healing');
+  bossBadge.classList.remove('healing-badge');
+}
+
+/* ─── Attack log show/hide ─── */
+function showLog() {
+  attackLog.classList.add('open');
+  clearTimeout(logHideTimer);
+  logHideTimer = setTimeout(hideLog, CFG.logHideMs);
+}
+
+function hideLog() {
+  attackLog.classList.remove('open');
+}
+
+/* ─── Log entry ─── */
+function addLogEntry({ type, meta, name, avatar, value, amount, isHeal }) {
+  let desc = meta.label;
+  if (type === 'resub')    desc = `re-subbed × ${amount} months`;
+  if (type === 'giftsub')  desc = `gifted ${amount} sub${amount > 1 ? 's' : ''}`;
+  if (type === 'cheer')    desc = `cheered ${amount} bits`;
+  if (type === 'donation') desc = `donated $${Number(amount).toFixed(2)}`;
+
+  const col = isHeal ? '#39ff14' : meta.col;
+  const el  = document.createElement('div');
+  el.className = 'attack-entry' + (isHeal ? ' is-heal' : '');
+  el.style.setProperty('--ec', col);
+  el.innerHTML = `
+    <img class="entry-avatar"
+         src="${avatar || DEFAULT_AVATAR}"
+         onerror="this.src='${DEFAULT_AVATAR}'" />
+    <span class="entry-icon">${isHeal ? '⚕' : meta.icon}</span>
+    <span class="entry-text"><strong>${name}</strong> ${desc}</span>
+    ${isHeal ? `<span class="boss-self-tag">BOSS HEAL</span>` : ''}
+    <span class="entry-dmg${isHeal ? ' heal' : ''}">${isHeal ? '+' : '-'}${Math.round(value)} HP</span>
+  `;
+  attackLog.prepend(el);
+  while (attackLog.children.length > CFG.maxLogEntries)
+    attackLog.removeChild(attackLog.lastChild);
+
+  showLog();   // <-- reveal the log on every new entry
+}
+
+/* ─── Damage / heal pop ─── */
+function popValue(val, col, isHeal) {
+  dmgPop.classList.remove('go', 'go-heal');
+  void dmgPop.offsetWidth;
+  dmgPop.textContent      = (isHeal ? '+' : '-') + Math.round(val);
+  dmgPop.style.color      = col;
+  dmgPop.style.textShadow = `0 0 18px ${col}, 0 0 45px ${col}66`;
+  dmgPop.classList.add(isHeal ? 'go-heal' : 'go');
+}
+
+/* ─── Particles ─── */
+function burst(col) {
+  for (let i = 0; i < 12; i++) {
+    const p  = document.createElement('div');
+    p.className = 'ptcl';
+    const s  = 3 + Math.random() * 6;
+    const tx = (Math.random() - 0.5) * 160;
+    const ty = -(45 + Math.random() * 100);
+    const d  = 0.55 + Math.random() * 0.8;
+    p.style.cssText = `
+      width:${s}px; height:${s}px;
+      background:${col}; box-shadow:0 0 5px ${col};
+      left:${340+(Math.random()-0.5)*70}px;
+      top:${40+Math.random()*30}px;
+      --tx:${tx}px; --ty:${ty}px; --d:${d}s;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), d * 1000);
+  }
+}
+
+/* ─── Boss defeated → next boss takes over ─── */
+function doBossDefeated() {
+  if (!boss) return;
+  boss.kills++;
+  clearHealingVisuals();
+  clearTimeout(healGlowTimer);
+  hideLog();
+
+  const killedName   = boss.name;
+  const killerName   = lastAttacker;
+  const killerAvatar = lastAttackerAvatar;
+
+  if (killerName) {
+    // Someone from chat killed the boss → show defeat screen briefly then crown killer
+    defeatedTitle.textContent = 'BOSS DEFEATED!';
+    defeatedSb.innerHTML =
+      `<strong style="color:#fff">${killedName}</strong> was slain by ` +
+      `<strong style="color:var(--neon-gold)">${killerName}</strong>!`;
+    defeated.classList.add('show');
+
+    clearTimeout(defeatedTimer);
+    defeatedTimer = setTimeout(() => {
+      defeated.classList.remove('show');
+      // Crown the killer as the new boss after short delay
+      setTimeout(() => spawnBoss(killerName, killerAvatar, 0, true), 300);
+    }, CFG.defeatedMs);
+  } else {
+    // No attacker tracked (e.g. manual kill) — just clear the panel
+    defeatedTitle.textContent = 'BOSS DEFEATED!';
+    defeatedSb.textContent    = `${killedName} was slain by chat!`;
+    defeated.classList.add('show');
+
+    clearTimeout(defeatedTimer);
+    defeatedTimer = setTimeout(() => {
+      defeated.classList.remove('show');
+      panel.classList.remove('visible');
+      boss = null;
+      attackLog.innerHTML = '';
+      regenTicker.classList.remove('visible');
+      regenTicker.textContent = '';
+    }, CFG.defeatedMs);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   WEBSOCKET
+═══════════════════════════════════════════════ */
+const urlParams = new URLSearchParams(window.location.search);
+const WS_URI    = `ws://${urlParams.get('address') || 'localhost'}:${urlParams.get('port') || '8080'}/`;
+
+let ws, wsTimer;
+
+function connect() {
+  try {
+    ws = new WebSocket(WS_URI);
+
+    ws.onopen = () => {
+      console.log('[StreamBoss] Connected →', WS_URI);
+      clearTimeout(wsTimer);
+      ws.send(JSON.stringify({
+        request: 'Subscribe',
+        events:  { general: ['Custom'] },
+        id:      'streamBoss-sub'
+      }));
+    };
+
+    ws.onmessage = (e) => {
+      let msg;
+      try { msg = JSON.parse(e.data); } catch { return; }
+      route(msg);
+    };
+
+    ws.onclose = () => {
+      console.log('[StreamBoss] Disconnected. Retrying in 3s...');
+      wsTimer = setTimeout(connect, 3000);
+    };
+
+    ws.onerror = (err) => {
+      console.error('[StreamBoss] WS error', err);
+      ws.close();
+    };
+
+  } catch(e) {
+    console.error('[StreamBoss] connect() threw:', e);
+    wsTimer = setTimeout(connect, 3000);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   MESSAGE ROUTER
+═══════════════════════════════════════════════ */
+function route(msg) {
+  let pl = null;
+
+  if (msg?.event?.source === 'General' && msg?.event?.type === 'Custom') {
+    const d = msg?.data;
+    if (d?.eventName || d?.type) {
+      pl = d;
+    } else if (d?.custom != null) {
+      pl = typeof d.custom === 'string'
+        ? (() => { try { return JSON.parse(d.custom); } catch { return null; } })()
+        : d.custom;
+    } else {
+      pl = d;
+    }
+  } else if (msg?.eventName || msg?.type) {
+    pl = msg;
+  }
+
+  if (!pl) return;
+  if (pl.eventName && pl.eventName !== 'StreamBoss') return;
+
+  const type   = pl.type;
+  const name   = pl.user   || pl.name  || 'Unknown';
+  const avatar = pl.avatar || DEFAULT_AVATAR;
+  const amount = pl.amount;
+  const power  = pl.power;
+
+  if (type === 'boss_spawn') {
+    spawnBoss(name, avatar, power || 0, false);
+    return;
+  }
+
+  // Auto-spawn first attacker as boss if none active
+  if (!boss) spawnBoss(name, avatar, 0, false);
+
+  if (EVENT_META[type]) applyEvent(type, name, avatar, amount);
+}
+
+connect();
+
+/* ═══════════════════════════════════════════════
+   DEMO MODE — uncomment to test without Streamer.bot
+═══════════════════════════════════════════════
+setTimeout(() => spawnBoss('TestBoss123', DEFAULT_AVATAR, 0, false), 600);
+const DEMO = [
+  { eventName:'StreamBoss', type:'follow',   user:'CoolViewer' },
+  { eventName:'StreamBoss', type:'cheer',    user:'BitMaster',  amount:500 },
+  { eventName:'StreamBoss', type:'sub',      user:'SubGuy' },
+  { eventName:'StreamBoss', type:'giftsub',  user:'GiftKing',   amount:3 },
+  { eventName:'StreamBoss', type:'cheer',    user:'TestBoss123', amount:200 },
+  { eventName:'StreamBoss', type:'resub',    user:'LoyalFan',   amount:24 },
+  { eventName:'StreamBoss', type:'donation', user:'BigDonor',   amount:20 },
+];
+let _di = 0;
+setInterval(() => { if (boss) route(DEMO[_di++ % DEMO.length]); }, 2200);
+*/
+</script>
+</body>
+</html>
