@@ -43,20 +43,6 @@
                 transform 1.2s ease-in;
   }
 
-  /* ── CHAIN ── */
-  .chain {
-    display: flex;
-    margin-bottom: -1px;
-    z-index: 10;
-  }
-  .link {
-    width: 10px;
-    height: 14px;
-    border: 2px solid #5a0e0e;
-    border-radius: 50%;
-    background: transparent;
-  }
-  .link:nth-child(even) { transform: rotate(90deg); }
 
   /* ── BOARD ── */
   .board {
@@ -374,12 +360,7 @@
 <div class="game-switch-overlay" id="gameSwitchOverlay"></div>
 
 <div class="wrap" id="wrap">
-  <div class="chain">
-    <div class="link"></div><div class="link"></div><div class="link"></div>
-    <div class="link"></div><div class="link"></div><div class="link"></div>
-    <div class="link"></div><div class="link"></div><div class="link"></div>
-    <div class="link"></div>
-  </div>
+
 
   <div class="board">
     <div class="nail tl"></div>
