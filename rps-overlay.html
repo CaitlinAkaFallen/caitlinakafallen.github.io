@@ -310,12 +310,12 @@
     50% { transform: scale(1.1); }
   }
 
-  /* ── RESULT BAR (slides up from bottom) ── */
+/* ── RESULT BAR (slides up from bottom) ── */
   #result-bar {
     position: fixed;
-    bottom: 20px;
+    bottom: 120px; /* Increased from 20px to move its active position up */
     left: 50%;
-    transform: translateX(-50%) translateY(120px);
+    transform: translateX(-50%) translateY(160px); /* Increased from 120px to keep it safely hidden off-screen */
     width: 600px;
     height: 80px;
     background: linear-gradient(135deg, rgba(10,10,20,0.98) 0%, rgba(20,10,40,0.98) 100%);
@@ -466,6 +466,7 @@
   #idle-msg {
     position: absolute;
     inset: 0;
+    top: 40%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -542,7 +543,7 @@
 
     <!-- EFFECTS -->
     <div id="countdown"></div>
-    <div id="idle-msg"><span>🎮 ARENA READY</span></div>
+    <div id="idle-msg"><span>ARENA READY</span></div>
 
   </div>
 </div>
