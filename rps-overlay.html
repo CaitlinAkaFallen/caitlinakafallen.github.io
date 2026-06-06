@@ -7,14 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --p1:       #00e5ff;
-    --p2:       #ff3d71;
-    --gold:     #ffd700;
-    --accent:   #7c3aed;
-    --dark-bg:  #0a0a14;
-    --glow1:    0 0 20px rgba(0,229,255,0.5);
-    --glow2:    0 0 20px rgba(255,61,113,0.5);
-    --glow-acc: 0 0 20px rgba(124,58,237,0.5);
+    --p1:        #00e5ff;
+    --p2:        #ff3d71;
+    --gold:      #ffd700;
+    --accent:    #7c3aed;
+    --glow1:     0 0 20px rgba(0,229,255,0.5);
+    --glow2:     0 0 20px rgba(255,61,113,0.5);
+    --glow-acc:  0 0 20px rgba(124,58,237,0.5);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,11 +29,11 @@
     justify-content: center;
   }
 
-  /* ── MAIN CONTAINER (CENTERED) ── */
+  /* ── MAIN CONTAINER ── */
   #overlay-wrapper {
-    position: absolute;
-    width: 1000px;
-    height: 540px;
+    position: fixed;
+    width: 1200px;
+    height: 600px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -46,179 +45,241 @@
     position: relative;
     width: 100%;
     height: 100%;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
     align-items: center;
-    justify-content: space-around;
-    padding: 40px 50px;
-    opacity: 0;
-    transform: scale(0.85) translateY(30px);
-    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    justify-items: center;
+    padding: 40px;
+    transform: scale(0.92) translateY(20px);
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 5;
   }
 
   #arena.visible {
-    opacity: 1;
     transform: scale(1) translateY(0);
   }
 
-  /* Glass morphism background */
-  #arena::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse 100% 100% at 50% 30%, rgba(0,229,255,0.1) 0%, transparent 50%),
-      radial-gradient(ellipse 100% 100% at 50% 70%, rgba(255,61,113,0.1) 0%, transparent 50%),
-      linear-gradient(135deg, rgba(10,10,20,0.95) 0%, rgba(5,5,15,0.98) 50%, rgba(10,5,25,0.95) 100%);
-    border-radius: 24px;
-    border: 1px solid rgba(124,58,237,0.3);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    box-shadow: 
-      0 8px 32px rgba(0,0,0,0.5),
-      inset 0 1px 0 rgba(255,255,255,0.1),
-      0 0 60px rgba(124,58,237,0.15);
-  }
-
-  /* Animated grid overlay */
-  #arena::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: 
-      linear-gradient(0deg, transparent 24%, rgba(124,58,237,0.05) 25%, rgba(124,58,237,0.05) 26%, transparent 27%, transparent 74%, rgba(124,58,237,0.05) 75%, rgba(124,58,237,0.05) 76%, transparent 77%, transparent),
-      linear-gradient(90deg, transparent 24%, rgba(124,58,237,0.05) 25%, rgba(124,58,237,0.05) 26%, transparent 27%, transparent 74%, rgba(124,58,237,0.05) 75%, rgba(124,58,237,0.05) 76%, transparent 77%, transparent);
-    background-size: 60px 60px;
-    border-radius: 24px;
-    pointer-events: none;
-    z-index: 1;
-    animation: gridShift 20s linear infinite;
-  }
-
-  @keyframes gridShift {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(60px, 60px); }
-  }
-
-  /* ── PLAYER CARDS ── */
+  /* ── PLAYER CARDS WITH SPACE BACKGROUNDS ── */
   .player-card {
     position: relative;
     z-index: 3;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 200px;
-    padding: 20px;
-    gap: 12px;
-    border-radius: 16px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.05);
-    transition: all 0.4s ease;
+    width: 240px;
+    padding: 28px 24px;
+    gap: 16px;
+    border-radius: 20px;
+    border: 2px solid;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden; /* Clips the background textures perfectly inside the card shape */
+  }
+
+  /* Base Space Background Layer inside the cards */
+  .player-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* Deep space base blended with a canvas noise/star effect */
+    background: 
+      radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+      radial-gradient(1px 1px at 75px 140px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 120px 50px, rgba(255,255,255,0.8), transparent),
+      radial-gradient(2px 2px at 190px 220px, #fff, transparent),
+      radial-gradient(1px 1px at 40px 320px, #fff, transparent),
+      linear-gradient(135deg, rgba(15, 15, 25, 0.95) 0%, rgba(5, 5, 10, 0.98) 100%);
+    background-size: 200% 200%;
+    z-index: -2;
+    animation: spaceShift 12s ease infinite;
+  }
+
+  /* Colorized Nebula Overlay Layer */
+  .player-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    mix-blend-mode: screen;
+    opacity: 0.35;
+    transition: opacity 0.4s ease;
+  }
+
+  /* Player 1 Styling (Cyan Theme) */
+  .p1 {
+    border-color: rgba(0, 229, 255, 0.45);
+    box-shadow: 0 12px 40px rgba(0, 229, 255, 0.15), inset 0 0 20px rgba(0, 229, 255, 0.1);
+  }
+  .p1::after {
+    background: radial-gradient(circle at 30% 20%, rgba(0, 229, 255, 0.6) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(124, 58, 237, 0.4) 0%, transparent 70%);
+    animation: nebulaPulse 7s ease-in-out infinite alternate;
+  }
+
+  /* Player 2 Styling (Pink/Red Theme) */
+  .p2 {
+    border-color: rgba(255, 61, 113, 0.45);
+    box-shadow: 0 12px 40px rgba(255, 61, 113, 0.15), inset 0 0 20px rgba(255, 61, 113, 0.1);
+  }
+  .p2::after {
+    background: radial-gradient(circle at 70% 20%, rgba(255, 61, 113, 0.6) 0%, transparent 60%),
+                radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.4) 0%, transparent 70%);
+    animation: nebulaPulse 7s ease-in-out infinite alternate-reverse;
+  }
+
+  /* ── BACKGROUND ANIMATIONS ── */
+  @keyframes spaceShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes nebulaPulse {
+    0% { transform: scale(1) rotate(0deg); opacity: 0.25; }
+    50% { transform: scale(1.15) rotate(5deg); opacity: 0.4; }
+    100% { transform: scale(1) rotate(-3deg); opacity: 0.25; }
   }
 
   .player-card:hover {
-    background: rgba(255,255,255,0.04);
-    border-color: rgba(255,255,255,0.1);
+    transform: translateY(-5px);
   }
+  .p1:hover { border-color: rgba(0, 229, 255, 0.7); box-shadow: 0 16px 45px rgba(0, 229, 255, 0.3); }
+  .p2:hover { border-color: rgba(255, 61, 113, 0.7); box-shadow: 0 16px 45px rgba(255, 61, 113, 0.3); }
 
-  /* Avatar with glow */
+  /* Avatar section */
   .avatar-ring {
     position: relative;
-    width: 100px;
-    height: 100px;
-    margin-bottom: 8px;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 4px;
   }
+
+  .avatar-ring::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--color1), var(--color2), var(--color1));
+    animation: rotateConic 6s linear infinite;
+    z-index: 0;
+  }
+
+  .p1 .avatar-ring::before { --color1: rgba(0,229,255,0.4); --color2: rgba(0,229,255,0.1); }
+  .p2 .avatar-ring::before { --color1: rgba(255,61,113,0.4); --color2: rgba(255,61,113,0.1); }
 
   .avatar-ring svg {
     position: absolute;
     inset: -8px;
     width: calc(100% + 16px);
     height: calc(100% + 16px);
-    animation: rotateSpin 8s linear infinite;
+    animation: rotateSpin 10s linear infinite;
+    z-index: 1;
   }
 
-  .p1 .avatar-ring svg circle { stroke: var(--p1); stroke-width: 1.5; }
-  .p2 .avatar-ring svg circle { stroke: var(--p2); stroke-width: 1.5; }
+  .p1 .avatar-ring svg circle { stroke: var(--p1); stroke-width: 2; }
+  .p2 .avatar-ring svg circle { stroke: var(--p2); stroke-width: 2; }
 
-  @keyframes rotateSpin {
+  @keyframes rotateConic {
     to { transform: rotate(360deg); }
   }
 
+  @keyframes rotateSpin {
+    to { transform: rotate(-360deg); }
+  }
+
   .avatar-img {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid;
+    border: 3px solid;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+  }
+
+  .p1 .avatar-img { border-color: var(--p1); filter: drop-shadow(0 0 20px rgba(0,229,255,0.6)); }
+  .p2 .avatar-img { border-color: var(--p2); filter: drop-shadow(0 0 20px rgba(255,61,113,0.6)); }
+
+  /* Player info section */
+  .player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
     position: relative;
     z-index: 2;
   }
 
-  .p1 .avatar-img { border-color: var(--p1); filter: drop-shadow(var(--glow1)); }
-  .p2 .avatar-img { border-color: var(--p2); filter: drop-shadow(var(--glow2)); }
-
-  /* Player name */
   .player-name {
     font-family: 'Orbitron', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 2px;
     text-transform: uppercase;
     line-height: 1;
     text-align: center;
     width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
-  .p1 .player-name { color: var(--p1); text-shadow: var(--glow1), 0 0 30px rgba(0,229,255,0.3); }
-  .p2 .player-name { color: var(--p2); text-shadow: var(--glow2), 0 0 30px rgba(255,61,113,0.3); }
+  .p1 .player-name { color: var(--p1); text-shadow: 0 0 30px rgba(0,229,255,0.6), 0 0 60px rgba(0,229,255,0.3); }
+  .p2 .player-name { color: var(--p2); text-shadow: 0 0 30px rgba(255,61,113,0.6), 0 0 60px rgba(255,61,113,0.3); }
 
   /* Record badge */
   .player-record {
     font-family: 'Orbitron', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: rgba(255,255,255,0.7);
-    background: linear-gradient(135deg, rgba(124,58,237,0.2) 0%, rgba(124,58,237,0.1) 100%);
-    padding: 4px 12px;
-    border-radius: 20px;
-    border: 1px solid rgba(124,58,237,0.4);
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.85);
+    background: linear-gradient(135deg, rgba(124,58,237,0.35) 0%, rgba(124,58,237,0.15) 100%);
+    padding: 6px 16px;
+    border-radius: 24px;
+    border: 1.5px solid rgba(124,58,237,0.6);
     text-transform: uppercase;
-    box-shadow: inset 0 0 10px rgba(124,58,237,0.1);
+    box-shadow: 0 0 20px rgba(124,58,237,0.2), inset 0 0 15px rgba(124,58,237,0.1);
   }
 
   /* Choice display */
   .choice-box {
-    width: 90px;
-    height: 90px;
-    border-radius: 12px;
+    width: 110px;
+    height: 110px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 48px;
-    background: rgba(255,255,255,0.02);
+    font-size: 60px;
+    background: rgba(0, 0, 0, 0.4); /* Darkened slightly to contrast beautifully over the background texture */
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 2px solid;
+    z-index: 2;
+  }
+
+  .choice-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent);
   }
 
   .p1 .choice-box { 
-    box-shadow: inset 0 0 20px rgba(0,229,255,0.1);
-    border-color: rgba(0,229,255,0.2);
+    border-color: rgba(0,229,255,0.4);
+    box-shadow: 0 0 30px rgba(0,229,255,0.2), inset 0 0 20px rgba(0,229,255,0.1);
   }
   .p2 .choice-box { 
-    box-shadow: inset 0 0 20px rgba(255,61,113,0.1);
-    border-color: rgba(255,61,113,0.2);
+    border-color: rgba(255,61,113,0.4);
+    box-shadow: 0 0 30px rgba(255,61,113,0.2), inset 0 0 20px rgba(255,61,113,0.1);
   }
 
   .choice-box .emoji {
     display: block;
     transform-origin: center;
-    transition: all 0.4s ease;
+    position: relative;
+    z-index: 2;
   }
 
   .choice-box.rolling .emoji {
@@ -227,20 +288,23 @@
 
   @keyframes emojiRoll {
     0% { transform: scale(0) rotateZ(-180deg); opacity: 0; }
-    50% { transform: scale(1.2) rotateZ(10deg); }
+    50% { transform: scale(1.3) rotateZ(10deg); }
     100% { transform: scale(1) rotateZ(0deg); opacity: 1; }
   }
 
   .choice-label {
     font-family: 'Orbitron', sans-serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    opacity: 0.5;
+    font-size: 13px;
+    letter-spacing: 3px;
+    opacity: 0.8;
     text-transform: uppercase;
+    font-weight: 700;
+    position: relative;
+    z-index: 2;
   }
 
-  .p1 .choice-label { color: var(--p1); }
-  .p2 .choice-label { color: var(--p2); }
+  .p1 .choice-label { color: var(--p1); text-shadow: 0 0 10px rgba(0,229,255,0.4); }
+  .p2 .choice-label { color: var(--p2); text-shadow: 0 0 10px rgba(255,61,113,0.4); }
 
   /* ── CENTER ARENA ── */
   #center {
@@ -250,86 +314,115 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    flex: 1;
+    gap: 20px;
     height: 100%;
-    padding: 0 30px;
+    padding: 0;
+    width: 100%;
+  }
+
+  /* Decorative dividers */
+  .center-divider {
+    position: absolute;
+    width: 2px;
+    height: 120px;
+    background: linear-gradient(180deg, transparent, rgba(124,58,237,0.5), transparent);
+  }
+
+  .divider-left { left: -40px; }
+  .divider-right { right: -40px; }
+
+  #status-line {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: rgba(62, 237, 250, 0.8);
+    text-align: center;
+    text-transform: uppercase;
+    min-height: 28px;
+    background: transparent;
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: none;
+    order: 1;
+    text-shadow: 0 0 10px rgba(255,255,255,0.3);
   }
 
   #vs-badge {
     font-family: 'Orbitron', sans-serif;
-    font-size: 64px;
+    font-size: 88px;
     font-weight: 900;
-    letter-spacing: 3px;
-    background: linear-gradient(135deg, var(--p1), var(--accent), var(--p2));
+    letter-spacing: 5px;
+    background: linear-gradient(135deg, var(--p1) 0%, var(--accent) 50%, var(--p2) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 20px rgba(124,58,237,0.4));
+    filter: drop-shadow(0 0 30px rgba(124,58,237,0.6));
     line-height: 1;
     animation: pulseBadge 2s ease-in-out infinite;
+    text-shadow: 0 0 40px rgba(0,0,0,0.8);
+    order: 3;
+    margin-top: 10px;
   }
 
   @keyframes pulseBadge {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
-
-  #status-line {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: rgba(255,255,255,0.6);
-    text-align: center;
-    text-transform: uppercase;
-    min-height: 24px;
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
   }
 
   /* ── WINNING EFFECTS ── */
   .player-card.winner {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.2);
-    animation: winnerGlow 0.6s ease-in-out infinite;
+    animation: winnerPulse 0.5s ease-in-out infinite;
+  }
+  .player-card.winner::after {
+    opacity: 0.65; /* Intensifies the nebula coloration behind the winner */
   }
 
-  .p1.winner { box-shadow: 0 0 30px rgba(0,229,255,0.3), inset 0 0 20px rgba(0,229,255,0.1); }
-  .p2.winner { box-shadow: 0 0 30px rgba(255,61,113,0.3), inset 0 0 20px rgba(255,61,113,0.1); }
+  .p1.winner { 
+    border-color: rgba(0,229,255,0.9);
+    box-shadow: 0 0 50px rgba(0,229,255,0.6), inset 0 0 30px rgba(0,229,255,0.3);
+  }
+  .p2.winner { 
+    border-color: rgba(255,61,113,0.9);
+    box-shadow: 0 0 50px rgba(255,61,113,0.6), inset 0 0 30px rgba(255,61,113,0.3);
+  }
 
-  @keyframes winnerGlow {
+  @keyframes winnerPulse {
     0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
+    50% { transform: scale(1.03); }
   }
 
   .player-card.winner .choice-box {
-    animation: choiceWinPulse 0.5s ease-in-out infinite;
+    animation: choiceWinPulse 0.4s ease-in-out infinite;
   }
 
   @keyframes choiceWinPulse {
     0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    50% { transform: scale(1.15); }
   }
 
-/* ── RESULT BAR (slides up from bottom) ── */
+  /* ── RESULT BAR ── */
   #result-bar {
     position: fixed;
-    bottom: 120px; /* Increased from 20px to move its active position up */
+    bottom: 80px;
     left: 50%;
-    transform: translateX(-50%) translateY(160px); /* Increased from 120px to keep it safely hidden off-screen */
-    width: 600px;
-    height: 80px;
-    background: linear-gradient(135deg, rgba(10,10,20,0.98) 0%, rgba(20,10,40,0.98) 100%);
-    border: 1px solid rgba(124,58,237,0.5);
-    border-radius: 16px;
+    transform: translateX(-50%) translateY(160px);
+    width: 700px;
+    height: 100px;
+    background: linear-gradient(135deg, rgba(10,10,20,0.99) 0%, rgba(20,10,40,0.99) 100%);
+    border: 2px solid rgba(124,58,237,0.5);
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 30px;
+    padding: 0 40px;
     z-index: 50;
     opacity: 0;
     pointer-events: none;
     transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(124,58,237,0.2);
+    box-shadow: 0 0 80px rgba(0,0,0,0.8), 0 0 40px rgba(124,58,237,0.3);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
   }
 
   #result-bar.show {
@@ -339,59 +432,59 @@
   }
 
   #result-bar.p1-bar {
-    border-color: rgba(0,229,255,0.6);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(0,229,255,0.3);
+    border-color: rgba(0,229,255,0.7);
+    box-shadow: 0 0 80px rgba(0,0,0,0.8), 0 0 50px rgba(0,229,255,0.4);
   }
 
   #result-bar.p2-bar {
-    border-color: rgba(255,61,113,0.6);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(255,61,113,0.3);
+    border-color: rgba(255,61,113,0.7);
+    box-shadow: 0 0 80px rgba(0,0,0,0.8), 0 0 50px rgba(255,61,113,0.4);
   }
 
   #result-bar.tie-bar {
-    border-color: rgba(255,215,0,0.6);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(255,215,0,0.3);
+    border-color: rgba(255,215,0,0.7);
+    box-shadow: 0 0 80px rgba(0,0,0,0.8), 0 0 50px rgba(255,215,0,0.4);
   }
 
   .result-winner {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 20px;
   }
 
   .result-avatar {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid;
+    border: 3px solid;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
   }
 
-  #result-bar.p1-bar .result-avatar { border-color: var(--p1); filter: drop-shadow(var(--glow1)); }
-  #result-bar.p2-bar .result-avatar { border-color: var(--p2); filter: drop-shadow(var(--glow2)); }
-  #result-bar.tie-bar .result-avatar { border-color: var(--gold); filter: drop-shadow(0 0 15px rgba(255,215,0,0.5)); }
+  #result-bar.p1-bar .result-avatar { border-color: var(--p1); filter: drop-shadow(0 0 25px rgba(0,229,255,0.6)); }
+  #result-bar.p2-bar .result-avatar { border-color: var(--p2); filter: drop-shadow(0 0 25px rgba(255,61,113,0.6)); }
+  #result-bar.tie-bar .result-avatar { border-color: var(--gold); filter: drop-shadow(0 0 25px rgba(255,215,0,0.6)); }
 
   .result-text {
     font-family: 'Orbitron', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: 2px;
     text-transform: uppercase;
     line-height: 1.2;
   }
 
-  #result-bar.p1-bar .result-text { color: var(--p1); text-shadow: var(--glow1); }
-  #result-bar.p2-bar .result-text { color: var(--p2); text-shadow: var(--glow2); }
-  #result-bar.tie-bar .result-text { color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+  #result-bar.p1-bar .result-text { color: var(--p1); text-shadow: 0 0 30px rgba(0,229,255,0.7); }
+  #result-bar.p2-bar .result-text { color: var(--p2); text-shadow: 0 0 30px rgba(255,61,113,0.7); }
+  #result-bar.tie-bar .result-text { color: var(--gold); text-shadow: 0 0 30px rgba(255,215,0,0.7); }
 
   .result-logic {
     font-family: 'Space Mono', monospace;
-    font-size: 14px;
-    letter-spacing: 1px;
-    color: rgba(255,255,255,0.6);
-    text-align: center;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.7);
     text-transform: uppercase;
-    margin-top: 2px;
+    margin-top: 3px;
   }
 
   /* ── VISUAL EFFECTS ── */
@@ -401,16 +494,15 @@
     pointer-events: none;
     z-index: 40;
     opacity: 0;
-    background: rgba(255,255,255,0.1);
   }
 
   #flash.fire {
-    animation: flashBurst 0.4s ease-out forwards;
+    animation: flashBurst 0.5s ease-out forwards;
   }
 
   @keyframes flashBurst {
-    0% { opacity: 0.8; }
-    100% { opacity: 0; }
+    0% { opacity: 0.9; background: rgba(255,255,255,0.15); }
+    100% { opacity: 0; background: transparent; }
   }
 
   #sparks {
@@ -423,15 +515,16 @@
 
   .spark {
     position: fixed;
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    animation: sparkFloat 1s ease-out forwards;
+    box-shadow: 0 0 10px currentColor;
+    animation: sparkFloat 1.2s ease-out forwards;
   }
 
   @keyframes sparkFloat {
-    0% { opacity: 1; }
-    100% { opacity: 0; transform: var(--path) scale(0); }
+    0% { opacity: 1; filter: blur(0); }
+    100% { opacity: 0; filter: blur(2px); transform: var(--path) scale(0); }
   }
 
   /* ── COUNTDOWN ── */
@@ -442,37 +535,38 @@
     align-items: center;
     justify-content: center;
     font-family: 'Orbitron', sans-serif;
-    font-size: 120px;
+    font-size: 140px;
     font-weight: 900;
     color: #fff;
     text-shadow: 
-      0 0 40px rgba(0,229,255,0.5),
-      0 0 80px rgba(124,58,237,0.3);
+      0 0 40px rgba(0,229,255,0.6),
+      0 0 80px rgba(124,58,237,0.4),
+      0 0 120px rgba(0,0,0,0.8);
     z-index: 45;
     opacity: 0;
     pointer-events: none;
   }
 
   #countdown.counting {
-    animation: countDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: countDown 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
 
   @keyframes countDown {
-    0% { opacity: 0; transform: scale(2); }
-    100% { opacity: 1; transform: scale(1); }
+    0% { opacity: 0; transform: scale(2.2) rotateZ(-30deg); }
+    100% { opacity: 1; transform: scale(1) rotateZ(0deg); }
   }
 
-  /* ── IDLE MESSAGE ── */
+  /* ── IDLE MESSAGE (POSITIONED INSIDE THE CENTER COLUMN ABOVE VS) ── */
   #idle-msg {
-    position: absolute;
-    inset: 0;
-    top: 40%;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2;
     opacity: 1;
     transition: opacity 0.5s ease;
+    order: 2;
+    margin-bottom: 5px;
   }
 
   #idle-msg.hidden {
@@ -482,23 +576,26 @@
 
   #idle-msg span {
     font-family: 'Orbitron', sans-serif;
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: rgba(255,255,255,0.3);
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: rgba(243, 235, 124, 0.8);
     text-transform: uppercase;
-    border: 1px solid rgba(124,58,237,0.3);
-    padding: 16px 40px;
-    border-radius: 12px;
-    background: rgba(10,10,20,0.5);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    border: 2px solid rgba(124,58,237,0.5);
+    padding: 20px 50px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(119, 117, 228, 0.384) 0%, rgba(78, 250, 236, 0.301) 100%);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 40px rgba(124,58,237,0.2);
     animation: floatIdle 3s ease-in-out infinite;
+    text-shadow: 0 0 20px rgba(124,58,237,0.4);
+    white-space: nowrap;
   }
 
   @keyframes floatIdle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-15px) scale(1.02); }
   }
 </style>
 </head>
@@ -507,52 +604,52 @@
 <div id="overlay-wrapper">
   <div id="arena">
     
-    <!-- P1 PLAYER CARD -->
     <div class="player-card p1" id="card-p1">
       <div class="avatar-ring">
-        <svg viewBox="0 0 116 116" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="58" cy="58" r="54" stroke-dasharray="8 4" stroke-linecap="round" opacity="0.6"/>
+        <svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="70" cy="70" r="65" stroke-dasharray="10 5" stroke-linecap="round" opacity="0.8" stroke-width="2"/>
         </svg>
         <img class="avatar-img" id="avatar-p1" src=" " alt="P1"/>
       </div>
-      <div class="player-name" id="name-p1">PLAYER 1</div>
-      <div class="player-record" id="record-p1">0-0-0</div>
+      <div class="player-info">
+        <div class="player-name" id="name-p1">PLAYER 1</div>
+        <div class="player-record" id="record-p1">0-0-0</div>
+      </div>
       <div class="choice-box" id="box-p1"><span class="emoji" id="emoji-p1">❓</span></div>
       <div class="choice-label" id="label-p1">WAITING</div>
     </div>
 
-    <!-- CENTER ARENA -->
+    <div id="countdown"></div>
+    
     <div id="center">
+      <div class="center-divider divider-left"></div>
+      <div id="status-line">⚡ READY ⚡</div>
+      <div id="idle-msg"><span>🎮 ARENA READY</span></div>
       <div id="vs-badge">VS</div>
-      <div id="status-line">READY</div>
+      <div class="center-divider divider-right"></div>
     </div>
 
-    <!-- P2 PLAYER CARD -->
     <div class="player-card p2" id="card-p2">
       <div class="avatar-ring">
-        <svg viewBox="0 0 116 116" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="58" cy="58" r="54" stroke-dasharray="8 4" stroke-linecap="round" opacity="0.6"/>
+        <svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="70" cy="70" r="65" stroke-dasharray="10 5" stroke-linecap="round" opacity="0.8" stroke-width="2"/>
         </svg>
         <img class="avatar-img" id="avatar-p2" src=" " alt="P2"/>
       </div>
-      <div class="player-name" id="name-p2">PLAYER 2</div>
-      <div class="player-record" id="record-p2">0-0-0</div>
+      <div class="player-info">
+        <div class="player-name" id="name-p2">PLAYER 2</div>
+        <div class="player-record" id="record-p2">0-0-0</div>
+      </div>
       <div class="choice-box" id="box-p2"><span class="emoji" id="emoji-p2">❓</span></div>
       <div class="choice-label" id="label-p2">WAITING</div>
     </div>
 
-    <!-- EFFECTS -->
-    <div id="countdown"></div>
-    <div id="idle-msg"><span>ARENA READY</span></div>
-
   </div>
 </div>
 
-<!-- GLOBAL EFFECTS -->
 <div id="flash"></div>
 <div id="sparks"></div>
 
-<!-- RESULT BAR -->
 <div id="result-bar">
   <div class="result-winner">
     <img class="result-avatar" id="result-avatar" src=" " alt="Winner"/>
@@ -564,15 +661,11 @@
 </div>
 
 <script>
-// ──────────────────────────────────────────────────────────────────────────────
-// CONFIG
-// ──────────────────────────────────────────────────────────────────────────────
-const params     = new URLSearchParams(window.location.search);
-const WS_HOST    = `ws://${params.get('address') || 'localhost'}:${params.get('port') || '8080'}/`;
+const params = new URLSearchParams(window.location.search);
+const WS_HOST = `ws://${params.get('address') || 'localhost'}:${params.get('port') || '8080'}/`;
 const EVENT_NAME = 'rps_overlay';
 const avatarCache = new Map();
 
-// 6-Choice System
 const CHOICES = {
   rock:     { emoji: '🪨', label: 'ROCK'     },
   paper:    { emoji: '📄', label: 'PAPER'    },
@@ -582,7 +675,6 @@ const CHOICES = {
   hammer:   { emoji: '🔨', label: 'HAMMER'   },
 };
 
-// Balanced Win Matrix
 const WINS = {
   rock:     ['scissors', 'lava'],
   paper:    ['rock', 'robot'],
@@ -592,16 +684,9 @@ const WINS = {
   hammer:   ['paper', 'rock'],
 };
 
-// ──────────────────────────────────────────────────────────────────────────────
-// STATE
-// ──────────────────────────────────────────────────────────────────────────────
 let ws, reconnectTimer;
 let gameActive = false;
-let lastWinner = null;
 
-// ──────────────────────────────────────────────────────────────────────────────
-// DOM ELEMENTS
-// ──────────────────────────────────────────────────────────────────────────────
 const arena = document.getElementById('arena');
 const idleMsg = document.getElementById('idle-msg');
 const statusLine = document.getElementById('status-line');
@@ -613,183 +698,102 @@ const resultAvatar = document.getElementById('result-avatar');
 const resultName = document.getElementById('result-name');
 const resultLogic = document.getElementById('result-logic');
 
-// ──────────────────────────────────────────────────────────────────────────────
-// WEBSOCKET
-// ──────────────────────────────────────────────────────────────────────────────
 function connect() {
   if (ws) { try { ws.close(); } catch(e){} }
   ws = new WebSocket(WS_HOST);
 
   ws.onopen = () => {
     clearTimeout(reconnectTimer);
-    ws.send(JSON.stringify({
-      request: 'Subscribe',
-      events: { general: ['Custom'] },
-      id: 'RPSOverlay'
-    }));
-    console.log('[RPS] Connected to Streamer.bot');
+    ws.send(JSON.stringify({ request: 'Subscribe', events: { general: ['Custom'] }, id: 'RPSOverlay' }));
+    console.log('[RPS] Connected');
   };
 
   ws.onmessage = (e) => {
     try {
       const msg = JSON.parse(e.data);
       let d = null;
-
-      if (typeof msg?.data === 'string') {
-        try {
-          const inner = JSON.parse(msg.data);
-          if (inner?.eventName === EVENT_NAME) d = inner;
-        } catch(_) {}
-      }
-
+      if (typeof msg?.data === 'string') { try { const inner = JSON.parse(msg.data); if (inner?.eventName === EVENT_NAME) d = inner; } catch(_) {} }
       if (!d && msg?.data?.eventName === EVENT_NAME) d = msg.data;
       if (!d && msg?.eventName === EVENT_NAME) d = msg;
-      if (!d && msg?.data?.event?.name === EVENT_NAME) {
-        d = msg.data.variables || msg.data;
-      }
-
+      if (!d && msg?.data?.event?.name === EVENT_NAME) d = msg.data.variables || msg.data;
       if (d) handleEvent(d);
-    } catch(err) {
-      console.warn('[RPS] Parse error', err);
-    }
+    } catch(err) { console.warn('[RPS] Parse error', err); }
   };
 
   ws.onclose = () => { reconnectTimer = setTimeout(connect, 3000); };
   ws.onerror = () => ws.close();
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// EVENT HANDLER
-// ──────────────────────────────────────────────────────────────────────────────
 function handleEvent(d) {
   const action = (d.action || '').toLowerCase();
-  
-  if (action === 'start') {
-    startGame({
-      user1: d.user1 || 'Player 1',
-      user2: d.user2 || 'Player 2',
-      avatar1: d.avatar1 || '',
-      avatar2: d.avatar2 || '',
-      p1Record: d.p1Record || '0-0-0',
-      p2Record: d.p2Record || '0-0-0',
-    });
-  }
-  
-  if (action === 'result') {
-    showResult({
-      choice1: (d.choice1 || 'rock').toLowerCase(),
-      choice2: (d.choice2 || 'rock').toLowerCase(),
-    });
-  }
-  
+  if (action === 'start') startGame({ user1: d.user1 || 'Player 1', user2: d.user2 || 'Player 2', avatar1: d.avatar1 || '', avatar2: d.avatar2 || '', p1Record: d.p1Record || '0-0-0', p2Record: d.p2Record || '0-0-0' });
+  if (action === 'result') showResult({ choice1: (d.choice1 || 'rock').toLowerCase(), choice2: (d.choice2 || 'rock').toLowerCase() });
   if (action === 'hide') hideArena();
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// GAME FLOW
-// ──────────────────────────────────────────────────────────────────────────────
 async function startGame({ user1, user2, avatar1, avatar2, p1Record, p2Record }) {
   if (gameActive) return;
   gameActive = true;
-
   setText('name-p1', user1.toUpperCase());
   setText('name-p2', user2.toUpperCase());
   setText('record-p1', p1Record);
   setText('record-p2', p2Record);
   setAvatar('avatar-p1', avatar1);
   setAvatar('avatar-p2', avatar2);
-
   setEmoji('emoji-p1', '❓');
   setEmoji('emoji-p2', '❓');
   setLabel('label-p1', 'PICKING');
   setLabel('label-p2', 'PICKING');
-  
   clearWinner();
   resultBar.classList.remove('show', 'p1-bar', 'p2-bar', 'tie-bar');
-
   idleMsg.classList.add('hidden');
   arena.classList.add('visible');
-  statusLine.textContent = '• READY •';
-
-  // Countdown
-  for (let i = 3; i >= 1; i--) {
-    await showCountdown(i);
-    await sleep(700);
-    countdown.classList.remove('counting');
-    await sleep(100);
-  }
-  
+  statusLine.textContent = '⚡ READY ⚡';
+  for (let i = 3; i >= 1; i--) { await showCountdown(i); await sleep(700); countdown.classList.remove('counting'); await sleep(100); }
   await showCountdown('GO!');
   await sleep(600);
   countdown.classList.remove('counting');
   countdown.style.opacity = '0';
-
-  statusLine.textContent = '• THROWING •';
-
-  if (params.get('demo') === '1') {
-    await sleep(900);
-    const keys = Object.keys(CHOICES);
-    showResult({
-      choice1: keys[Math.floor(Math.random() * keys.length)],
-      choice2: keys[Math.floor(Math.random() * keys.length)],
-    });
-  }
+  statusLine.textContent = '⚡ THROWING ⚡';
+  if (params.get('demo') === '1') { await sleep(900); const keys = Object.keys(CHOICES); showResult({ choice1: keys[Math.floor(Math.random() * keys.length)], choice2: keys[Math.floor(Math.random() * keys.length)] }); }
 }
 
 async function showResult({ choice1, choice2 }) {
   const c1 = CHOICES[choice1] || CHOICES.rock;
   const c2 = CHOICES[choice2] || CHOICES.rock;
-
   rollChoice('emoji-p1', 'box-p1', c1.emoji);
   await sleep(200);
   rollChoice('emoji-p2', 'box-p2', c2.emoji);
   setLabel('label-p1', c1.label);
   setLabel('label-p2', c2.label);
-
   await sleep(1000);
-
   let winner = 'tie';
   if (WINS[choice1]?.includes(choice2)) winner = 'p1';
   else if (WINS[choice2]?.includes(choice1)) winner = 'p2';
-
   triggerFlash();
   triggerSparks(winner);
-  lastWinner = winner;
-
   await sleep(300);
-
-  // Show result bar
   resultBar.classList.remove('p1-bar', 'p2-bar', 'tie-bar');
-
   if (winner === 'p1') {
-    const p1Name = getText('name-p1');
-    const p1Avatar = document.getElementById('avatar-p1').src;
     document.getElementById('card-p1').classList.add('winner');
-
-    resultAvatar.src = p1Avatar;
-    resultName.textContent = p1Name + ' WINS!';
+    resultAvatar.src = document.getElementById('avatar-p1').src;
+    resultName.textContent = getText('name-p1') + ' WINS!';
     resultLogic.textContent = c1.label + ' BEATS ' + c2.label;
     resultBar.classList.add('show', 'p1-bar');
-
   } else if (winner === 'p2') {
-    const p2Name = getText('name-p2');
-    const p2Avatar = document.getElementById('avatar-p2').src;
     document.getElementById('card-p2').classList.add('winner');
-
-    resultAvatar.src = p2Avatar;
-    resultName.textContent = p2Name + ' WINS!';
+    resultAvatar.src = document.getElementById('avatar-p2').src;
+    resultName.textContent = getText('name-p2') + ' WINS!';
     resultLogic.textContent = c2.label + ' BEATS ' + c1.label;
     resultBar.classList.add('show', 'p2-bar');
-
   } else {
     resultAvatar.src = '';
     resultAvatar.style.display = 'none';
     resultName.textContent = 'IT\'S A TIE!';
-    resultLogic.textContent = 'BOTH THREW ' + c1.label.toLowerCase();
+    resultLogic.textContent = 'BOTH THREW ' + c1.label;
     resultBar.classList.add('show', 'tie-bar');
   }
-
-  statusLine.textContent = '• RESULT •';
+  statusLine.textContent = '⚡ RESULT ⚡';
   await sleep(6000);
   hideArena();
 }
@@ -799,107 +803,38 @@ function hideArena() {
   resultBar.classList.remove('show');
   clearWinner();
   gameActive = false;
-
-  setTimeout(() => {
-    idleMsg.classList.remove('hidden');
-    statusLine.textContent = '• READY •';
-    resultBar.classList.remove('p1-bar', 'p2-bar', 'tie-bar');
-  }, 500);
+  setTimeout(() => { idleMsg.classList.remove('hidden'); statusLine.textContent = '⚡ READY ⚡'; resultBar.classList.remove('p1-bar', 'p2-bar', 'tie-bar'); }, 500);
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// UTILITIES
-// ──────────────────────────────────────────────────────────────────────────────
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-
 function setText(id, val) { document.getElementById(id).textContent = val; }
 function getText(id) { return document.getElementById(id).textContent; }
 function setLabel(id, val) { document.getElementById(id).textContent = val; }
 function setEmoji(id, em) { document.getElementById(id).textContent = em; }
-
-function rollChoice(emojiId, boxId, emoji) {
-  const box = document.getElementById(boxId);
-  const span = document.getElementById(emojiId);
-  span.textContent = emoji;
-  box.classList.remove('rolling');
-  void box.offsetWidth;
-  box.classList.add('rolling');
-}
-
-function setAvatar(id, url) {
-  const img = document.getElementById(id);
-  if (!url) { img.src = ''; return; }
-  if (avatarCache.has(url)) { img.src = avatarCache.get(url); return; }
-  img.src = url;
-  avatarCache.set(url, url);
-}
-
-async function showCountdown(val) {
-  countdown.textContent = val;
-  countdown.style.opacity = '1';
-  countdown.classList.remove('counting');
-  void countdown.offsetWidth;
-  countdown.classList.add('counting');
-}
-
-function clearWinner() {
-  document.getElementById('card-p1').classList.remove('winner');
-  document.getElementById('card-p2').classList.remove('winner');
-}
-
-function triggerFlash() {
-  flashEl.classList.remove('fire');
-  void flashEl.offsetWidth;
-  flashEl.classList.add('fire');
-}
-
+function rollChoice(emojiId, boxId, emoji) { const box = document.getElementById(boxId); const span = document.getElementById(emojiId); span.textContent = emoji; box.classList.remove('rolling'); void box.offsetWidth; box.classList.add('rolling'); }
+function setAvatar(id, url) { const img = document.getElementById(id); if (!url) { img.src = ''; return; } if (avatarCache.has(url)) { img.src = avatarCache.get(url); return; } img.src = url; avatarCache.set(url, url); }
+async function showCountdown(val) { countdown.textContent = val; countdown.style.opacity = '1'; countdown.classList.remove('counting'); void countdown.offsetWidth; countdown.classList.add('counting'); }
+function clearWinner() { document.getElementById('card-p1').classList.remove('winner'); document.getElementById('card-p2').classList.remove('winner'); }
+function triggerFlash() { flashEl.classList.remove('fire'); void flashEl.offsetWidth; flashEl.classList.add('fire'); }
 function triggerSparks(winner) {
   sparksEl.innerHTML = '';
-  const colors = {
-    p1: '#00e5ff',
-    p2: '#ff3d71',
-    tie: '#ffd700'
-  };
+  const colors = { p1: '#00e5ff', p2: '#ff3d71', tie: '#ffd700' };
   const color = colors[winner] || colors.tie;
-  
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 50; i++) {
     const spark = document.createElement('div');
     spark.className = 'spark';
-    
-    const angle = (Math.PI * 2 * i) / 40;
-    const dist = 80 + Math.random() * 150;
+    spark.style.color = color;
+    const angle = (Math.PI * 2 * i) / 50;
+    const dist = 100 + Math.random() * 200;
     const x = Math.cos(angle) * dist;
     const y = Math.sin(angle) * dist;
-    
-    spark.style.cssText = `
-      left: 50%;
-      top: 50%;
-      background: ${color};
-      box-shadow: 0 0 8px ${color};
-      --path: translate(${x}px, ${y}px);
-      animation-duration: ${0.6 + Math.random() * 0.6}s;
-      animation-delay: ${Math.random() * 0.1}s;
-    `;
-    
+    spark.style.cssText = `left: 50%; top: 50%; --path: translate(${x}px, ${y}px); animation-duration: ${0.7 + Math.random() * 0.7}s; animation-delay: ${Math.random() * 0.1}s;`;
     sparksEl.appendChild(spark);
   }
-  
-  setTimeout(() => sparksEl.innerHTML = '', 1500);
+  setTimeout(() => sparksEl.innerHTML = '', 1600);
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// DEMO MODE
-// ──────────────────────────────────────────────────────────────────────────────
-if (params.get('demo') === '1') {
-  setTimeout(() => startGame({
-    user1: 'FallenOne',
-    user2: 'RareGangster',
-    avatar1: 'https://static-cdn.jtvnw.net/user-default-pictures-uv/294c98b5-e34d-42cd-a8f0-140b72fcd4f1-profile_image-70x70.png',
-    avatar2: 'https://static-cdn.jtvnw.net/user-default-pictures-uv/215b7342-a87a-4d20-acd9-538a0a68a5ba-profile_image-70x70.png',
-    p1Record: '24-11-5',
-    p2Record: '14-19-5'
-  }), 600);
-}
+if (params.get('demo') === '1') { setTimeout(() => startGame({ user1: 'FallenOne', user2: 'RareGangster', avatar1: 'https://static-cdn.jtvnw.net/user-default-pictures-uv/294c98b5-e34d-42cd-a8f0-140b72fcd4f1-profile_image-70x70.png', avatar2: 'https://static-cdn.jtvnw.net/user-default-pictures-uv/215b7342-a87a-4d20-acd9-538a0a68a5ba-profile_image-70x70.png', p1Record: '24-11-5', p2Record: '14-19-5' }), 600); }
 
 connect();
 arena.classList.add('visible');
