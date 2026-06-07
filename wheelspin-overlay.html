@@ -72,7 +72,6 @@
       pointer-events: none;
     }
 
-    /* Avatar */
     #wc-avatar-wrap {
       width: 80px; height: 80px; border-radius: 50%;
       margin: 0 auto 4px; position: relative;
@@ -107,7 +106,7 @@
 <div id="wheel-wrap">
   <div class="pointer"></div>
   <canvas id="wheelCanvas"></canvas>
-  <div class="hub"></div>
+  <div class="hub" id="css-hub"></div>
   <div id="spin-banner"></div>
 </div>
 
@@ -128,7 +127,7 @@
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════
-    SEGMENTS — Fallback configuration if dashboard is unconfigured
+    SEGMENTS — Fallback if dashboard unconfigured
 ═══════════════════════════════════════════════════════════ */
 let SEGMENTS = [
   { key:'WCG',            label:'Winner\nChoose Game', color:'#7C3AED', text:'#ffffff', emoji:'' },
@@ -143,22 +142,20 @@ let SEGMENTS = [
   { key:'DF',             label:'Diabolical Foods',    color:'#0E7490', text:'#ffffff', emoji:'' },
 ];
 
-/* ═══════════════════════════════════════════════════════════
-    DYNAMIC LOADING FROM DASHBOARD (LOCALSTORAGE)
-═══════════════════════════════════════════════════════════ */
 const storedSegments = localStorage.getItem('stream_wheel_segments');
 if (storedSegments) {
-  try {
-    SEGMENTS = JSON.parse(storedSegments);
-  } catch(e) {
-    console.error("[WheelSpin] Failed loading custom layout segments out of dashboard container:", e);
-  }
+  try { SEGMENTS = JSON.parse(storedSegments); }
+  catch(e) { console.error('[WheelSpin] Failed parsing segments:', e); }
 }
 
+/* ═══════════════════════════════════════════════════════════
+    CANVAS SETUP
+═══════════════════════════════════════════════════════════ */
 const canvas = document.getElementById('wheelCanvas');
 const ctx    = canvas.getContext('2d');
 const DPR    = Math.min(window.devicePixelRatio || 1, 2);
 const SIZE   = 600, R = 278, CX = SIZE/2, CY = SIZE/2;
+const HUB_R  = 30; // hub circle radius in canvas units
 
 canvas.width  = SIZE * DPR; canvas.height = SIZE * DPR;
 canvas.style.width = SIZE+'px'; canvas.style.height = SIZE+'px';
@@ -167,6 +164,42 @@ ctx.scale(DPR, DPR);
 let angle = 0, spinning = false;
 const queue = [];
 
+/* ═══════════════════════════════════════════════════════════
+    HUB IMAGE — load from localStorage, draw on canvas
+═══════════════════════════════════════════════════════════ */
+let hubImage = null;
+const cssHub = document.getElementById('css-hub');
+
+function loadHubImage() {
+  const stored = localStorage.getItem('stream_wheel_hub_image');
+  if (!stored) {
+    hubImage = null;
+    cssHub.style.display = '';  // show default chrome hub
+    drawWheel(angle);
+    return;
+  }
+  const img = new Image();
+  img.onload = () => {
+    hubImage = img;
+    cssHub.style.display = 'none'; // hide CSS hub, canvas draws it
+    drawWheel(angle);
+  };
+  img.onerror = () => {
+    hubImage = null;
+    cssHub.style.display = '';
+    drawWheel(angle);
+  };
+  img.src = stored;
+}
+
+// Pick up changes saved from dashboard in same browser (same-origin)
+window.addEventListener('storage', e => {
+  if (e.key === 'stream_wheel_hub_image') loadHubImage();
+});
+
+/* ═══════════════════════════════════════════════════════════
+    DRAW
+═══════════════════════════════════════════════════════════ */
 function drawWheel(a) {
   ctx.clearRect(0, 0, SIZE, SIZE);
   const n = SEGMENTS.length, arc = (2*Math.PI)/n;
@@ -174,24 +207,21 @@ function drawWheel(a) {
   SEGMENTS.forEach((seg, i) => {
     const s = a + i*arc, e = s + arc;
 
-    /* Slice */
     ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,R,s,e); ctx.closePath();
     ctx.fillStyle = seg.color; ctx.fill();
     ctx.strokeStyle = 'rgba(0,0,0,.45)'; ctx.lineWidth = 2.5; ctx.stroke();
 
-    /* Subtle brightness band on alternating slices */
     if (i%2===0) {
       ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,R,s,e); ctx.closePath();
       ctx.fillStyle='rgba(255,255,255,.05)'; ctx.fill();
     }
 
-    /* ── Label text — custom dashboard color formatting applied ── */
     ctx.save();
     ctx.translate(CX,CY); ctx.rotate(s+arc/2);
     ctx.textAlign    = 'right';
     ctx.textBaseline = 'middle';
 
-    const lines     = seg.label.split('\\n'); // Split explicitly on mapped or raw custom string line-break representations
+    const lines     = seg.label.split('\\n');
     const lh        = 32;
     const FONT_SIZE = 26;
 
@@ -213,9 +243,27 @@ function drawWheel(a) {
   ctx.beginPath(); ctx.arc(CX,CY,R,0,Math.PI*2);
   ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=5; ctx.stroke();
 
-  /* Inner ring */
-  ctx.beginPath(); ctx.arc(CX,CY,32,0,Math.PI*2);
-  ctx.strokeStyle='rgba(0,0,0,.5)'; ctx.lineWidth=2; ctx.stroke();
+  /* ── Hub: custom image OR inner ring fallback ── */
+  if (hubImage) {
+    // Clip circle, draw image, then overlay a bright rim
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(CX, CY, HUB_R, 0, Math.PI*2);
+    ctx.clip();
+    ctx.drawImage(hubImage, CX - HUB_R, CY - HUB_R, HUB_R * 2, HUB_R * 2);
+    ctx.restore();
+
+    // Rim over image
+    ctx.beginPath(); ctx.arc(CX, CY, HUB_R, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 3; ctx.stroke();
+    // Inner shadow ring
+    ctx.beginPath(); ctx.arc(CX, CY, HUB_R - 2, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(0,0,0,.4)'; ctx.lineWidth = 2; ctx.stroke();
+  } else {
+    // Default inner dark ring (the CSS hub div covers this visually)
+    ctx.beginPath(); ctx.arc(CX,CY,32,0,Math.PI*2);
+    ctx.strokeStyle='rgba(0,0,0,.5)'; ctx.lineWidth=2; ctx.stroke();
+  }
 }
 
 function getWinner(a) {
@@ -291,9 +339,9 @@ function processQueue() {
   spin(next.user, next.displayName, next.avatarUrl||'');
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
     WEBSOCKET
-═══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 const params = new URLSearchParams(window.location.search);
 const WS_URI = `ws://${params.get('address')||'localhost'}:${params.get('port')||'8080'}/`;
 let ws, wsTimer;
@@ -349,7 +397,9 @@ function sendResult(user, displayName, seg){
   }));
 }
 
+/* ── Init ── */
 drawWheel(0);
+loadHubImage();
 connect();
 </script>
 </body>
