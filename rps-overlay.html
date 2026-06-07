@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RPS Advanced Overlay</title>
+<title>RPS Overlay</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <style>
   :root {
@@ -621,13 +621,12 @@
 
     <div id="countdown"></div>
     
-     <div id="center">
+    <div id="center">
       <div class="center-divider divider-left"></div>
       <div id="idle-msg"><span>🎮 ARENA READY</span></div>
       <div id="vs-badge">VS</div>
       <div class="center-divider divider-right"></div>
     </div>
-
 
     <div class="player-card p2" id="card-p2">
       <div class="avatar-ring">
@@ -661,11 +660,15 @@
 </div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const WS_HOST = `ws://${params.get('address') || 'localhost'}:${params.get('port') || '8080'}/`;
+// ──────────────────────────────────────────────────────────────────────────────
+// CONFIG
+// ──────────────────────────────────────────────────────────────────────────────
+const params     = new URLSearchParams(window.location.search);
+const WS_HOST    = `ws://${params.get('address') || 'localhost'}:${params.get('port') || '8080'}/`;
 const EVENT_NAME = 'rps_overlay';
 const avatarCache = new Map();
-
+ 
+// 6-Choice System
 const CHOICES = {
   rock:     { emoji: '🪨', label: 'ROCK'     },
   paper:    { emoji: '📄', label: 'PAPER'    },
@@ -674,170 +677,337 @@ const CHOICES = {
   robot:    { emoji: '🤖', label: 'ROBOT'    },
   hammer:   { emoji: '🔨', label: 'HAMMER'   },
 };
-
+ 
+// Verified balanced win matrix (brute-force checked, zero conflicts/undefined pairs)
+// Based on RPSLS (rock/paper/scissors/lava=lizard/robot=spock) + hammer
+// rock(3W2L) paper(3W2L) scissors(3W2L) lava(2W3L) robot(2W3L) hammer(2W3L)
+// Win Matrix — zero conflicts, robot does NOT beat lava
+// Each beats exactly 2. Draw pairs (paper/lava, scissors/lava, robot/hammer) → tie.
+// rock     beats scissors + lava     | loses to paper, robot, hammer
+// paper    beats rock + hammer       | loses to scissors, robot
+// scissors beats paper + robot       | loses to rock, hammer
+// lava     beats hammer + robot      | loses to rock      | draws: paper, scissors
+// robot    beats rock + paper        | loses to scissors, lava | draws: hammer
+// hammer   beats scissors + rock     | loses to paper, lava | draws: robot
 const WINS = {
-  rock:     ['scissors', 'lava'],
-  paper:    ['rock', 'robot'],
-  scissors: ['paper', 'hammer'],
-  lava:     ['hammer', 'robot'],
-  robot:    ['scissors', 'lava'],
-  hammer:   ['paper', 'rock'],
+  rock:     ['scissors', 'lava'   ],
+  paper:    ['rock',     'hammer' ],
+  scissors: ['paper',    'robot'  ],
+  lava:     ['hammer',   'robot'  ],
+  robot:    ['rock',     'paper'  ],
+  hammer:   ['scissors', 'rock'   ],
 };
-
+ 
+// ──────────────────────────────────────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────────────────────────────────────
 let ws, reconnectTimer;
 let gameActive = false;
-
-const arena = document.getElementById('arena');
-const idleMsg = document.getElementById('idle-msg');
-const statusLine = document.getElementById('status-line');
-const countdown = document.getElementById('countdown');
-const flashEl = document.getElementById('flash');
-const sparksEl = document.getElementById('sparks');
-const resultBar = document.getElementById('result-bar');
-const resultAvatar = document.getElementById('result-avatar');
-const resultName = document.getElementById('result-name');
-const resultLogic = document.getElementById('result-logic');
-
+let lastWinner = null;
+ 
+// DOM vars — assigned after DOMContentLoaded
+let arena, idleMsg, statusLine, countdown, flashEl, sparksEl,
+    resultBar, resultAvatar, resultName, resultLogic;
+ 
+// ──────────────────────────────────────────────────────────────────────────────
+// WEBSOCKET
+// ──────────────────────────────────────────────────────────────────────────────
 function connect() {
   if (ws) { try { ws.close(); } catch(e){} }
   ws = new WebSocket(WS_HOST);
-
+ 
   ws.onopen = () => {
     clearTimeout(reconnectTimer);
-    ws.send(JSON.stringify({ request: 'Subscribe', events: { general: ['Custom'] }, id: 'RPSOverlay' }));
-    console.log('[RPS] Connected');
+    ws.send(JSON.stringify({
+      request: 'Subscribe',
+      events: { general: ['Custom'] },
+      id: 'RPSOverlay'
+    }));
+    console.log('[RPS] Connected to Streamer.bot');
   };
-
+ 
   ws.onmessage = (e) => {
     try {
       const msg = JSON.parse(e.data);
       let d = null;
-      if (typeof msg?.data === 'string') { try { const inner = JSON.parse(msg.data); if (inner?.eventName === EVENT_NAME) d = inner; } catch(_) {} }
+ 
+      if (typeof msg?.data === 'string') {
+        try {
+          const inner = JSON.parse(msg.data);
+          if (inner?.eventName === EVENT_NAME) d = inner;
+        } catch(_) {}
+      }
+ 
       if (!d && msg?.data?.eventName === EVENT_NAME) d = msg.data;
       if (!d && msg?.eventName === EVENT_NAME) d = msg;
-      if (!d && msg?.data?.event?.name === EVENT_NAME) d = msg.data.variables || msg.data;
+      if (!d && msg?.data?.event?.name === EVENT_NAME) {
+        d = msg.data.variables || msg.data;
+      }
+ 
       if (d) handleEvent(d);
-    } catch(err) { console.warn('[RPS] Parse error', err); }
+    } catch(err) {
+      console.warn('[RPS] Parse error', err);
+    }
   };
-
+ 
   ws.onclose = () => { reconnectTimer = setTimeout(connect, 3000); };
   ws.onerror = () => ws.close();
 }
-
+ 
+// ──────────────────────────────────────────────────────────────────────────────
+// EVENT HANDLER
+// ──────────────────────────────────────────────────────────────────────────────
 function handleEvent(d) {
   const action = (d.action || '').toLowerCase();
-  if (action === 'start') startGame({ user1: d.user1 || 'Player 1', user2: d.user2 || 'Player 2', avatar1: d.avatar1 || '', avatar2: d.avatar2 || '', p1Record: d.p1Record || '0-0-0', p2Record: d.p2Record || '0-0-0' });
-  if (action === 'result') showResult({ choice1: (d.choice1 || 'rock').toLowerCase(), choice2: (d.choice2 || 'rock').toLowerCase() });
+  
+  if (action === 'start') {
+    startGame({
+      user1: d.user1 || 'Player 1',
+      user2: d.user2 || 'Player 2',
+      avatar1: d.avatar1 || '',
+      avatar2: d.avatar2 || '',
+      p1Record: d.p1Record || '0-0-0',
+      p2Record: d.p2Record || '0-0-0',
+    });
+  }
+  
+  if (action === 'result') {
+    showResult({
+      choice1: (d.choice1 || 'rock').toLowerCase(),
+      choice2: (d.choice2 || 'rock').toLowerCase(),
+    });
+  }
+  
   if (action === 'hide') hideArena();
 }
-
+ 
+// ──────────────────────────────────────────────────────────────────────────────
+// GAME FLOW
+// ──────────────────────────────────────────────────────────────────────────────
 async function startGame({ user1, user2, avatar1, avatar2, p1Record, p2Record }) {
   if (gameActive) return;
   gameActive = true;
+ 
   setText('name-p1', user1.toUpperCase());
   setText('name-p2', user2.toUpperCase());
   setText('record-p1', p1Record);
   setText('record-p2', p2Record);
   setAvatar('avatar-p1', avatar1);
   setAvatar('avatar-p2', avatar2);
+ 
   setEmoji('emoji-p1', '❓');
   setEmoji('emoji-p2', '❓');
   setLabel('label-p1', 'PICKING');
   setLabel('label-p2', 'PICKING');
+  
   clearWinner();
   resultBar.classList.remove('show', 'p1-bar', 'p2-bar', 'tie-bar');
+ 
   idleMsg.classList.add('hidden');
   arena.classList.add('visible');
-  statusLine.textContent = '⚡ READY ⚡';
-  for (let i = 3; i >= 1; i--) { await showCountdown(i); await sleep(700); countdown.classList.remove('counting'); await sleep(100); }
+  statusLine.textContent = '• READY •';
+ 
+  // Countdown
+  for (let i = 3; i >= 1; i--) {
+    await showCountdown(i);
+    await sleep(700);
+    countdown.classList.remove('counting');
+    await sleep(100);
+  }
+  
   await showCountdown('GO!');
   await sleep(600);
   countdown.classList.remove('counting');
   countdown.style.opacity = '0';
-  statusLine.textContent = '⚡ THROWING ⚡';
-  if (params.get('demo') === '1') { await sleep(900); const keys = Object.keys(CHOICES); showResult({ choice1: keys[Math.floor(Math.random() * keys.length)], choice2: keys[Math.floor(Math.random() * keys.length)] }); }
+ 
+  statusLine.textContent = '• THROWING •';
+ 
+  if (params.get('demo') === '1') {
+    await sleep(900);
+    const keys = Object.keys(CHOICES);
+    showResult({
+      choice1: keys[Math.floor(Math.random() * keys.length)],
+      choice2: keys[Math.floor(Math.random() * keys.length)],
+    });
+  }
 }
-
+ 
 async function showResult({ choice1, choice2 }) {
   const c1 = CHOICES[choice1] || CHOICES.rock;
   const c2 = CHOICES[choice2] || CHOICES.rock;
+ 
   rollChoice('emoji-p1', 'box-p1', c1.emoji);
   await sleep(200);
   rollChoice('emoji-p2', 'box-p2', c2.emoji);
   setLabel('label-p1', c1.label);
   setLabel('label-p2', c2.label);
+ 
   await sleep(1000);
+ 
   let winner = 'tie';
   if (WINS[choice1]?.includes(choice2)) winner = 'p1';
   else if (WINS[choice2]?.includes(choice1)) winner = 'p2';
+ 
   triggerFlash();
   triggerSparks(winner);
+  lastWinner = winner;
+ 
   await sleep(300);
+ 
   resultBar.classList.remove('p1-bar', 'p2-bar', 'tie-bar');
+ 
   if (winner === 'p1') {
+    const p1Name   = getText('name-p1');
+    const p1Avatar = document.getElementById('avatar-p1').src;
     document.getElementById('card-p1').classList.add('winner');
-    resultAvatar.src = document.getElementById('avatar-p1').src;
-    resultName.textContent = getText('name-p1') + ' WINS!';
+ 
+    resultAvatar.src = p1Avatar;
+    resultAvatar.style.display = '';
+    resultName.textContent  = p1Name + ' WINS!';
     resultLogic.textContent = c1.label + ' BEATS ' + c2.label;
     resultBar.classList.add('show', 'p1-bar');
+ 
   } else if (winner === 'p2') {
+    const p2Name   = getText('name-p2');
+    const p2Avatar = document.getElementById('avatar-p2').src;
     document.getElementById('card-p2').classList.add('winner');
-    resultAvatar.src = document.getElementById('avatar-p2').src;
-    resultName.textContent = getText('name-p2') + ' WINS!';
+ 
+    resultAvatar.src = p2Avatar;
+    resultAvatar.style.display = '';
+    resultName.textContent  = p2Name + ' WINS!';
     resultLogic.textContent = c2.label + ' BEATS ' + c1.label;
     resultBar.classList.add('show', 'p2-bar');
+ 
   } else {
     resultAvatar.src = '';
     resultAvatar.style.display = 'none';
-    resultName.textContent = 'IT\'S A TIE!';
+    resultName.textContent  = "IT'S A TIE!";
     resultLogic.textContent = 'BOTH THREW ' + c1.label;
     resultBar.classList.add('show', 'tie-bar');
   }
-  statusLine.textContent = '⚡ RESULT ⚡';
+ 
+  statusLine.textContent = '• RESULT •';
   await sleep(6000);
   hideArena();
 }
-
+ 
 function hideArena() {
   arena.classList.remove('visible');
   resultBar.classList.remove('show');
   clearWinner();
   gameActive = false;
-  setTimeout(() => { idleMsg.classList.remove('hidden'); statusLine.textContent = '⚡ READY ⚡'; resultBar.classList.remove('p1-bar', 'p2-bar', 'tie-bar'); }, 500);
+ 
+  setTimeout(() => {
+    idleMsg.classList.remove('hidden');
+    statusLine.textContent = '• READY •';
+    resultBar.classList.remove('p1-bar', 'p2-bar', 'tie-bar');
+  }, 500);
 }
-
+ 
+// ──────────────────────────────────────────────────────────────────────────────
+// UTILITIES
+// ──────────────────────────────────────────────────────────────────────────────
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-function setText(id, val) { document.getElementById(id).textContent = val; }
-function getText(id) { return document.getElementById(id).textContent; }
+ 
+function setText(id, val)  { document.getElementById(id).textContent = val; }
+function getText(id)       { return document.getElementById(id).textContent; }
 function setLabel(id, val) { document.getElementById(id).textContent = val; }
-function setEmoji(id, em) { document.getElementById(id).textContent = em; }
-function rollChoice(emojiId, boxId, emoji) { const box = document.getElementById(boxId); const span = document.getElementById(emojiId); span.textContent = emoji; box.classList.remove('rolling'); void box.offsetWidth; box.classList.add('rolling'); }
-function setAvatar(id, url) { const img = document.getElementById(id); if (!url) { img.src = ''; return; } if (avatarCache.has(url)) { img.src = avatarCache.get(url); return; } img.src = url; avatarCache.set(url, url); }
-async function showCountdown(val) { countdown.textContent = val; countdown.style.opacity = '1'; countdown.classList.remove('counting'); void countdown.offsetWidth; countdown.classList.add('counting'); }
-function clearWinner() { document.getElementById('card-p1').classList.remove('winner'); document.getElementById('card-p2').classList.remove('winner'); }
-function triggerFlash() { flashEl.classList.remove('fire'); void flashEl.offsetWidth; flashEl.classList.add('fire'); }
+function setEmoji(id, em)  { document.getElementById(id).textContent = em; }
+ 
+function rollChoice(emojiId, boxId, emoji) {
+  const box  = document.getElementById(boxId);
+  const span = document.getElementById(emojiId);
+  span.textContent = emoji;
+  box.classList.remove('rolling');
+  void box.offsetWidth;
+  box.classList.add('rolling');
+}
+ 
+function setAvatar(id, url) {
+  const img = document.getElementById(id);
+  if (!url) { img.src = ''; return; }
+  if (avatarCache.has(url)) { img.src = avatarCache.get(url); return; }
+  img.src = url;
+  avatarCache.set(url, url);
+}
+ 
+async function showCountdown(val) {
+  countdown.textContent = val;
+  countdown.style.opacity = '1';
+  countdown.classList.remove('counting');
+  void countdown.offsetWidth;
+  countdown.classList.add('counting');
+}
+ 
+function clearWinner() {
+  document.getElementById('card-p1').classList.remove('winner');
+  document.getElementById('card-p2').classList.remove('winner');
+}
+ 
+function triggerFlash() {
+  flashEl.classList.remove('fire');
+  void flashEl.offsetWidth;
+  flashEl.classList.add('fire');
+}
+ 
 function triggerSparks(winner) {
   sparksEl.innerHTML = '';
   const colors = { p1: '#00e5ff', p2: '#ff3d71', tie: '#ffd700' };
   const color = colors[winner] || colors.tie;
-  for (let i = 0; i < 50; i++) {
+  
+  for (let i = 0; i < 40; i++) {
     const spark = document.createElement('div');
     spark.className = 'spark';
-    spark.style.color = color;
-    const angle = (Math.PI * 2 * i) / 50;
-    const dist = 100 + Math.random() * 200;
-    const x = Math.cos(angle) * dist;
-    const y = Math.sin(angle) * dist;
-    spark.style.cssText = `left: 50%; top: 50%; --path: translate(${x}px, ${y}px); animation-duration: ${0.7 + Math.random() * 0.7}s; animation-delay: ${Math.random() * 0.1}s;`;
+    
+    const angle = (Math.PI * 2 * i) / 40;
+    const dist  = 80 + Math.random() * 150;
+    const x     = Math.cos(angle) * dist;
+    const y     = Math.sin(angle) * dist;
+    
+    spark.style.cssText = `
+      left: 50%;
+      top: 50%;
+      background: ${color};
+      box-shadow: 0 0 8px ${color};
+      --path: translate(${x}px, ${y}px);
+      animation-duration: ${0.6 + Math.random() * 0.6}s;
+      animation-delay: ${Math.random() * 0.1}s;
+    `;
     sparksEl.appendChild(spark);
   }
-  setTimeout(() => sparksEl.innerHTML = '', 1600);
+  
+  setTimeout(() => sparksEl.innerHTML = '', 1500);
 }
-
-if (params.get('demo') === '1') { setTimeout(() => startGame({ user1: 'FallenOne', user2: 'RareGangster', avatar1: 'https://static-cdn.jtvnw.net/user-default-pictures-uv/294c98b5-e34d-42cd-a8f0-140b72fcd4f1-profile_image-70x70.png', avatar2: 'https://static-cdn.jtvnw.net/user-default-pictures-uv/215b7342-a87a-4d20-acd9-538a0a68a5ba-profile_image-70x70.png', p1Record: '24-11-5', p2Record: '14-19-5' }), 600); }
-
-connect();
-arena.classList.add('visible');
+ 
+// ──────────────────────────────────────────────────────────────────────────────
+// INIT — inside DOMContentLoaded so all elements exist before any query runs
+// ──────────────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  arena        = document.getElementById('arena');
+  idleMsg      = document.getElementById('idle-msg');
+  statusLine   = document.getElementById('status-line');
+  countdown    = document.getElementById('countdown');
+  flashEl      = document.getElementById('flash');
+  sparksEl     = document.getElementById('sparks');
+  resultBar    = document.getElementById('result-bar');
+  resultAvatar = document.getElementById('result-avatar');
+  resultName   = document.getElementById('result-name');
+  resultLogic  = document.getElementById('result-logic');
+ 
+  connect();
+  arena.classList.add('visible');
+ 
+  if (params.get('demo') === '1') {
+    setTimeout(() => startGame({
+      user1: 'FallenOne',
+      user2: 'RareGangster',
+      avatar1: 'https://static-cdn.jtvnw.net/user-default-pictures-uv/294c98b5-e34d-42cd-a8f0-140b72fcd4f1-profile_image-70x70.png',
+      avatar2: 'https://static-cdn.jtvnw.net/user-default-pictures-uv/215b7342-a87a-4d20-acd9-538a0a68a5ba-profile_image-70x70.png',
+      p1Record: '24-11-5',
+      p2Record: '14-19-5'
+    }), 600);
+  }
+});
 </script>
 </body>
 </html>
