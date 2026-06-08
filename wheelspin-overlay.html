@@ -245,7 +245,6 @@ function drawWheel(a) {
 
   /* ── Hub: custom image OR inner ring fallback ── */
   if (hubImage) {
-    // Clip circle, draw image, then overlay a bright rim
     ctx.save();
     ctx.beginPath();
     ctx.arc(CX, CY, HUB_R, 0, Math.PI*2);
@@ -253,14 +252,11 @@ function drawWheel(a) {
     ctx.drawImage(hubImage, CX - HUB_R, CY - HUB_R, HUB_R * 2, HUB_R * 2);
     ctx.restore();
 
-    // Rim over image
     ctx.beginPath(); ctx.arc(CX, CY, HUB_R, 0, Math.PI*2);
     ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 3; ctx.stroke();
-    // Inner shadow ring
     ctx.beginPath(); ctx.arc(CX, CY, HUB_R - 2, 0, Math.PI*2);
     ctx.strokeStyle = 'rgba(0,0,0,.4)'; ctx.lineWidth = 2; ctx.stroke();
   } else {
-    // Default inner dark ring (the CSS hub div covers this visually)
     ctx.beginPath(); ctx.arc(CX,CY,32,0,Math.PI*2);
     ctx.strokeStyle='rgba(0,0,0,.5)'; ctx.lineWidth=2; ctx.stroke();
   }
@@ -387,14 +383,31 @@ function route(msg){
   }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   SEND RESULT
+   This format matches the requirement for Streamer.bot's 
+   WebSocket "Custom JSON Event" trigger.
+═══════════════════════════════════════════════════════════ */
 function sendResult(user, displayName, seg){
-  if(!ws||ws.readyState!==WebSocket.OPEN) return;
-  ws.send(JSON.stringify({
-    request:'DoAction', action:{name:'HandleWheelResult'},
-    args:{ wheelUser:user, wheelDisplay:displayName, wheelPrize:seg.key,
-           wheelLabel:seg.label.replace('\\n',' '), wheelEmoji:seg.emoji },
-    id:'wr_'+Date.now()
-  }));
+  if(!ws || ws.readyState !== WebSocket.OPEN) {
+    console.error('[WheelSpin] Cannot send result: WebSocket not connected.');
+    return;
+  }
+  
+  const payload = {
+    request: 'DoAction',
+    action: { name: 'WheelSpin_HandleResult' },
+    args: {
+      wheelUser: user,
+      wheelDisplay: displayName,
+      wheelPrize: seg.key,
+      wheelLabel: seg.label.replace('\n', ' '),
+      wheelEmoji: seg.emoji || ''
+    }
+  };
+
+  console.log('[WheelSpin] Sending result to Streamer.bot:', payload);
+  ws.send(JSON.stringify(payload));
 }
 
 /* ── Init ── */
