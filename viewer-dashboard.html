@@ -3,225 +3,524 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Viewer Dashboard Pro</title>
+  <title>Viewer Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { overflow-y: scroll; scrollbar-width: none; -ms-overflow-style: none; }
-    html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar { width: 0; height: 0; background: transparent; }
 
     :root {
-      --purple-deep:   #4c1d95;
-      --purple-mid:    #7c3aed;
-      --purple-bright: #a78bfa;
-      --teal:          #2dd4bf;
-      --teal-dim:      #0d9488;
-      --cyan:          #06b6d4;
-      --rose:          #f43f5e;
-      --slate-dark:    #0b0d17;
-      --slate-mid:     #0f172a;
-      --slate-panel:   #1e293b;
-      --glass-border:  rgba(255,255,255,0.07);
-      --text-dim:      #64748b;
-      --text-mid:      #94a3b8;
-      --text-bright:   #e2e8f0;
-      --twitch-purple: #9146FF;
+      --bg:          #06060f;
+      --bg2:         #0d0d1a;
+      --panel:       rgba(255,255,255,0.03);
+      --border:      rgba(255,255,255,0.06);
+      --border-hot:  rgba(167,139,250,0.35);
+      --purple:      #7c3aed;
+      --purple-glow: #a78bfa;
+      --teal:        #2dd4bf;
+      --teal-dim:    #0d9488;
+      --cyan:        #06b6d4;
+      --rose:        #f43f5e;
+      --gold:        #f59e0b;
+      --text:        #e2e8f0;
+      --text-mid:    #94a3b8;
+      --text-dim:    #475569;
+      --twitch:      #9146FF;
+      --success:     #22c55e;
     }
 
-    body {
-      background: var(--slate-dark);
-      color: #f8fafc;
-      font-family: 'Rajdhani', sans-serif;
-      min-height: 100vh;
-      padding: 0 0 80px;
+    html, body {
+      height: 100%; background: var(--bg);
+      color: var(--text); font-family: 'Rajdhani', sans-serif;
       overflow-x: hidden;
-      position: relative;
     }
 
+    /* ── Animated mesh background ── */
     body::before {
-      content: ''; position: fixed; inset: 0;
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(124,58,237,0.18) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 90% 90%,  rgba(6,182,212,0.12) 0%, transparent 55%),
-        radial-gradient(ellipse 50% 60% at 50% 50%,  rgba(11,13,23,0.6)   0%, transparent 100%);
-      pointer-events: none; z-index: 0;
+        radial-gradient(ellipse 70% 55% at 15% 5%,  rgba(124,58,237,.14) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 45% at 85% 95%, rgba(45,212,191,.10) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 55% 45%, rgba(6,182,212,.06)  0%, transparent 70%);
     }
-
     body::after {
-      content: ''; position: fixed; inset: 0;
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background-image:
-        linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
-      background-size: 40px 40px; pointer-events: none; z-index: 0;
+        linear-gradient(rgba(255,255,255,.013) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.013) 1px, transparent 1px);
+      background-size: 36px 36px;
     }
 
-    .dashboard-container {
-      position: relative; max-width: 800px; margin: 0 auto; padding: 0 24px; z-index: 1;
-    }
+    .wrap { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 0 20px 80px; }
 
-    header { text-align: center; padding: 52px 0 36px; position: relative; }
-    header::after {
-      content: ''; display: block; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(167,139,250,0.4), rgba(6,182,212,0.4), transparent);
-      margin-top: 28px;
+    /* ── Header ── */
+    header {
+      text-align: center; padding: 56px 0 40px;
+      border-bottom: 1px solid var(--border);
     }
-    .header-eyebrow {
-      font-family: 'Space Mono', monospace; font-size: 11px; color: var(--teal);
-      letter-spacing: 4px; text-transform: uppercase; margin-bottom: 10px; opacity: 0.8;
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--teal); letter-spacing: 5px; text-transform: uppercase;
+      opacity: .7; margin-bottom: 12px;
     }
     h1 {
-      font-family: 'Bebas Neue', sans-serif; font-size: 62px; letter-spacing: 5px;
-      background: linear-gradient(130deg, #c4b5fd 0%, #a855f7 45%, #22d3ee 100%);
+      font-family: 'Bebas Neue', sans-serif; font-size: 58px; letter-spacing: 6px;
+      background: linear-gradient(120deg, #c4b5fd 0%, #9146ff 40%, #2dd4bf 100%);
       -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 30px rgba(168,85,247,0.35)); display: inline-block; line-height: 1;
+      filter: drop-shadow(0 0 28px rgba(145,70,255,.4));
+    }
+    .tagline {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: var(--text-dim); letter-spacing: 2px; margin-top: 8px;
     }
 
-    .status-card {
-      background: rgba(15,23,42,0.5);
-      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border); border-radius: 16px;
-      padding: 0; position: relative; display: flex; flex-direction: column; overflow: hidden;
-      margin-top: 40px; text-align: center;
+    /* ── Auth card ── */
+    .auth-card {
+      margin-top: 48px; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 20px;
+      overflow: hidden; transition: border-color .3s;
     }
-    .card-strip {
-      height: 3px; background: linear-gradient(90deg, var(--twitch-purple), transparent 80%);
-      box-shadow: 0 0 12px var(--twitch-purple); flex-shrink: 0;
+    .auth-card:hover { border-color: var(--border-hot); }
+    .card-accent {
+      height: 2px;
+      background: linear-gradient(90deg, var(--twitch), var(--teal), transparent 80%);
+      box-shadow: 0 0 16px rgba(145,70,255,.5);
     }
-    .card-body { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .card-inner { padding: 48px 32px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
 
     .btn-twitch {
-      background: var(--twitch-purple); color: #ffffff;
-      border: 1px solid rgba(145, 70, 255, 0.5); border-radius: 10px; padding: 14px 32px;
-      font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 18px;
-      letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
-      transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 10px;
-      text-decoration: none; box-shadow: 0 0 20px rgba(145, 70, 255, 0.2);
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--twitch); color: #fff;
+      border: 1px solid rgba(145,70,255,.5); border-radius: 12px;
+      padding: 16px 36px; font-family: 'Rajdhani', sans-serif;
+      font-weight: 700; font-size: 18px; letter-spacing: 2px;
+      text-transform: uppercase; text-decoration: none; cursor: pointer;
+      transition: all .25s; box-shadow: 0 0 24px rgba(145,70,255,.25);
     }
     .btn-twitch:hover {
-      background: #a970ff; box-shadow: 0 0 30px rgba(145, 70, 255, 0.4), inset 0 0 10px rgba(255,255,255,0.2);
-      transform: translateY(-2px);
+      background: #a970ff; transform: translateY(-2px);
+      box-shadow: 0 0 40px rgba(145,70,255,.5), inset 0 0 12px rgba(255,255,255,.1);
+    }
+    .auth-note {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--text-dim); letter-spacing: 1.5px; text-align: center;
     }
 
-    .stream-status {
-      display: none; flex-direction: column; align-items: center; gap: 10px; width: 100%;
+    /* ── Loading ── */
+    #loading {
+      display: none; text-align: center; padding: 48px 0;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      color: var(--purple-glow); letter-spacing: 3px;
+      animation: pulse 1.4s ease-in-out infinite;
     }
-    .status-badge {
-      font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700;
-      letter-spacing: 2px; text-transform: uppercase; padding: 6px 16px;
-      border-radius: 100px; border: 1px solid;
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+    /* ── Dashboard (shown after auth) ── */
+    #dashboard { display: none; }
+
+    /* Profile strip */
+    .profile-strip {
+      display: flex; align-items: center; gap: 20px;
+      margin-top: 40px; padding: 24px 28px;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
     }
-    .status-online { color: #22c55e; background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); box-shadow: 0 0 15px rgba(34,197,94,0.2); }
-    .status-offline { color: var(--text-dim); background: rgba(100,116,139,0.1); border-color: rgba(100,116,139,0.3); }
+    .avatar-ring {
+      width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--purple), var(--teal));
+      padding: 2px;
+    }
+    .avatar-ring img {
+      width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+      background: var(--bg2); display: block;
+    }
+    .profile-info { flex: 1; }
+    .profile-name {
+      font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+      letter-spacing: 3px; color: var(--text); line-height: 1;
+    }
+    .profile-sub {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--text-dim); letter-spacing: 2px; margin-top: 4px;
+    }
+    .live-badge {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+      letter-spacing: 2px; padding: 5px 14px; border-radius: 100px;
+      text-transform: uppercase; border: 1px solid;
+    }
+    .live-on  { color: var(--success); background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.3); box-shadow: 0 0 14px rgba(34,197,94,.15); }
+    .live-off { color: var(--text-dim); background: rgba(71,85,105,.08); border-color: rgba(71,85,105,.3); }
 
-    .stream-info { font-size: 24px; color: var(--text-bright); margin-top: 10px; }
-    .stream-title { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--cyan); margin-top: 5px; }
+    /* Section label */
+    .section-label {
+      display: flex; align-items: center; gap: 12px;
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--text-dim); letter-spacing: 3px; text-transform: uppercase;
+      margin: 36px 0 16px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
 
-    #loading { font-family: 'Space Mono', monospace; color: var(--purple-bright); display: none; }
+    /* Wallet grid */
+    #wallet-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px;
+    }
+
+    .prize-card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+      padding: 20px 18px; position: relative; overflow: hidden;
+      transition: border-color .25s, transform .2s, box-shadow .25s;
+      animation: fadeUp .4s ease both;
+    }
+    .prize-card:hover {
+      border-color: var(--border-hot); transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(124,58,237,.18);
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+    .prize-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--prize-col, var(--purple)), transparent);
+      opacity: .7;
+    }
+    .prize-count {
+      font-family: 'Bebas Neue', sans-serif; font-size: 42px;
+      color: var(--prize-col, var(--purple-glow)); line-height: 1;
+      filter: drop-shadow(0 0 10px var(--prize-col, var(--purple)));
+    }
+    .prize-label {
+      font-size: 15px; font-weight: 700; color: var(--text);
+      margin-top: 6px; letter-spacing: .5px; line-height: 1.3;
+    }
+    .prize-key {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      color: var(--text-dim); letter-spacing: 1.5px; margin-top: 8px;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 60px 20px;
+      border: 1px dashed var(--border); border-radius: 16px;
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: .4; }
+    .empty-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: 26px;
+      letter-spacing: 3px; color: var(--text-dim);
+    }
+    .empty-sub {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--text-dim); letter-spacing: 2px; margin-top: 8px;
+    }
+
+    /* How to use */
+    .how-to {
+      margin-top: 36px; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: 24px 24px 20px;
+    }
+    .how-to h3 {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px;
+      color: var(--teal); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px;
+    }
+    .cmd-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .cmd-row:last-child { border-bottom: none; }
+    .cmd-tag {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
+      color: var(--purple-glow); background: rgba(124,58,237,.12);
+      border: 1px solid rgba(124,58,237,.25); border-radius: 6px;
+      padding: 3px 10px; white-space: nowrap; flex-shrink: 0;
+    }
+    .cmd-desc { font-size: 14px; color: var(--text-mid); line-height: 1.4; }
+
+    /* WS dot */
+    #ws-dot {
+      position: fixed; bottom: 20px; right: 20px;
+      width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim);
+      transition: background .4s, box-shadow .4s; z-index: 99;
+    }
+    #ws-dot.on  { background: var(--success); box-shadow: 0 0 10px var(--success); }
+    #ws-dot.off { background: var(--rose);    box-shadow: 0 0 10px var(--rose); }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: rgba(13,13,26,.95); border: 1px solid var(--border-hot);
+      border-radius: 10px; padding: 12px 24px;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      color: var(--purple-glow); letter-spacing: 1px;
+      opacity: 0; transition: opacity .3s, transform .3s; pointer-events: none; z-index: 100;
+      box-shadow: 0 0 30px rgba(124,58,237,.3);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 
-  <div class="dashboard-container">
-    <header>
-      <div class="header-eyebrow">// viewer_dashboard_v1</div>
-      <h1>Stream Status</h1>
-    </header>
+<div id="ws-dot"></div>
+<div id="toast"></div>
 
-    <div class="status-card">
-      <div class="card-strip"></div>
-      <div class="card-body">
-        
-        <a id="twitch-login-btn" class="btn-twitch" href="#">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
-          Connect Twitch
-        </a>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">// fallenoneart.stream</div>
+    <h1>Prize Wallet</h1>
+    <div class="tagline">// spin the wheel → win prizes → redeem in chat</div>
+  </header>
 
-        <div id="loading">AUTHENTICATING...</div>
-
-        <div id="stream-data" class="stream-status">
-          <div id="status-indicator" class="status-badge status-offline">OFFLINE</div>
-          <div class="stream-info">@fallenoneart</div>
-          <div id="stream-title" class="stream-title">Waiting for stream to start...</div>
-        </div>
-
-      </div>
+  <!-- AUTH CARD -->
+  <div class="auth-card" id="auth-card">
+    <div class="card-accent"></div>
+    <div class="card-inner">
+      <a id="twitch-login-btn" class="btn-twitch" href="#">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+        </svg>
+        Connect with Twitch
+      </a>
+      <div class="auth-note">read-only · no posting · no follows<br>only used to verify your identity</div>
     </div>
   </div>
 
+  <div id="loading">LOADING WALLET...</div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <div class="profile-strip">
+      <div class="avatar-ring">
+        <img id="user-avatar" src=" " alt="avatar">
+      </div>
+      <div class="profile-info">
+        <div class="profile-name" id="user-display">—</div>
+        <div class="profile-sub" id="user-login">// twitch viewer</div>
+      </div>
+      <div class="live-badge live-off" id="stream-badge">OFFLINE</div>
+    </div>
+
+    <div class="section-label">// your prizes</div>
+    <div id="wallet-grid"></div>
+
+    <div class="section-label">// how to use</div>
+    <div class="how-to">
+      <h3>chat commands</h3>
+      <div class="cmd-row">
+        <span class="cmd-tag">$ws</span>
+        <span class="cmd-desc">Spin the wheel for yourself — costs nothing, wins prizes</span>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-tag">$ws @user</span>
+        <span class="cmd-desc">Gift a wheel spin to another viewer</span>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-tag">$wallet</span>
+        <span class="cmd-desc">Show your prize wallet in chat</span>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-tag">$redeem</span>
+        <span class="cmd-desc">Redeem your prize (auto if only one held)</span>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-tag">$redeem [key]</span>
+        <span class="cmd-desc">Redeem a specific prize by its key name</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-  // =======================================================================
-  // CONFIGURATION: Replace these with your actual Twitch Developer details
-  // =======================================================================
-  const CLIENT_ID = '87lnemvwe90imdy4epe41ylw79aeyj';
-  // REDIRECT_URI must exactly match the OAuth Redirect URL in your Twitch Console
-  const REDIRECT_URI = window.location.href.split('#')[0]; 
-  const TARGET_CHANNEL = 'fallenoneart';
+'use strict';
 
-  const loginBtn = document.getElementById('twitch-login-btn');
-  const loading = document.getElementById('loading');
-  const streamData = document.getElementById('stream-data');
-  const statusIndicator = document.getElementById('status-indicator');
-  const streamTitle = document.getElementById('stream-title');
+// ── Config ────────────────────────────────────────────────────────
+const CLIENT_ID      = '87lnemvwe90imdy4epe41ylw79aeyj';
+const REDIRECT_URI   = window.location.href.split('#')[0];
+const TARGET_CHANNEL = 'fallenoneart';
 
-  // 1. Setup the Twitch Login URL
-  const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=`;
-  loginBtn.href = authUrl;
+// Streamer.bot WebSocket — reads from ?address=&port= or defaults
+const params = new URLSearchParams(window.location.search);
+const WS_URI = `ws://${params.get('address')||'localhost'}:${params.get('port')||'8080'}/`;
 
-  // 2. Check for Token in the URL hash
-  function getAccessToken() {
-    const hash = window.location.hash;
-    if (!hash) return null;
-    const params = new URLSearchParams(hash.substring(1));
-    return params.get('access_token');
-  }
+// ── Prize colour palette (cycles through these) ───────────────────
+const PALETTE = ['#7c3aed','#0d9488','#9333ea','#0891b2','#6d28d9','#14b8a6','#4f46e5','#0e7490'];
 
-  // 3. Fetch Stream Status using the token
-  async function checkStreamStatus(token) {
-    try {
-      const response = await fetch(`https://api.twitch.tv/helix/streams?user_login=${TARGET_CHANNEL}`, {
-        headers: {
-          'Client-ID': CLIENT_ID,
-          'Authorization': `Bearer ${token}`
-        }
-      });
+// ── State ─────────────────────────────────────────────────────────
+let currentUser  = null;   // { login, displayName, avatarUrl }
+let ws, wsTimer;
 
-      if (!response.ok) throw new Error('Failed to fetch stream data');
-      
-      const data = await response.json();
-      
-      loading.style.display = 'none';
-      streamData.style.display = 'flex';
+// ── DOM refs ──────────────────────────────────────────────────────
+const authCard     = document.getElementById('auth-card');
+const loginBtn     = document.getElementById('twitch-login-btn');
+const loadingEl    = document.getElementById('loading');
+const dashboardEl  = document.getElementById('dashboard');
+const walletGrid   = document.getElementById('wallet-grid');
+const userDisplay  = document.getElementById('user-display');
+const userLogin    = document.getElementById('user-login');
+const userAvatar   = document.getElementById('user-avatar');
+const streamBadge  = document.getElementById('stream-badge');
+const wsDot        = document.getElementById('ws-dot');
+const toastEl      = document.getElementById('toast');
 
-      if (data.data && data.data.length > 0) {
-        // Stream is live
-        const stream = data.data[0];
-        statusIndicator.textContent = 'LIVE NOW';
-        statusIndicator.className = 'status-badge status-online';
-        streamTitle.textContent = `${stream.game_name} — ${stream.title}`;
-      } else {
-        // Stream is offline
-        statusIndicator.textContent = 'OFFLINE';
-        statusIndicator.className = 'status-badge status-offline';
-        streamTitle.textContent = 'Currently offline. Check back later!';
-      }
-    } catch (error) {
-      console.error('[Dashboard Error]', error);
-      loading.textContent = 'ERROR LOADING DATA';
+// ── Auth URL ──────────────────────────────────────────────────────
+const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=`;
+loginBtn.href = authUrl;
+
+function getToken() {
+  const hash = window.location.hash;
+  if (!hash) return null;
+  return new URLSearchParams(hash.substring(1)).get('access_token');
+}
+
+// ── Twitch API helpers ────────────────────────────────────────────
+async function twitchFetch(path, token) {
+  const r = await fetch(`https://api.twitch.tv/helix/${path}`, {
+    headers: { 'Client-ID': CLIENT_ID, 'Authorization': `Bearer ${token}` }
+  });
+  if (!r.ok) throw new Error(`Twitch ${path} → ${r.status}`);
+  return r.json();
+}
+
+async function init(token) {
+  authCard.style.display   = 'none';
+  loadingEl.style.display  = 'block';
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+
+  try {
+    // Who am I?
+    const meData = await twitchFetch('users', token);
+    const me     = meData.data[0];
+    currentUser  = {
+      login:       me.login,
+      displayName: me.display_name,
+      avatarUrl:   me.profile_image_url
+    };
+
+    // Stream status
+    const streamData = await twitchFetch(`streams?user_login=${TARGET_CHANNEL}`, token);
+    const isLive     = streamData.data && streamData.data.length > 0;
+
+    loadingEl.style.display  = 'none';
+    dashboardEl.style.display = 'block';
+
+    userDisplay.textContent = currentUser.displayName;
+    userLogin.textContent   = `// ${currentUser.login}`;
+    userAvatar.src          = currentUser.avatarUrl;
+
+    if (isLive) {
+      streamBadge.textContent  = 'LIVE NOW';
+      streamBadge.className    = 'live-badge live-on';
     }
+
+    // Load wallet from Streamer.bot global vars via the WS API
+    connectWS();
+
+  } catch (err) {
+    console.error('[Dashboard]', err);
+    loadingEl.textContent = 'ERROR — check console';
+  }
+}
+
+// ── Render wallet ─────────────────────────────────────────────────
+function renderWallet(inv) {
+  walletGrid.innerHTML = '';
+  const items = Object.entries(inv).filter(([,p]) => p.count > 0);
+
+  if (!items.length) {
+    walletGrid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <div class="empty-icon">🎡</div>
+        <div class="empty-title">Wallet Empty</div>
+        <div class="empty-sub">// type $ws in chat to spin</div>
+      </div>`;
+    return;
   }
 
-  // Init
-  const token = getAccessToken();
-  if (token) {
-    loginBtn.style.display = 'none';
-    loading.style.display = 'block';
-    
-    // Clean up the URL so the token isn't just sitting there
-    history.replaceState(null, '', window.location.pathname);
-    
-    checkStreamStatus(token);
+  items.forEach(([key, prize], i) => {
+    const col  = PALETTE[i % PALETTE.length];
+    const card = document.createElement('div');
+    card.className = 'prize-card';
+    card.style.setProperty('--prize-col', col);
+    card.style.animationDelay = `${i * 60}ms`;
+    card.innerHTML = `
+      <div class="prize-count">${prize.count}</div>
+      <div class="prize-label">${prize.label}</div>
+      <div class="prize-key">${key}</div>`;
+    walletGrid.appendChild(card);
+  });
+}
+
+// ── WebSocket — connects to Streamer.bot ──────────────────────────
+function setDot(s) { wsDot.className = s; }
+
+function connectWS() {
+  try {
+    ws = new WebSocket(WS_URI);
+    ws.onopen = () => {
+      clearTimeout(wsTimer); setDot('on');
+      // Subscribe to Custom events (WheelInventoryUpdate)
+      ws.send(JSON.stringify({
+        request: 'Subscribe',
+        events:  { general: ['Custom'] },
+        id:      'WalletDash'
+      }));
+      // Request the current inventory immediately
+      requestInventory();
+    };
+    ws.onmessage = e => {
+      let m; try { m = JSON.parse(e.data); } catch { return; }
+      handleWsMessage(m);
+    };
+    ws.onclose = () => { setDot('off'); wsTimer = setTimeout(connectWS, 3000); };
+    ws.onerror = ()  => { setDot('off'); ws.close(); };
+  } catch { setDot('off'); wsTimer = setTimeout(connectWS, 3000); }
+}
+
+// Ask Streamer.bot to run the WalletFetch action which broadcasts back
+function requestInventory() {
+  if (!currentUser || !ws || ws.readyState !== WebSocket.OPEN) return;
+  // Broadcast a WheelWalletRequest — SB action listens for this and
+  // broadcasts back a WheelInventoryUpdate with the user's inventory
+  ws.send(JSON.stringify({
+    eventName: 'WheelWalletRequest',
+    type:      'request',
+    user:      currentUser.login.toLowerCase()
+  }));
+}
+
+function handleWsMessage(msg) {
+  // Unwrap Streamer.bot envelope
+  let data = msg;
+  if (msg?.data !== undefined) {
+    let inner = msg.data;
+    if (typeof inner === 'string') { try { inner = JSON.parse(inner); } catch { inner = null; } }
+    if (inner) data = inner;
   }
+
+  if (data?.eventName === 'WheelInventoryUpdate') {
+    // Only update if the event is for the logged-in user
+    if (!currentUser) return;
+    if (data.user && data.user !== currentUser.login.toLowerCase()) return;
+    renderWallet(data.inventory || {});
+    showToast('Wallet updated');
+  }
+}
+
+// ── Toast ─────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+}
+
+// ── Boot ──────────────────────────────────────────────────────────
+const token = getToken();
+if (token) {
+  init(token);
+} else {
+  authCard.style.display = 'block';
+}
 </script>
 </body>
 </html>
