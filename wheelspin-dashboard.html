@@ -3,949 +3,807 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stream Wheel Dashboard Pro</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <title>Wheel Admin — FallenOneArt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { 
-      margin: 0; 
-      padding: 0; 
-      box-sizing: border-box; 
-    }
-
-    html, body {
-      overflow-y: scroll;
-      /* Firefox */
-      scrollbar-width: none;
-      /* IE 10+ */
-      -ms-overflow-style: none;
-    }
-    /* WebKit browsers (Chrome, Safari, iOS Safari, Samsung Internet) - hide by sizing to 0 */
-    html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-      background: transparent;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --purple-deep:   #4c1d95;
-      --purple-mid:    #7c3aed;
-      --purple-bright: #a78bfa;
-      --teal:          #2dd4bf;
-      --teal-dim:      #0d9488;
-      --cyan:          #06b6d4;
-      --rose:          #f43f5e;
-      --slate-dark:    #0b0d17;
-      --slate-mid:     #0f172a;
-      --slate-panel:   #1e293b;
-      --glass-border:  rgba(255,255,255,0.07);
-      --text-dim:      #64748b;
-      --text-mid:      #94a3b8;
-      --text-bright:   #e2e8f0;
+      --bg:        #080b12;
+      --surface:   #0f1623;
+      --panel:     #161e2e;
+      --border:    rgba(255,255,255,.07);
+      --purple:    #7c3aed;
+      --purple-lt: #a78bfa;
+      --teal:      #2dd4bf;
+      --teal-dk:   #0d9488;
+      --cyan:      #06b6d4;
+      --rose:      #f43f5e;
+      --green:     #22c55e;
+      --dim:       #475569;
+      --mid:       #94a3b8;
+      --bright:    #e2e8f0;
     }
+
+    html { scroll-behavior: smooth; }
+    html, body { height: 100%; }
 
     body {
-      background: var(--slate-dark);
-      color: #f8fafc;
+      background: var(--bg);
+      color: var(--bright);
       font-family: 'Rajdhani', sans-serif;
       min-height: 100vh;
-      padding: 0 0 80px;
       overflow-x: hidden;
-      position: relative;
     }
 
+    /* scrollbar hidden */
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; }
+
+    /* ambient bg */
     body::before {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background:
-        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(124,58,237,0.18) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 90% 90%,  rgba(6,182,212,0.12) 0%, transparent 55%),
-        radial-gradient(ellipse 50% 60% at 50% 50%,  rgba(11,13,23,0.6)   0%, transparent 100%);
-      pointer-events: none;
-      z-index: 0;
+        radial-gradient(ellipse 70% 50% at 15% 0%,   rgba(124,58,237,.14) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 90% 100%,  rgba(6,182,212,.10) 0%, transparent 55%);
+      pointer-events: none; z-index: 0;
     }
 
+    /* grid overlay */
     body::after {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background-image:
-        linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
+        linear-gradient(rgba(255,255,255,.011) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.011) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none; z-index: 0;
     }
 
-    .dashboard-container {
+    .page {
       position: relative;
-      max-width: 1140px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 28px 80px;
       z-index: 1;
     }
 
-    /* ── Header ── */
-    header {
+    /* ── Header ──────────────────────────────────────── */
+    .site-header {
+      padding: 48px 0 32px;
       text-align: center;
-      padding: 52px 0 36px;
-      position: relative;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
     }
-    header::after {
-      content: '';
-      display: block;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(167,139,250,0.4), rgba(6,182,212,0.4), transparent);
-      margin-top: 28px;
-    }
-    .header-eyebrow {
+
+    .eyebrow {
       font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      color: var(--teal);
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-      opacity: 0.8;
+      font-size: 10px; letter-spacing: 5px;
+      color: var(--teal); text-transform: uppercase;
+      opacity: .7; margin-bottom: 10px;
     }
-    h1 {
+
+    .site-header h1 {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 62px;
-      letter-spacing: 5px;
-      background: linear-gradient(130deg, #c4b5fd 0%, #a855f7 45%, #22d3ee 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
+      font-size: 56px; letter-spacing: 4px;
+      background: linear-gradient(125deg, #c4b5fd 0%, #a855f7 40%, #22d3ee 100%);
+      -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 30px rgba(168,85,247,0.35));
-      display: inline-block;
+      filter: drop-shadow(0 0 28px rgba(168,85,247,.3));
       line-height: 1;
     }
-    .subtitle {
-      font-size: 13px;
-      color: var(--text-dim);
+
+    .site-header p {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; color: var(--dim);
+      letter-spacing: 2px; margin-top: 8px;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      margin-top: 8px;
-      font-family: 'Space Mono', monospace;
     }
 
-    /* ── Sticky Actions Bar ── */
-    .actions-bar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(11,13,23,0.75);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      backdrop-filter: blur(20px) saturate(180%);
-      border-bottom: 1px solid var(--glass-border);
-      padding: 14px 28px;
-      margin: 0 -24px 32px;
+    /* ── Sticky toolbar ──────────────────────────────── */
+    .toolbar {
+      position: sticky; top: 0; z-index: 200;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px;
+      background: rgba(8,11,18,.82);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 13px 28px;
+      margin: 0 -28px 36px;
     }
-    .actions-bar::before {
+
+    .toolbar::after {
       content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent 0%, rgba(124,58,237,0.5) 30%, rgba(45,212,191,0.5) 70%, transparent 100%);
-    }
-    .bar-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .seg-count-pill {
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      color: var(--purple-bright);
-      background: rgba(124,58,237,0.12);
-      border: 1px solid rgba(124,58,237,0.25);
-      border-radius: 100px;
-      padding: 4px 12px;
-      letter-spacing: 1px;
+      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg,
+        transparent, rgba(124,58,237,.5) 30%, rgba(45,212,191,.5) 70%, transparent);
     }
 
+    .toolbar-left { display: flex; align-items: center; gap: 10px; }
+
+    .pill {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: 1.5px;
+      color: var(--purple-lt);
+      background: rgba(124,58,237,.12);
+      border: 1px solid rgba(124,58,237,.25);
+      border-radius: 100px;
+      padding: 4px 13px;
+    }
+
+    /* ── Buttons ─────────────────────────────────────── */
     .btn {
       font-family: 'Rajdhani', sans-serif;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      padding: 10px 22px;
-      border: none;
-      border-radius: 8px;
-      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      font-weight: 700; font-size: 14px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 9px 22px; border-radius: 9px;
+      cursor: pointer; border: none;
+      display: inline-flex; align-items: center; gap: 7px;
       white-space: nowrap;
+      transition: all .2s ease;
     }
-    .btn-add { 
-      background: transparent; 
+
+    .btn-ghost {
+      background: transparent;
       color: var(--teal);
-      border: 1px solid rgba(45,212,191,0.3);
+      border: 1px solid rgba(45,212,191,.3);
     }
-    .btn-add:hover { 
-      background: rgba(45,212,191,0.08);
-      border-color: rgba(45,212,191,0.6);
-      box-shadow: 0 0 18px rgba(45,212,191,0.15);
+    .btn-ghost:hover {
+      background: rgba(45,212,191,.08);
+      border-color: rgba(45,212,191,.6);
+      box-shadow: 0 0 16px rgba(45,212,191,.15);
     }
-    .btn-save {
-      position: relative;
-      background: rgba(124,58,237,0.15);
-      color: #c4b5fd;
-      border: 1px solid rgba(167,139,250,0.35);
-      border-radius: 10px;
-      padding: 10px 28px;
-      font-size: 14px;
-      letter-spacing: 2px;
-      overflow: hidden;
-      transition: all 0.3s ease;
+
+    .btn-primary {
+      position: relative; overflow: hidden;
+      background: rgba(124,58,237,.15);
+      color: var(--purple-lt);
+      border: 1px solid rgba(167,139,250,.35);
+      padding: 9px 28px;
     }
-    .btn-save::before {
+    .btn-primary::before {
       content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(167,139,250,0.15), transparent);
-      transition: left 0.5s ease;
+      position: absolute; top: 0; left: -120%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(167,139,250,.12), transparent);
+      transition: left .55s;
     }
-    .btn-save::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 20%; right: 20%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #a78bfa, transparent);
-      box-shadow: 0 0 8px rgba(167,139,250,0.8);
-      border-radius: 100%;
-      transition: all 0.3s ease;
-    }
-    .btn-save:hover {
-      background: rgba(124,58,237,0.28);
-      border-color: rgba(167,139,250,0.6);
+    .btn-primary:hover {
+      background: rgba(124,58,237,.28);
+      border-color: rgba(167,139,250,.6);
       color: #e9d5ff;
-      box-shadow:
-        0 0 20px rgba(124,58,237,0.25),
-        0 0 40px rgba(124,58,237,0.1),
-        inset 0 0 20px rgba(167,139,250,0.05);
+      box-shadow: 0 0 22px rgba(124,58,237,.25), inset 0 0 20px rgba(167,139,250,.05);
       transform: translateY(-1px);
     }
-    .btn-save:hover::before { left: 150%; }
-    .btn-save:hover::after { left: 10%; right: 10%; box-shadow: 0 0 14px rgba(167,139,250,1); }
-    .btn-save:active { transform: translateY(0); box-shadow: 0 0 10px rgba(124,58,237,0.3); }
-    .save-icon { width: 14px; height: 14px; opacity: 0.8; }
+    .btn-primary:hover::before { left: 160%; }
+    .btn-primary:active { transform: translateY(0); }
 
-    /* ══════════════════════════════════════
-       HUB IMAGE SECTION
-    ══════════════════════════════════════ */
-    .hub-section {
-      margin-bottom: 28px;
-      background: rgba(15,23,42,0.5);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      overflow: hidden;
+    .btn-danger {
+      background: transparent;
+      color: rgba(244,63,94,.6);
+      border: 1px solid rgba(244,63,94,.18);
+      padding: 4px 11px; font-size: 11px;
+      border-radius: 6px;
+    }
+    .btn-danger:hover {
+      background: rgba(244,63,94,.08);
+      border-color: rgba(244,63,94,.5);
+      color: var(--rose);
     }
 
-    .hub-strip {
-      height: 3px;
-      background: linear-gradient(90deg, #06b6d4, #a78bfa 60%, transparent);
-      box-shadow: 0 0 12px rgba(6,182,212,0.5);
+    /* ── Section header ──────────────────────────────── */
+    .section-head {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: 4px;
+      color: var(--dim); text-transform: uppercase;
+    }
+
+    .section-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, rgba(255,255,255,.07), transparent);
+    }
+
+    /* ── Hub image panel ─────────────────────────────── */
+    .hub-panel {
+      background: rgba(15,22,35,.6);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .hub-accent {
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple-lt) 60%, transparent);
+      box-shadow: 0 0 10px rgba(6,182,212,.4);
     }
 
     .hub-body {
-      padding: 20px 24px 24px;
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      flex-wrap: wrap;
+      padding: 22px 26px;
+      display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
     }
 
-    .hub-label-group {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .hub-section-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      letter-spacing: 2px;
-      color: var(--cyan);
-      margin-bottom: 4px;
-    }
-
-    .hub-section-sub {
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      line-height: 1.6;
-    }
-
-    /* Dropzone */
-    .hub-dropzone {
+    /* Circle dropzone */
+    .hub-drop {
       position: relative;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 2px dashed rgba(6,182,212,0.3);
-      background: rgba(6,182,212,0.04);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.25s ease;
       flex-shrink: 0;
-      overflow: hidden;
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      border: 2px dashed rgba(6,182,212,.3);
+      background: rgba(6,182,212,.04);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer; overflow: hidden;
+      transition: all .25s;
     }
-    .hub-dropzone:hover, .hub-dropzone.drag-over {
-      border-color: rgba(6,182,212,0.7);
-      background: rgba(6,182,212,0.1);
-      box-shadow: 0 0 24px rgba(6,182,212,0.2), inset 0 0 20px rgba(6,182,212,0.05);
+    .hub-drop:hover, .hub-drop.drag-over {
+      border-color: rgba(6,182,212,.7);
+      background: rgba(6,182,212,.1);
+      box-shadow: 0 0 22px rgba(6,182,212,.2);
     }
-    .hub-dropzone input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
+    .hub-drop input[type="file"] {
+      position: absolute; inset: 0; opacity: 0;
+      cursor: pointer; width: 100%; height: 100%;
     }
     .hub-drop-icon {
-      font-size: 28px;
-      line-height: 1;
-      margin-bottom: 6px;
-      pointer-events: none;
+      font-size: 26px; pointer-events: none; margin-bottom: 5px;
     }
-    .hub-drop-text {
+    .hub-drop-hint {
       font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      color: var(--text-dim);
-      text-align: center;
-      letter-spacing: 0.5px;
-      line-height: 1.5;
+      font-size: 8px; color: var(--dim);
+      text-align: center; line-height: 1.5;
       pointer-events: none;
     }
-
-    /* Preview state */
-    #hub-preview-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
+    #hub-preview {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; border-radius: 50%;
       display: none;
     }
-    #hub-preview-img.visible { display: block; }
+    #hub-preview.visible { display: block; }
 
-    /* Hub actions */
-    .hub-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .hub-info { flex: 1; min-width: 180px; }
+    .hub-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 2px; color: var(--cyan);
+      margin-bottom: 4px;
+    }
+    .hub-desc {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px; color: var(--dim);
+      line-height: 1.65; letter-spacing: .5px;
     }
 
-    .btn-hub-save {
+    .hub-actions { display: flex; flex-direction: column; gap: 8px; }
+
+    .btn-hub {
       font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 8px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      border: 1px solid rgba(6,182,212,0.35);
-      background: rgba(6,182,212,0.1);
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 8px 18px; border-radius: 8px;
+      cursor: pointer; white-space: nowrap;
+      transition: all .2s;
+    }
+    .btn-hub-save {
+      background: rgba(6,182,212,.1);
+      border: 1px solid rgba(6,182,212,.3);
       color: var(--cyan);
-      transition: all 0.2s;
-      white-space: nowrap;
     }
     .btn-hub-save:hover {
-      background: rgba(6,182,212,0.2);
-      border-color: rgba(6,182,212,0.6);
-      box-shadow: 0 0 14px rgba(6,182,212,0.2);
+      background: rgba(6,182,212,.2);
+      border-color: rgba(6,182,212,.6);
+      box-shadow: 0 0 14px rgba(6,182,212,.2);
     }
-    .btn-hub-save:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
+    .btn-hub-save:disabled { opacity: .3; cursor: not-allowed; }
 
     .btn-hub-clear {
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      padding: 8px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      border: 1px solid rgba(244,63,94,0.2);
       background: transparent;
-      color: rgba(244,63,94,0.6);
-      transition: all 0.2s;
-      white-space: nowrap;
+      border: 1px solid rgba(244,63,94,.2);
+      color: rgba(244,63,94,.6);
     }
     .btn-hub-clear:hover {
-      background: rgba(244,63,94,0.08);
-      border-color: rgba(244,63,94,0.5);
+      background: rgba(244,63,94,.08);
+      border-color: rgba(244,63,94,.5);
       color: var(--rose);
     }
-    .btn-hub-clear:disabled {
-      opacity: 0.25;
-      cursor: not-allowed;
-    }
+    .btn-hub-clear:disabled { opacity: .25; cursor: not-allowed; }
 
     #hub-status {
       font-family: 'Space Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 1px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      align-self: center;
-      min-width: 80px;
+      font-size: 9px; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--dim);
     }
-    #hub-status.saved { color: #22c55e; }
+    #hub-status.saved   { color: var(--green); }
     #hub-status.cleared { color: var(--rose); }
 
-    /* ── Grid ── */
-    .grid-container {
+    /* ── Segment grid ────────────────────────────────── */
+    .seg-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
       margin-bottom: 40px;
     }
 
-    /* ── Segment Cards ── */
-    .segment-card {
-      background: rgba(15,23,42,0.5);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 0;
-      position: relative;
-      transition: transform 0.2s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-      display: flex;
-      flex-direction: column;
+    .seg-card {
+      background: rgba(15,22,35,.55);
+      border: 1px solid var(--border);
+      border-radius: 14px;
       overflow: hidden;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+      display: flex; flex-direction: column;
     }
-    .card-strip {
+    .seg-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,.11);
+      box-shadow: 0 14px 30px -12px rgba(0,0,0,.7);
+    }
+
+    .seg-strip {
       height: 3px;
-      background: linear-gradient(90deg, var(--card-accent, #7c3aed), transparent 80%);
-      box-shadow: 0 0 12px var(--card-accent, #7c3aed);
-      flex-shrink: 0;
+      background: linear-gradient(90deg, var(--card-col, #7c3aed), transparent 80%);
+      box-shadow: 0 0 10px var(--card-col, #7c3aed);
     }
-    .card-body {
-      padding: 18px 20px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+
+    .seg-body {
+      padding: 16px 18px 18px;
+      display: flex; flex-direction: column; gap: 12px;
       flex: 1;
     }
-    .segment-card:hover {
-      border-color: rgba(255,255,255,0.12);
-      box-shadow:
-        0 16px 32px -12px rgba(0,0,0,0.7),
-        0 0 0 1px rgba(255,255,255,0.04) inset;
-      transform: translateY(-3px);
-    }
-    .card-header-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .index-badge {
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-    }
-    .btn-delete {
-      background: transparent;
-      color: rgba(244,63,94,0.6);
-      border: 1px solid rgba(244,63,94,0.15);
-      padding: 3px 10px;
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: all 0.2s;
-    }
-    .btn-delete:hover {
-      background: rgba(244,63,94,0.08);
-      border-color: rgba(244,63,94,0.4);
-      color: var(--rose);
+
+    .seg-row-top {
+      display: flex; justify-content: space-between; align-items: center;
     }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .form-group label {
+    .seg-index {
       font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-dim);
+      font-size: 9px; letter-spacing: 2px;
+      color: var(--dim); text-transform: uppercase;
     }
-    input[type="text"] {
-      background: rgba(15,23,42,0.7);
-      border: 1px solid rgba(255,255,255,0.07);
-      color: var(--text-bright);
-      padding: 9px 12px;
-      border-radius: 8px;
+
+    /* Form elements */
+    .field { display: flex; flex-direction: column; gap: 4px; }
+
+    .field label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px; letter-spacing: 1.5px;
+      color: var(--dim); text-transform: uppercase;
+    }
+
+    .input-text {
+      background: rgba(15,22,35,.75);
+      border: 1px solid rgba(255,255,255,.07);
+      color: var(--bright);
+      padding: 8px 11px; border-radius: 7px;
       font-family: 'Rajdhani', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 15px; font-weight: 600;
       width: 100%;
-      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      transition: border-color .2s, box-shadow .2s;
     }
-    input[type="text"]:focus {
+    .input-text:focus {
       outline: none;
-      border-color: rgba(168,85,247,0.5);
-      background: rgba(15,23,42,0.95);
-      box-shadow: 0 0 0 3px rgba(168,85,247,0.08);
+      border-color: rgba(167,139,250,.5);
+      box-shadow: 0 0 0 3px rgba(167,139,250,.07);
+      background: rgba(15,22,35,.95);
     }
-    .color-pickers-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+
+    .color-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .color-wrap {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(15,22,35,.75);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 7px; padding: 5px 9px;
+      transition: border-color .2s;
     }
-    .color-input-wrapper {
-      display: flex;
-      align-items: center;
-      background: rgba(15,23,42,0.7);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 8px;
-      padding: 6px 10px;
-      gap: 8px;
-      transition: border-color 0.2s;
-    }
-    .color-input-wrapper:focus-within { border-color: rgba(168,85,247,0.4); }
+    .color-wrap:focus-within { border-color: rgba(167,139,250,.4); }
+
     input[type="color"] {
-      -webkit-appearance: none;
-      appearance: none;
-      border: none;
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      cursor: pointer;
-      background: transparent;
-      flex-shrink: 0;
+      -webkit-appearance: none; appearance: none;
+      border: none; width: 26px; height: 26px;
+      border-radius: 5px; cursor: pointer;
+      background: transparent; flex-shrink: 0;
     }
     input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-    input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(255,255,255,0.15); border-radius: 5px; }
-    .hex-input {
-      font-family: 'Space Mono', monospace;
-      font-size: 12px;
-      color: var(--text-bright);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background: transparent;
-      border: none;
-      outline: none;
-      width: 72px;
-      padding: 2px 0;
-      caret-color: var(--purple-bright);
-    }
-    .hex-input:focus { color: #ffffff; }
-    .hex-input.invalid { color: var(--rose); }
-    .form-divider {
-      height: 1px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent);
-      margin: 0 -4px;
+    input[type="color"]::-webkit-color-swatch {
+      border: 1px solid rgba(255,255,255,.15); border-radius: 4px;
     }
 
-    /* ── Toast ── */
-    .toast-notification {
-      position: fixed;
-      bottom: -120px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(11,13,23,0.92);
-      border: 1px solid rgba(34,197,94,0.35);
-      box-shadow:
-        0 8px 32px rgba(0,0,0,0.5),
-        0 0 20px rgba(34,197,94,0.15),
-        inset 0 0 20px rgba(34,197,94,0.04);
-      color: #ffffff;
-      padding: 14px 28px;
-      border-radius: 50px;
+    .hex-field {
       font-family: 'Space Mono', monospace;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      z-index: 1000;
-      transition: bottom 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      white-space: nowrap;
+      font-size: 11px; color: var(--bright);
+      text-transform: uppercase; letter-spacing: .5px;
+      background: transparent; border: none; outline: none;
+      width: 68px; caret-color: var(--purple-lt);
     }
-    .toast-notification.show { bottom: 36px; }
-    .toast-icon {
-      width: 18px; height: 18px;
-      background: #22c55e;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: #0f172a;
-      font-size: 10px;
-      flex-shrink: 0;
+    .hex-field.bad { color: var(--rose); }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255,255,255,.05), transparent);
+      margin: 0 -2px;
     }
+
+    /* ── Toast ───────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: -100px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(8,11,18,.95);
+      border: 1px solid rgba(34,197,94,.35);
+      box-shadow: 0 8px 30px rgba(0,0,0,.5), 0 0 18px rgba(34,197,94,.12);
+      color: #fff; padding: 13px 28px; border-radius: 50px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      display: flex; align-items: center; gap: 10px;
+      white-space: nowrap; z-index: 9999;
+      transition: bottom .45s cubic-bezier(.175,.885,.32,1.275);
+    }
+    #toast.show { bottom: 32px; }
     .toast-dot {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: rgba(34,197,94,0.5);
-      animation: pulse-dot 1.4s ease infinite;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: blink 1.4s ease infinite;
     }
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 0.4; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.4); }
+    @keyframes blink {
+      0%,100% { opacity:.4; transform:scale(1); }
+      50%      { opacity:1;  transform:scale(1.35); }
     }
   </style>
 </head>
 <body>
+<div class="page">
 
-  <div class="dashboard-container">
-    <header>
-      <div class="header-eyebrow">// broadcast_control_v3</div>
-      <h1>Wheel Configurator</h1>
-      <div class="subtitle">WheelSpin Dashboard</div>
-    </header>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="eyebrow">// fallenoneart.stream</div>
+    <h1>Wheel Admin</h1>
+    <p>Configure segments · hub image · save to overlay</p>
+  </header>
 
-    <div class="actions-bar">
-      <div class="bar-left">
-        <button class="btn btn-add" onclick="addNewRow()">
-          <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
-          Add Segment
-        </button>
-        <div class="seg-count-pill" id="seg-count">10 slices</div>
-      </div>
-      <button class="btn btn-save" onclick="saveSegments()">
-        <svg class="save-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button class="btn btn-ghost" onclick="addSegment()">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 4a.5.5 0 01.5.5v3h3a.5.5 0 010 1h-3v3a.5.5 0 01-1 0v-3h-3a.5.5 0 010-1h3v-3A.5.5 0 018 4z"/>
         </svg>
-        Save to System
+        Add Slice
       </button>
+      <div class="pill" id="count-pill">10 slices</div>
     </div>
+    <button class="btn btn-primary" onclick="saveAll()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+      </svg>
+      Save to Overlay
+    </button>
+  </div>
 
-    <!-- ══ HUB IMAGE CUSTOMIZER ══ -->
-    <div class="hub-section">
-      <div class="hub-strip"></div>
-      <div class="hub-body">
+  <!-- Hub Image -->
+  <div class="section-head">
+    <span class="section-label">Hub Image</span>
+    <div class="section-line"></div>
+  </div>
 
-        <div class="hub-dropzone" id="hub-dropzone">
-          <input type="file" id="hub-file-input" accept="image/*" onchange="onHubFileSelected(this)" title="Select an image file for the wheel hub">
-          <img id="hub-preview-img" alt="Hub preview">
-          <div class="hub-drop-icon" id="hub-drop-icon"></div>
-          <div class="hub-drop-text" id="hub-drop-text">Drop image<br>or click</div>
+  <div class="hub-panel">
+    <div class="hub-accent"></div>
+    <div class="hub-body">
+      <div class="hub-drop" id="hub-drop">
+        <input type="file" id="hub-file" accept="image/*" onchange="onHubFile(this)" title="Upload hub image" aria-label="Upload hub image">
+        <img id="hub-preview" alt="">
+        <div class="hub-drop-icon" id="hub-drop-icon">🎡</div>
+        <div class="hub-drop-hint" id="hub-drop-hint">Drop or<br>click</div>
+      </div>
+
+      <div class="hub-info">
+        <div class="hub-title">Center Circle</div>
+        <div class="hub-desc">
+          Upload any image — it auto-crops to fill<br>
+          the wheel hub. PNG with transparency works best.<br>
+          Keep file under ~2 MB for localStorage.
         </div>
+      </div>
 
-        <div class="hub-label-group">
-          <div class="hub-section-title">Wheel Hub Image</div>
-          <div class="hub-section-sub">
-            Upload any image — it will be auto-cropped<br>
-            to fit the center circle of the wheel.<br>
-            PNG with transparency works great.
-          </div>
-        </div>
-
-        <div class="hub-actions">
-          <button class="btn-hub-save" id="btn-hub-save" onclick="saveHubImage()" disabled>
-            ↑ Save Hub Image
-          </button>
-          <button class="btn-hub-clear" id="btn-hub-clear" onclick="clearHubImage()" disabled>
-            × Clear Hub
-          </button>
-          <span id="hub-status"></span>
-        </div>
-
+      <div class="hub-actions">
+        <button class="btn-hub btn-hub-save" id="btn-hub-save" onclick="saveHub()" disabled>
+          ↑ Save Image
+        </button>
+        <button class="btn-hub btn-hub-clear" id="btn-hub-clear" onclick="clearHub()" disabled>
+          × Clear
+        </button>
+        <span id="hub-status"></span>
       </div>
     </div>
-    <!-- ══ END HUB IMAGE ══ -->
-
-    <div class="grid-container" id="segments-container"></div>
   </div>
 
-  <div id="status-toast" class="toast-notification">
-    <span class="toast-icon">✓</span>
-    Configuration Synced
-    <span class="toast-dot"></span>
+  <!-- Segments -->
+  <div class="section-head">
+    <span class="section-label">Wheel Slices</span>
+    <div class="section-line"></div>
   </div>
+
+  <div class="seg-grid" id="seg-grid"></div>
+
+</div><!-- /page -->
+
+<div id="toast"><span class="toast-dot"></span> Saved to overlay</div>
 
 <script>
-  /* ══════════════════════════════════════════════════
-     HUB IMAGE LOGIC
-  ══════════════════════════════════════════════════ */
-  let pendingHubDataUrl = null;
+/* ════════════════════════════════════════════════════
+   DATA
+════════════════════════════════════════════════════ */
+const LS_SEGS = 'sw_segments';
+const LS_HUB  = 'sw_hub_image';
 
-  function initHubSection() {
-    const stored = localStorage.getItem('stream_wheel_hub_image');
-    if (stored) {
-      showHubPreview(stored);
-      document.getElementById('btn-hub-clear').disabled = false;
-      setHubStatus('saved', '● Saved');
-    }
+const DEFAULTS = [
+  { key:'WCG',           label:'Winner\nChoose Game', color:'#7c3aed', text:'#ffffff' },
+  { key:'SF',            label:'Shitface',            color:'#0d9488', text:'#ffffff' },
+  { key:'Hydrate',       label:'Hydrate',             color:'#9333ea', text:'#ffffff' },
+  { key:'ViewersChoice', label:"Viewer's\nChoice",    color:'#0891b2', text:'#ffffff' },
+  { key:'fallgreement',  label:'Fallgreement',        color:'#6d28d9', text:'#ffffff' },
+  { key:'VI',            label:'Voice Impression',    color:'#14b8a6', text:'#ffffff' },
+  { key:'Cosplay',       label:'CC Cosplay',          color:'#5b21b6', text:'#ffffff' },
+  { key:'Nothing',       label:'Nothing',             color:'#1e293b', text:'#ffffff' },
+  { key:'No Swear',      label:'No Swearing',         color:'#4f46e5', text:'#ffffff' },
+  { key:'DF',            label:'Diabolical Foods',    color:'#0e7490', text:'#ffffff' },
+];
 
-    // Drag-over highlight
-    const zone = document.getElementById('hub-dropzone');
-    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-    zone.addEventListener('drop', e => {
-      e.preventDefault();
-      zone.classList.remove('drag-over');
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) processHubFile(file);
-    });
+let segments = [];
+
+function load() {
+  try {
+    const s = localStorage.getItem(LS_SEGS);
+    segments = s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULTS));
+  } catch(e) {
+    segments = JSON.parse(JSON.stringify(DEFAULTS));
   }
+  render();
+  initHub();
+}
 
-  function onHubFileSelected(input) {
-    const file = input.files[0];
-    if (file) processHubFile(file);
-  }
+/* ════════════════════════════════════════════════════
+   HUB IMAGE
+════════════════════════════════════════════════════ */
+let pendingHub = null;
 
-  function processHubFile(file) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      pendingHubDataUrl = e.target.result;
-      showHubPreview(pendingHubDataUrl);
-      document.getElementById('btn-hub-save').disabled = false;
-      document.getElementById('btn-hub-clear').disabled = false;
-      setHubStatus('', 'Unsaved');
-    };
-    reader.readAsDataURL(file);
-  }
+function initHub() {
+  const stored = localStorage.getItem(LS_HUB);
+  if (stored) { showHubPreview(stored); setHubStatus('saved', '● Saved'); document.getElementById('btn-hub-clear').disabled = false; }
 
-  function showHubPreview(src) {
-    const img  = document.getElementById('hub-preview-img');
-    const icon = document.getElementById('hub-drop-icon');
-    const text = document.getElementById('hub-drop-text');
-    img.src = src;
-    img.classList.add('visible');
-    icon.style.display = 'none';
-    text.style.display = 'none';
-  }
+  const zone = document.getElementById('hub-drop');
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', ()  => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop',      e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) readHubFile(f);
+  });
+}
 
-  function clearHubPreview() {
-    const img  = document.getElementById('hub-preview-img');
-    const icon = document.getElementById('hub-drop-icon');
-    const text = document.getElementById('hub-drop-text');
-    img.classList.remove('visible');
-    img.src = '';
-    icon.style.display = '';
-    text.style.display = '';
-  }
+function onHubFile(input) {
+  if (input.files[0]) readHubFile(input.files[0]);
+}
 
-  function saveHubImage() {
-    if (!pendingHubDataUrl) return;
-    try {
-      localStorage.setItem('stream_wheel_hub_image', pendingHubDataUrl);
-      pendingHubDataUrl = null;
-      document.getElementById('btn-hub-save').disabled = true;
-      setHubStatus('saved', '● Saved');
-      showToast();
-    } catch(e) {
-      // Image might be too large for localStorage (5MB limit)
-      alert('Image too large for storage. Please use a smaller file (under ~2MB).');
-      console.error('[Hub] localStorage quota exceeded:', e);
-    }
-  }
+function readHubFile(file) {
+  const r = new FileReader();
+  r.onload = e => {
+    pendingHub = e.target.result;
+    showHubPreview(pendingHub);
+    document.getElementById('btn-hub-save').disabled  = false;
+    document.getElementById('btn-hub-clear').disabled = false;
+    setHubStatus('', 'Unsaved');
+  };
+  r.readAsDataURL(file);
+}
 
-  function clearHubImage() {
-    localStorage.removeItem('stream_wheel_hub_image');
-    pendingHubDataUrl = null;
-    clearHubPreview();
+function showHubPreview(src) {
+  const img  = document.getElementById('hub-preview');
+  const icon = document.getElementById('hub-drop-icon');
+  const hint = document.getElementById('hub-drop-hint');
+  img.src = src; img.classList.add('visible');
+  icon.style.display = hint.style.display = 'none';
+}
+
+function clearHubPreview() {
+  const img  = document.getElementById('hub-preview');
+  const icon = document.getElementById('hub-drop-icon');
+  const hint = document.getElementById('hub-drop-hint');
+  img.classList.remove('visible'); img.src = '';
+  icon.style.display = hint.style.display = '';
+}
+
+function saveHub() {
+  if (!pendingHub) return;
+  try {
+    localStorage.setItem(LS_HUB, pendingHub);
+    pendingHub = null;
     document.getElementById('btn-hub-save').disabled = true;
-    document.getElementById('btn-hub-clear').disabled = true;
-    document.getElementById('hub-file-input').value = '';
-    setHubStatus('cleared', '○ Cleared');
-    setTimeout(() => setHubStatus('', ''), 2000);
+    setHubStatus('saved', '● Saved');
+    showToast();
+  } catch(e) {
+    alert('Image too large for storage. Please use a smaller image (under ~2 MB).');
   }
+}
 
-  function setHubStatus(cls, text) {
-    const el = document.getElementById('hub-status');
-    el.className = cls;
-    el.textContent = text;
-  }
+function clearHub() {
+  localStorage.removeItem(LS_HUB);
+  pendingHub = null;
+  clearHubPreview();
+  document.getElementById('btn-hub-save').disabled  = true;
+  document.getElementById('btn-hub-clear').disabled = true;
+  document.getElementById('hub-file').value = '';
+  setHubStatus('cleared', '○ Cleared');
+  setTimeout(() => setHubStatus('', ''), 2200);
+}
 
-  /* ══════════════════════════════════════════════════
-     SEGMENTS
-  ══════════════════════════════════════════════════ */
-  const DEFAULT_SEGMENTS = [
-    { key:'WCG',            label:'Winner\nChoose Game', color:'#7c3aed', text:'#ffffff', emoji:'' },
-    { key:'SF',             label:'Shitface',            color:'#0d9488', text:'#ffffff', emoji:'' },
-    { key:'Hydrate',        label:'Hydrate',             color:'#9333ea', text:'#ffffff', emoji:'' },
-    { key:'ViewersChoice',  label:"Viewer's\nChoice",    color:'#0891b2', text:'#ffffff', emoji:'' },
-    { key:'fallgreement',   label:'Fallgreement',        color:'#6d28d9', text:'#ffffff', emoji:'' },
-    { key:'VI',             label:'Voice Impression',    color:'#14b8a6', text:'#ffffff', emoji:'' },
-    { key:'Cosplay',        label:'CC Cosplay',          color:'#5b21b6', text:'#ffffff', emoji:'' },
-    { key:'Nothing',        label:'Nothing',             color:'#1e293b', text:'#ffffff', emoji:'' },
-    { key:'No Swear',       label:'No Swearing',         color:'#4f46e5', text:'#ffffff', emoji:'' },
-    { key:'DF',             label:'Diabolical Foods',    color:'#0e7490', text:'#ffffff', emoji:'' },
-  ];
+function setHubStatus(cls, txt) {
+  const el = document.getElementById('hub-status');
+  el.className = cls; el.textContent = txt;
+}
 
-  let segments = [];
+/* ════════════════════════════════════════════════════
+   SEGMENT RENDER
+════════════════════════════════════════════════════ */
+function render() {
+  const grid = document.getElementById('seg-grid');
+  grid.innerHTML = '';
 
-  function loadSegments() {
-    const stored = localStorage.getItem('stream_wheel_segments');
-    if (stored) {
-      try { segments = JSON.parse(stored); }
-      catch (e) { segments = DEFAULT_SEGMENTS; }
-    } else {
-      segments = DEFAULT_SEGMENTS;
-    }
-    renderGrid();
-  }
+  segments.forEach((seg, i) => {
+    const card = document.createElement('div');
+    card.className = 'seg-card';
+    card.style.setProperty('--card-col', seg.color);
 
-  function renderGrid() {
-    const container = document.getElementById('segments-container');
-    container.innerHTML = '';
+    card.innerHTML = `
+      <div class="seg-strip"></div>
+      <div class="seg-body">
+        <div class="seg-row-top">
+          <span class="seg-index">Slice ${i + 1}</span>
+          <button class="btn btn-danger" onclick="removeSegment(${i})">× Remove</button>
+        </div>
 
-    segments.forEach((seg, index) => {
-      const card = document.createElement('div');
-      card.className = 'segment-card';
-      card.style.setProperty('--card-accent', seg.color);
+        <div class="field">
+          <label>Key ID</label>
+          <input class="input-text inp-key" type="text"
+            value="${esc(seg.key)}" placeholder="UniqueKey">
+        </div>
 
-      card.innerHTML = `
-        <div class="card-strip"></div>
-        <div class="card-body">
-          <div class="card-header-actions">
-            <span class="index-badge">Slice #${index + 1}</span>
-            <button class="btn-delete" onclick="deleteRow(${index})">× Remove</button>
-          </div>
-          <div class="form-group">
-            <label>Unique Key ID</label>
-            <input type="text" class="input-key" value="${escapeHtml(seg.key)}" placeholder="e.g. UniqueID">
-          </div>
-          <div class="form-divider"></div>
-          <div class="form-group">
-            <label>Label Text — use \\n for line wrap</label>
-            <input type="text" class="input-label" value="${escapeHtml(seg.label)}" placeholder="e.g. Line 1\\nLine 2">
-          </div>
-          <div class="color-pickers-row">
-            <div class="form-group">
-              <label>Slice Tint</label>
-              <div class="color-input-wrapper">
-                <input type="color" class="input-color" value="${normalizeColor(seg.color)}" oninput="syncPickerToHex(this)">
-                <input type="text" class="hex-input input-color-hex" value="${normalizeColor(seg.color)}" maxlength="7" spellcheck="false" oninput="syncHexToPicker(this)">
-              </div>
+        <div class="divider"></div>
+
+        <div class="field">
+          <label>Label — use \\n for line wrap</label>
+          <input class="input-text inp-label" type="text"
+            value="${esc(seg.label)}" placeholder="Line 1\\nLine 2">
+        </div>
+
+        <div class="color-row">
+          <div class="field">
+            <label>Slice color</label>
+            <div class="color-wrap">
+              <input type="color" class="inp-color" value="${norm(seg.color)}"
+                oninput="syncPicker(this)">
+              <input type="text" class="hex-field inp-color-hex"
+                value="${norm(seg.color)}" maxlength="7" spellcheck="false"
+                oninput="syncHex(this)">
             </div>
-            <div class="form-group">
-              <label>Font Tint</label>
-              <div class="color-input-wrapper">
-                <input type="color" class="input-text" value="${normalizeColor(seg.text || '#ffffff')}" oninput="syncPickerToHex(this)">
-                <input type="text" class="hex-input input-text-hex" value="${normalizeColor(seg.text || '#ffffff')}" maxlength="7" spellcheck="false" oninput="syncHexToPicker(this)">
-              </div>
+          </div>
+          <div class="field">
+            <label>Text color</label>
+            <div class="color-wrap">
+              <input type="color" class="inp-text" value="${norm(seg.text||'#ffffff')}"
+                oninput="syncPicker(this)">
+              <input type="text" class="hex-field inp-text-hex"
+                value="${norm(seg.text||'#ffffff')}" maxlength="7" spellcheck="false"
+                oninput="syncHex(this)">
             </div>
           </div>
         </div>
-      `;
-      container.appendChild(card);
-    });
+      </div>`;
 
-    document.getElementById('seg-count').textContent = `${segments.length} slice${segments.length !== 1 ? 's' : ''}`;
+    grid.appendChild(card);
+  });
+
+  document.getElementById('count-pill').textContent =
+    `${segments.length} slice${segments.length !== 1 ? 's' : ''}`;
+}
+
+/* ════════════════════════════════════════════════════
+   COLOR SYNC
+════════════════════════════════════════════════════ */
+function syncPicker(picker) {
+  const hex = picker.value;
+  picker.nextElementSibling.value = hex;
+  picker.nextElementSibling.classList.remove('bad');
+  if (picker.classList.contains('inp-color'))
+    picker.closest('.seg-card').style.setProperty('--card-col', hex);
+}
+
+function syncHex(field) {
+  let v = field.value.trim();
+  if (!v.startsWith('#')) v = '#' + v;
+  field.value = v.toUpperCase();
+  const ok = /^#[0-9A-Fa-f]{6}$/.test(v);
+  field.classList.toggle('bad', !ok);
+  if (ok) {
+    field.previousElementSibling.value = v.toLowerCase();
+    if (field.classList.contains('inp-color-hex'))
+      field.closest('.seg-card').style.setProperty('--card-col', v);
   }
+}
 
-  function syncPickerToHex(picker) {
-    const hex = picker.value;
-    const hexField = picker.nextElementSibling;
-    hexField.value = hex;
-    hexField.classList.remove('invalid');
-    if (picker.classList.contains('input-color')) {
-      picker.closest('.segment-card').style.setProperty('--card-accent', hex);
-    }
+/* ════════════════════════════════════════════════════
+   CRUD
+════════════════════════════════════════════════════ */
+function readCards() {
+  document.querySelectorAll('.seg-card').forEach((card, i) => {
+    segments[i] = {
+      key:   card.querySelector('.inp-key').value,
+      label: card.querySelector('.inp-label').value,
+      color: validHex(card.querySelector('.inp-color-hex')) || card.querySelector('.inp-color').value,
+      text:  validHex(card.querySelector('.inp-text-hex'))  || card.querySelector('.inp-text').value,
+    };
+  });
+}
+
+function validHex(field) {
+  return /^#[0-9A-Fa-f]{6}$/.test(field.value) ? field.value : null;
+}
+
+function addSegment() {
+  readCards();
+  segments.push({ key: 'NEW', label: 'New Slice', color: '#7c3aed', text: '#ffffff' });
+  render();
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function removeSegment(i) {
+  readCards();
+  segments.splice(i, 1);
+  render();
+}
+
+function saveAll() {
+  readCards();
+  if (segments.length === 0) {
+    alert('Keep at least one slice!');
+    return;
   }
+  localStorage.setItem(LS_SEGS, JSON.stringify(segments));
+  showToast();
+}
 
-  function syncHexToPicker(hexField) {
-    let val = hexField.value.trim();
-    if (!val.startsWith('#')) val = '#' + val;
-    hexField.value = val.toUpperCase();
-    const isValid = /^#[0-9A-Fa-f]{6}$/.test(val);
-    hexField.classList.toggle('invalid', !isValid);
-    if (isValid) {
-      const picker = hexField.previousElementSibling;
-      picker.value = val.toLowerCase();
-      if (hexField.classList.contains('input-color-hex')) {
-        hexField.closest('.segment-card').style.setProperty('--card-accent', val);
-      }
-    }
-  }
+/* ════════════════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════════════ */
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-  function addNewRow() {
-    readCurrentInputs();
-    segments.push({ key: 'NEW_PRIZE', label: 'Custom\\nPrize', color: '#7c3aed', text: '#ffffff', emoji: '' });
-    renderGrid();
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  }
+function norm(c) {
+  if (!c || !c.startsWith('#')) return '#ffffff';
+  if (c.length === 4) return '#' + c[1]+c[1]+c[2]+c[2]+c[3]+c[3];
+  return c.slice(0, 7);
+}
 
-  function deleteRow(index) {
-    readCurrentInputs();
-    segments.splice(index, 1);
-    renderGrid();
-  }
+let toastTimer;
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-  function readCurrentInputs() {
-    const cards = document.querySelectorAll('.segment-card');
-    const updatedSegments = [];
-    cards.forEach(card => {
-      const key   = card.querySelector('.input-key').value;
-      const label = card.querySelector('.input-label').value;
-      const colorHexField = card.querySelector('.input-color-hex');
-      const textHexField  = card.querySelector('.input-text-hex');
-      const color = /^#[0-9A-Fa-f]{6}$/.test(colorHexField.value) ? colorHexField.value : card.querySelector('.input-color').value;
-      const text  = /^#[0-9A-Fa-f]{6}$/.test(textHexField.value)  ? textHexField.value  : card.querySelector('.input-text').value;
-      updatedSegments.push({ key, label, color, text, emoji: '' });
-    });
-    segments = updatedSegments;
-  }
-
-  function saveSegments() {
-    readCurrentInputs();
-    if (segments.length === 0) {
-      alert("Operation aborted! Keep at least 1 functional segment available for the rendering wheel engine.");
-      return;
-    }
-    localStorage.setItem('stream_wheel_segments', JSON.stringify(segments));
-    showToast();
-  }
-
-  function showToast() {
-    const toast = document.getElementById('status-toast');
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3500);
-  }
-
-  function escapeHtml(str) {
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-  }
-
-  function normalizeColor(colorStr) {
-    if (!colorStr.startsWith('#')) return '#ffffff';
-    if (colorStr.length === 4) {
-      return '#' + colorStr[1] + colorStr[1] + colorStr[2] + colorStr[2] + colorStr[3] + colorStr[3];
-    }
-    return colorStr.substring(0, 7);
-  }
-
-  /* ── Init ── */
-  initHubSection();
-  loadSegments();
+load();
 </script>
 </body>
 </html>
