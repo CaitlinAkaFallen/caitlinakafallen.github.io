@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viewer Dashboard Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { overflow-y: scroll; scrollbar-width: none; -ms-overflow-style: none; }
+    html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar { width: 0; height: 0; background: transparent; }
+
+    :root {
+      --purple-deep:   #4c1d95;
+      --purple-mid:    #7c3aed;
+      --purple-bright: #a78bfa;
+      --teal:          #2dd4bf;
+      --teal-dim:      #0d9488;
+      --cyan:          #06b6d4;
+      --rose:          #f43f5e;
+      --slate-dark:    #0b0d17;
+      --slate-mid:     #0f172a;
+      --slate-panel:   #1e293b;
+      --glass-border:  rgba(255,255,255,0.07);
+      --text-dim:      #64748b;
+      --text-mid:      #94a3b8;
+      --text-bright:   #e2e8f0;
+      --twitch-purple: #9146FF;
+    }
+
+    body {
+      background: var(--slate-dark);
+      color: #f8fafc;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      padding: 0 0 80px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(124,58,237,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 90%,  rgba(6,182,212,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 60% at 50% 50%,  rgba(11,13,23,0.6)   0%, transparent 100%);
+      pointer-events: none; z-index: 0;
+    }
+
+    body::after {
+      content: ''; position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+      background-size: 40px 40px; pointer-events: none; z-index: 0;
+    }
+
+    .dashboard-container {
+      position: relative; max-width: 800px; margin: 0 auto; padding: 0 24px; z-index: 1;
+    }
+
+    header { text-align: center; padding: 52px 0 36px; position: relative; }
+    header::after {
+      content: ''; display: block; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(167,139,250,0.4), rgba(6,182,212,0.4), transparent);
+      margin-top: 28px;
+    }
+    .header-eyebrow {
+      font-family: 'Space Mono', monospace; font-size: 11px; color: var(--teal);
+      letter-spacing: 4px; text-transform: uppercase; margin-bottom: 10px; opacity: 0.8;
+    }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif; font-size: 62px; letter-spacing: 5px;
+      background: linear-gradient(130deg, #c4b5fd 0%, #a855f7 45%, #22d3ee 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 30px rgba(168,85,247,0.35)); display: inline-block; line-height: 1;
+    }
+
+    .status-card {
+      background: rgba(15,23,42,0.5);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border); border-radius: 16px;
+      padding: 0; position: relative; display: flex; flex-direction: column; overflow: hidden;
+      margin-top: 40px; text-align: center;
+    }
+    .card-strip {
+      height: 3px; background: linear-gradient(90deg, var(--twitch-purple), transparent 80%);
+      box-shadow: 0 0 12px var(--twitch-purple); flex-shrink: 0;
+    }
+    .card-body { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+    .btn-twitch {
+      background: var(--twitch-purple); color: #ffffff;
+      border: 1px solid rgba(145, 70, 255, 0.5); border-radius: 10px; padding: 14px 32px;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 18px;
+      letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+      transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 10px;
+      text-decoration: none; box-shadow: 0 0 20px rgba(145, 70, 255, 0.2);
+    }
+    .btn-twitch:hover {
+      background: #a970ff; box-shadow: 0 0 30px rgba(145, 70, 255, 0.4), inset 0 0 10px rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+    }
+
+    .stream-status {
+      display: none; flex-direction: column; align-items: center; gap: 10px; width: 100%;
+    }
+    .status-badge {
+      font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; padding: 6px 16px;
+      border-radius: 100px; border: 1px solid;
+    }
+    .status-online { color: #22c55e; background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); box-shadow: 0 0 15px rgba(34,197,94,0.2); }
+    .status-offline { color: var(--text-dim); background: rgba(100,116,139,0.1); border-color: rgba(100,116,139,0.3); }
+
+    .stream-info { font-size: 24px; color: var(--text-bright); margin-top: 10px; }
+    .stream-title { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--cyan); margin-top: 5px; }
+
+    #loading { font-family: 'Space Mono', monospace; color: var(--purple-bright); display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    <header>
+      <div class="header-eyebrow">// viewer_dashboard_v1</div>
+      <h1>Stream Status</h1>
+    </header>
+
+    <div class="status-card">
+      <div class="card-strip"></div>
+      <div class="card-body">
+        
+        <a id="twitch-login-btn" class="btn-twitch" href="#">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
+          Connect Twitch
+        </a>
+
+        <div id="loading">AUTHENTICATING...</div>
+
+        <div id="stream-data" class="stream-status">
+          <div id="status-indicator" class="status-badge status-offline">OFFLINE</div>
+          <div class="stream-info">@fallenoneart</div>
+          <div id="stream-title" class="stream-title">Waiting for stream to start...</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+  // =======================================================================
+  // CONFIGURATION: Replace these with your actual Twitch Developer details
+  // =======================================================================
+  const CLIENT_ID = '87lnemvwe90imdy4epe41ylw79aeyj';
+  // REDIRECT_URI must exactly match the OAuth Redirect URL in your Twitch Console
+  const REDIRECT_URI = window.location.href.split('#')[0]; 
+  const TARGET_CHANNEL = 'fallenoneart';
+
+  const loginBtn = document.getElementById('twitch-login-btn');
+  const loading = document.getElementById('loading');
+  const streamData = document.getElementById('stream-data');
+  const statusIndicator = document.getElementById('status-indicator');
+  const streamTitle = document.getElementById('stream-title');
+
+  // 1. Setup the Twitch Login URL
+  const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=`;
+  loginBtn.href = authUrl;
+
+  // 2. Check for Token in the URL hash
+  function getAccessToken() {
+    const hash = window.location.hash;
+    if (!hash) return null;
+    const params = new URLSearchParams(hash.substring(1));
+    return params.get('access_token');
+  }
+
+  // 3. Fetch Stream Status using the token
+  async function checkStreamStatus(token) {
+    try {
+      const response = await fetch(`https://api.twitch.tv/helix/streams?user_login=${TARGET_CHANNEL}`, {
+        headers: {
+          'Client-ID': CLIENT_ID,
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch stream data');
+      
+      const data = await response.json();
+      
+      loading.style.display = 'none';
+      streamData.style.display = 'flex';
+
+      if (data.data && data.data.length > 0) {
+        // Stream is live
+        const stream = data.data[0];
+        statusIndicator.textContent = 'LIVE NOW';
+        statusIndicator.className = 'status-badge status-online';
+        streamTitle.textContent = `${stream.game_name} — ${stream.title}`;
+      } else {
+        // Stream is offline
+        statusIndicator.textContent = 'OFFLINE';
+        statusIndicator.className = 'status-badge status-offline';
+        streamTitle.textContent = 'Currently offline. Check back later!';
+      }
+    } catch (error) {
+      console.error('[Dashboard Error]', error);
+      loading.textContent = 'ERROR LOADING DATA';
+    }
+  }
+
+  // Init
+  const token = getAccessToken();
+  if (token) {
+    loginBtn.style.display = 'none';
+    loading.style.display = 'block';
+    
+    // Clean up the URL so the token isn't just sitting there
+    history.replaceState(null, '', window.location.pathname);
+    
+    checkStreamStatus(token);
+  }
+</script>
+</body>
+</html>
