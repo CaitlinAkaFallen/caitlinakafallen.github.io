@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prize Wallet — FallenOneArt</title>
+  <title>Viewer Dashboard-User's Wallet</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -177,10 +177,35 @@
 
     .user-info { flex: 1; }
 
+    .user-name-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .user-name {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 26px; letter-spacing: 2px;
       color: var(--bright);
+    }
+
+    .btn-signout {
+      background: transparent;
+      border: 1px solid rgba(244, 63, 94, 0.2);
+      color: var(--rose);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+    }
+    .btn-signout:hover {
+      background: rgba(244, 63, 94, 0.1);
+      border-color: var(--rose);
     }
 
     .user-login {
@@ -326,6 +351,7 @@
       border-radius: 12px;
       padding: 36px 24px;
       text-align: center;
+      grid-column: 1 / -1;
     }
 
     .state-icon {
@@ -410,11 +436,14 @@
     </div>
   </div>
 
-  <div class="user-card">
-    <img id="user-avatar" src=" " alt="">
+  <div class="user-card" id="user-card">
+    <img id="user-avatar" src="" alt="">
     <div class="user-info">
-      <div class="user-name"  id="user-name">—</div>
-      <div class="user-login" id="user-login">// enter a username below</div>
+      <div class="user-name-row">
+        <div class="user-name" id="user-name">—</div>
+        <button id="signout-btn" class="btn-signout" onclick="logout()" style="display: none;">Sign Out</button>
+      </div>
+      <div class="user-login" id="user-login">// Login with twitch above</div>
     </div>
     <div class="stream-status offline" id="stream-status">Offline</div>
   </div>
@@ -425,7 +454,7 @@
       <div class="section-rule"></div>
     </div>
 
-    <div class="lookup-wrap">
+    <div class="lookup-wrap" id="lookup-wrap" style="display: none;">
       <input id="lookup-input" type="text"
         placeholder="Enter your Twitch username…"
         onkeydown="if(event.key==='Enter') lookupUser()">
@@ -436,7 +465,7 @@
       <div class="state-box">
         <div class="state-icon">🎡</div>
         <div class="state-title">No User Loaded</div>
-        <div class="state-sub">Enter your Twitch username above<br>to see your prize wallet.</div>
+        <div class="state-sub">Connect your Twitch account above<br>to access your live prize wallet.</div>
       </div>
     </div>
   </div>
@@ -472,32 +501,21 @@
     </div>
   </div>
 
-</div><script>
+</div>
+
+<script>
 // ── Config ────────────────────────────────────────────────────────
 const CLIENT_ID      = '87lnemvwe90imdy4epe41ylw79aeyj';
 const REDIRECT_URI   = window.location.href.split('#')[0];
 const TARGET_CHANNEL = 'fallenoneart';
 
-// Set up the Twitch Login URL dynamically using Config
+// Setup the Twitch Login Authorization Link (Adds necessary token parameter)
 const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=`;
 document.getElementById('twitch-login-btn').href = authUrl;
-
-/* ════════════════════════════════════════════════════
-   Wallet reads the same localStorage key that
-   Streamer.bot's HandleResult writes via CPH.SetGlobalVar.
-
-   Key format:  sw_inv_{username_lowercase}
-   Value:       JSON string of { [prizeKey]: { count, label } }
-
-   Because this runs on the same domain as the overlay
-   (both served via VS Code Live Server on port 5500),
-   they share the same localStorage origin.
-════════════════════════════════════════════════════ */
 
 const LS_INV  = u => `sw_inv_${u.toLowerCase()}`;
 const LS_SEGS = 'sw_segments';
 
-// Segment colour lookup so prize cards match wheel colours
 function segmentColors() {
   const map = {};
   try {
@@ -507,14 +525,108 @@ function segmentColors() {
   return map;
 }
 
-/* Auto-load from URL param ?user=username */
-function autoLoad() {
-  const p = new URLSearchParams(window.location.search);
-  const u = p.get('user');
-  if (u) {
-    document.getElementById('lookup-input').value = u;
-    lookupUser();
+// ── Twitch Authentication Flow ──────────────────────────────────
+function checkAuth() {
+  // 1. Process active return from Twitch redirect
+  if (window.location.hash) {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const token = hashParams.get('access_token');
+    
+    if (token) {
+      localStorage.setItem('tw_dashboard_token', token);
+      window.history.replaceState({}, document.title, window.location.pathname); // clear hash from URL
+      fetchTwitchProfile(token);
+      return;
+    }
   }
+
+  // 2. Check for an existing saved session
+  const savedToken = localStorage.getItem('tw_dashboard_token');
+  const savedUser  = localStorage.getItem('tw_dashboard_user');
+  
+  if (savedToken && savedUser) {
+    const savedDisplay = localStorage.getItem('tw_dashboard_display') || savedUser;
+    const savedAvatar  = localStorage.getItem('tw_dashboard_avatar') || '';
+    loginSuccess(savedUser, savedDisplay, savedAvatar);
+  } else if (savedToken) {
+    fetchTwitchProfile(savedToken);
+  } else {
+    // If a direct parameter search ?user= is appended, let it override visual locks
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryUser = urlParams.get('user');
+    if (queryUser) {
+      document.getElementById('lookup-wrap').style.display = 'flex';
+      document.getElementById('lookup-input').value = queryUser;
+      lookupUser();
+    }
+  }
+}
+
+function fetchTwitchProfile(token) {
+  fetch('https://api.twitch.tv/helix/users', {
+    headers: {
+      'Client-ID': CLIENT_ID,
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Token expired');
+    return res.json();
+  })
+  .then(payload => {
+    if (payload.data && payload.data.length > 0) {
+      const user = payload.data[0];
+      localStorage.setItem('tw_dashboard_user', user.login);
+      localStorage.setItem('tw_dashboard_display', user.display_name);
+      localStorage.setItem('tw_dashboard_avatar', user.profile_image_url);
+      
+      loginSuccess(user.login, user.display_name, user.profile_image_url);
+    }
+  })
+  .catch(err => {
+    console.warn('[Auth] Token verification failed:', err);
+    logout();
+  });
+}
+
+function loginSuccess(username, displayName, avatarUrl) {
+  document.getElementById('auth-card').style.display = 'none';
+  document.getElementById('lookup-wrap').style.display = 'flex'; // Search bar only appears when logged in
+  document.getElementById('signout-btn').style.display = 'inline-block';
+
+  // Fill in search input automatically for smooth user experience
+  const searchBar = document.getElementById('lookup-input');
+  if (!searchBar.value) {
+    searchBar.value = username;
+  }
+
+  updateUserCard(username, displayName, avatarUrl);
+  loadPrizes(username);
+}
+
+function logout() {
+  localStorage.removeItem('tw_dashboard_token');
+  localStorage.removeItem('tw_dashboard_user');
+  localStorage.removeItem('tw_dashboard_display');
+  localStorage.removeItem('tw_dashboard_avatar');
+
+  document.getElementById('auth-card').style.display = 'block';
+  document.getElementById('lookup-wrap').style.display = 'none';
+  document.getElementById('signout-btn').style.display = 'none';
+  document.getElementById('lookup-input').value = '';
+
+  document.getElementById('user-name').textContent = '—';
+  document.getElementById('user-login').textContent = '// Login with twitch above';
+  document.getElementById('user-avatar').src = '';
+  document.getElementById('stream-status').textContent = 'Offline';
+  document.getElementById('stream-status').className = 'stream-status offline';
+
+  document.getElementById('prize-grid').innerHTML = `
+    <div class="state-box">
+      <div class="state-icon">🎡</div>
+      <div class="state-title">No User Loaded</div>
+      <div class="state-sub">Connect your Twitch account above<br>to access your live prize wallet.</div>
+    </div>`;
 }
 
 function lookupUser() {
@@ -522,25 +634,30 @@ function lookupUser() {
   if (!raw) return;
 
   const user = raw.toLowerCase();
-  updateUserCard(raw);
+  
+  // Use cached high-res avatar if checking self, else use decapi fallback
+  const cachedUser = localStorage.getItem('tw_dashboard_user');
+  let avatar = `https://decapi.me/twitch/avatar/${user}`;
+  if (cachedUser && cachedUser.toLowerCase() === user) {
+    avatar = localStorage.getItem('tw_dashboard_avatar') || avatar;
+  }
+
+  updateUserCard(user, raw, avatar);
   loadPrizes(user);
 }
 
-/* Attempt to pull avatar from decapi (public CORS-friendly endpoint) */
-function updateUserCard(username) {
+function updateUserCard(username, displayName, avatarUrl) {
   const nameEl   = document.getElementById('user-name');
   const loginEl  = document.getElementById('user-login');
   const avatarEl = document.getElementById('user-avatar');
   const statusEl = document.getElementById('stream-status');
 
-  nameEl.textContent  = username.toUpperCase();
+  nameEl.textContent  = displayName.toUpperCase();
   loginEl.textContent = `// ${username.toLowerCase()}`;
+  avatarEl.src        = avatarUrl;
+  avatarEl.onerror    = () => { avatarEl.src = ''; };
 
-  // Avatar via decapi.me (no auth required)
-  avatarEl.src = `https://decapi.me/twitch/avatar/${username.toLowerCase()}`;
-  avatarEl.onerror = () => { avatarEl.src = ''; };
-
-  // Stream status via decapi.me
+  // Live status update lookup via decapi
   fetch(`https://decapi.me/twitch/uptime/${username.toLowerCase()}`)
     .then(r => r.text())
     .then(t => {
@@ -558,7 +675,6 @@ function loadPrizes(user) {
   const grid   = document.getElementById('prize-grid');
   const colors = segmentColors();
 
-  // Read from localStorage (same origin as overlay)
   const raw = localStorage.getItem(LS_INV(user)) || '{}';
   let inv;
   try { inv = JSON.parse(raw); } catch(e) { inv = {}; }
@@ -567,7 +683,7 @@ function loadPrizes(user) {
 
   if (!items.length) {
     grid.innerHTML = `
-      <div class="state-box" style="grid-column:1/-1">
+      <div class="state-box">
         <div class="state-icon">📭</div>
         <div class="state-title">Wallet Empty</div>
         <div class="state-sub">
@@ -600,15 +716,76 @@ function esc(s) {
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-/* Live-refresh when SB writes new inventory (same-tab not possible,
-   but useful when admin panel is open in another tab on same origin) */
+// ── Streamer.bot WebSocket Live Synchronizer ────────────────────
+const urlParams = new URLSearchParams(window.location.search);
+const WS_HOST   = urlParams.get('address') || 'localhost';
+const WS_PORT   = urlParams.get('port')    || '8080';
+const WS_URI    = `ws://${WS_HOST}:${WS_PORT}/`;
+
+function connectWS() {
+  try {
+    const ws = new WebSocket(WS_URI);
+
+    ws.onopen = () => {
+      console.log('[Wallet Sync] Connected to Streamer.bot WebSocket Server →', WS_URI);
+      ws.send(JSON.stringify({
+        request: 'Subscribe',
+        events:  { general: ['Custom'] },
+        id:      'DashboardWalletSub'
+      }));
+    };
+
+    ws.onmessage = e => {
+      let msg;
+      try { msg = JSON.parse(e.data); } catch { return; }
+      
+      // Route internal envelope structure
+      let data = null;
+      if (msg.eventName === 'WalletUpdate') {
+        data = msg;
+      } else if (msg.data !== undefined) {
+        let inner = msg.data;
+        if (typeof inner === 'string') {
+          try { inner = JSON.parse(inner); } catch { inner = null; }
+        }
+        if (inner && inner.eventName === 'WalletUpdate') data = inner;
+      }
+
+      if (!data) return;
+
+      // Extract details sent from the updated unified C# script
+      const targetUser = data.user.toLowerCase();
+      localStorage.setItem(LS_INV(targetUser), JSON.stringify(data.inventory));
+      console.log(`[Wallet Sync] Automatically saved fresh win data for user: ${targetUser}`);
+
+      // If the viewer currently loaded matches the target, live-update their screen cards!
+      const activeInput = document.getElementById('lookup-input').value.trim().toLowerCase().replace(/^@/, '');
+      if (activeInput === targetUser) {
+        loadPrizes(targetUser);
+      }
+    };
+
+    ws.onclose = () => {
+      setTimeout(connectWS, 5000); // Retry reconnecting in 5s if stream machine is toggled
+    };
+
+    ws.onerror = () => {
+      ws.close();
+    };
+  } catch (err) {
+    setTimeout(connectWS, 5000);
+  }
+}
+
+// ── Initialization ──────────────────────────────────────────────
 window.addEventListener('storage', e => {
   if (!e.key) return;
   const input = document.getElementById('lookup-input').value.trim().replace(/^@/,'');
   if (input && e.key === LS_INV(input.toLowerCase())) loadPrizes(input.toLowerCase());
 });
 
-autoLoad();
+checkAuth();
+connectWS();
 </script>
 </body>
 </html>
