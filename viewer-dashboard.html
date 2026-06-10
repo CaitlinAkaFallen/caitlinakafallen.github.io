@@ -34,8 +34,15 @@
       overflow-x: hidden;
     }
 
-    ::-webkit-scrollbar { display: none; }
-    * { scrollbar-width: none; }
+    html {
+      -ms-overflow-style: none;
+      overflow: -moz-scrollbars-none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
 
     /* Ambient layers */
     body::before {
@@ -259,45 +266,6 @@
     /* ── Prize wallet ────────────────────────────────── */
     #prize-section { margin-bottom: 36px; }
 
-    /* lookup input */
-    .lookup-wrap {
-      display: flex; gap: 10px; margin-bottom: 20px;
-      align-items: stretch;
-    }
-
-    #lookup-input {
-      flex: 1;
-      background: rgba(15,22,35,.75);
-      border: 1px solid rgba(255,255,255,.08);
-      color: var(--bright); padding: 10px 14px;
-      border-radius: 9px;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 16px; font-weight: 600;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    #lookup-input:focus {
-      outline: none;
-      border-color: rgba(167,139,250,.5);
-      box-shadow: 0 0 0 3px rgba(167,139,250,.07);
-    }
-    #lookup-input::placeholder { color: var(--dim); }
-
-    .btn-lookup {
-      background: rgba(124,58,237,.15);
-      border: 1px solid rgba(167,139,250,.35);
-      color: var(--purple-lt);
-      padding: 10px 22px; border-radius: 9px;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 14px; font-weight: 700;
-      letter-spacing: 1.5px; text-transform: uppercase;
-      cursor: pointer;
-      transition: all .2s;
-    }
-    .btn-lookup:hover {
-      background: rgba(124,58,237,.28);
-      border-color: rgba(167,139,250,.6);
-    }
-
     /* Prize cards grid */
     #prize-grid {
       display: grid;
@@ -310,6 +278,9 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       transition: transform .2s, box-shadow .2s;
     }
     .prize-card:hover {
@@ -324,7 +295,8 @@
     }
 
     .prize-body {
-      padding: 14px 16px 16px;
+      padding: 14px 16px 14px;
+      flex-grow: 1;
     }
 
     .prize-label {
@@ -332,6 +304,14 @@
       font-size: 17px; font-weight: 700;
       color: var(--bright); line-height: 1.25;
       margin-bottom: 8px;
+    }
+
+    .prize-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 6px;
     }
 
     .prize-count {
@@ -342,6 +322,19 @@
 
     .prize-count span {
       color: var(--purple-lt); font-size: 13px;
+    }
+
+    .channel-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--cyan);
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     /* Empty / loading states */
@@ -411,6 +404,7 @@
       font-size: 14px; font-weight: 600;
       color: var(--mid); line-height: 1.3;
     }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -437,11 +431,11 @@
   </div>
 
   <div class="user-card" id="user-card">
-    <img id="user-avatar" src="" alt="">
+    <img id="user-avatar" src=" " alt="">
     <div class="user-info">
       <div class="user-name-row">
         <div class="user-name" id="user-name">—</div>
-        <button id="signout-btn" class="btn-signout" onclick="logout()" style="display: none;">Sign Out</button>
+        <button id="signout-btn" class="btn-signout hidden" onclick="logout()">Sign Out</button>
       </div>
       <div class="user-login" id="user-login">// Login with twitch above</div>
     </div>
@@ -452,13 +446,6 @@
     <div class="section-row">
       <span class="section-lbl">Your Prizes</span>
       <div class="section-rule"></div>
-    </div>
-
-    <div class="lookup-wrap" id="lookup-wrap" style="display: none;">
-      <input id="lookup-input" type="text"
-        placeholder="Enter your Twitch username…"
-        onkeydown="if(event.key==='Enter') lookupUser()">
-      <button class="btn-lookup" onclick="lookupUser()">Look Up</button>
     </div>
 
     <div id="prize-grid">
@@ -509,7 +496,6 @@ const CLIENT_ID      = '87lnemvwe90imdy4epe41ylw79aeyj';
 const REDIRECT_URI   = window.location.href.split('#')[0];
 const TARGET_CHANNEL = 'fallenoneart';
 
-// Setup the Twitch Login Authorization Link (Adds necessary token parameter)
 const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=`;
 document.getElementById('twitch-login-btn').href = authUrl;
 
@@ -527,20 +513,18 @@ function segmentColors() {
 
 // ── Twitch Authentication Flow ──────────────────────────────────
 function checkAuth() {
-  // 1. Process active return from Twitch redirect
   if (window.location.hash) {
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const token = hashParams.get('access_token');
     
     if (token) {
       localStorage.setItem('tw_dashboard_token', token);
-      window.history.replaceState({}, document.title, window.location.pathname); // clear hash from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
       fetchTwitchProfile(token);
       return;
     }
   }
 
-  // 2. Check for an existing saved session
   const savedToken = localStorage.getItem('tw_dashboard_token');
   const savedUser  = localStorage.getItem('tw_dashboard_user');
   
@@ -550,15 +534,6 @@ function checkAuth() {
     loginSuccess(savedUser, savedDisplay, savedAvatar);
   } else if (savedToken) {
     fetchTwitchProfile(savedToken);
-  } else {
-    // If a direct parameter search ?user= is appended, let it override visual locks
-    const urlParams = new URLSearchParams(window.location.search);
-    const queryUser = urlParams.get('user');
-    if (queryUser) {
-      document.getElementById('lookup-wrap').style.display = 'flex';
-      document.getElementById('lookup-input').value = queryUser;
-      lookupUser();
-    }
   }
 }
 
@@ -591,14 +566,7 @@ function fetchTwitchProfile(token) {
 
 function loginSuccess(username, displayName, avatarUrl) {
   document.getElementById('auth-card').style.display = 'none';
-  document.getElementById('lookup-wrap').style.display = 'flex'; // Search bar only appears when logged in
   document.getElementById('signout-btn').style.display = 'inline-block';
-
-  // Fill in search input automatically for smooth user experience
-  const searchBar = document.getElementById('lookup-input');
-  if (!searchBar.value) {
-    searchBar.value = username;
-  }
 
   updateUserCard(username, displayName, avatarUrl);
   loadPrizes(username);
@@ -611,9 +579,7 @@ function logout() {
   localStorage.removeItem('tw_dashboard_avatar');
 
   document.getElementById('auth-card').style.display = 'block';
-  document.getElementById('lookup-wrap').style.display = 'none';
   document.getElementById('signout-btn').style.display = 'none';
-  document.getElementById('lookup-input').value = '';
 
   document.getElementById('user-name').textContent = '—';
   document.getElementById('user-login').textContent = '// Login with twitch above';
@@ -629,23 +595,6 @@ function logout() {
     </div>`;
 }
 
-function lookupUser() {
-  const raw = document.getElementById('lookup-input').value.trim().replace(/^@/, '');
-  if (!raw) return;
-
-  const user = raw.toLowerCase();
-  
-  // Use cached high-res avatar if checking self, else use decapi fallback
-  const cachedUser = localStorage.getItem('tw_dashboard_user');
-  let avatar = `https://decapi.me/twitch/avatar/${user}`;
-  if (cachedUser && cachedUser.toLowerCase() === user) {
-    avatar = localStorage.getItem('tw_dashboard_avatar') || avatar;
-  }
-
-  updateUserCard(user, raw, avatar);
-  loadPrizes(user);
-}
-
 function updateUserCard(username, displayName, avatarUrl) {
   const nameEl   = document.getElementById('user-name');
   const loginEl  = document.getElementById('user-login');
@@ -657,7 +606,6 @@ function updateUserCard(username, displayName, avatarUrl) {
   avatarEl.src        = avatarUrl;
   avatarEl.onerror    = () => { avatarEl.src = ''; };
 
-  // Live status update lookup via decapi
   fetch(`https://decapi.me/twitch/uptime/${username.toLowerCase()}`)
     .then(r => r.text())
     .then(t => {
@@ -679,7 +627,12 @@ function loadPrizes(user) {
   let inv;
   try { inv = JSON.parse(raw); } catch(e) { inv = {}; }
 
-  const items = Object.entries(inv).filter(([, v]) => v.count > 0);
+  // Support both legacy numeric tracking and the new channel-aware objects safely
+  const items = Object.entries(inv).filter(([, val]) => {
+    if (!val) return false;
+    const count = typeof val === 'object' ? val.count : val;
+    return count > 0;
+  });
 
   if (!items.length) {
     grid.innerHTML = `
@@ -687,7 +640,7 @@ function loadPrizes(user) {
         <div class="state-icon">📭</div>
         <div class="state-title">Wallet Empty</div>
         <div class="state-sub">
-          ${user} hasn't won any prizes yet.<br>
+          You haven't won any prizes yet.<br>
           Type <strong>$ws</strong> in chat to spin the wheel!
         </div>
       </div>`;
@@ -696,16 +649,32 @@ function loadPrizes(user) {
 
   grid.innerHTML = '';
   items.forEach(([key, prize]) => {
-    const col  = colors[key] || '#7c3aed';
+    const col   = colors[key] || '#7c3aed';
+    const label = typeof prize === 'object' ? (prize.label || key) : key;
+    const count = typeof prize === 'object' ? prize.count : prize;
+    const originChannel = typeof prize === 'object' && prize.channel ? prize.channel : null;
+
     const card = document.createElement('div');
     card.className = 'prize-card';
     card.style.setProperty('--pc', col);
-    card.innerHTML = `
+    
+    // Create inner content string checking if channel info is present
+    let innerContent = `
       <div class="prize-strip"></div>
       <div class="prize-body">
-        <div class="prize-label">${esc(prize.label || key)}</div>
-        <div class="prize-count">Held: <span>×${prize.count}</span></div>
+        <div class="prize-label">${esc(label)}</div>
+        <div class="prize-meta-row">
+          <div class="prize-count">Held: <span>×${count}</span></div>`;
+          
+    if (originChannel) {
+      innerContent += `<div class="channel-badge">From: ${esc(originChannel)}</div>`;
+    }
+    
+    innerContent += `
+        </div>
       </div>`;
+      
+    card.innerHTML = innerContent;
     grid.appendChild(card);
   });
 }
@@ -735,15 +704,9 @@ function connectWS() {
       }));
     };
 
-    ws.onmessage = e => {
-      let msg;
-      try { msg = JSON.parse(e.data); } catch { return; }
-      
-      // Route internal envelope structure
+    ws.onmessage = (msg) => {
       let data = null;
-      if (msg.eventName === 'WalletUpdate') {
-        data = msg;
-      } else if (msg.data !== undefined) {
+      if (msg.data !== undefined) {
         let inner = msg.data;
         if (typeof inner === 'string') {
           try { inner = JSON.parse(inner); } catch { inner = null; }
@@ -753,20 +716,19 @@ function connectWS() {
 
       if (!data) return;
 
-      // Extract details sent from the updated unified C# script
       const targetUser = data.user.toLowerCase();
       localStorage.setItem(LS_INV(targetUser), JSON.stringify(data.inventory));
-      console.log(`[Wallet Sync] Automatically saved fresh win data for user: ${targetUser}`);
+      console.log(`[Manual Wallet Sync] Received fresh state data for: ${targetUser}`);
 
-      // If the viewer currently loaded matches the target, live-update their screen cards!
-      const activeInput = document.getElementById('lookup-input').value.trim().toLowerCase().replace(/^@/, '');
-      if (activeInput === targetUser) {
-        loadPrizes(targetUser);
+      // Automatically live-refresh the UI if the current logged-in user matches the payload target
+      const currentUser = localStorage.getItem('tw_dashboard_user');
+      if (currentUser && currentUser.toLowerCase() === targetUser) {
+        loadPrizes(currentUser);
       }
     };
 
     ws.onclose = () => {
-      setTimeout(connectWS, 5000); // Retry reconnecting in 5s if stream machine is toggled
+      setTimeout(connectWS, 5000);
     };
 
     ws.onerror = () => {
@@ -780,8 +742,10 @@ function connectWS() {
 // ── Initialization ──────────────────────────────────────────────
 window.addEventListener('storage', e => {
   if (!e.key) return;
-  const input = document.getElementById('lookup-input').value.trim().replace(/^@/,'');
-  if (input && e.key === LS_INV(input.toLowerCase())) loadPrizes(input.toLowerCase());
+  const activeUser = localStorage.getItem('tw_dashboard_user');
+  if (activeUser && e.key === LS_INV(activeUser.toLowerCase())) {
+    loadPrizes(activeUser.toLowerCase());
+  }
 });
 
 checkAuth();

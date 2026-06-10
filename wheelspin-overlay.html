@@ -30,7 +30,6 @@
         drop-shadow(0 0 60px rgba(167,139,250,.12));
     }
 
-    /* CSS hub — visible when no custom image */
     #css-hub {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
@@ -44,7 +43,6 @@
       z-index: 20;
     }
 
-    /* Pointer triangle */
     .pointer {
       position: absolute; top: -6px; left: 50%;
       transform: translateX(-50%);
@@ -58,7 +56,6 @@
         drop-shadow(0 4px 14px rgba(0,0,0,.8));
     }
 
-    /* Spinning-for banner */
     #spin-banner {
       position: absolute; bottom: -58px; left: 50%;
       transform: translateX(-50%);
@@ -91,7 +88,6 @@
         opacity .3s ease;
     }
 
-    /* Gradient border via pseudo */
     #winner-card::before {
       content: '';
       position: absolute; inset: -2px;
@@ -100,7 +96,6 @@
       z-index: -1;
     }
 
-    /* Inner glow */
     #winner-card::after {
       content: '';
       position: absolute; inset: 0;
@@ -115,7 +110,6 @@
       opacity: 1;
     }
 
-    /* Avatar */
     #wc-avatar-wrap {
       width: 88px; height: 88px;
       border-radius: 50%;
@@ -152,7 +146,6 @@
       font-weight: 600; text-transform: uppercase;
     }
 
-    /* WS status dot */
     #ws-dot {
       position: fixed; top: 14px; right: 16px;
       width: 10px; height: 10px; border-radius: 50%;
@@ -189,9 +182,6 @@
 <script>
 'use strict';
 
-/* ══════════════════════════════════════════════════════
-   SEGMENTS  (fallback; overridden by admin dashboard)
-══════════════════════════════════════════════════════ */
 let SEGMENTS = [
   { key:'WCG',           label:'Winner\nChoose Game', color:'#7C3AED', text:'#ffffff' },
   { key:'SF',            label:'Shitface',            color:'#0D9488', text:'#ffffff' },
@@ -212,17 +202,14 @@ let SEGMENTS = [
   } catch(e) {}
 })();
 
-/* ══════════════════════════════════════════════════════
-   CANVAS
-══════════════════════════════════════════════════════ */
 const canvas  = document.getElementById('wheelCanvas');
 const ctx     = canvas.getContext('2d');
 const DPR     = Math.min(window.devicePixelRatio || 1, 2);
 const SIZE    = 600;
 const CX      = SIZE / 2;
 const CY      = SIZE / 2;
-const R       = 278;   // outer wheel radius
-const HUB_R   = 30;   // hub circle radius
+const R       = 278;
+const HUB_R   = 30;
 
 canvas.width  = SIZE * DPR;
 canvas.height = SIZE * DPR;
@@ -234,9 +221,6 @@ let angle    = 0;
 let spinning = false;
 const queue  = [];
 
-/* ══════════════════════════════════════════════════════
-   HUB IMAGE
-══════════════════════════════════════════════════════ */
 let hubImage = null;
 const cssHub = document.getElementById('css-hub');
 
@@ -254,7 +238,6 @@ function loadHubImage() {
   img.src = stored;
 }
 
-// Live-sync from admin dashboard (same origin, different tab)
 window.addEventListener('storage', e => {
   if (e.key === 'sw_hub_image')  loadHubImage();
   if (e.key === 'sw_segments') {
@@ -262,20 +245,15 @@ window.addEventListener('storage', e => {
   }
 });
 
-/* ══════════════════════════════════════════════════════
-   DRAW WHEEL
-══════════════════════════════════════════════════════ */
 function drawWheel(a) {
   ctx.clearRect(0, 0, SIZE, SIZE);
   const n   = SEGMENTS.length;
   const arc = (2 * Math.PI) / n;
 
-  // Slices
   SEGMENTS.forEach((seg, i) => {
     const start = a + i * arc;
     const end   = start + arc;
 
-    // Fill
     ctx.beginPath();
     ctx.moveTo(CX, CY);
     ctx.arc(CX, CY, R, start, end);
@@ -283,12 +261,10 @@ function drawWheel(a) {
     ctx.fillStyle = seg.color;
     ctx.fill();
 
-    // Divider stroke
     ctx.strokeStyle = 'rgba(0,0,0,.5)';
     ctx.lineWidth   = 2.5;
     ctx.stroke();
 
-    // Alternate sheen
     if (i % 2 === 0) {
       ctx.beginPath();
       ctx.moveTo(CX, CY);
@@ -298,7 +274,6 @@ function drawWheel(a) {
       ctx.fill();
     }
 
-    // Label
     ctx.save();
     ctx.translate(CX, CY);
     ctx.rotate(start + arc / 2);
@@ -323,14 +298,12 @@ function drawWheel(a) {
     ctx.restore();
   });
 
-  // Outer ring
   ctx.beginPath();
   ctx.arc(CX, CY, R, 0, Math.PI * 2);
   ctx.strokeStyle = 'rgba(255,255,255,.6)';
   ctx.lineWidth   = 5;
   ctx.stroke();
 
-  // Hub — image or plain ring
   if (hubImage) {
     ctx.save();
     ctx.beginPath();
@@ -339,14 +312,12 @@ function drawWheel(a) {
     ctx.drawImage(hubImage, CX - HUB_R, CY - HUB_R, HUB_R * 2, HUB_R * 2);
     ctx.restore();
 
-    // Rim over image
     ctx.beginPath();
     ctx.arc(CX, CY, HUB_R, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255,255,255,.55)';
     ctx.lineWidth   = 3;
     ctx.stroke();
   } else {
-    // Dark centre hole so CSS hub shows through
     ctx.beginPath();
     ctx.arc(CX, CY, HUB_R + 2, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(0,0,0,.6)';
@@ -355,9 +326,6 @@ function drawWheel(a) {
   }
 }
 
-/* ══════════════════════════════════════════════════════
-   PHYSICS
-══════════════════════════════════════════════════════ */
 function getWinner(a) {
   const n    = SEGMENTS.length;
   const arc  = (2 * Math.PI) / n;
@@ -392,7 +360,7 @@ function spin(user, displayName, avatarUrl) {
     if (t < 1) {
       requestAnimationFrame(frame);
     } else {
-      angle    = (((startAngle + total) % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
+      angle = (((startAngle + total) % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
       spinning = false;
       banner.style.opacity = '0';
       showWinner(user, displayName, avatarUrl, getWinner(angle));
@@ -400,18 +368,13 @@ function spin(user, displayName, avatarUrl) {
   })(t0);
 }
 
-/* ══════════════════════════════════════════════════════
-   WINNER CARD
-══════════════════════════════════════════════════════ */
 function showWinner(user, displayName, avatarUrl, seg) {
   const card = document.getElementById('winner-card');
 
-  card.style.setProperty('--card-border',
-    `linear-gradient(135deg, ${seg.color}, ${seg.color}88)`);
+  card.style.setProperty('--card-border', `linear-gradient(135deg, ${seg.color}, ${seg.color}88)`);
   card.style.setProperty('--card-glow',  seg.color + '30');
   card.style.setProperty('--prize-col',  seg.color);
 
-  // Avatar
   const wrap = document.getElementById('wc-avatar-wrap');
   const img  = document.getElementById('wc-avatar');
   if (avatarUrl) {
@@ -424,9 +387,8 @@ function showWinner(user, displayName, avatarUrl, seg) {
   document.getElementById('wc-user').textContent  = `@${displayName}`;
   document.getElementById('wc-prize').textContent = seg.label.replace('\\n', ' ');
   document.getElementById('wc-sub').textContent   =
-    seg.key === 'SpinAgain' ? 'SPINNING AGAIN!'                :
-    seg.key === 'Nothing'   ? 'Better luck next time...'       :
-                              'Added to inventory! Use $redeem';
+    seg.key === 'SpinAgain' ? 'SPINNING AGAIN!' :
+    seg.key === 'Nothing'   ? 'Better luck next time...' : 'Added to inventory! Use $redeem';
 
   card.classList.add('show');
   sendResult(user, displayName, seg);
@@ -440,9 +402,6 @@ function showWinner(user, displayName, avatarUrl, seg) {
   }, 6500);
 }
 
-/* ══════════════════════════════════════════════════════
-   QUEUE
-══════════════════════════════════════════════════════ */
 function processQueue() {
   if (!queue.length) return;
   const next = queue[0];
@@ -452,11 +411,6 @@ function processQueue() {
   spin(next.user, next.displayName, next.avatarUrl || '');
 }
 
-/* ══════════════════════════════════════════════════════
-   SEND RESULT TO STREAMER.BOT
-   DoAction → "WheelSpin_Trigger" (Combo action handler)
-   Args land directly in C# args[] dictionary.
-══════════════════════════════════════════════════════ */
 function sendResult(user, displayName, seg) {
   if (!ws || ws.readyState !== WebSocket.OPEN) {
     console.warn('[WheelSpin] WS not open — result dropped');
@@ -465,7 +419,7 @@ function sendResult(user, displayName, seg) {
 
   const msg = JSON.stringify({
     request: 'DoAction',
-    action:  { name: 'WheelSpin_Trigger' }, // Point it to your Combo Action
+    action:  { name: 'WheelSpin_Trigger' },
     args: {
       wheelUser:    user,
       wheelDisplay: displayName,
@@ -479,9 +433,6 @@ function sendResult(user, displayName, seg) {
   console.log('[WheelSpin] sendResult →', msg);
 }
 
-/* ══════════════════════════════════════════════════════
-   WEBSOCKET
-══════════════════════════════════════════════════════ */
 const params = new URLSearchParams(window.location.search);
 const WS_HOST = params.get('address') || 'localhost';
 const WS_PORT = params.get('port')    || '8080';
@@ -531,7 +482,6 @@ function connect() {
   }
 }
 
-/* Unwrap Streamer.bot's event envelope */
 function route(msg) {
   const isSpinPayload = p => p && (p.type === 'spin' || p.eventName === 'WheelSpin');
   const isWalletUpdate = p => p && p.eventName === 'WalletUpdate';
@@ -551,11 +501,7 @@ function route(msg) {
   if (!data) return;
 
   if (isWalletUpdate(data)) {
-    // Save to localStorage so the Viewer Dashboard can instantly read it!
-    localStorage.setItem(`sw_inv_${data.user}`, JSON.stringify(data.inventory));
-    // Trigger a storage event manually for same-page updates if needed
-    window.dispatchEvent(new Event('storage'));
-    return;
+    return; 
   }
 
   const rawUser     = (data.user || 'unknown').replace(/^@/, '');
@@ -565,11 +511,10 @@ function route(msg) {
   const count       = Math.max(1, Math.min(parseInt(data.count) || 1, 10));
 
   console.log(`[WheelSpin] Queuing ×${count} for ${displayName}`);
-  queue.push({ user, displayName, avatarUrl, count });
+  queue.push({ user, displayName, avatarUrl, count, choiceKey: data.choiceKey });
   if (!spinning) processQueue();
 }
 
-/* ── Boot ─────────────────────────────────────────── */
 drawWheel(0);
 loadHubImage();
 connect();
