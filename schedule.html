@@ -1110,7 +1110,7 @@
                   Schedule
                 </h2>
                 <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
-                  Welcome to the Schedule Page! Here you can find my streaming schedule.
+                  Welcome to the Schedule Page! Here you can find my streaming schedule, Twitch affiliate info, sub goals, and cheer rewards.
                 </h5>
             </div>
           </header>
@@ -1233,13 +1233,13 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Friday – June 20th</td>
+                      <td id="affiliate-anniversary-day-1">June 20th</td>
                       <td>12:00 PM – 12:00 AM</td>
                       <td>Twitch Affiliate Anniversary Part 1</td>
                     </tr>
                     <tr>
-                      <td>Saturday – June 21st</td>
-                      <td>2:00 PM – 8:00 PM</td>
+                      <td id="affiliate-anniversary-day-2">June 21st</td>
+                      <td>12:00 PM – 12:00 AM</td>
                       <td>Twitch Affiliate Anniversary Part 2</td>
                     </tr>
                   </tbody>
@@ -1445,6 +1445,30 @@
             window.history.replaceState({}, "", pathname.replace(".html", ""));
         }
     })();
+
+      // ===============================
+      // 🎉 Twitch Affiliate Anniversary — Auto-Detect Weekday for June 20 & 21
+      // ===============================
+      function updateAffiliateAnniversaryDays() {
+          const year = new Date().getFullYear();
+          // Month is 0-indexed, so 5 = June
+          const day20 = new Date(year, 5, 20);
+          const day21 = new Date(year, 5, 21);
+
+          const weekdayFormatter = new Intl.DateTimeFormat('en-US', { weekday: 'long' });
+
+          const day1El = document.getElementById('affiliate-anniversary-day-1');
+          const day2El = document.getElementById('affiliate-anniversary-day-2');
+
+          if (day1El) {
+              day1El.textContent = `${weekdayFormatter.format(day20)} – June 20th`;
+          }
+          if (day2El) {
+              day2El.textContent = `${weekdayFormatter.format(day21)} – June 21st`;
+          }
+      }
+      document.addEventListener("DOMContentLoaded", updateAffiliateAnniversaryDays);
+
       // ===============================
       // 🎮 Twitch & Stream Integration (Unified Version)
       // ===============================
