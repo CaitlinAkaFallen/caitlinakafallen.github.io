@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FallenOneArt — Music Player Control Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --accent-primary:#7de8c8;
+  --accent-secondary:#c8a2ff;
+  --bg-deep:#0a0915;
+  --bg-panel:rgba(22,20,34,0.55);
+  --border-soft:rgba(255,255,255,0.1);
+  --text-primary:#f3f1f8;
+  --text-secondary:#9a97ab;
+  --font-display:'Orbitron', sans-serif;
+  --font-mono:'Share Tech Mono', monospace;
+}
+
+*{box-sizing:border-box;}
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg-deep);
+  color:var(--text-primary);
+  font-family:var(--font-mono);
+  min-height:100vh;
+}
+body{
+  background:
+    radial-gradient(circle at 15% 0%, rgba(125,232,200,0.10), transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(200,162,255,0.10), transparent 45%),
+    var(--bg-deep);
+}
+
+a{ color:var(--accent-primary); }
+
+.shell{ display:grid; grid-template-columns:220px 1fr 380px; min-height:100vh; }
+@media (max-width:1100px){ .shell{ grid-template-columns:1fr; } }
+
+.sidebar{
+  border-right:1px solid var(--border-soft);
+  padding:24px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.brand{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:15px;
+  letter-spacing:1px;
+  color:var(--text-primary);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 10px 22px;
+}
+.brand .dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--accent-primary);
+  box-shadow:0 0 8px var(--accent-primary);
+}
+.brand small{
+  display:block;
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--text-secondary);
+  letter-spacing:2px;
+  font-weight:400;
+  margin-top:2px;
+}
+
+.nav-btn{
+  text-align:left;
+  background:transparent;
+  border:1px solid transparent;
+  color:var(--text-secondary);
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:1px;
+  padding:11px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  transition:all .2s ease;
+}
+.nav-btn:hover{ color:var(--text-primary); background:rgba(255,255,255,0.04); }
+.nav-btn.active{
+  color:var(--text-primary);
+  background:linear-gradient(90deg, rgba(125,232,200,0.14), rgba(200,162,255,0.08));
+  border-color:rgba(125,232,200,0.3);
+}
+.nav-btn .num{ font-size:10px; opacity:.6; }
+
+.main{ padding:28px 32px 60px; overflow-y:auto; }
+.panel{ display:none; max-width:640px; }
+.panel.active{ display:block; animation:fadein .35s ease; }
+@keyframes fadein{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+.panel h2{ font-family:var(--font-display); font-size:18px; letter-spacing:1px; margin:0 0 4px; }
+.panel .sub{ color:var(--text-secondary); font-size:12px; margin-bottom:24px; line-height:1.6; }
+
+.field{ margin-bottom:20px; }
+.field label{ display:block; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-secondary); margin-bottom:8px; }
+.field .hint{ font-size:11px; color:var(--text-secondary); opacity:.75; margin-top:6px; line-height:1.5; }
+
+input[type="text"],
+input[type="url"],
+select{
+  width:100%;
+  background:var(--bg-panel);
+  border:1px solid var(--border-soft);
+  border-radius:8px;
+  color:var(--text-primary);
+  font-family:var(--font-mono);
+  font-size:13px;
+  padding:10px 12px;
+}
+input[type="text"]:focus,
+select:focus{
+  outline:2px solid var(--accent-primary);
+  outline-offset:1px;
+}
+
+input[type="range"]{ width:100%; accent-color:var(--accent-primary); }
+.range-row{ display:flex; align-items:center; gap:12px; }
+.range-row .val{ font-size:12px; color:var(--accent-primary); width:48px; text-align:right; flex:0 0 auto; }
+
+input[type="color"]{
+  width:46px;
+  height:36px;
+  border:1px solid var(--border-soft);
+  border-radius:8px;
+  background:none;
+  cursor:pointer;
+  padding:2px;
+}
+.color-field{ display:flex; align-items:center; gap:12px; }
+.color-field .swatch-label{ font-size:12px; color:var(--text-secondary); }
+
+.toggle-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.toggle-row:last-child{ border-bottom:none; }
+.toggle-row span{ font-size:13px; }
+
+.switch{
+  position:relative;
+  width:40px;
+  height:22px;
+  flex:0 0 auto;
+}
+.switch input{ opacity:0; width:0; height:0; }
+.switch .track{
+  position:absolute;
+  inset:0;
+  background:rgba(255,255,255,0.12);
+  border-radius:20px;
+  cursor:pointer;
+  transition:.2s;
+}
+.switch .track:before{
+  content:'';
+  position:absolute;
+  width:16px;
+  height:16px;
+  left:3px;
+  top:3px;
+  background:#fff;
+  border-radius:50%;
+  transition:.2s;
+}
+.switch input:checked + .track{
+  background:var(--accent-primary);
+}
+.switch input:checked + .track:before{
+  transform:translateX(18px);
+}
+
+.choice-cards{ display:flex; gap:10px; flex-wrap:wrap; }
+.choice-cards .choice-card{ flex:1 1 130px; }
+.choice-card{
+  flex:1;
+  border:1px solid var(--border-soft);
+  border-radius:10px;
+  padding:12px;
+  cursor:pointer;
+  background:var(--bg-panel);
+  text-align:center;
+  font-size:12px;
+  color:var(--text-secondary);
+  transition:.2s;
+}
+.choice-card.selected{
+  border-color:var(--accent-primary);
+  color:var(--text-primary);
+  box-shadow:0 0 0 1px var(--accent-primary) inset;
+}
+.choice-card .ico{ font-size:20px; display:block; margin-bottom:6px; }
+
+button.primary-btn{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:1px;
+  background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  color:#0a0915;
+  border:none;
+  border-radius:10px;
+  padding:12px 22px;
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(125,232,200,0.35);
+  transition:transform .15s ease;
+}
+button.primary-btn:hover{ transform:translateY(-1px); }
+button.primary-btn:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
+
+button.ghost-btn{
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:.5px;
+  background:transparent;
+  border:1px solid var(--border-soft);
+  color:var(--text-secondary);
+  border-radius:9px;
+  padding:10px 16px;
+  cursor:pointer;
+  transition:.2s;
+}
+button.ghost-btn:hover{
+  color:var(--text-primary);
+  border-color:var(--accent-primary);
+}
+
+button.icon-btn{
+  background:var(--bg-panel);
+  border:1px solid var(--border-soft);
+  color:var(--text-primary);
+  border-radius:10px;
+  width:38px;
+  height:38px;
+  cursor:pointer;
+  font-size:14px;
+}
+button.icon-btn:hover{ border-color:var(--accent-primary); }
+
+.status-card{
+  border:1px solid var(--border-soft);
+  border-radius:12px;
+  background:var(--bg-panel);
+  padding:16px;
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.status-led{ width:9px; height:9px; border-radius:50%; background:#6f6c80; flex:0 0 auto; }
+.status-led.on{ background:var(--accent-primary); box-shadow:0 0 8px var(--accent-primary); }
+.status-text{ font-size:12.5px; line-height:1.5; }
+.status-text strong{ color:var(--text-primary); }
+
+.preview-col{
+  border-left:1px solid var(--border-soft);
+  padding:24px 22px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  position:sticky;
+  top:0;
+  height:100vh;
+}
+.preview-col h3{ font-family:var(--font-display); font-size:13px; letter-spacing:1.5px; margin:0; }
+.preview-frame-wrap{
+  flex:1;
+  border:1px solid var(--border-soft);
+  border-radius:14px;
+  background:repeating-conic-gradient(#15131f 0% 25%, #181626 0% 50%) 50% / 24px 24px;
+  position:relative;
+  overflow:hidden;
+}
+.preview-frame-wrap iframe{ width:100%; height:100%; border:none; }
+.preview-note{ font-size:11px; color:var(--text-secondary); line-height:1.6; }
+
+.save-bar{
+  position:sticky;
+  bottom:0;
+  left:0;
+  background:linear-gradient(180deg, transparent, rgba(10,9,21,0.92) 30%);
+  padding:24px 0 4px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-top:18px;
+}
+
+.toast{
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:var(--bg-panel);
+  border:1px solid var(--accent-primary);
+  color:var(--text-primary);
+  padding:12px 18px;
+  border-radius:10px;
+  font-size:12.5px;
+  box-shadow:0 0 20px rgba(125,232,200,0.25);
+  transform:translateY(-12px);
+  opacity:0;
+  transition:.25s ease;
+  pointer-events:none;
+  z-index:50;
+}
+.toast.show{ transform:translateY(0); opacity:1; }
+
+.spotify-controls{ display:flex; gap:10px; margin-top:6px; }
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <nav class="sidebar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>FALLENONEART<br><small>MUSIC PLAYER</small></span>
+    </div>
+    <button class="nav-btn active" data-tab="connection"><span class="num">01</span> Connection</button>
+    <button class="nav-btn" data-tab="appearance"><span class="num">02</span> Appearance</button>
+    <button class="nav-btn" data-tab="layout"><span class="num">03</span> Layout</button>
+    <button class="nav-btn" data-tab="behavior"><span class="num">04</span> Behavior</button>
+    <button class="nav-btn" data-tab="theme"><span class="num">05</span> Dashboard Theme</button>
+  </nav>
+
+  <main class="main">
+
+    <!-- CONNECTION -->
+    <section class="panel active" id="panel-connection">
+      <h2>Spotify Connection</h2>
+      <p class="sub">Connect your Spotify account using PKCE (Proof Key for Code Exchange) — no backend server needed.</p>
+
+      <div class="status-card" style="background:rgba(125,232,200,0.08); border-color:rgba(125,232,200,0.25); display:block;">
+        <div class="status-text">
+          <strong>✓ Your Client ID</strong> saves automatically in this browser, even if login is interrupted.<br>
+          <strong>✓ Multi-user friendly</strong> — anyone using this dashboard logs in with their own Spotify account.<br>
+          <strong>✓ Secure</strong> — no passwords or personal data are ever stored, only Spotify's own access tokens.
+        </div>
+      </div>
+
+      <div class="status-card">
+        <span class="status-led" id="statusLed"></span>
+        <div class="status-text" id="statusText">Not connected yet.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputClientId">Spotify Client ID</label>
+        <input type="text" id="inputClientId" placeholder="Paste your Spotify app Client ID">
+        <div class="hint">Get this from <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a> → Create app</div>
+      </div>
+
+      <div class="field">
+        <label for="inputRedirectUri">Redirect URI</label>
+        <input type="text" id="inputRedirectUri" readonly>
+        <div class="hint">Add this exact URL to your Spotify app's Redirect URIs in Edit Settings.</div>
+      </div>
+
+      <button class="primary-btn" id="btnConnect">Connect Spotify</button>
+      <button class="ghost-btn" id="btnDisconnect" style="margin-left:10px; display:none;">Disconnect</button>
+
+      <div class="spotify-controls" id="playbackControls" style="display:none;">
+        <button class="icon-btn" id="btnPrev" title="Previous">⏮</button>
+        <button class="icon-btn" id="btnPlayPause" title="Play/Pause">⏯</button>
+        <button class="icon-btn" id="btnNext" title="Next">⏭</button>
+      </div>
+    </section>
+
+    <!-- APPEARANCE -->
+    <section class="panel" id="panel-appearance">
+      <h2>Appearance</h2>
+      <p class="sub">Control colors, glass effect, and visual polish.</p>
+
+      <div class="field">
+        <label>Primary Accent Color</label>
+        <div class="color-field">
+          <input type="color" id="inputAccentPrimary" value="#7de8c8">
+          <span class="swatch-label">Main glow & highlights</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Secondary Accent Color</label>
+        <div class="color-field">
+          <input type="color" id="inputAccentSecondary" value="#c8a2ff">
+          <span class="swatch-label">Accent glow & animations</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Time/Progress Color</label>
+        <div class="color-field">
+          <input type="color" id="inputTimeColor" value="#7de8c8">
+          <span class="swatch-label">Elapsed time & timestamps</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Track Title Color</label>
+        <div class="color-field">
+          <input type="color" id="inputTitleColor" value="#f3f1f8">
+          <span class="swatch-label">Track title text color</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Artist Name Color</label>
+        <div class="color-field">
+          <input type="color" id="inputArtistColor" value="#ffffff">
+          <span class="swatch-label">Artist name text color</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Album Name Color</label>
+        <div class="color-field">
+          <input type="color" id="inputAlbumColor" value="#ffffff">
+          <span class="swatch-label">Album name text color</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Glass Opacity</label>
+        <div class="range-row"><input type="range" id="inputGlassOpacity" min="0.1" max="0.85" step="0.01"><span class="val" id="valGlassOpacity"></span></div>
+        <div class="hint">How transparent the card background is.</div>
+      </div>
+
+      <div class="field">
+        <label>Blur Strength</label>
+        <div class="range-row"><input type="range" id="inputBlurStrength" min="4" max="32" step="1"><span class="val" id="valBlurStrength"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Corner Radius</label>
+        <div class="range-row"><input type="range" id="inputCornerRadius" min="0" max="40" step="1"><span class="val" id="valCornerRadius"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Glow Intensity</label>
+        <div class="range-row"><input type="range" id="inputGlowIntensity" min="0.2" max="1" step="0.05"><span class="val" id="valGlowIntensity"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Ambient Pulse Speed (seconds)</label>
+        <div class="range-row"><input type="range" id="inputPulseSpeed" min="4" max="12" step="1"><span class="val" id="valPulseSpeed"></span></div>
+        <div class="hint">Minimum 4s for seizure safety.</div>
+      </div>
+
+      <div class="field">
+        <label>Text Scale</label>
+        <div class="range-row"><input type="range" id="inputTextScale" min="0.8" max="1.3" step="0.02"><span class="val" id="valTextScale"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Font Pairing</label>
+        <select id="inputFontPairing">
+          <option value="signature">Orbitron + Share Tech Mono (signature)</option>
+          <option value="modern">Poppins (modern/clean)</option>
+          <option value="tech">Rajdhani + JetBrains Mono (technical)</option>
+          <option value="retro">Bebas Neue + VT323 (retro terminal)</option>
+          <option value="elegant">Playfair Display + Inter (elegant)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Album Art Reveal Animation</label>
+        <select id="inputArtRevealStyle">
+          <option value="roll">Roll (3D flip-in)</option>
+          <option value="fade">Fade</option>
+          <option value="slide-left">Slide from left</option>
+          <option value="slide-up">Slide from bottom</option>
+          <option value="swing">Swing in</option>
+        </select>
+        <div class="hint">Plays once each time the track changes.</div>
+      </div>
+
+      <div class="field">
+        <label>Italic Artist Name</label>
+        <div class="toggle-row"><span>Style the artist name in italics</span><label class="switch"><input type="checkbox" id="toggleArtistItalic"><span class="track"></span></label></div>
+      </div>
+
+      <div class="field">
+        <label>Card Width (px)</label>
+        <div class="range-row"><input type="range" id="inputCardWidth" min="320" max="560" step="10"><span class="val" id="valCardWidth"></span></div>
+      </div>
+    </section>
+
+    <!-- LAYOUT -->
+    <section class="panel" id="panel-layout">
+      <h2>Layout &amp; Content</h2>
+      <p class="sub">Choose display mode and which elements appear.</p>
+
+      <div class="field">
+        <label>Layout Mode</label>
+        <div class="choice-cards">
+          <div class="choice-card" data-choice="layoutMode" data-value="compact"><span class="ico">◉ ▭</span>Compact<br>(Circle + Pill)</div>
+          <div class="choice-card" data-choice="layoutMode" data-value="full"><span class="ico">▢ ▭</span>Full<br>(Large Square)</div>
+          <div class="choice-card" data-choice="layoutMode" data-value="minimal"><span class="ico">▢ ▭</span>Minimal<br>(Lean + Bare Bar)</div>
+          <div class="choice-card" data-choice="layoutMode" data-value="banner"><span class="ico">▭▭▭</span>Banner<br>(Wide Strip)</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Album Art Shape</label>
+        <div class="choice-cards">
+          <div class="choice-card" data-choice="albumArtShape" data-value="rounded">Rounded Square</div>
+          <div class="choice-card" data-choice="albumArtShape" data-value="circle">Circle</div>
+          <div class="choice-card" data-choice="albumArtShape" data-value="square">Square (Sharp)</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Title Marquee Scroll</label>
+        <div class="toggle-row"><span>Scroll long titles instead of truncating</span><label class="switch"><input type="checkbox" id="toggleMarqueeEnabled"><span class="track"></span></label></div>
+        <div class="range-row" style="margin-top:10px;"><input type="range" id="inputMarqueeSpeed" min="15" max="60" step="1"><span class="val" id="valMarqueeSpeed"></span></div>
+        <div class="hint">Controls scroll speed. Only activates when a title is too long to fit — short titles stay still either way.</div>
+      </div>
+
+      <div class="field">
+        <label>Progress Bar Style</label>
+        <div class="choice-cards">
+          <div class="choice-card" data-choice="progressBarStyle" data-value="solid">Solid</div>
+          <div class="choice-card" data-choice="progressBarStyle" data-value="segmented">Segmented (dotted)</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Extra Player Details</label>
+        <div class="toggle-row"><span>Scrubber dot on progress bar</span><label class="switch"><input type="checkbox" id="toggleShowScrubberDot"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Play/pause badge on album art</span><label class="switch"><input type="checkbox" id="toggleShowArtBadge"><span class="track"></span></label></div>
+      </div>
+
+      <div class="field">
+        <label>Visible Elements</label>
+        <div class="toggle-row"><span>Artist name</span><label class="switch"><input type="checkbox" id="toggleShowArtist"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Album name</span><label class="switch"><input type="checkbox" id="toggleShowAlbum"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Progress bar</span><label class="switch"><input type="checkbox" id="toggleShowProgressBar"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Time display</span><label class="switch"><input type="checkbox" id="toggleShowTimecode"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Equalizer bars</span><label class="switch"><input type="checkbox" id="toggleShowEqualizer"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Header ("NOW PLAYING")</span><label class="switch"><input type="checkbox" id="toggleShowBranding"><span class="track"></span></label></div>
+      </div>
+
+      <div class="field">
+        <label>When nothing is playing</label>
+        <select id="inputIdleBehavior">
+          <option value="message">Show idle message</option>
+          <option value="hide">Hide the card entirely</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="inputIdleMessage">Idle message text</label>
+        <input type="text" id="inputIdleMessage" placeholder="NOTHING PLAYING">
+      </div>
+    </section>
+
+    <!-- BEHAVIOR -->
+    <section class="panel" id="panel-behavior">
+      <h2>Behavior</h2>
+      <p class="sub">Polling frequency and refresh rates.</p>
+
+      <div class="field">
+        <label>Poll Interval (seconds)</label>
+        <div class="range-row"><input type="range" id="inputPollInterval" min="3" max="15" step="1"><span class="val" id="valPollInterval"></span></div>
+        <div class="hint">How often the overlay checks Spotify for new tracks. Lower = more responsive but more API calls.</div>
+      </div>
+
+      <button class="ghost-btn" id="btnResetDefaults">Reset all to defaults</button>
+    </section>
+
+    <!-- DASHBOARD THEME (this control panel's own background — does not affect the overlay) -->
+    <section class="panel" id="panel-theme">
+      <h2>Dashboard Theme</h2>
+      <p class="sub">This only changes the look of this control panel itself — it's never pushed to the overlay, which always stays transparent for OBS.</p>
+
+      <div class="field">
+        <label>Background Style</label>
+        <div class="choice-cards">
+          <div class="choice-card" data-dash-choice="bgType" data-value="gradient">Gradient<br>(default)</div>
+          <div class="choice-card" data-dash-choice="bgType" data-value="solid">Solid Color</div>
+          <div class="choice-card" data-dash-choice="bgType" data-value="image">Image</div>
+        </div>
+      </div>
+
+      <div class="field" id="fieldBgSolid">
+        <label>Solid Color</label>
+        <div class="color-field"><input type="color" id="inputDashBgColor1" value="#0a0915"><span class="swatch-label">Background color</span></div>
+      </div>
+
+      <div class="field" id="fieldBgGradient">
+        <label>Gradient Colors</label>
+        <div style="display:flex; gap:24px;">
+          <div class="color-field"><input type="color" id="inputDashGradColor1" value="#7de8c8"><span class="swatch-label">Color 1</span></div>
+          <div class="color-field"><input type="color" id="inputDashGradColor2" value="#c8a2ff"><span class="swatch-label">Color 2</span></div>
+        </div>
+        <div class="hint" style="margin-top:14px;">Angle</div>
+        <div class="range-row"><input type="range" id="inputDashGradAngle" min="0" max="360" step="5"><span class="val" id="valDashGradAngle"></span></div>
+      </div>
+
+      <div class="field hidden" id="fieldBgImage">
+        <label for="inputDashBgImageUrl">Image URL</label>
+        <input type="text" id="inputDashBgImageUrl" placeholder="https://example.com/your-background.jpg">
+        <div class="hint" style="margin-top:14px;">Position</div>
+        <select id="inputDashBgPosition">
+          <option value="cover">Cover (fill, crop edges)</option>
+          <option value="contain">Contain (fit, no crop)</option>
+          <option value="center">Center (actual size)</option>
+          <option value="repeat">Repeat (tile)</option>
+        </select>
+      </div>
+
+      <button class="ghost-btn" id="btnResetDashTheme">Reset dashboard theme</button>
+    </section>
+
+    <div class="save-bar">
+      <button class="primary-btn" id="btnSave">Save &amp; Push to Overlay</button>
+      <span class="hint" id="saveHint">Changes preview live on the right. Click Save to push to all open overlay instances.</span>
+    </div>
+
+  </main>
+
+  <aside class="preview-col">
+    <h3>LIVE PREVIEW</h3>
+    <div class="preview-frame-wrap">
+      <iframe id="previewFrame" src="music-player.html" title="Live preview of music player overlay"></iframe>
+    </div>
+    <p class="preview-note">This is a live preview of music-player.html. Add it to OBS as a browser source. The checkered background represents transparency.</p>
+  </aside>
+
+</div>
+
+<div class="toast" id="toast">Saved &amp; pushed ✓</div>
+
+<script>
+/* ============================================================
+   CONSTANTS
+   ============================================================ */
+const LS_CONFIG_KEY    = 'fallenoneart_music_player_config';
+const LS_AUTH_KEY       = 'fallenoneart_spotify_auth';
+const LS_PKCE_KEY       = 'fallenoneart_spotify_pkce_verifier';
+const LS_CLIENT_ID_KEY  = 'fallenoneart_spotify_client_id'; // persists independently of auth, so it survives a failed/incomplete login
+const LS_DASH_THEME_KEY = 'fallenoneart_dashboard_theme';   // this dashboard's OWN background — never synced to the overlay
+const BROADCAST_NAME    = 'fallenoneart-music-player-sync';
+const SPOTIFY_AUTH_URL  = 'https://accounts.spotify.com/authorize';
+const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
+const SPOTIFY_ME_URL    = 'https://api.spotify.com/v1/me';
+const SPOTIFY_SCOPES    = 'user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-private';
+
+const DEFAULT_CONFIG = {
+  layoutMode:'compact',
+  accentPrimary:'#7de8c8',
+  accentSecondary:'#c8a2ff',
+  timeColor:'#7de8c8',
+  titleColor:'#f3f1f8',
+  artistColor:'#a39fb5',
+  albumColor:'#a39fb5',
+  glassOpacity:0.45,
+  blurStrength:18,
+  cornerRadius:22,
+  albumArtShape:'rounded',
+  showProgressBar:true,
+  showArtist:true,
+  showAlbum:false,
+  showTimecode:true,
+  showEqualizer:true,
+  showBranding:true,
+  idleBehavior:'message',
+  idleMessage:'NOTHING PLAYING',
+  pollInterval:5,
+  glowIntensity:0.6,
+  pulseSpeed:6,
+  fontPairing:'signature',
+  artRevealStyle:'roll',
+  marqueeEnabled:true,
+  marqueeSpeed:36,
+  progressBarStyle:'solid',
+  showScrubberDot:false,
+  showArtBadge:false,
+  artistItalic:false,
+  textScale:1,
+  cardWidth:420
+};
+
+const DEFAULT_DASH_THEME = {
+  bgType:'gradient',
+  bgColor1:'#0a0915',
+  gradColor1:'#7de8c8',
+  gradColor2:'#c8a2ff',
+  gradAngle:135,
+  bgImageUrl:'',
+  bgPosition:'cover'
+};
+
+let config = { ...DEFAULT_CONFIG };
+let dashTheme = { ...DEFAULT_DASH_THEME };
+let bc = null;
+try{ bc = new BroadcastChannel(BROADCAST_NAME); }catch(e){}
+
+/* ============================================================
+   TAB NAVIGATION
+   ============================================================ */
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ============================================================
+   CONFIG <-> UI BINDING
+   ============================================================ */
+function loadConfig(){
+  try{
+    const raw = localStorage.getItem(LS_CONFIG_KEY);
+    if(raw) config = { ...DEFAULT_CONFIG, ...JSON.parse(raw) };
+  }catch(e){}
+}
+
+function populateForm(){
+  document.getElementById('inputTitleColor').value = config.titleColor;
+  document.getElementById('inputArtistColor').value = config.artistColor;
+  document.getElementById('inputAlbumColor').value = config.albumColor;
+  document.getElementById('inputAccentPrimary').value = config.accentPrimary;
+  document.getElementById('inputAccentSecondary').value = config.accentSecondary;
+  document.getElementById('inputTimeColor').value = config.timeColor;
+  document.getElementById('inputGlassOpacity').value = config.glassOpacity;
+  document.getElementById('inputBlurStrength').value = config.blurStrength;
+  document.getElementById('inputCornerRadius').value = config.cornerRadius;
+  document.getElementById('inputGlowIntensity').value = config.glowIntensity;
+  document.getElementById('inputPulseSpeed').value = config.pulseSpeed;
+  document.getElementById('inputTextScale').value = config.textScale;
+  document.getElementById('inputCardWidth').value = config.cardWidth;
+  document.getElementById('inputFontPairing').value = config.fontPairing;
+  document.getElementById('inputArtRevealStyle').value = config.artRevealStyle;
+  document.getElementById('toggleMarqueeEnabled').checked = config.marqueeEnabled;
+  document.getElementById('inputMarqueeSpeed').value = config.marqueeSpeed;
+  document.getElementById('toggleShowScrubberDot').checked = config.showScrubberDot;
+  document.getElementById('toggleShowArtBadge').checked = config.showArtBadge;
+  document.getElementById('toggleArtistItalic').checked = config.artistItalic;
+  document.getElementById('toggleShowArtist').checked = config.showArtist;
+  document.getElementById('toggleShowAlbum').checked = config.showAlbum;
+  document.getElementById('toggleShowProgressBar').checked = config.showProgressBar;
+  document.getElementById('toggleShowTimecode').checked = config.showTimecode;
+  document.getElementById('toggleShowEqualizer').checked = config.showEqualizer;
+  document.getElementById('toggleShowBranding').checked = config.showBranding;
+  document.getElementById('inputIdleBehavior').value = config.idleBehavior;
+  document.getElementById('inputIdleMessage').value = config.idleMessage;
+  document.getElementById('inputPollInterval').value = config.pollInterval;
+  updateChoiceCards();
+  updateRangeLabels();
+}
+
+/* ---- Dashboard's own background theme (separate from the overlay config) ---- */
+function loadDashTheme(){
+  try{
+    const raw = localStorage.getItem(LS_DASH_THEME_KEY);
+    if(raw) dashTheme = { ...DEFAULT_DASH_THEME, ...JSON.parse(raw) };
+  }catch(e){}
+}
+
+function saveDashTheme(){
+  localStorage.setItem(LS_DASH_THEME_KEY, JSON.stringify(dashTheme));
+}
+
+function applyDashTheme(){
+  const body = document.body;
+  if(dashTheme.bgType === 'solid'){
+    body.style.background = dashTheme.bgColor1;
+  }else if(dashTheme.bgType === 'gradient'){
+    body.style.background = `linear-gradient(${dashTheme.gradAngle}deg, ${dashTheme.gradColor1}33, ${dashTheme.gradColor2}33), var(--bg-deep)`;
+  }else if(dashTheme.bgType === 'image' && dashTheme.bgImageUrl){
+    const posMap = {
+      cover:'background-size:cover; background-repeat:no-repeat; background-position:center;',
+      contain:'background-size:contain; background-repeat:no-repeat; background-position:center;',
+      center:'background-size:auto; background-repeat:no-repeat; background-position:center;',
+      repeat:'background-size:auto; background-repeat:repeat; background-position:top left;'
+    };
+    body.setAttribute('style', `background-image:url('${dashTheme.bgImageUrl}'); ${posMap[dashTheme.bgPosition] || posMap.cover}`);
+  }
+
+  document.querySelectorAll('[data-dash-choice]').forEach(card=>{
+    card.classList.toggle('selected', dashTheme[card.dataset.dashChoice] === card.dataset.value);
+  });
+  document.getElementById('fieldBgSolid').style.display = dashTheme.bgType === 'solid' ? 'block' : 'none';
+  document.getElementById('fieldBgGradient').style.display = dashTheme.bgType === 'gradient' ? 'block' : 'none';
+  document.getElementById('fieldBgImage').classList.toggle('hidden', dashTheme.bgType !== 'image');
+}
+
+function populateDashThemeForm(){
+  document.getElementById('inputDashBgColor1').value = dashTheme.bgColor1;
+  document.getElementById('inputDashGradColor1').value = dashTheme.gradColor1;
+  document.getElementById('inputDashGradColor2').value = dashTheme.gradColor2;
+  document.getElementById('inputDashGradAngle').value = dashTheme.gradAngle;
+  document.getElementById('valDashGradAngle').textContent = dashTheme.gradAngle + '°';
+  document.getElementById('inputDashBgImageUrl').value = dashTheme.bgImageUrl;
+  document.getElementById('inputDashBgPosition').value = dashTheme.bgPosition;
+}
+
+document.querySelectorAll('#panel-theme input, #panel-theme select').forEach(el=>{
+  el.addEventListener('input', ()=>{
+    dashTheme.bgColor1 = document.getElementById('inputDashBgColor1').value;
+    dashTheme.gradColor1 = document.getElementById('inputDashGradColor1').value;
+    dashTheme.gradColor2 = document.getElementById('inputDashGradColor2').value;
+    dashTheme.gradAngle = parseInt(document.getElementById('inputDashGradAngle').value);
+    dashTheme.bgImageUrl = document.getElementById('inputDashBgImageUrl').value;
+    dashTheme.bgPosition = document.getElementById('inputDashBgPosition').value;
+    document.getElementById('valDashGradAngle').textContent = dashTheme.gradAngle + '°';
+    applyDashTheme();
+    saveDashTheme();
+  });
+});
+
+document.querySelectorAll('[data-dash-choice]').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    dashTheme[card.dataset.dashChoice] = card.dataset.value;
+    applyDashTheme();
+    saveDashTheme();
+  });
+});
+
+document.getElementById('btnResetDashTheme').addEventListener('click', ()=>{
+  dashTheme = { ...DEFAULT_DASH_THEME };
+  populateDashThemeForm();
+  applyDashTheme();
+  saveDashTheme();
+  showToast('Dashboard theme reset ✓');
+});
+
+function updateChoiceCards(){
+  document.querySelectorAll('.choice-card').forEach(card=>{
+    const key = card.dataset.choice;
+    card.classList.toggle('selected', config[key] === card.dataset.value);
+  });
+}
+
+function updateRangeLabels(){
+  document.getElementById('valGlassOpacity').textContent = config.glassOpacity;
+  document.getElementById('valBlurStrength').textContent = config.blurStrength + 'px';
+  document.getElementById('valCornerRadius').textContent = config.cornerRadius + 'px';
+  document.getElementById('valGlowIntensity').textContent = config.glowIntensity;
+  document.getElementById('valPulseSpeed').textContent = config.pulseSpeed + 's';
+  document.getElementById('valTextScale').textContent = config.textScale + 'x';
+  document.getElementById('valCardWidth').textContent = config.cardWidth + 'px';
+  document.getElementById('valPollInterval').textContent = config.pollInterval + 's';
+  document.getElementById('valMarqueeSpeed').textContent = config.marqueeSpeed + 'px/s';
+}
+
+function readFormIntoConfig(){
+  config.accentPrimary = document.getElementById('inputAccentPrimary').value;
+  config.accentSecondary = document.getElementById('inputAccentSecondary').value;
+  config.timeColor = document.getElementById('inputTimeColor').value;
+  config.titleColor = document.getElementById('inputTitleColor').value;
+  config.artistColor = document.getElementById('inputArtistColor').value;
+  config.albumColor = document.getElementById('inputAlbumColor').value;
+  config.glassOpacity = parseFloat(document.getElementById('inputGlassOpacity').value);
+  config.blurStrength = parseInt(document.getElementById('inputBlurStrength').value);
+  config.cornerRadius = parseInt(document.getElementById('inputCornerRadius').value);
+  config.glowIntensity = parseFloat(document.getElementById('inputGlowIntensity').value);
+  config.pulseSpeed = parseInt(document.getElementById('inputPulseSpeed').value);
+  config.textScale = parseFloat(document.getElementById('inputTextScale').value);
+  config.cardWidth = parseInt(document.getElementById('inputCardWidth').value);
+  config.fontPairing = document.getElementById('inputFontPairing').value;
+  config.artRevealStyle = document.getElementById('inputArtRevealStyle').value;
+  config.marqueeEnabled = document.getElementById('toggleMarqueeEnabled').checked;
+  config.marqueeSpeed = parseInt(document.getElementById('inputMarqueeSpeed').value);
+  config.showScrubberDot = document.getElementById('toggleShowScrubberDot').checked;
+  config.showArtBadge = document.getElementById('toggleShowArtBadge').checked;
+  config.artistItalic = document.getElementById('toggleArtistItalic').checked;
+  config.showArtist = document.getElementById('toggleShowArtist').checked;
+  config.showAlbum = document.getElementById('toggleShowAlbum').checked;
+  config.showProgressBar = document.getElementById('toggleShowProgressBar').checked;
+  config.showTimecode = document.getElementById('toggleShowTimecode').checked;
+  config.showEqualizer = document.getElementById('toggleShowEqualizer').checked;
+  config.showBranding = document.getElementById('toggleShowBranding').checked;
+  config.idleBehavior = document.getElementById('inputIdleBehavior').value;
+  config.idleMessage = document.getElementById('inputIdleMessage').value || 'NOTHING PLAYING';
+  config.pollInterval = parseInt(document.getElementById('inputPollInterval').value);
+}
+
+function pushLivePreview(){
+  const frame = document.getElementById('previewFrame');
+  if(frame.contentWindow) frame.contentWindow.postMessage({ type:'config-update', config }, '*');
+}
+
+document.querySelectorAll('.main input, .main select').forEach(el=>{
+  el.addEventListener('input', ()=>{
+    readFormIntoConfig();
+    updateRangeLabels();
+    pushLivePreview();
+  });
+});
+
+document.querySelectorAll('.choice-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    config[card.dataset.choice] = card.dataset.value;
+    updateChoiceCards();
+    pushLivePreview();
+  });
+});
+
+document.getElementById('btnResetDefaults').addEventListener('click', ()=>{
+  config = { ...DEFAULT_CONFIG };
+  populateForm();
+  pushLivePreview();
+  showToast('Reset to defaults ✓');
+});
+
+/* ============================================================
+   SAVE & PUSH
+   ============================================================ */
+document.getElementById('btnSave').addEventListener('click', ()=>{
+  readFormIntoConfig();
+  localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(config));
+  if(bc) bc.postMessage({ type:'config-update', config });
+  pushLivePreview();
+  showToast('Saved & pushed to overlay ✓');
+});
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+/* ============================================================
+   SPOTIFY PKCE AUTH
+   ============================================================ */
+function base64UrlEncode(buffer){
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+
+async function generateCodeChallenge(verifier){
+  const data = new TextEncoder().encode(verifier);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return base64UrlEncode(digest);
+}
+
+function generateCodeVerifier(length=64){
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+  const randomValues = crypto.getRandomValues(new Uint8Array(length));
+  let result = '';
+  randomValues.forEach(v=> result += chars[v % chars.length]);
+  return result;
+}
+
+function getRedirectUri(){
+  return window.location.origin + window.location.pathname;
+}
+
+// Client ID is saved the moment it's typed, independent of whether login ever completes.
+function saveClientId(){
+  const clientId = document.getElementById('inputClientId').value.trim();
+  if(clientId) localStorage.setItem(LS_CLIENT_ID_KEY, clientId);
+}
+function restoreClientId(){
+  const saved = localStorage.getItem(LS_CLIENT_ID_KEY);
+  if(saved) document.getElementById('inputClientId').value = saved;
+}
+
+function getAuth(){
+  try{ return JSON.parse(localStorage.getItem(LS_AUTH_KEY) || 'null'); }catch(e){ return null; }
+}
+function saveAuth(auth){ localStorage.setItem(LS_AUTH_KEY, JSON.stringify(auth)); }
+
+async function startSpotifyLogin(){
+  const clientId = document.getElementById('inputClientId').value.trim();
+  if(!clientId){ alert('Enter your Spotify Client ID first.'); return; }
+  saveClientId();
+  const verifier = generateCodeVerifier();
+  localStorage.setItem(LS_PKCE_KEY, verifier);
+  const challenge = await generateCodeChallenge(verifier);
+  const params = new URLSearchParams({
+    client_id: clientId,
+    response_type: 'code',
+    redirect_uri: getRedirectUri(),
+    code_challenge_method: 'S256',
+    code_challenge: challenge,
+    scope: SPOTIFY_SCOPES
+  });
+  window.location.href = `${SPOTIFY_AUTH_URL}?${params.toString()}`;
+}
+
+async function exchangeCodeForToken(code){
+  const verifier = localStorage.getItem(LS_PKCE_KEY);
+  const clientId = localStorage.getItem(LS_CLIENT_ID_KEY) || document.getElementById('inputClientId').value.trim();
+  const body = new URLSearchParams({
+    client_id: clientId,
+    grant_type: 'authorization_code',
+    code,
+    redirect_uri: getRedirectUri(),
+    code_verifier: verifier
+  });
+  const res = await fetch(SPOTIFY_TOKEN_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
+    body
+  });
+  if(!res.ok){ throw new Error('Token exchange failed: ' + res.status); }
+  const data = await res.json();
+  const auth = {
+    clientId,
+    redirectUri: getRedirectUri(),
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+    expiresAt: Date.now() + (data.expires_in * 1000)
+  };
+  saveAuth(auth);
+  localStorage.removeItem(LS_PKCE_KEY);
+  return auth;
+}
+
+async function refreshAccessToken(auth){
+  const body = new URLSearchParams({
+    client_id: auth.clientId,
+    grant_type: 'refresh_token',
+    refresh_token: auth.refreshToken
+  });
+  const res = await fetch(SPOTIFY_TOKEN_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
+    body
+  });
+  if(!res.ok) throw new Error('Refresh failed: ' + res.status);
+  const data = await res.json();
+  const updated = { ...auth, accessToken:data.access_token, refreshToken:data.refresh_token || auth.refreshToken, expiresAt: Date.now() + (data.expires_in*1000) };
+  saveAuth(updated);
+  return updated;
+}
+
+async function getValidAccessToken(){
+  let auth = getAuth();
+  if(!auth) return null;
+  if(!auth.expiresAt || Date.now() > (auth.expiresAt - 60000)){
+    try{ auth = await refreshAccessToken(auth); }catch(e){ return null; }
+  }
+  return auth.accessToken;
+}
+
+async function refreshConnectionStatus(){
+  const auth = getAuth();
+  const led = document.getElementById('statusLed');
+  const text = document.getElementById('statusText');
+  const connectBtn = document.getElementById('btnConnect');
+  const disconnectBtn = document.getElementById('btnDisconnect');
+  const controls = document.getElementById('playbackControls');
+
+  if(!auth){
+    led.classList.remove('on');
+    text.textContent = 'Not connected yet.';
+    connectBtn.style.display = 'inline-block';
+    disconnectBtn.style.display = 'none';
+    controls.style.display = 'none';
+    return;
+  }
+
+  document.getElementById('inputClientId').value = auth.clientId;
+  connectBtn.style.display = 'none';
+  disconnectBtn.style.display = 'inline-block';
+  controls.style.display = 'flex';
+
+  const token = await getValidAccessToken();
+  if(!token){
+    led.classList.remove('on');
+    text.innerHTML = '<strong>Connection expired.</strong> Reconnect below.';
+    connectBtn.style.display = 'inline-block';
+    return;
+  }
+
+  led.classList.add('on');
+  try{
+    const res = await fetch(SPOTIFY_ME_URL, { headers:{ 'Authorization': `Bearer ${token}` } });
+    if(res.ok){
+      const me = await res.json();
+      text.innerHTML = `Connected as <strong>${me.display_name || me.id}</strong>.`;
+    }else{
+      text.innerHTML = '<strong>Connected.</strong>';
+    }
+  }catch(e){
+    text.innerHTML = '<strong>Connected.</strong>';
+  }
+}
+
+document.getElementById('btnConnect').addEventListener('click', startSpotifyLogin);
+document.getElementById('btnDisconnect').addEventListener('click', ()=>{
+  localStorage.removeItem(LS_AUTH_KEY);
+  if(bc) bc.postMessage({ type:'auth-cleared' });
+  refreshConnectionStatus();
+  showToast('Disconnected from Spotify.');
+});
+
+/* Playback controls */
+async function playbackAction(method, path){
+  const token = await getValidAccessToken();
+  if(!token){ showToast('Not connected to Spotify.'); return; }
+  try{
+    const res = await fetch(`https://api.spotify.com/v1/me/player/${path}`, { method, headers:{ 'Authorization': `Bearer ${token}` } });
+    if(res.status === 404){ showToast('No active Spotify device found.'); }
+  }catch(e){ showToast('Playback control failed.'); }
+}
+
+let isPlayingGuess = true;
+document.getElementById('btnPlayPause').addEventListener('click', ()=>{
+  playbackAction('PUT', isPlayingGuess ? 'pause' : 'play');
+  isPlayingGuess = !isPlayingGuess;
+});
+document.getElementById('btnPrev').addEventListener('click', ()=> playbackAction('POST','previous'));
+document.getElementById('btnNext').addEventListener('click', ()=> playbackAction('POST','next'));
+
+/* ============================================================
+   OAUTH REDIRECT HANDLER
+   ============================================================ */
+async function handleRedirectIfPresent(){
+  const url = new URL(window.location.href);
+  const code = url.searchParams.get('code');
+  const error = url.searchParams.get('error');
+
+  if(error){
+    showToast('Spotify login cancelled.');
+    history.replaceState({}, '', window.location.pathname);
+    return;
+  }
+
+  if(code){
+    try{
+      await exchangeCodeForToken(code);
+      showToast('Connected to Spotify ✓');
+    }catch(e){
+      showToast('Could not complete Spotify login.');
+    }
+    history.replaceState({}, '', window.location.pathname);
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(async function init(){
+  loadConfig();
+  populateForm();
+  restoreClientId();
+  document.getElementById('inputClientId').addEventListener('change', saveClientId);
+  document.getElementById('inputClientId').addEventListener('blur', saveClientId);
+  document.getElementById('inputRedirectUri').value = getRedirectUri();
+  await handleRedirectIfPresent();
+  await refreshConnectionStatus();
+  document.getElementById('previewFrame').addEventListener('load', pushLivePreview);
+
+  loadDashTheme();
+  populateDashThemeForm();
+  applyDashTheme();
+})();
+</script>
+</body>
+</html>

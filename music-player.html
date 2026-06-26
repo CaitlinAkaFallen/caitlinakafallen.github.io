@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FallenOneArt — Now Playing Overlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&family=Poppins:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Bebas+Neue&family=VT323&family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --accent-primary:#7de8c8;
+  --accent-secondary:#c8a2ff;
+  --glass-bg:rgba(15,14,24,0.45);
+  --glass-border:rgba(255,255,255,0.14);
+  --corner-radius:22px;
+  --glow-intensity:0.6;
+  --pulse-speed:6s;
+  --text-scale:1;
+  --card-width:420px;
+  --time-color:#7de8c8;
+  --title-color:#f3f1f8;
+  --artist-color:#a39fb5;
+  --album-color:#a39fb5;
+  --reveal-anim-name:art-roll-in;
+  --font-display:'Orbitron', sans-serif;
+  --font-mono:'Share Tech Mono', monospace;
+  --text-primary:#f3f1f8;
+  --text-secondary:#a39fb5;
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+
+html,body{
+  width:100%; height:100%;
+  background:transparent;
+  overflow:hidden;
+  font-family:var(--font-mono);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.stage{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+}
+
+/* ============================================================
+   CARD SHELL — glassmorphism with double-layer glow
+   ============================================================ */
+.player-card{
+  position:relative;
+  width:var(--card-width);
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  border-radius:var(--corner-radius);
+  -webkit-backdrop-filter:blur(var(--blur-strength,18px));
+  backdrop-filter:blur(var(--blur-strength,18px));
+  box-shadow:
+    0 0 calc(28px * var(--glow-intensity)) rgba(125,232,200,calc(var(--glow-intensity) * 0.35)),
+    0 0 calc(48px * var(--glow-intensity)) rgba(200,162,255,calc(var(--glow-intensity) * 0.25)),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  padding:18px 20px 20px;
+  transition:opacity 0.5s ease, transform 0.5s ease;
+  opacity:0;
+  transform:translateY(6px);
+}
+.player-card.visible{ opacity:1; transform:translateY(0); }
+
+/* HUD corner brackets */
+.hud-corner{
+  position:absolute;
+  width:16px; height:16px;
+  border-color:var(--accent-primary);
+  opacity:0.85;
+  pointer-events:none;
+  filter:drop-shadow(0 0 4px var(--accent-primary));
+}
+.hud-corner.tl{ top:6px; left:6px; border-top:2px solid; border-left:2px solid; border-top-left-radius:6px; }
+.hud-corner.tr{ top:6px; right:6px; border-top:2px solid; border-right:2px solid; border-top-right-radius:6px; border-color:var(--accent-secondary); filter:drop-shadow(0 0 4px var(--accent-secondary)); }
+.hud-corner.bl{ bottom:6px; left:6px; border-bottom:2px solid; border-left:2px solid; border-bottom-left-radius:6px; border-color:var(--accent-secondary); filter:drop-shadow(0 0 4px var(--accent-secondary)); }
+.hud-corner.br{ bottom:6px; right:6px; border-bottom:2px solid; border-right:2px solid; border-bottom-right-radius:6px; }
+
+/* ============================================================
+   HEADER ROW
+   ============================================================ */
+.header-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:14px;
+}
+.logo-mark{
+  width:26px; height:26px;
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center;
+}
+.logo-mark svg{ width:100%; height:100%; }
+.logo-mark .bar{
+  fill:var(--accent-primary);
+  animation:eq-pulse var(--pulse-speed) ease-in-out infinite;
+}
+.logo-mark .bar:nth-child(2){ animation-delay:calc(var(--pulse-speed) / -4); fill:var(--accent-secondary); }
+.logo-mark .bar:nth-child(3){ animation-delay:calc(var(--pulse-speed) / -2); }
+
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:calc(11px * var(--text-scale));
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+}
+.eyebrow span{ color:var(--accent-primary); }
+
+.status-dot{
+  margin-left:auto;
+  width:7px; height:7px;
+  border-radius:50%;
+  background:var(--accent-primary);
+  box-shadow:0 0 8px var(--accent-primary);
+  animation:dot-pulse var(--pulse-speed) ease-in-out infinite;
+}
+.status-dot.paused{ background:#6f6c80; box-shadow:none; animation:none; }
+
+/* ============================================================
+   COMPACT LAYOUT
+   ============================================================ */
+.layout-compact{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.art-wrap-circle{
+  position:relative;
+  flex:0 0 auto;
+  width:84px;
+  height:84px;
+  perspective:1000px;
+}
+
+.art-ring{
+  position:absolute;
+  inset:-6px;
+  border-radius:50%;
+  background:conic-gradient(from 0deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary));
+  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+  animation:spin-ring 9s linear infinite;
+}
+.art-ring.paused{ animation-play-state:paused; }
+
+.art-circle{
+  position:relative;
+  width:84px;
+  height:84px;
+  border-radius:50%;
+  overflow:hidden;
+  background:#1a1825;
+  box-shadow:
+    0 0 0 3px rgba(0,0,0,0.35),
+    inset 0 2px 8px rgba(0,0,0,0.5);
+  animation-name:var(--reveal-anim-name, art-roll-in);
+  animation-duration:0.8s;
+  animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-fill-mode:both;
+}
+.art-circle.paused{ animation:art-pulse 2.5s ease-in-out infinite; }
+.art-circle img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.info-pill{
+  flex:1 1 auto;
+  min-width:0;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--glass-border);
+  border-radius:999px;
+  padding:11px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  overflow:hidden;
+}
+
+.pill-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:calc(14px * var(--text-scale));
+  color:var(--title-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  position:relative;
+}
+.pill-title .scroll-inner{ display:inline-block; white-space:nowrap; }
+.pill-title.marquee{ text-overflow:unset; }
+.pill-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:50px; }
+
+.pill-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:calc(11px * var(--text-scale));
+  color:var(--text-secondary);
+}
+
+.pill-artist{
+  color:var(--artist-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+.pill-artist.italic, .full-artist.italic{ font-style:italic; }
+
+.pill-album{
+  color:var(--album-color);
+  opacity:0.7;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:calc(10px * var(--text-scale));
+}
+
+.pill-time{
+  color:var(--time-color);
+  font-weight:600;
+  font-family:var(--font-mono);
+  flex:0 0 auto;
+}
+
+.eq-bars{
+  display:flex;
+  align-items:flex-end;
+  gap:2px;
+  height:12px;
+  flex:0 0 auto;
+}
+.eq-bars .bar{
+  width:3px;
+  border-radius:2px;
+  background:linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
+  height:30%;
+  animation:eq-bounce 1.1s ease-in-out infinite;
+}
+.eq-bars .bar:nth-child(1){ animation-delay:-0.9s; }
+.eq-bars .bar:nth-child(2){ animation-delay:-0.5s; }
+.eq-bars .bar:nth-child(3){ animation-delay:-1.1s; }
+.eq-bars .bar:nth-child(4){ animation-delay:-0.2s; }
+.eq-bars.paused .bar{ animation-play-state:paused; height:18%; }
+
+.art-badge{
+  position:absolute;
+  bottom:-2px;
+  right:-2px;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  background:rgba(10,9,21,0.85);
+  border:1px solid rgba(255,255,255,0.18);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.4);
+  z-index:2;
+}
+.art-badge svg{ width:12px; height:12px; fill:var(--text-primary); }
+.art-badge.paused .icon-play{ display:block; }
+.art-badge.paused .icon-pause{ display:none; }
+.art-badge:not(.paused) .icon-play{ display:none; }
+.art-badge:not(.paused) .icon-pause{ display:block; }
+
+/* ============================================================
+   FULL LAYOUT
+   ============================================================ */
+.layout-full{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.full-top{
+  display:flex;
+  gap:16px;
+}
+
+.art-wrap-square{
+  flex:0 0 auto;
+  width:140px;
+  height:140px;
+  border-radius:calc(var(--corner-radius) * 0.6);
+  overflow:hidden;
+  background:#1a1825;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  animation-name:var(--reveal-anim-name, art-roll-in);
+  animation-duration:0.8s;
+  animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-fill-mode:both;
+  position:relative;
+}
+.art-wrap-square img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.art-wrap-square::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.full-meta{
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:6px;
+  min-width:0;
+}
+
+.full-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:calc(17px * var(--text-scale));
+  color:var(--title-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  position:relative;
+}
+.full-title .scroll-inner{ display:inline-block; white-space:nowrap; }
+.full-title.marquee{ text-overflow:unset; }
+.full-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:60px; }
+
+.full-artist{
+  font-family:var(--font-mono);
+  font-size:calc(13px * var(--text-scale));
+  color:var(--artist-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.full-album{
+  font-family:var(--font-mono);
+  font-size:calc(11px * var(--text-scale));
+  color:var(--album-color);
+  opacity:0.7;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.control-bar{
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--glass-border);
+  border-radius:14px;
+  padding:12px 14px;
+}
+
+.progress-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.time-stamp{
+  font-family:var(--font-mono);
+  font-size:calc(10px * var(--text-scale));
+  color:var(--time-color);
+  font-weight:600;
+  flex:0 0 auto;
+  min-width:36px;
+}
+
+.time-stamp.remaining{
+  text-align:right;
+}
+
+.progress-track{
+  flex:1 1 auto;
+  height:5px;
+  border-radius:4px;
+  background:rgba(255,255,255,0.08);
+  overflow:visible;
+  position:relative;
+}
+
+.progress-fill{
+  position:relative;
+  height:100%;
+  border-radius:4px;
+  background:linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+  box-shadow:0 0 8px var(--accent-primary);
+  width:0%;
+  /* Smooth half-second transition matches the tick interval */
+  transition:width 0.5s linear;
+}
+
+.progress-track.style-segmented{
+  -webkit-mask-image:repeating-linear-gradient(to right, #000 0 3px, transparent 3px 6px);
+  mask-image:repeating-linear-gradient(to right, #000 0 3px, transparent 3px 6px);
+}
+.progress-track.style-segmented .progress-fill{
+  -webkit-mask-image:repeating-linear-gradient(to right, #000 0 3px, transparent 3px 6px);
+  mask-image:repeating-linear-gradient(to right, #000 0 3px, transparent 3px 6px);
+}
+
+.progress-scrubber{
+  display:none;
+  position:absolute;
+  right:-4px;
+  top:50%;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 6px rgba(0,0,0,0.5), 0 0 4px var(--accent-primary);
+  transform:translateY(-50%);
+}
+.progress-track.show-scrubber .progress-scrubber{ display:block; }
+
+/* ============================================================
+   MINIMAL LAYOUT
+   ============================================================ */
+.layout-minimal{ display:flex; flex-direction:column; gap:10px; }
+.minimal-row{ display:flex; align-items:center; gap:12px; }
+
+.minimal-art-wrap{
+  flex:0 0 auto;
+  width:52px;
+  height:52px;
+  overflow:hidden;
+  background:#1a1825;
+  position:relative;
+  border-radius:calc(var(--corner-radius) * 0.5);
+  animation-name:var(--reveal-anim-name, art-roll-in);
+  animation-duration:0.8s;
+  animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-fill-mode:both;
+}
+.minimal-art-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+.minimal-meta{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.minimal-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:calc(15px * var(--text-scale));
+  color:var(--title-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  position:relative;
+}
+.minimal-title .scroll-inner{ display:inline-block; white-space:nowrap; }
+.minimal-title.marquee{ text-overflow:unset; }
+.minimal-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:50px; }
+.minimal-artist{
+  font-family:var(--font-mono);
+  font-size:calc(12px * var(--text-scale));
+  color:var(--artist-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.minimal-progress-row{ display:flex; align-items:center; gap:10px; }
+
+/* ============================================================
+   BANNER LAYOUT
+   ============================================================ */
+.layout-banner{ display:flex; flex-direction:column; gap:10px; }
+.banner-row{ display:flex; align-items:center; gap:12px; }
+
+.banner-art-wrap{
+  flex:0 0 auto;
+  width:38px;
+  height:38px;
+  overflow:hidden;
+  background:#1a1825;
+  position:relative;
+  border-radius:calc(var(--corner-radius) * 0.45);
+  animation-name:var(--reveal-anim-name, art-roll-in);
+  animation-duration:0.8s;
+  animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-fill-mode:both;
+}
+.banner-art-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+.banner-meta{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:1px; }
+.banner-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:calc(13px * var(--text-scale));
+  color:var(--title-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  position:relative;
+}
+.banner-title .scroll-inner{ display:inline-block; white-space:nowrap; }
+.banner-title.marquee{ text-overflow:unset; }
+.banner-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:40px; }
+.banner-artist{
+  font-family:var(--font-mono);
+  font-size:calc(10.5px * var(--text-scale));
+  color:var(--artist-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.banner-times{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  font-family:var(--font-mono);
+  font-size:calc(10px * var(--text-scale));
+  color:var(--time-color);
+  font-weight:600;
+}
+.banner-time-sep{ opacity:0.45; }
+.banner-progress-track{ height:3px; width:100%; }
+
+/* ============================================================
+   IDLE / OFFLINE STATE
+   ============================================================ */
+.idle-state{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:6px 2px;
+}
+
+.idle-icon{
+  width:48px;
+  height:48px;
+  flex:0 0 auto;
+  border-radius:50%;
+  border:2px solid var(--glass-border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation:idle-breathe var(--pulse-speed) ease-in-out infinite;
+}
+
+.idle-icon svg{
+  width:22px;
+  height:22px;
+  fill:var(--text-secondary);
+}
+
+.idle-text{
+  font-family:var(--font-mono);
+  font-size:calc(12px * var(--text-scale));
+  letter-spacing:1.5px;
+  color:var(--text-secondary);
+  text-transform:uppercase;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes eq-pulse{
+  0%,100%{ opacity:0.5; }
+  50%{ opacity:1; }
+}
+
+@keyframes dot-pulse{
+  0%,100%{ opacity:0.5; transform:scale(0.85); }
+  50%{ opacity:1; transform:scale(1); }
+}
+
+@keyframes spin-ring{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+@keyframes eq-bounce{
+  0%,100%{ height:25%; }
+  50%{ height:90%; }
+}
+
+@keyframes idle-breathe{
+  0%,100%{ box-shadow:0 0 0 0 rgba(255,255,255,0.0); }
+  50%{ box-shadow:0 0 16px 3px rgba(255,255,255,0.08); }
+}
+
+@keyframes art-roll-in{
+  from{ opacity:0; transform:scale(0.75) rotateY(45deg); }
+  to{ opacity:1; transform:scale(1) rotateY(0deg); }
+}
+
+@keyframes art-fade-in{
+  from{ opacity:0; }
+  to{ opacity:1; }
+}
+@keyframes art-slide-left-in{
+  from{ opacity:0; transform:translateX(-26px); }
+  to{ opacity:1; transform:translateX(0); }
+}
+@keyframes art-slide-up-in{
+  from{ opacity:0; transform:translateY(22px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+@keyframes art-swing-in{
+  0%{ opacity:0; transform:rotate(-14deg) scale(0.9); }
+  60%{ opacity:1; transform:rotate(4deg) scale(1.02); }
+  100%{ opacity:1; transform:rotate(0deg) scale(1); }
+}
+
+@keyframes marquee-scroll{
+  0%{ transform:translateX(0); }
+  100%{ transform:translateX(-100%); }
+}
+
+@keyframes art-pulse{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.02); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .logo-mark .bar,
+  .status-dot,
+  .art-ring,
+  .eq-bars .bar,
+  .idle-icon,
+  .art-circle,
+  .art-wrap-square,
+  .minimal-art-wrap,
+  .banner-art-wrap,
+  .pill-title.marquee .scroll-inner,
+  .full-title.marquee .scroll-inner,
+  .minimal-title.marquee .scroll-inner,
+  .banner-title.marquee .scroll-inner{
+    animation:none !important;
+  }
+}
+
+.hidden{ display:none !important; }
+
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="player-card" id="playerCard">
+    <span class="hud-corner tl"></span>
+    <span class="hud-corner tr"></span>
+    <span class="hud-corner bl"></span>
+    <span class="hud-corner br"></span>
+
+    <div class="header-row" id="headerRow">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><rect class="bar" x="2" y="9" width="4" height="9" rx="1.5"/><rect class="bar" x="10" y="3" width="4" height="15" rx="1.5"/><rect class="bar" x="18" y="6" width="4" height="12" rx="1.5"/></svg>
+      </div>
+      <div class="eyebrow"><span>NOW</span> PLAYING</div>
+      <div class="status-dot" id="statusDot"></div>
+    </div>
+
+    <!-- COMPACT LAYOUT -->
+    <div class="layout-compact" id="layoutCompact">
+      <div class="art-wrap-circle">
+        <div class="art-ring" id="artRing"></div>
+        <div class="art-circle" id="artCircle">
+          <img id="artImgCompact" data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Album art" referrerpolicy="no-referrer">
+        </div>
+        <div class="art-badge hidden" id="artBadgeCompact" data-role="art-badge">
+          <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </div>
+      </div>
+      <div class="info-pill">
+        <div class="pill-title" id="titleCompact" data-role="title"><span class="scroll-inner">—</span></div>
+        <div class="pill-meta">
+          <div class="pill-artist" id="artistCompact" data-role="artist">—</div>
+          <div class="eq-bars" id="eqCompact">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          </div>
+        </div>
+        <div class="pill-album" id="albumCompact" data-role="album">—</div>
+        <div class="pill-time" id="timeCompact">0:00</div>
+      </div>
+    </div>
+
+    <!-- FULL LAYOUT -->
+    <div class="layout-full" id="layoutFull">
+      <div class="full-top">
+        <div class="art-wrap-square art-shapeable">
+          <img id="artImgFull" data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
+          <div class="art-badge hidden" id="artBadgeFull" data-role="art-badge">
+            <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+          </div>
+        </div>
+        <div class="full-meta">
+          <div class="full-title" id="titleFull" data-role="title"><span class="scroll-inner">—</span></div>
+          <div class="full-artist" id="artistFull" data-role="artist">—</div>
+          <div class="full-album" id="albumFull" data-role="album">—</div>
+        </div>
+      </div>
+      <div class="control-bar">
+        <div class="progress-row">
+          <span class="time-stamp" id="timeElapsed" data-role="time-elapsed">0:00</span>
+          <div class="progress-track" id="progressTrack"><div class="progress-fill" data-role="progress-fill"><span class="progress-scrubber"></span></div></div>
+          <span class="time-stamp remaining" id="timeRemaining" data-role="time-remaining">-0:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MINIMAL LAYOUT -->
+    <div class="layout-minimal hidden" id="layoutMinimal">
+      <div class="minimal-row">
+        <div class="minimal-art-wrap art-shapeable">
+          <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
+          <div class="art-badge hidden" data-role="art-badge">
+            <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+          </div>
+        </div>
+        <div class="minimal-meta">
+          <div class="minimal-title" data-role="title"><span class="scroll-inner">—</span></div>
+          <div class="minimal-artist" data-role="artist">—</div>
+        </div>
+      </div>
+      <div class="minimal-progress-row">
+        <span class="time-stamp" data-role="time-elapsed">0:00</span>
+        <div class="progress-track"><div class="progress-fill" data-role="progress-fill"><span class="progress-scrubber"></span></div></div>
+        <span class="time-stamp remaining" data-role="time-remaining">-0:00</span>
+      </div>
+    </div>
+
+    <!-- BANNER LAYOUT -->
+    <div class="layout-banner hidden" id="layoutBanner">
+      <div class="banner-row">
+        <div class="banner-art-wrap art-shapeable">
+          <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
+          <div class="art-badge hidden" data-role="art-badge">
+            <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+          </div>
+        </div>
+        <div class="banner-meta">
+          <div class="banner-title" data-role="title"><span class="scroll-inner">—</span></div>
+          <div class="banner-artist" data-role="artist">—</div>
+        </div>
+        <div class="banner-times">
+          <span data-role="time-elapsed">0:00</span>
+          <span class="banner-time-sep">/</span>
+          <span data-role="time-remaining">-0:00</span>
+        </div>
+      </div>
+      <div class="banner-progress-track progress-track"><div class="progress-fill" data-role="progress-fill"><span class="progress-scrubber"></span></div></div>
+    </div>
+
+    <!-- IDLE STATE -->
+    <div class="idle-state hidden" id="idleState">
+      <div class="idle-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg></div>
+      <div class="idle-text" id="idleText">NOTHING PLAYING</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONSTANTS
+   ============================================================ */
+const LS_CONFIG_KEY   = 'fallenoneart_music_player_config';
+const LS_AUTH_KEY     = 'fallenoneart_spotify_auth';
+const BROADCAST_NAME  = 'fallenoneart-music-player-sync';
+const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
+const SPOTIFY_NOW_PLAYING_URL = 'https://api.spotify.com/v1/me/player/currently-playing';
+const TOKEN_REFRESH_BUFFER_MS = 60000;
+const MIN_POLL_SECONDS = 3;
+
+const FONT_PAIRINGS = {
+  signature:{ display:"'Orbitron', sans-serif",        mono:"'Share Tech Mono', monospace" },
+  modern:   { display:"'Poppins', sans-serif",          mono:"'Poppins', sans-serif" },
+  tech:     { display:"'Rajdhani', sans-serif",         mono:"'JetBrains Mono', monospace" },
+  retro:    { display:"'Bebas Neue', sans-serif",       mono:"'VT323', monospace" },
+  elegant:  { display:"'Playfair Display', serif",      mono:"'Inter', sans-serif" }
+};
+
+const REVEAL_ANIM_MAP = {
+  roll:'art-roll-in',
+  fade:'art-fade-in',
+  'slide-left':'art-slide-left-in',
+  'slide-up':'art-slide-up-in',
+  swing:'art-swing-in'
+};
+
+const LAYOUT_IDS = [
+  { mode:'compact', id:'layoutCompact' },
+  { mode:'full',    id:'layoutFull' },
+  { mode:'minimal', id:'layoutMinimal' },
+  { mode:'banner',  id:'layoutBanner' }
+];
+
+const DEFAULT_CONFIG = {
+  layoutMode:'compact',
+  accentPrimary:'#7de8c8',
+  accentSecondary:'#c8a2ff',
+  glassOpacity:0.45,
+  blurStrength:18,
+  cornerRadius:22,
+  albumArtShape:'rounded',
+  showProgressBar:true,
+  showArtist:true,
+  showAlbum:false,
+  showTimecode:true,
+  showEqualizer:true,
+  showBranding:true,
+  idleBehavior:'message',
+  idleMessage:'NOTHING PLAYING',
+  pollInterval:5,
+  glowIntensity:0.6,
+  pulseSpeed:6,
+  fontPairing:'signature',
+  textScale:1,
+  cardWidth:420,
+  timeColor:'#7de8c8',
+  titleColor:'#f3f1f8',
+  artistColor:'#a39fb5',
+  albumColor:'#a39fb5',
+  artRevealStyle:'roll',
+  marqueeEnabled:true,
+  marqueeSpeed:36,
+  progressBarStyle:'solid',
+  showScrubberDot:false,
+  showArtBadge:false,
+  artistItalic:false
+};
+
+let currentConfig = { ...DEFAULT_CONFIG };
+let pollTimer = null;
+let lastTrackId = null;
+
+/* ============================================================
+   REAL-TIME TICK — interpolates progress between API polls
+   so the bar and clock advance every 500 ms without waiting
+   for the next Spotify request.
+   ============================================================ */
+let playbackState = {
+  progressMs:  0,
+  durationMs:  0,
+  isPlaying:   false,
+  lastSyncTime: 0   // performance.now() timestamp of last Spotify response
+};
+let tickTimer = null;
+
+function tick() {
+  if (!playbackState.isPlaying || !playbackState.durationMs) return;
+
+  // Calculate how far we are right now based on wall-clock time since last sync
+  const wallElapsed = performance.now() - playbackState.lastSyncTime;
+  const currentMs   = Math.min(playbackState.progressMs + wallElapsed, playbackState.durationMs);
+
+  // Update all time displays
+  const elapsedStr   = formatTime(currentMs);
+  const remainingStr = formatTime(playbackState.durationMs - currentMs);
+
+  document.getElementById('timeCompact').textContent = elapsedStr;
+  document.querySelectorAll('[data-role="time-elapsed"]').forEach(el => el.textContent = elapsedStr);
+  document.querySelectorAll('[data-role="time-remaining"]').forEach(el => el.textContent = '-' + remainingStr);
+
+  // Update all progress fills
+  if (currentConfig.showProgressBar) {
+    const pct = (currentMs / playbackState.durationMs) * 100;
+    document.querySelectorAll('[data-role="progress-fill"]').forEach(el => {
+      el.style.width = pct + '%';
+    });
+  }
+
+  // Song appears to have ended — kick off a fresh poll immediately
+  if (currentMs >= playbackState.durationMs) {
+    playbackState.isPlaying = false;
+    pollNowPlaying();
+  }
+}
+
+function startTick() {
+  stopTick();
+  tick();                                   // run once right away
+  tickTimer = setInterval(tick, 500);       // then every 500 ms
+}
+
+function stopTick() {
+  if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
+}
+
+/* ============================================================
+   CONFIG APPLICATION
+   ============================================================ */
+function loadConfig(){
+  try{
+    const raw = localStorage.getItem(LS_CONFIG_KEY);
+    if(raw) currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(raw) };
+  }catch(e){}
+  applyConfig(currentConfig);
+}
+
+function applyConfig(cfg){
+  const root = document.documentElement.style;
+  root.setProperty('--accent-primary', cfg.accentPrimary);
+  root.setProperty('--accent-secondary', cfg.accentSecondary);
+  root.setProperty('--glass-bg', `rgba(15,14,24,${cfg.glassOpacity})`);
+  root.setProperty('--blur-strength', `${cfg.blurStrength}px`);
+  root.setProperty('--corner-radius', `${cfg.cornerRadius}px`);
+  root.setProperty('--glow-intensity', cfg.glowIntensity);
+  root.setProperty('--pulse-speed', `${Math.max(4, cfg.pulseSpeed)}s`);
+  root.setProperty('--text-scale', cfg.textScale);
+  root.setProperty('--card-width', `${cfg.cardWidth}px`);
+  root.setProperty('--time-color', cfg.timeColor || '#7de8c8');
+  root.setProperty('--title-color', cfg.titleColor || '#f3f1f8');
+  root.setProperty('--artist-color', cfg.artistColor || '#a39fb5');
+  root.setProperty('--album-color', cfg.albumColor || '#a39fb5');
+  root.setProperty('--reveal-anim-name', REVEAL_ANIM_MAP[cfg.artRevealStyle] || 'art-roll-in');
+
+  const fonts = FONT_PAIRINGS[cfg.fontPairing] || FONT_PAIRINGS.signature;
+  root.setProperty('--font-display', fonts.display);
+  root.setProperty('--font-mono', fonts.mono);
+
+  LAYOUT_IDS.forEach(({mode, id})=>{
+    document.getElementById(id).classList.toggle('hidden', cfg.layoutMode !== mode);
+  });
+
+  let radiusVal;
+  if(cfg.albumArtShape === 'circle') radiusVal = '50%';
+  else if(cfg.albumArtShape === 'square') radiusVal = '0px';
+  else radiusVal = `${Math.round(cfg.cornerRadius*0.6)}px`;
+  document.querySelectorAll('.art-shapeable').forEach(el=>{ el.style.borderRadius = radiusVal; });
+
+  document.querySelectorAll('[data-role="artist"]').forEach(el=>{
+    el.classList.toggle('hidden', !cfg.showArtist);
+    el.classList.toggle('italic', !!cfg.artistItalic);
+  });
+  document.querySelectorAll('[data-role="album"]').forEach(el=> el.classList.toggle('hidden', !cfg.showAlbum));
+  document.querySelectorAll('[data-role="time-elapsed"], [data-role="time-remaining"]').forEach(el=> el.classList.toggle('hidden', !cfg.showTimecode));
+  document.getElementById('timeCompact').classList.toggle('hidden', !cfg.showTimecode);
+  document.querySelector('.control-bar').classList.toggle('hidden', !cfg.showProgressBar);
+  document.getElementById('eqCompact').classList.toggle('hidden', !cfg.showEqualizer);
+  document.getElementById('headerRow').classList.toggle('hidden', !cfg.showBranding);
+
+  document.querySelectorAll('.progress-track').forEach(track=>{
+    track.classList.toggle('style-segmented', cfg.progressBarStyle === 'segmented');
+    track.classList.toggle('show-scrubber', !!cfg.showScrubberDot);
+  });
+  document.querySelectorAll('[data-role="art-badge"]').forEach(el=> el.classList.toggle('hidden', !cfg.showArtBadge));
+
+  document.getElementById('idleText').textContent = cfg.idleMessage || 'NOTHING PLAYING';
+
+  restartPolling();
+}
+
+/* ============================================================
+   LIVE SYNC
+   ============================================================ */
+window.addEventListener('storage', (e)=>{
+  if(e.key === LS_CONFIG_KEY && e.newValue){
+    try{ currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(e.newValue) }; applyConfig(currentConfig); }catch(err){}
+  }
+});
+
+let bc = null;
+try{
+  bc = new BroadcastChannel(BROADCAST_NAME);
+  bc.onmessage = (e)=>{
+    if(e.data && e.data.type === 'config-update'){
+      currentConfig = { ...DEFAULT_CONFIG, ...e.data.config };
+      applyConfig(currentConfig);
+    }
+  };
+}catch(e){}
+
+window.addEventListener('message', (e)=>{
+  if(e.data && e.data.type === 'config-update'){
+    currentConfig = { ...DEFAULT_CONFIG, ...e.data.config };
+    applyConfig(currentConfig);
+  }
+});
+
+/* ============================================================
+   SPOTIFY AUTH
+   ============================================================ */
+function getAuth(){
+  try{ return JSON.parse(localStorage.getItem(LS_AUTH_KEY) || 'null'); }catch(e){ return null; }
+}
+function saveAuth(auth){ localStorage.setItem(LS_AUTH_KEY, JSON.stringify(auth)); }
+
+async function refreshAccessToken(auth){
+  const body = new URLSearchParams({
+    client_id: auth.clientId,
+    grant_type: 'refresh_token',
+    refresh_token: auth.refreshToken
+  });
+  const res = await fetch(SPOTIFY_TOKEN_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
+    body
+  });
+  if(!res.ok) throw new Error('Refresh failed');
+  const data = await res.json();
+  const updated = { ...auth, accessToken:data.access_token, refreshToken:data.refresh_token || auth.refreshToken, expiresAt: Date.now() + (data.expires_in * 1000) };
+  saveAuth(updated);
+  return updated;
+}
+
+async function getValidAccessToken(){
+  let auth = getAuth();
+  if(!auth || !auth.refreshToken || !auth.clientId) return null;
+  if(!auth.expiresAt || Date.now() > (auth.expiresAt - TOKEN_REFRESH_BUFFER_MS)){
+    try{ auth = await refreshAccessToken(auth); }catch(e){ return null; }
+  }
+  return auth.accessToken;
+}
+
+/* ============================================================
+   NOW PLAYING POLLING
+   ============================================================ */
+function showIdle(message){
+  stopTick(); // nothing to tick while idle
+  const cfg = currentConfig;
+  if(cfg.idleBehavior === 'hide'){
+    document.getElementById('playerCard').classList.remove('visible');
+    return;
+  }
+  LAYOUT_IDS.forEach(({id})=> document.getElementById(id).classList.add('hidden'));
+  document.getElementById('idleState').classList.remove('hidden');
+  if(message) document.getElementById('idleText').textContent = message;
+  document.getElementById('playerCard').classList.add('visible');
+}
+
+function showTrack(){
+  const cfg = currentConfig;
+  document.getElementById('idleState').classList.add('hidden');
+  LAYOUT_IDS.forEach(({mode, id})=>{
+    document.getElementById(id).classList.toggle('hidden', cfg.layoutMode !== mode);
+  });
+  document.getElementById('playerCard').classList.add('visible');
+}
+
+function formatTime(ms){
+  const totalSec = Math.max(0, Math.floor(ms / 1000));
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function setupMarquee(el){
+  const inner = el.querySelector('.scroll-inner');
+  if(!inner) return;
+  el.classList.remove('marquee');
+  inner.style.animation = 'none';
+  if(!currentConfig.marqueeEnabled) return;
+  requestAnimationFrame(()=>{
+    if(inner.scrollWidth > el.clientWidth + 4){
+      const distance = inner.scrollWidth + 50;
+      const speed = Math.max(10, currentConfig.marqueeSpeed || 36);
+      const duration = distance / speed;
+      inner.style.animation = '';
+      el.classList.add('marquee');
+      inner.style.animationDuration = `${duration}s`;
+    }
+  });
+}
+
+function retriggerRevealAnimation(el){
+  if(!el) return;
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = '';
+}
+
+function renderTrack(data){
+  const item      = data.item;
+  const isPlaying = !!data.is_playing;
+  const artUrl    = (item.album && item.album.images && item.album.images[0]) ? item.album.images[0].url : '';
+  const artists   = (item.artists || []).map(a => a.name).join(', ');
+  const albumName = (item.album && item.album.name) || '—';
+  const isNewTrack = item.id !== lastTrackId;
+
+  document.querySelectorAll('[data-role="title"]').forEach(el=>{
+    el.querySelector('.scroll-inner').textContent = item.name || '—';
+    setupMarquee(el);
+  });
+  document.querySelectorAll('[data-role="artist"]').forEach(el => el.textContent = artists || '—');
+  document.querySelectorAll('[data-role="album"]').forEach(el => el.textContent = albumName);
+  document.querySelectorAll('[data-role="art-img"]').forEach(img =>{
+    if(img.src !== artUrl) img.src = artUrl;
+  });
+
+  if(isNewTrack){
+    document.querySelectorAll('.art-circle, .art-shapeable').forEach(retriggerRevealAnimation);
+    lastTrackId = item.id;
+  }
+
+  document.getElementById('artCircle').classList.toggle('paused', !isPlaying);
+  document.getElementById('artRing').classList.toggle('paused', !isPlaying);
+  document.getElementById('statusDot').classList.toggle('paused', !isPlaying);
+  document.getElementById('eqCompact').classList.toggle('paused', !isPlaying);
+  document.querySelectorAll('[data-role="art-badge"]').forEach(el => el.classList.toggle('paused', !isPlaying));
+
+  /* ----------------------------------------------------------
+     Sync playback state so the tick interpolator knows where
+     we are and whether the track is playing or paused.
+     ---------------------------------------------------------- */
+  playbackState = {
+    progressMs:   data.progress_ms,
+    durationMs:   item.duration_ms,
+    isPlaying:    isPlaying,
+    lastSyncTime: performance.now()   // wall-clock anchor for interpolation
+  };
+
+  // Kick off (or re-sync) the real-time ticker
+  startTick();
+
+  showTrack();
+}
+
+async function pollNowPlaying(){
+  const token = await getValidAccessToken();
+  if(!token){
+    showIdle('CONNECT SPOTIFY IN DASHBOARD');
+    return;
+  }
+  try{
+    const res = await fetch(SPOTIFY_NOW_PLAYING_URL, { headers:{ 'Authorization': `Bearer ${token}` } });
+    if(res.status === 204){ showIdle(currentConfig.idleMessage); lastTrackId = null; return; }
+    if(res.status === 401){ showIdle('TOKEN EXPIRED — RECONNECT'); return; }
+    if(!res.ok){ showIdle('SPOTIFY UNAVAILABLE'); return; }
+    const data = await res.json();
+    if(!data || !data.item){ showIdle(currentConfig.idleMessage); lastTrackId = null; return; }
+    renderTrack(data);
+  }catch(e){
+    showIdle('CONNECTION ERROR');
+  }
+}
+
+function restartPolling(){
+  if(pollTimer) clearInterval(pollTimer);
+  const seconds = Math.max(MIN_POLL_SECONDS, currentConfig.pollInterval || DEFAULT_CONFIG.pollInterval);
+  pollNowPlaying();
+  pollTimer = setInterval(pollNowPlaying, seconds * 1000);
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+loadConfig();
+</script>
+</body>
+</html>
