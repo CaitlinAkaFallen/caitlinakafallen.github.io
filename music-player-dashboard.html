@@ -29,6 +29,7 @@ html,body{
   font-family:var(--font-mono);
   min-height:100vh;
 }
+
 body{
   background:
     radial-gradient(circle at 15% 0%, rgba(125,232,200,0.10), transparent 45%),
@@ -108,6 +109,24 @@ a{ color:var(--accent-primary); }
 
 .panel h2{ font-family:var(--font-display); font-size:18px; letter-spacing:1px; margin:0 0 4px; }
 .panel .sub{ color:var(--text-secondary); font-size:12px; margin-bottom:24px; line-height:1.6; }
+
+.section-divider{
+  margin:28px 0 24px;
+  padding-top:20px;
+  border-top:1px solid var(--border-soft);
+}
+.section-divider h3{
+  font-family:var(--font-display);
+  font-size:14px;
+  letter-spacing:1px;
+  margin:0 0 2px;
+  color:var(--text-primary);
+}
+.section-divider .sub{
+  margin-bottom:0;
+  font-size:11px;
+  color:var(--text-secondary);
+}
 
 .field{ margin-bottom:20px; }
 .field label{ display:block; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-secondary); margin-bottom:8px; }
@@ -254,8 +273,13 @@ button.icon-btn{
   height:38px;
   cursor:pointer;
   font-size:14px;
+  transition:all .2s ease;
 }
-button.icon-btn:hover{ border-color:var(--accent-primary); }
+button.icon-btn:hover{ 
+  border-color:var(--accent-primary);
+  color:var(--accent-primary);
+  box-shadow:0 0 12px rgba(125,232,200,0.2);
+}
 
 .status-card{
   border:1px solid var(--border-soft);
@@ -327,6 +351,8 @@ button.icon-btn:hover{ border-color:var(--accent-primary); }
 
 .spotify-controls{ display:flex; gap:10px; margin-top:6px; }
 
+.hidden{ display:none !important; }
+
 </style>
 </head>
 <body>
@@ -339,10 +365,12 @@ button.icon-btn:hover{ border-color:var(--accent-primary); }
       <span>FALLENONEART<br><small>MUSIC PLAYER</small></span>
     </div>
     <button class="nav-btn active" data-tab="connection"><span class="num">01</span> Connection</button>
-    <button class="nav-btn" data-tab="appearance"><span class="num">02</span> Appearance</button>
-    <button class="nav-btn" data-tab="layout"><span class="num">03</span> Layout</button>
-    <button class="nav-btn" data-tab="behavior"><span class="num">04</span> Behavior</button>
-    <button class="nav-btn" data-tab="theme"><span class="num">05</span> Dashboard Theme</button>
+    <button class="nav-btn" data-tab="layout"><span class="num">02</span> Layout & Shapes</button>
+    <button class="nav-btn" data-tab="compact"><span class="num">03</span> Compact Layout</button>
+    <button class="nav-btn" data-tab="appearance"><span class="num">04</span> Appearance</button>
+    <button class="nav-btn" data-tab="metadata"><span class="num">05</span> Metadata & Progress</button>
+    <button class="nav-btn" data-tab="behavior"><span class="num">06</span> Behavior</button>
+    <button class="nav-btn" data-tab="theme"><span class="num">07</span> Dashboard Theme</button>
   </nav>
 
   <main class="main">
@@ -352,7 +380,7 @@ button.icon-btn:hover{ border-color:var(--accent-primary); }
       <h2>Spotify Connection</h2>
       <p class="sub">Connect your Spotify account using PKCE (Proof Key for Code Exchange) — no backend server needed.</p>
 
-      <div class="status-card" style="background:rgba(125,232,200,0.08); border-color:rgba(125,232,200,0.25); display:block;">
+      <div class="status-card prominent">
         <div class="status-text">
           <strong>✓ Your Client ID</strong> saves automatically in this browser, even if login is interrupted.<br>
           <strong>✓ Multi-user friendly</strong> — anyone using this dashboard logs in with their own Spotify account.<br>
@@ -377,20 +405,117 @@ button.icon-btn:hover{ border-color:var(--accent-primary); }
         <div class="hint">Add this exact URL to your Spotify app's Redirect URIs in Edit Settings.</div>
       </div>
 
-      <button class="primary-btn" id="btnConnect">Connect Spotify</button>
-      <button class="ghost-btn" id="btnDisconnect" style="margin-left:10px; display:none;">Disconnect</button>
+      <button type="button" class="primary-btn" id="btnConnect">Connect Spotify</button>
+      <button type="button" class="ghost-btn hidden" id="btnDisconnect">Disconnect</button>
 
-      <div class="spotify-controls" id="playbackControls" style="display:none;">
+      <div class="spotify-controls" id="playbackControls">
         <button class="icon-btn" id="btnPrev" title="Previous">⏮</button>
         <button class="icon-btn" id="btnPlayPause" title="Play/Pause">⏯</button>
         <button class="icon-btn" id="btnNext" title="Next">⏭</button>
       </div>
     </section>
 
+    <!-- LAYOUT & SHAPES -->
+    <section class="panel" id="panel-layout">
+      <h2>Layout & Shapes</h2>
+      <p class="sub">Choose your display mode and universal artwork shape — applies to all layouts.</p>
+
+      <div class="field">
+        <label>Layout Mode</label>
+        <div class="choice-cards">
+          <div class="choice-card" data-choice="layoutMode" data-value="compact"><span class="ico">◉ ▭</span>Compact</div>
+          <div class="choice-card" data-choice="layoutMode" data-value="minimal"><span class="ico">▢ ▭</span>Minimal</div>
+          <div class="choice-card" data-choice="layoutMode" data-value="stacked"><span class="ico">⊟ ⊟</span>Stacked</div>
+          <div class="choice-card" data-choice="layoutMode" data-value="square"><span class="ico">▭ ▭</span>Square</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Album Art Shape</label>
+        <div class="choice-cards">
+          <div class="choice-card" data-choice="albumArtShape" data-value="rounded">Rounded<br>Square</div>
+          <div class="choice-card" data-choice="albumArtShape" data-value="circle">●<br>Circle</div>
+          <div class="choice-card" data-choice="albumArtShape" data-value="square">■<br>Square</div>
+          <div class="choice-card" data-choice="albumArtShape" data-value="rounded-rect">⬜<br>Rounded Rect</div>
+          <div class="choice-card" data-choice="albumArtShape" data-value="hexagon">⬡<br>Hexagon</div>
+          <div class="choice-card" data-choice="albumArtShape" data-value="octagon">⬢<br>Octagon</div>
+        </div>
+        <div class="hint">This shape applies to all layouts — no layout-specific setup needed.</div>
+      </div>
+
+      <div class="field">
+        <label>Card Width (px)</label>
+        <div class="range-row"><input type="range" id="inputCardWidth" min="320" max="560" step="10"><span class="val" id="valCardWidth"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Card Height (px)</label>
+        <div class="range-row"><input type="range" id="inputCardHeight" min="300" max="700" step="10"><span class="val" id="valCardHeight"></span></div>
+        <div class="hint">Adjust the overall player card size. Compact/Minimal/Square use this. Stacked layout is unconstrained (full-bleed art).</div>
+      </div>
+
+      <div class="field">
+        <label>Container Background</label>
+        <div class="toggle-row"><span>Show dark backing container behind player</span><label class="switch"><input type="checkbox" id="toggleShowContainerBackground" checked><span class="track"></span></label></div>
+        <div class="hint">When OFF: creates a frameless appearance. Stacked always respects its own layering.</div>
+      </div>
+    </section>
+
+    <!-- COMPACT LAYOUT SIZING -->
+    <section class="panel" id="panel-compact">
+      <h2>Compact Layout Sizing</h2>
+      <p class="sub">Fine-tune dimensions, spacing, and styling for the Compact layout mode.</p>
+
+      <div class="field">
+        <label>Album Art Size (px)</label>
+        <div class="range-row"><input type="range" id="inputCompactArtSize" min="80" max="180" step="5"><span class="val" id="valCompactArtSize"></span></div>
+        <div class="hint">Width and height of the square artwork thumbnail on the left.</div>
+      </div>
+
+      <div class="field">
+        <label>Right Column Gap (px)</label>
+        <div class="range-row"><input type="range" id="inputCompactRightGap" min="2" max="16" step="1"><span class="val" id="valCompactRightGap"></span></div>
+        <div class="hint">Space between art and the title/artist/progress section on the right.</div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Typography</h3>
+      </div>
+
+      <div class="field">
+        <label>Title Font Size (px)</label>
+        <div class="range-row"><input type="range" id="inputCompactTitleSize" min="12" max="24" step="1"><span class="val" id="valCompactTitleSize"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Artist Font Size (px)</label>
+        <div class="range-row"><input type="range" id="inputCompactArtistSize" min="8" max="14" step="1"><span class="val" id="valCompactArtistSize"></span></div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Equalizer & Progress</h3>
+      </div>
+
+      <div class="field">
+        <label>Equalizer Bars Height (px)</label>
+        <div class="range-row"><input type="range" id="inputCompactEqBarsHeight" min="10" max="24" step="1"><span class="val" id="valCompactEqBarsHeight"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Equalizer Bar Width (px)</label>
+        <div class="range-row"><input type="range" id="inputCompactEqBarWidth" min="1" max="4" step="0.5"><span class="val" id="valCompactEqBarWidth"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Progress Bar Height (px)</label>
+        <div class="range-row"><input type="range" id="inputCompactProgressHeight" min="2" max="10" step="1"><span class="val" id="valCompactProgressHeight"></span></div>
+      </div>
+    </section>
+
     <!-- APPEARANCE -->
     <section class="panel" id="panel-appearance">
       <h2>Appearance</h2>
-      <p class="sub">Control colors, glass effect, and visual polish.</p>
+      <p class="sub">Colors, effects, fonts, and animations.</p>
 
       <div class="field">
         <label>Primary Accent Color</label>
@@ -409,35 +534,28 @@ button.icon-btn:hover{ border-color:var(--accent-primary); }
       </div>
 
       <div class="field">
-        <label>Time/Progress Color</label>
-        <div class="color-field">
-          <input type="color" id="inputTimeColor" value="#7de8c8">
-          <span class="swatch-label">Elapsed time & timestamps</span>
-        </div>
-      </div>
-
-      <div class="field">
         <label>Track Title Color</label>
         <div class="color-field">
           <input type="color" id="inputTitleColor" value="#f3f1f8">
-          <span class="swatch-label">Track title text color</span>
         </div>
       </div>
 
       <div class="field">
         <label>Artist Name Color</label>
         <div class="color-field">
-          <input type="color" id="inputArtistColor" value="#ffffff">
-          <span class="swatch-label">Artist name text color</span>
+          <input type="color" id="inputArtistColor" value="#a39fb5">
         </div>
       </div>
 
       <div class="field">
         <label>Album Name Color</label>
         <div class="color-field">
-          <input type="color" id="inputAlbumColor" value="#ffffff">
-          <span class="swatch-label">Album name text color</span>
+          <input type="color" id="inputAlbumColor" value="#a39fb5">
         </div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Glass Effects</h3>
       </div>
 
       <div class="field">
@@ -452,19 +570,34 @@ button.icon-btn:hover{ border-color:var(--accent-primary); }
       </div>
 
       <div class="field">
-        <label>Corner Radius</label>
-        <div class="range-row"><input type="range" id="inputCornerRadius" min="0" max="40" step="1"><span class="val" id="valCornerRadius"></span></div>
-      </div>
-
-      <div class="field">
         <label>Glow Intensity</label>
         <div class="range-row"><input type="range" id="inputGlowIntensity" min="0.2" max="1" step="0.05"><span class="val" id="valGlowIntensity"></span></div>
       </div>
 
+      <div class="section-divider">
+        <h3>Typography & Motion</h3>
+      </div>
+
       <div class="field">
-        <label>Ambient Pulse Speed (seconds)</label>
-        <div class="range-row"><input type="range" id="inputPulseSpeed" min="4" max="12" step="1"><span class="val" id="valPulseSpeed"></span></div>
-        <div class="hint">Minimum 4s for seizure safety.</div>
+        <label>Font Pairing</label>
+        <select id="inputFontPairing">
+          <option value="signature">Orbitron + Share Tech Mono</option>
+          <option value="modern">Poppins (modern)</option>
+          <option value="tech">Rajdhani + JetBrains Mono</option>
+          <option value="retro">Bebas Neue + VT323</option>
+          <option value="elegant">Playfair Display + Inter</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Album Art Reveal</label>
+        <select id="inputArtRevealStyle">
+          <option value="roll">Roll (3D flip-in)</option>
+          <option value="fade">Fade</option>
+          <option value="slide-left">Slide from left</option>
+          <option value="slide-up">Slide from bottom</option>
+          <option value="swing">Swing in</option>
+        </select>
       </div>
 
       <div class="field">
@@ -473,92 +606,104 @@ button.icon-btn:hover{ border-color:var(--accent-primary); }
       </div>
 
       <div class="field">
-        <label>Font Pairing</label>
-        <select id="inputFontPairing">
-          <option value="signature">Orbitron + Share Tech Mono (signature)</option>
-          <option value="modern">Poppins (modern/clean)</option>
-          <option value="tech">Rajdhani + JetBrains Mono (technical)</option>
-          <option value="retro">Bebas Neue + VT323 (retro terminal)</option>
-          <option value="elegant">Playfair Display + Inter (elegant)</option>
-        </select>
+        <label>Ambient Pulse Speed (seconds)</label>
+        <div class="range-row"><input type="range" id="inputPulseSpeed" min="4" max="12" step="1"><span class="val" id="valPulseSpeed"></span></div>
       </div>
 
       <div class="field">
-        <label>Album Art Reveal Animation</label>
-        <select id="inputArtRevealStyle">
-          <option value="roll">Roll (3D flip-in)</option>
-          <option value="fade">Fade</option>
-          <option value="slide-left">Slide from left</option>
-          <option value="slide-up">Slide from bottom</option>
-          <option value="swing">Swing in</option>
-        </select>
-        <div class="hint">Plays once each time the track changes.</div>
+        <label>Corner Radius</label>
+        <div class="range-row"><input type="range" id="inputCornerRadius" min="0" max="40" step="1"><span class="val" id="valCornerRadius"></span></div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Content Visibility</h3>
       </div>
 
       <div class="field">
-        <label>Italic Artist Name</label>
-        <div class="toggle-row"><span>Style the artist name in italics</span><label class="switch"><input type="checkbox" id="toggleArtistItalic"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Artist name</span><label class="switch"><input type="checkbox" id="toggleShowArtist" checked><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Album name</span><label class="switch"><input type="checkbox" id="toggleShowAlbum"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Italic artist</span><label class="switch"><input type="checkbox" id="toggleArtistItalic"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Equalizer bars</span><label class="switch"><input type="checkbox" id="toggleShowEqualizer" checked><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Header branding</span><label class="switch"><input type="checkbox" id="toggleShowBranding" checked><span class="track"></span></label></div>
       </div>
 
       <div class="field">
-        <label>Card Width (px)</label>
-        <div class="range-row"><input type="range" id="inputCardWidth" min="320" max="560" step="10"><span class="val" id="valCardWidth"></span></div>
-      </div>
-    </section>
-
-    <!-- LAYOUT -->
-    <section class="panel" id="panel-layout">
-      <h2>Layout &amp; Content</h2>
-      <p class="sub">Choose display mode and which elements appear.</p>
-
-      <div class="field">
-        <label>Layout Mode</label>
-        <div class="choice-cards">
-          <div class="choice-card" data-choice="layoutMode" data-value="compact"><span class="ico">◉ ▭</span>Compact<br>(Circle + Pill)</div>
-          <div class="choice-card" data-choice="layoutMode" data-value="full"><span class="ico">▢ ▭</span>Full<br>(Large Square)</div>
-          <div class="choice-card" data-choice="layoutMode" data-value="minimal"><span class="ico">▢ ▭</span>Minimal<br>(Lean + Bare Bar)</div>
-          <div class="choice-card" data-choice="layoutMode" data-value="banner"><span class="ico">▭▭▭</span>Banner<br>(Wide Strip)</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Album Art Shape</label>
-        <div class="choice-cards">
-          <div class="choice-card" data-choice="albumArtShape" data-value="rounded">Rounded Square</div>
-          <div class="choice-card" data-choice="albumArtShape" data-value="circle">Circle</div>
-          <div class="choice-card" data-choice="albumArtShape" data-value="square">Square (Sharp)</div>
-        </div>
+        <label>Advanced Badge & Styling</label>
+        <div class="toggle-row"><span>Play/pause badge on artwork</span><label class="switch"><input type="checkbox" id="toggleShowArtBadge"><span class="track"></span></label></div>
       </div>
 
       <div class="field">
         <label>Title Marquee Scroll</label>
-        <div class="toggle-row"><span>Scroll long titles instead of truncating</span><label class="switch"><input type="checkbox" id="toggleMarqueeEnabled"><span class="track"></span></label></div>
-        <div class="range-row" style="margin-top:10px;"><input type="range" id="inputMarqueeSpeed" min="15" max="60" step="1"><span class="val" id="valMarqueeSpeed"></span></div>
-        <div class="hint">Controls scroll speed. Only activates when a title is too long to fit — short titles stay still either way.</div>
+        <div class="toggle-row"><span>Scroll long titles instead of truncating</span><label class="switch"><input type="checkbox" id="toggleMarqueeEnabled" checked><span class="track"></span></label></div>
+        <div class="range-row"><input type="range" id="inputMarqueeSpeed" min="15" max="60" step="1"><span class="val" id="valMarqueeSpeed"></span></div>
+      </div>
+    </section>
+
+    <!-- METADATA & PROGRESS -->
+    <section class="panel" id="panel-metadata">
+      <h2>Metadata Pill & Progress Bar</h2>
+      <p class="sub">Controls for title/artist/album container and progress positioning — works across all layouts.</p>
+
+      <div class="section-divider">
+        <h3>Metadata Pill (Title/Artist/Album)</h3>
+        <div class="sub">The container behind your song information. Hiding the pill background never hides the text itself.</div>
+      </div>
+
+      <div class="field">
+        <label>Metadata Pill Visibility</label>
+        <div class="toggle-row"><span>Show metadata pill</span><label class="switch"><input type="checkbox" id="toggleShowMetadataPill" checked><span class="track"></span></label></div>
+        <div class="hint">When OFF, the background and border vanish but title/artist/album text remains visible.</div>
+      </div>
+
+      <div class="field">
+        <label>Metadata Background</label>
+        <div class="toggle-row"><span>Show dark container behind pill</span><label class="switch"><input type="checkbox" id="toggleMetadataBackground" checked><span class="track"></span></label></div>
+        <div class="hint">Toggles the glass container appearance only — metadata text always stays.</div>
+      </div>
+
+      <div class="field">
+        <label>Metadata Opacity</label>
+        <div class="range-row"><input type="range" id="inputMetadataOpacity" min="0" max="1" step="0.05"><span class="val" id="valMetadataOpacity"></span></div>
+        <div class="hint">Fades the entire title/artist/album section while preserving readability.</div>
+      </div>
+
+      <div class="field">
+        <label>Time/Progress Color</label>
+        <div class="color-field">
+          <input type="color" id="inputTimeColor" value="#7de8c8">
+          <span class="swatch-label">Elapsed time & timestamps</span>
+        </div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Progress Bar & Timing</h3>
+        <div class="sub">Progress bar position adapts per layout. Stacked: below metadata. Others: at layout bottom.</div>
+      </div>
+
+      <div class="field">
+        <label>Progress Bar Visibility</label>
+        <div class="toggle-row"><span>Show progress bar</span><label class="switch"><input type="checkbox" id="toggleShowProgressBar" checked><span class="track"></span></label></div>
+      </div>
+
+      <div class="field">
+        <label>Progress Bar Background</label>
+        <div class="toggle-row"><span>Show dark container behind progress bar</span><label class="switch"><input type="checkbox" id="toggleProgressBackground" checked><span class="track"></span></label></div>
+        <div class="hint">When ON: glass container around progress track. When OFF: bare progress bar only.</div>
       </div>
 
       <div class="field">
         <label>Progress Bar Style</label>
         <div class="choice-cards">
           <div class="choice-card" data-choice="progressBarStyle" data-value="solid">Solid</div>
-          <div class="choice-card" data-choice="progressBarStyle" data-value="segmented">Segmented (dotted)</div>
+          <div class="choice-card" data-choice="progressBarStyle" data-value="segmented">Segmented</div>
         </div>
       </div>
 
       <div class="field">
-        <label>Extra Player Details</label>
-        <div class="toggle-row"><span>Scrubber dot on progress bar</span><label class="switch"><input type="checkbox" id="toggleShowScrubberDot"><span class="track"></span></label></div>
-        <div class="toggle-row"><span>Play/pause badge on album art</span><label class="switch"><input type="checkbox" id="toggleShowArtBadge"><span class="track"></span></label></div>
-      </div>
-
-      <div class="field">
-        <label>Visible Elements</label>
-        <div class="toggle-row"><span>Artist name</span><label class="switch"><input type="checkbox" id="toggleShowArtist"><span class="track"></span></label></div>
-        <div class="toggle-row"><span>Album name</span><label class="switch"><input type="checkbox" id="toggleShowAlbum"><span class="track"></span></label></div>
-        <div class="toggle-row"><span>Progress bar</span><label class="switch"><input type="checkbox" id="toggleShowProgressBar"><span class="track"></span></label></div>
-        <div class="toggle-row"><span>Time display</span><label class="switch"><input type="checkbox" id="toggleShowTimecode"><span class="track"></span></label></div>
-        <div class="toggle-row"><span>Equalizer bars</span><label class="switch"><input type="checkbox" id="toggleShowEqualizer"><span class="track"></span></label></div>
-        <div class="toggle-row"><span>Header ("NOW PLAYING")</span><label class="switch"><input type="checkbox" id="toggleShowBranding"><span class="track"></span></label></div>
+        <label>Time Display</label>
+        <div class="toggle-row"><span>Show elapsed time</span><label class="switch"><input type="checkbox" id="toggleShowTimecode" checked><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Show start time</span><label class="switch"><input type="checkbox" id="toggleShowStartTime"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Show scrubber dot</span><label class="switch"><input type="checkbox" id="toggleShowScrubberDot"><span class="track"></span></label></div>
       </div>
 
       <div class="field">
@@ -583,45 +728,43 @@ button.icon-btn:hover{ border-color:var(--accent-primary); }
       <div class="field">
         <label>Poll Interval (seconds)</label>
         <div class="range-row"><input type="range" id="inputPollInterval" min="3" max="15" step="1"><span class="val" id="valPollInterval"></span></div>
-        <div class="hint">How often the overlay checks Spotify for new tracks. Lower = more responsive but more API calls.</div>
+        <div class="hint">How often the overlay checks Spotify for new tracks.</div>
       </div>
 
       <button class="ghost-btn" id="btnResetDefaults">Reset all to defaults</button>
     </section>
 
-    <!-- DASHBOARD THEME (this control panel's own background — does not affect the overlay) -->
+    <!-- DASHBOARD THEME -->
     <section class="panel" id="panel-theme">
       <h2>Dashboard Theme</h2>
-      <p class="sub">This only changes the look of this control panel itself — it's never pushed to the overlay, which always stays transparent for OBS.</p>
+      <p class="sub">This changes the control panel appearance — it never affects the overlay.</p>
 
       <div class="field">
         <label>Background Style</label>
         <div class="choice-cards">
-          <div class="choice-card" data-dash-choice="bgType" data-value="gradient">Gradient<br>(default)</div>
-          <div class="choice-card" data-dash-choice="bgType" data-value="solid">Solid Color</div>
+          <div class="choice-card" data-dash-choice="bgType" data-value="gradient">Gradient</div>
+          <div class="choice-card" data-dash-choice="bgType" data-value="solid">Solid</div>
           <div class="choice-card" data-dash-choice="bgType" data-value="image">Image</div>
         </div>
       </div>
 
       <div class="field" id="fieldBgSolid">
         <label>Solid Color</label>
-        <div class="color-field"><input type="color" id="inputDashBgColor1" value="#0a0915"><span class="swatch-label">Background color</span></div>
+        <div class="color-field"><input type="color" id="inputDashBgColor1" value="#0a0915"></div>
       </div>
 
       <div class="field" id="fieldBgGradient">
         <label>Gradient Colors</label>
-        <div style="display:flex; gap:24px;">
-          <div class="color-field"><input type="color" id="inputDashGradColor1" value="#7de8c8"><span class="swatch-label">Color 1</span></div>
-          <div class="color-field"><input type="color" id="inputDashGradColor2" value="#c8a2ff"><span class="swatch-label">Color 2</span></div>
-        </div>
-        <div class="hint" style="margin-top:14px;">Angle</div>
+        <div class="color-field"><input type="color" id="inputDashGradColor1" value="#7de8c8"><span class="swatch-label">Color 1</span></div>
+        <div class="color-field"><input type="color" id="inputDashGradColor2" value="#c8a2ff"><span class="swatch-label">Color 2</span></div>
+        <div class="hint">Angle</div>
         <div class="range-row"><input type="range" id="inputDashGradAngle" min="0" max="360" step="5"><span class="val" id="valDashGradAngle"></span></div>
       </div>
 
       <div class="field hidden" id="fieldBgImage">
         <label for="inputDashBgImageUrl">Image URL</label>
-        <input type="text" id="inputDashBgImageUrl" placeholder="https://example.com/your-background.jpg">
-        <div class="hint" style="margin-top:14px;">Position</div>
+        <input type="text" id="inputDashBgImageUrl" placeholder="https://example.com/background.jpg">
+        <label>Position</label>
         <select id="inputDashBgPosition">
           <option value="cover">Cover (fill, crop edges)</option>
           <option value="contain">Contain (fit, no crop)</option>
@@ -635,7 +778,7 @@ button.icon-btn:hover{ border-color:var(--accent-primary); }
 
     <div class="save-bar">
       <button class="primary-btn" id="btnSave">Save &amp; Push to Overlay</button>
-      <span class="hint" id="saveHint">Changes preview live on the right. Click Save to push to all open overlay instances.</span>
+      <span class="hint" id="saveHint">Changes preview live. Click Save to push to all open instances.</span>
     </div>
 
   </main>
@@ -643,83 +786,43 @@ button.icon-btn:hover{ border-color:var(--accent-primary); }
   <aside class="preview-col">
     <h3>LIVE PREVIEW</h3>
     <div class="preview-frame-wrap">
-      <iframe id="previewFrame" src="music-player.html" title="Live preview of music player overlay"></iframe>
+      <iframe id="previewFrame" src="music-player.html" title="Live preview"></iframe>
     </div>
-    <p class="preview-note">This is a live preview of music-player.html. Add it to OBS as a browser source. The checkered background represents transparency.</p>
+    <p class="preview-note">All layouts supported: Compact, Minimal, Stacked, Square. Add to OBS as browser source.</p>
   </aside>
 
 </div>
 
-<div class="toast" id="toast">Saved &amp; pushed ✓</div>
+<div class="toast" id="toast">Saved ✓</div>
 
 <script>
-/* ============================================================
-   CONSTANTS
-   ============================================================ */
-const LS_CONFIG_KEY    = 'fallenoneart_music_player_config';
-const LS_AUTH_KEY       = 'fallenoneart_spotify_auth';
-const LS_PKCE_KEY       = 'fallenoneart_spotify_pkce_verifier';
-const LS_CLIENT_ID_KEY  = 'fallenoneart_spotify_client_id'; // persists independently of auth, so it survives a failed/incomplete login
-const LS_DASH_THEME_KEY = 'fallenoneart_dashboard_theme';   // this dashboard's OWN background — never synced to the overlay
-const BROADCAST_NAME    = 'fallenoneart-music-player-sync';
-const SPOTIFY_AUTH_URL  = 'https://accounts.spotify.com/authorize';
+const LS_CONFIG_KEY = 'fallenoneart_music_player_config';
+const LS_AUTH_KEY = 'fallenoneart_spotify_auth';
+const LS_PKCE_KEY = 'fallenoneart_spotify_pkce_verifier';
+const LS_CLIENT_ID_KEY = 'fallenoneart_spotify_client_id';
+const LS_DASH_THEME_KEY = 'fallenoneart_dashboard_theme';
+const BROADCAST_NAME = 'fallenoneart-music-player-sync';
+const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
-const SPOTIFY_ME_URL    = 'https://api.spotify.com/v1/me';
-const SPOTIFY_SCOPES    = 'user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-private';
+const SPOTIFY_ME_URL = 'https://api.spotify.com/v1/me';
+const SPOTIFY_SCOPES = 'user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-private';
 
 const DEFAULT_CONFIG = {
-  layoutMode:'compact',
-  accentPrimary:'#7de8c8',
-  accentSecondary:'#c8a2ff',
-  timeColor:'#7de8c8',
-  titleColor:'#f3f1f8',
-  artistColor:'#a39fb5',
-  albumColor:'#a39fb5',
-  glassOpacity:0.45,
-  blurStrength:18,
-  cornerRadius:22,
-  albumArtShape:'rounded',
-  showProgressBar:true,
-  showArtist:true,
-  showAlbum:false,
-  showTimecode:true,
-  showEqualizer:true,
-  showBranding:true,
-  idleBehavior:'message',
-  idleMessage:'NOTHING PLAYING',
-  pollInterval:5,
-  glowIntensity:0.6,
-  pulseSpeed:6,
-  fontPairing:'signature',
-  artRevealStyle:'roll',
-  marqueeEnabled:true,
-  marqueeSpeed:36,
-  progressBarStyle:'solid',
-  showScrubberDot:false,
-  showArtBadge:false,
-  artistItalic:false,
-  textScale:1,
-  cardWidth:420
+  layoutMode:'compact',accentPrimary:'#7de8c8',accentSecondary:'#c8a2ff',timeColor:'#7de8c8',titleColor:'#f3f1f8',artistColor:'#a39fb5',albumColor:'#a39fb5',
+  glassOpacity:0.45,blurStrength:18,cornerRadius:22,albumArtShape:'rounded',showProgressBar:true,showArtist:true,showAlbum:false,showTimecode:true,
+  showEqualizer:true,showBranding:true,showContainerBackground:true,idleBehavior:'message',idleMessage:'NOTHING PLAYING',pollInterval:5,glowIntensity:0.6,
+  pulseSpeed:6,fontPairing:'signature',artRevealStyle:'roll',marqueeEnabled:true,marqueeSpeed:36,progressBarStyle:'solid',showScrubberDot:false,showArtBadge:false,
+  artistItalic:false,textScale:1,cardWidth:420,cardHeight:480,showMetadataPill:true,metadataBackground:true,metadataOpacity:1,progressBackground:true,showStartTime:false,
+  compactArtSize:120,compactRightGap:6,compactTitleSize:16,compactArtistSize:11,compactEqBarsHeight:16,compactEqBarWidth:2,compactProgressHeight:6
 };
 
-const DEFAULT_DASH_THEME = {
-  bgType:'gradient',
-  bgColor1:'#0a0915',
-  gradColor1:'#7de8c8',
-  gradColor2:'#c8a2ff',
-  gradAngle:135,
-  bgImageUrl:'',
-  bgPosition:'cover'
-};
+const DEFAULT_DASH_THEME = {bgType:'gradient',bgColor1:'#0a0915',gradColor1:'#7de8c8',gradColor2:'#c8a2ff',gradAngle:135,bgImageUrl:'',bgPosition:'cover'};
 
 let config = { ...DEFAULT_CONFIG };
 let dashTheme = { ...DEFAULT_DASH_THEME };
 let bc = null;
 try{ bc = new BroadcastChannel(BROADCAST_NAME); }catch(e){}
 
-/* ============================================================
-   TAB NAVIGATION
-   ============================================================ */
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -729,17 +832,9 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
   });
 });
 
-/* ============================================================
-   CONFIG <-> UI BINDING
-   ============================================================ */
-function loadConfig(){
-  try{
-    const raw = localStorage.getItem(LS_CONFIG_KEY);
-    if(raw) config = { ...DEFAULT_CONFIG, ...JSON.parse(raw) };
-  }catch(e){}
-}
-
+function loadConfig(){try{const raw = localStorage.getItem(LS_CONFIG_KEY);if(raw) config = { ...DEFAULT_CONFIG, ...JSON.parse(raw) }}catch(e){}}
 function populateForm(){
+  document.getElementById('toggleShowContainerBackground').checked = config.showContainerBackground;
   document.getElementById('inputTitleColor').value = config.titleColor;
   document.getElementById('inputArtistColor').value = config.artistColor;
   document.getElementById('inputAlbumColor').value = config.albumColor;
@@ -753,6 +848,7 @@ function populateForm(){
   document.getElementById('inputPulseSpeed').value = config.pulseSpeed;
   document.getElementById('inputTextScale').value = config.textScale;
   document.getElementById('inputCardWidth').value = config.cardWidth;
+  document.getElementById('inputCardHeight').value = config.cardHeight;
   document.getElementById('inputFontPairing').value = config.fontPairing;
   document.getElementById('inputArtRevealStyle').value = config.artRevealStyle;
   document.getElementById('toggleMarqueeEnabled').checked = config.marqueeEnabled;
@@ -764,46 +860,35 @@ function populateForm(){
   document.getElementById('toggleShowAlbum').checked = config.showAlbum;
   document.getElementById('toggleShowProgressBar').checked = config.showProgressBar;
   document.getElementById('toggleShowTimecode').checked = config.showTimecode;
+  document.getElementById('toggleShowStartTime').checked = config.showStartTime;
   document.getElementById('toggleShowEqualizer').checked = config.showEqualizer;
   document.getElementById('toggleShowBranding').checked = config.showBranding;
+  document.getElementById('toggleShowMetadataPill').checked = config.showMetadataPill;
+  document.getElementById('toggleMetadataBackground').checked = config.metadataBackground;
+  document.getElementById('inputMetadataOpacity').value = config.metadataOpacity;
+  document.getElementById('toggleProgressBackground').checked = config.progressBackground;
   document.getElementById('inputIdleBehavior').value = config.idleBehavior;
   document.getElementById('inputIdleMessage').value = config.idleMessage;
   document.getElementById('inputPollInterval').value = config.pollInterval;
+  document.getElementById('inputCompactArtSize').value = config.compactArtSize;
+  document.getElementById('inputCompactRightGap').value = config.compactRightGap;
+  document.getElementById('inputCompactTitleSize').value = config.compactTitleSize;
+  document.getElementById('inputCompactArtistSize').value = config.compactArtistSize;
+  document.getElementById('inputCompactEqBarsHeight').value = config.compactEqBarsHeight;
+  document.getElementById('inputCompactEqBarWidth').value = config.compactEqBarWidth;
+  document.getElementById('inputCompactProgressHeight').value = config.compactProgressHeight;
   updateChoiceCards();
   updateRangeLabels();
 }
 
-/* ---- Dashboard's own background theme (separate from the overlay config) ---- */
-function loadDashTheme(){
-  try{
-    const raw = localStorage.getItem(LS_DASH_THEME_KEY);
-    if(raw) dashTheme = { ...DEFAULT_DASH_THEME, ...JSON.parse(raw) };
-  }catch(e){}
-}
-
-function saveDashTheme(){
-  localStorage.setItem(LS_DASH_THEME_KEY, JSON.stringify(dashTheme));
-}
-
+function loadDashTheme(){try{const raw = localStorage.getItem(LS_DASH_THEME_KEY);if(raw) dashTheme = { ...DEFAULT_DASH_THEME, ...JSON.parse(raw) }}catch(e){}}
+function saveDashTheme(){localStorage.setItem(LS_DASH_THEME_KEY, JSON.stringify(dashTheme))}
 function applyDashTheme(){
   const body = document.body;
-  if(dashTheme.bgType === 'solid'){
-    body.style.background = dashTheme.bgColor1;
-  }else if(dashTheme.bgType === 'gradient'){
-    body.style.background = `linear-gradient(${dashTheme.gradAngle}deg, ${dashTheme.gradColor1}33, ${dashTheme.gradColor2}33), var(--bg-deep)`;
-  }else if(dashTheme.bgType === 'image' && dashTheme.bgImageUrl){
-    const posMap = {
-      cover:'background-size:cover; background-repeat:no-repeat; background-position:center;',
-      contain:'background-size:contain; background-repeat:no-repeat; background-position:center;',
-      center:'background-size:auto; background-repeat:no-repeat; background-position:center;',
-      repeat:'background-size:auto; background-repeat:repeat; background-position:top left;'
-    };
-    body.setAttribute('style', `background-image:url('${dashTheme.bgImageUrl}'); ${posMap[dashTheme.bgPosition] || posMap.cover}`);
-  }
-
-  document.querySelectorAll('[data-dash-choice]').forEach(card=>{
-    card.classList.toggle('selected', dashTheme[card.dataset.dashChoice] === card.dataset.value);
-  });
+  if(dashTheme.bgType === 'solid'){body.style.background = dashTheme.bgColor1}
+  else if(dashTheme.bgType === 'gradient'){body.style.background = `linear-gradient(${dashTheme.gradAngle}deg, ${dashTheme.gradColor1}33, ${dashTheme.gradColor2}33), var(--bg-deep)`}
+  else if(dashTheme.bgType === 'image' && dashTheme.bgImageUrl){const posMap = {cover:'background-size:cover; background-repeat:no-repeat; background-position:center;',contain:'background-size:contain; background-repeat:no-repeat; background-position:center;',center:'background-size:auto; background-repeat:no-repeat; background-position:center;',repeat:'background-size:auto; background-repeat:repeat; background-position:top left;'};body.setAttribute('style', `background-image:url('${dashTheme.bgImageUrl}'); ${posMap[dashTheme.bgPosition] || posMap.cover}`)}
+  document.querySelectorAll('[data-dash-choice]').forEach(card=>{card.classList.toggle('selected', dashTheme[card.dataset.dashChoice] === card.dataset.value)});
   document.getElementById('fieldBgSolid').style.display = dashTheme.bgType === 'solid' ? 'block' : 'none';
   document.getElementById('fieldBgGradient').style.display = dashTheme.bgType === 'gradient' ? 'block' : 'none';
   document.getElementById('fieldBgImage').classList.toggle('hidden', dashTheme.bgType !== 'image');
@@ -834,28 +919,12 @@ document.querySelectorAll('#panel-theme input, #panel-theme select').forEach(el=
 });
 
 document.querySelectorAll('[data-dash-choice]').forEach(card=>{
-  card.addEventListener('click', ()=>{
-    dashTheme[card.dataset.dashChoice] = card.dataset.value;
-    applyDashTheme();
-    saveDashTheme();
-  });
+  card.addEventListener('click', ()=>{dashTheme[card.dataset.dashChoice] = card.dataset.value;applyDashTheme();saveDashTheme()});
 });
 
-document.getElementById('btnResetDashTheme').addEventListener('click', ()=>{
-  dashTheme = { ...DEFAULT_DASH_THEME };
-  populateDashThemeForm();
-  applyDashTheme();
-  saveDashTheme();
-  showToast('Dashboard theme reset ✓');
-});
+document.getElementById('btnResetDashTheme').addEventListener('click', ()=>{dashTheme = { ...DEFAULT_DASH_THEME };populateDashThemeForm();applyDashTheme();saveDashTheme();showToast('Dashboard theme reset ✓')});
 
-function updateChoiceCards(){
-  document.querySelectorAll('.choice-card').forEach(card=>{
-    const key = card.dataset.choice;
-    card.classList.toggle('selected', config[key] === card.dataset.value);
-  });
-}
-
+function updateChoiceCards(){document.querySelectorAll('.choice-card').forEach(card=>{const key = card.dataset.choice;card.classList.toggle('selected', config[key] === card.dataset.value)})}
 function updateRangeLabels(){
   document.getElementById('valGlassOpacity').textContent = config.glassOpacity;
   document.getElementById('valBlurStrength').textContent = config.blurStrength + 'px';
@@ -864,11 +933,21 @@ function updateRangeLabels(){
   document.getElementById('valPulseSpeed').textContent = config.pulseSpeed + 's';
   document.getElementById('valTextScale').textContent = config.textScale + 'x';
   document.getElementById('valCardWidth').textContent = config.cardWidth + 'px';
+  document.getElementById('valCardHeight').textContent = config.cardHeight + 'px';
   document.getElementById('valPollInterval').textContent = config.pollInterval + 's';
   document.getElementById('valMarqueeSpeed').textContent = config.marqueeSpeed + 'px/s';
+  document.getElementById('valMetadataOpacity').textContent = (config.metadataOpacity * 100).toFixed(0) + '%';
+  document.getElementById('valCompactArtSize').textContent = config.compactArtSize + 'px';
+  document.getElementById('valCompactRightGap').textContent = config.compactRightGap + 'px';
+  document.getElementById('valCompactTitleSize').textContent = config.compactTitleSize + 'px';
+  document.getElementById('valCompactArtistSize').textContent = config.compactArtistSize + 'px';
+  document.getElementById('valCompactEqBarsHeight').textContent = config.compactEqBarsHeight + 'px';
+  document.getElementById('valCompactEqBarWidth').textContent = config.compactEqBarWidth + 'px';
+  document.getElementById('valCompactProgressHeight').textContent = config.compactProgressHeight + 'px';
 }
 
 function readFormIntoConfig(){
+  config.showContainerBackground = document.getElementById('toggleShowContainerBackground').checked;
   config.accentPrimary = document.getElementById('inputAccentPrimary').value;
   config.accentSecondary = document.getElementById('inputAccentSecondary').value;
   config.timeColor = document.getElementById('inputTimeColor').value;
@@ -882,6 +961,7 @@ function readFormIntoConfig(){
   config.pulseSpeed = parseInt(document.getElementById('inputPulseSpeed').value);
   config.textScale = parseFloat(document.getElementById('inputTextScale').value);
   config.cardWidth = parseInt(document.getElementById('inputCardWidth').value);
+  config.cardHeight = parseInt(document.getElementById('inputCardHeight').value);
   config.fontPairing = document.getElementById('inputFontPairing').value;
   config.artRevealStyle = document.getElementById('inputArtRevealStyle').value;
   config.marqueeEnabled = document.getElementById('toggleMarqueeEnabled').checked;
@@ -893,287 +973,60 @@ function readFormIntoConfig(){
   config.showAlbum = document.getElementById('toggleShowAlbum').checked;
   config.showProgressBar = document.getElementById('toggleShowProgressBar').checked;
   config.showTimecode = document.getElementById('toggleShowTimecode').checked;
+  config.showStartTime = document.getElementById('toggleShowStartTime').checked;
   config.showEqualizer = document.getElementById('toggleShowEqualizer').checked;
   config.showBranding = document.getElementById('toggleShowBranding').checked;
+  config.showMetadataPill = document.getElementById('toggleShowMetadataPill').checked;
+  config.metadataBackground = document.getElementById('toggleMetadataBackground').checked;
+  config.metadataOpacity = parseFloat(document.getElementById('inputMetadataOpacity').value);
+  config.progressBackground = document.getElementById('toggleProgressBackground').checked;
   config.idleBehavior = document.getElementById('inputIdleBehavior').value;
   config.idleMessage = document.getElementById('inputIdleMessage').value || 'NOTHING PLAYING';
   config.pollInterval = parseInt(document.getElementById('inputPollInterval').value);
+  config.compactArtSize = parseInt(document.getElementById('inputCompactArtSize').value);
+  config.compactRightGap = parseInt(document.getElementById('inputCompactRightGap').value);
+  config.compactTitleSize = parseInt(document.getElementById('inputCompactTitleSize').value);
+  config.compactArtistSize = parseInt(document.getElementById('inputCompactArtistSize').value);
+  config.compactEqBarsHeight = parseInt(document.getElementById('inputCompactEqBarsHeight').value);
+  config.compactEqBarWidth = parseFloat(document.getElementById('inputCompactEqBarWidth').value);
+  config.compactProgressHeight = parseInt(document.getElementById('inputCompactProgressHeight').value);
 }
 
-function pushLivePreview(){
-  const frame = document.getElementById('previewFrame');
-  if(frame.contentWindow) frame.contentWindow.postMessage({ type:'config-update', config }, '*');
-}
+function pushLivePreview(){const frame = document.getElementById('previewFrame');if(frame.contentWindow) frame.contentWindow.postMessage({ type:'config-update', config }, '*')}
 
-document.querySelectorAll('.main input, .main select').forEach(el=>{
-  el.addEventListener('input', ()=>{
-    readFormIntoConfig();
-    updateRangeLabels();
-    pushLivePreview();
-  });
+document.querySelectorAll('#panel-layout input, #panel-layout select, #panel-compact input, #panel-compact select, #panel-appearance input, #panel-appearance select, #panel-metadata input, #panel-metadata select, #panel-behavior input, #panel-behavior select').forEach(el=>{
+  el.addEventListener('input', ()=>{readFormIntoConfig();updateRangeLabels();pushLivePreview()});
 });
 
-document.querySelectorAll('.choice-card').forEach(card=>{
-  card.addEventListener('click', ()=>{
-    config[card.dataset.choice] = card.dataset.value;
-    updateChoiceCards();
-    pushLivePreview();
-  });
-});
+document.querySelectorAll('.choice-card').forEach(card=>{card.addEventListener('click', ()=>{if(card.dataset.choice){config[card.dataset.choice] = card.dataset.value;updateChoiceCards();pushLivePreview()}})});
 
-document.getElementById('btnResetDefaults').addEventListener('click', ()=>{
-  config = { ...DEFAULT_CONFIG };
-  populateForm();
-  pushLivePreview();
-  showToast('Reset to defaults ✓');
-});
+document.getElementById('btnResetDefaults').addEventListener('click', ()=>{config = { ...DEFAULT_CONFIG };populateForm();pushLivePreview();showToast('Reset to defaults ✓')});
+document.getElementById('btnSave').addEventListener('click', ()=>{readFormIntoConfig();localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(config));if(bc) bc.postMessage({ type:'config-update', config });pushLivePreview();showToast('Saved & pushed to overlay ✓')});
 
-/* ============================================================
-   SAVE & PUSH
-   ============================================================ */
-document.getElementById('btnSave').addEventListener('click', ()=>{
-  readFormIntoConfig();
-  localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(config));
-  if(bc) bc.postMessage({ type:'config-update', config });
-  pushLivePreview();
-  showToast('Saved & pushed to overlay ✓');
-});
+function showToast(msg){const t = document.getElementById('toast');t.textContent = msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'), 2400)}
 
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2400);
-}
-
-/* ============================================================
-   SPOTIFY PKCE AUTH
-   ============================================================ */
-function base64UrlEncode(buffer){
-  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
-    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
-
-async function generateCodeChallenge(verifier){
-  const data = new TextEncoder().encode(verifier);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return base64UrlEncode(digest);
-}
-
-function generateCodeVerifier(length=64){
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-  const randomValues = crypto.getRandomValues(new Uint8Array(length));
-  let result = '';
-  randomValues.forEach(v=> result += chars[v % chars.length]);
-  return result;
-}
-
-function getRedirectUri(){
-  return window.location.origin + window.location.pathname;
-}
-
-// Client ID is saved the moment it's typed, independent of whether login ever completes.
-function saveClientId(){
-  const clientId = document.getElementById('inputClientId').value.trim();
-  if(clientId) localStorage.setItem(LS_CLIENT_ID_KEY, clientId);
-}
-function restoreClientId(){
-  const saved = localStorage.getItem(LS_CLIENT_ID_KEY);
-  if(saved) document.getElementById('inputClientId').value = saved;
-}
-
-function getAuth(){
-  try{ return JSON.parse(localStorage.getItem(LS_AUTH_KEY) || 'null'); }catch(e){ return null; }
-}
+function base64UrlEncode(buffer){return btoa(String.fromCharCode(...new Uint8Array(buffer))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+async function generateCodeChallenge(verifier){const data = new TextEncoder().encode(verifier);const digest = await crypto.subtle.digest('SHA-256', data);return base64UrlEncode(digest)}
+function generateCodeVerifier(length=64){const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';const randomValues = crypto.getRandomValues(new Uint8Array(length));let result = '';randomValues.forEach(v=> result += chars[v % chars.length]);return result}
+function getRedirectUri(){return window.location.origin + '/music-player-dashboard.html'}
+function saveClientId(){const clientId = document.getElementById('inputClientId').value.trim();if(clientId) localStorage.setItem(LS_CLIENT_ID_KEY, clientId)}
+function restoreClientId(){const saved = localStorage.getItem(LS_CLIENT_ID_KEY);if(saved) document.getElementById('inputClientId').value = saved}
+function getAuth(){try{ return JSON.parse(localStorage.getItem(LS_AUTH_KEY) || 'null'); }catch(e){ return null; }}
 function saveAuth(auth){ localStorage.setItem(LS_AUTH_KEY, JSON.stringify(auth)); }
-
-async function startSpotifyLogin(){
-  const clientId = document.getElementById('inputClientId').value.trim();
-  if(!clientId){ alert('Enter your Spotify Client ID first.'); return; }
-  saveClientId();
-  const verifier = generateCodeVerifier();
-  localStorage.setItem(LS_PKCE_KEY, verifier);
-  const challenge = await generateCodeChallenge(verifier);
-  const params = new URLSearchParams({
-    client_id: clientId,
-    response_type: 'code',
-    redirect_uri: getRedirectUri(),
-    code_challenge_method: 'S256',
-    code_challenge: challenge,
-    scope: SPOTIFY_SCOPES
-  });
-  window.location.href = `${SPOTIFY_AUTH_URL}?${params.toString()}`;
-}
-
-async function exchangeCodeForToken(code){
-  const verifier = localStorage.getItem(LS_PKCE_KEY);
-  const clientId = localStorage.getItem(LS_CLIENT_ID_KEY) || document.getElementById('inputClientId').value.trim();
-  const body = new URLSearchParams({
-    client_id: clientId,
-    grant_type: 'authorization_code',
-    code,
-    redirect_uri: getRedirectUri(),
-    code_verifier: verifier
-  });
-  const res = await fetch(SPOTIFY_TOKEN_URL, {
-    method:'POST',
-    headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
-    body
-  });
-  if(!res.ok){ throw new Error('Token exchange failed: ' + res.status); }
-  const data = await res.json();
-  const auth = {
-    clientId,
-    redirectUri: getRedirectUri(),
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token,
-    expiresAt: Date.now() + (data.expires_in * 1000)
-  };
-  saveAuth(auth);
-  localStorage.removeItem(LS_PKCE_KEY);
-  return auth;
-}
-
-async function refreshAccessToken(auth){
-  const body = new URLSearchParams({
-    client_id: auth.clientId,
-    grant_type: 'refresh_token',
-    refresh_token: auth.refreshToken
-  });
-  const res = await fetch(SPOTIFY_TOKEN_URL, {
-    method:'POST',
-    headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
-    body
-  });
-  if(!res.ok) throw new Error('Refresh failed: ' + res.status);
-  const data = await res.json();
-  const updated = { ...auth, accessToken:data.access_token, refreshToken:data.refresh_token || auth.refreshToken, expiresAt: Date.now() + (data.expires_in*1000) };
-  saveAuth(updated);
-  return updated;
-}
-
-async function getValidAccessToken(){
-  let auth = getAuth();
-  if(!auth) return null;
-  if(!auth.expiresAt || Date.now() > (auth.expiresAt - 60000)){
-    try{ auth = await refreshAccessToken(auth); }catch(e){ return null; }
-  }
-  return auth.accessToken;
-}
-
-async function refreshConnectionStatus(){
-  const auth = getAuth();
-  const led = document.getElementById('statusLed');
-  const text = document.getElementById('statusText');
-  const connectBtn = document.getElementById('btnConnect');
-  const disconnectBtn = document.getElementById('btnDisconnect');
-  const controls = document.getElementById('playbackControls');
-
-  if(!auth){
-    led.classList.remove('on');
-    text.textContent = 'Not connected yet.';
-    connectBtn.style.display = 'inline-block';
-    disconnectBtn.style.display = 'none';
-    controls.style.display = 'none';
-    return;
-  }
-
-  document.getElementById('inputClientId').value = auth.clientId;
-  connectBtn.style.display = 'none';
-  disconnectBtn.style.display = 'inline-block';
-  controls.style.display = 'flex';
-
-  const token = await getValidAccessToken();
-  if(!token){
-    led.classList.remove('on');
-    text.innerHTML = '<strong>Connection expired.</strong> Reconnect below.';
-    connectBtn.style.display = 'inline-block';
-    return;
-  }
-
-  led.classList.add('on');
-  try{
-    const res = await fetch(SPOTIFY_ME_URL, { headers:{ 'Authorization': `Bearer ${token}` } });
-    if(res.ok){
-      const me = await res.json();
-      text.innerHTML = `Connected as <strong>${me.display_name || me.id}</strong>.`;
-    }else{
-      text.innerHTML = '<strong>Connected.</strong>';
-    }
-  }catch(e){
-    text.innerHTML = '<strong>Connected.</strong>';
-  }
-}
-
+async function startSpotifyLogin(){const clientId = document.getElementById('inputClientId').value.trim();if(!clientId){ alert('Enter your Spotify Client ID first.'); return; }saveClientId();const verifier = generateCodeVerifier();localStorage.setItem(LS_PKCE_KEY, verifier);const challenge = await generateCodeChallenge(verifier);const params = new URLSearchParams({client_id: clientId,response_type: 'code',redirect_uri: getRedirectUri(),code_challenge_method: 'S256',code_challenge: challenge,scope: SPOTIFY_SCOPES});window.location.href = `${SPOTIFY_AUTH_URL}?${params.toString()}`}
+async function exchangeCodeForToken(code){const verifier = localStorage.getItem(LS_PKCE_KEY);const clientId = localStorage.getItem(LS_CLIENT_ID_KEY) || document.getElementById('inputClientId').value.trim();const body = new URLSearchParams({client_id: clientId,grant_type: 'authorization_code',code,redirect_uri: getRedirectUri(),code_verifier: verifier});const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST',headers:{ 'Content-Type':'application/x-www-form-urlencoded' },body});if(!res.ok){ throw new Error('Token exchange failed: ' + res.status); }const data = await res.json();const auth = {clientId,redirectUri: getRedirectUri(),accessToken: data.access_token,refreshToken: data.refresh_token,expiresAt: Date.now() + (data.expires_in * 1000)};saveAuth(auth);localStorage.removeItem(LS_PKCE_KEY);return auth}
+async function refreshAccessToken(auth){const body = new URLSearchParams({client_id: auth.clientId,grant_type: 'refresh_token',refresh_token: auth.refreshToken});const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST',headers:{ 'Content-Type':'application/x-www-form-urlencoded' },body});if(!res.ok) throw new Error('Refresh failed: ' + res.status);const data = await res.json();const updated = { ...auth, accessToken:data.access_token,refreshToken:data.refresh_token || auth.refreshToken,expiresAt: Date.now() + (data.expires_in*1000) };saveAuth(updated);return updated}
+async function getValidAccessToken(){let auth = getAuth();if(!auth) return null;if(!auth.expiresAt || Date.now() > (auth.expiresAt - 60000)){try{ auth = await refreshAccessToken(auth); }catch(e){ return null; }}return auth.accessToken}
+async function refreshConnectionStatus(){const auth = getAuth();const led = document.getElementById('statusLed');const text = document.getElementById('statusText');const connectBtn = document.getElementById('btnConnect');const disconnectBtn = document.getElementById('btnDisconnect');const controls = document.getElementById('playbackControls');if(!auth){led.classList.remove('on');text.textContent = 'Not connected yet.';connectBtn.style.display = 'inline-block';disconnectBtn.style.display = 'none';controls.style.display = 'none';return}document.getElementById('inputClientId').value = auth.clientId;connectBtn.style.display = 'none';disconnectBtn.style.display = 'inline-block';controls.style.display = 'flex';const token = await getValidAccessToken();if(!token){led.classList.remove('on');text.innerHTML = '<strong>Connection expired.</strong> Reconnect below.';connectBtn.style.display = 'inline-block';return}led.classList.add('on');try{const res = await fetch(SPOTIFY_ME_URL, { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok){const me = await res.json();text.innerHTML = `Connected as <strong>${me.display_name || me.id}</strong>.`}else{text.innerHTML = '<strong>Connected.</strong>'}}catch(e){text.innerHTML = '<strong>Connected.</strong>'}}
 document.getElementById('btnConnect').addEventListener('click', startSpotifyLogin);
-document.getElementById('btnDisconnect').addEventListener('click', ()=>{
-  localStorage.removeItem(LS_AUTH_KEY);
-  if(bc) bc.postMessage({ type:'auth-cleared' });
-  refreshConnectionStatus();
-  showToast('Disconnected from Spotify.');
-});
-
-/* Playback controls */
-async function playbackAction(method, path){
-  const token = await getValidAccessToken();
-  if(!token){ showToast('Not connected to Spotify.'); return; }
-  try{
-    const res = await fetch(`https://api.spotify.com/v1/me/player/${path}`, { method, headers:{ 'Authorization': `Bearer ${token}` } });
-    if(res.status === 404){ showToast('No active Spotify device found.'); }
-  }catch(e){ showToast('Playback control failed.'); }
-}
-
+document.getElementById('btnDisconnect').addEventListener('click', ()=>{localStorage.removeItem(LS_AUTH_KEY);if(bc) bc.postMessage({ type:'auth-cleared' });refreshConnectionStatus();showToast('Disconnected from Spotify.')});
+async function playbackAction(method, path){const token = await getValidAccessToken();if(!token){ showToast('Not connected to Spotify.'); return; }try{const res = await fetch(`https://api.spotify.com/v1/me/player/${path}`, { method, headers:{ 'Authorization': `Bearer ${token}` } });if(res.status === 404){ showToast('No active Spotify device found.'); }}catch(e){ showToast('Playback control failed.'); }}
 let isPlayingGuess = true;
-document.getElementById('btnPlayPause').addEventListener('click', ()=>{
-  playbackAction('PUT', isPlayingGuess ? 'pause' : 'play');
-  isPlayingGuess = !isPlayingGuess;
-});
+document.getElementById('btnPlayPause').addEventListener('click', ()=>{playbackAction('PUT', isPlayingGuess ? 'pause' : 'play');isPlayingGuess = !isPlayingGuess});
 document.getElementById('btnPrev').addEventListener('click', ()=> playbackAction('POST','previous'));
 document.getElementById('btnNext').addEventListener('click', ()=> playbackAction('POST','next'));
-
-/* ============================================================
-   OAUTH REDIRECT HANDLER
-   ============================================================ */
-async function handleRedirectIfPresent(){
-  const url = new URL(window.location.href);
-  const code = url.searchParams.get('code');
-  const error = url.searchParams.get('error');
-
-  if(error){
-    showToast('Spotify login cancelled.');
-    history.replaceState({}, '', window.location.pathname);
-    return;
-  }
-
-  if(code){
-    try{
-      await exchangeCodeForToken(code);
-      showToast('Connected to Spotify ✓');
-    }catch(e){
-      showToast('Could not complete Spotify login.');
-    }
-    history.replaceState({}, '', window.location.pathname);
-  }
-}
-
-/* ============================================================
-   INIT
-   ============================================================ */
-(async function init(){
-  loadConfig();
-  populateForm();
-  restoreClientId();
-  document.getElementById('inputClientId').addEventListener('change', saveClientId);
-  document.getElementById('inputClientId').addEventListener('blur', saveClientId);
-  document.getElementById('inputRedirectUri').value = getRedirectUri();
-  await handleRedirectIfPresent();
-  await refreshConnectionStatus();
-  document.getElementById('previewFrame').addEventListener('load', pushLivePreview);
-
-  loadDashTheme();
-  populateDashThemeForm();
-  applyDashTheme();
-})();
+async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
+(async function init(){loadConfig();populateForm();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme()})();
 </script>
 </body>
 </html>

@@ -18,6 +18,7 @@
   --pulse-speed:6s;
   --text-scale:1;
   --card-width:420px;
+  --card-height:480px;
   --time-color:#7de8c8;
   --title-color:#f3f1f8;
   --artist-color:#a39fb5;
@@ -27,6 +28,15 @@
   --font-mono:'Share Tech Mono', monospace;
   --text-primary:#f3f1f8;
   --text-secondary:#a39fb5;
+  --metadata-opacity:1;
+  --art-shape-radius:calc(var(--corner-radius) * 0.6);
+  --compact-art-size:120px;
+  --compact-right-gap:12px;
+  --compact-title-size:16px;
+  --compact-artist-size:11px;
+  --compact-eq-bars-height:16px;
+  --compact-eq-bar-width:2px;
+  --compact-progress-height:6px;
 }
 
 *{box-sizing:border-box; margin:0; padding:0;}
@@ -49,9 +59,6 @@ html,body{
   height:100%;
 }
 
-/* ============================================================
-   CARD SHELL — glassmorphism with double-layer glow
-   ============================================================ */
 .player-card{
   position:relative;
   width:var(--card-width);
@@ -68,10 +75,27 @@ html,body{
   transition:opacity 0.5s ease, transform 0.5s ease;
   opacity:0;
   transform:translateY(6px);
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:0;
+  grid-auto-flow:row;
 }
+
 .player-card.visible{ opacity:1; transform:translateY(0); }
 
-/* HUD corner brackets */
+.player-card:has(#layoutStacked:not(.hidden)) {
+  height:auto;
+}
+
+.player-card:has(#layoutMinimal:not(.hidden)) {
+  height:auto;
+  --card-height:80px;
+}
+
+.player-card:not(:has(#layoutStacked:not(.hidden))):not(:has(#layoutMinimal:not(.hidden))) {
+  height:var(--card-height);
+}
+
 .hud-corner{
   position:absolute;
   width:16px; height:16px;
@@ -85,14 +109,13 @@ html,body{
 .hud-corner.bl{ bottom:6px; left:6px; border-bottom:2px solid; border-left:2px solid; border-bottom-left-radius:6px; border-color:var(--accent-secondary); filter:drop-shadow(0 0 4px var(--accent-secondary)); }
 .hud-corner.br{ bottom:6px; right:6px; border-bottom:2px solid; border-right:2px solid; border-bottom-right-radius:6px; }
 
-/* ============================================================
-   HEADER ROW
-   ============================================================ */
 .header-row{
   display:flex;
   align-items:center;
   gap:10px;
   margin-bottom:14px;
+  grid-column:1;
+  grid-row:1;
 }
 .logo-mark{
   width:26px; height:26px;
@@ -126,249 +149,42 @@ html,body{
 }
 .status-dot.paused{ background:#6f6c80; box-shadow:none; animation:none; }
 
-/* ============================================================
-   COMPACT LAYOUT
-   ============================================================ */
-.layout-compact{
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.art-wrap-circle{
-  position:relative;
-  flex:0 0 auto;
-  width:84px;
-  height:84px;
-  perspective:1000px;
-}
-
-.art-ring{
-  position:absolute;
-  inset:-6px;
-  border-radius:50%;
-  background:conic-gradient(from 0deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary));
-  -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
-  mask:radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
-  animation:spin-ring 9s linear infinite;
-}
-.art-ring.paused{ animation-play-state:paused; }
-
-.art-circle{
-  position:relative;
-  width:84px;
-  height:84px;
-  border-radius:50%;
-  overflow:hidden;
-  background:#1a1825;
-  box-shadow:
-    0 0 0 3px rgba(0,0,0,0.35),
-    inset 0 2px 8px rgba(0,0,0,0.5);
-  animation-name:var(--reveal-anim-name, art-roll-in);
-  animation-duration:0.8s;
-  animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
-  animation-fill-mode:both;
-}
-.art-circle.paused{ animation:art-pulse 2.5s ease-in-out infinite; }
-.art-circle img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-
-.info-pill{
-  flex:1 1 auto;
-  min-width:0;
-  background:rgba(255,255,255,0.04);
-  border:1px solid var(--glass-border);
-  border-radius:999px;
-  padding:11px 18px;
+.layout-wrapper{
+  grid-column:1;
+  grid-row:2;
   display:flex;
   flex-direction:column;
-  gap:3px;
-  overflow:hidden;
-}
-
-.pill-title{
-  font-family:var(--font-display);
-  font-weight:700;
-  font-size:calc(14px * var(--text-scale));
-  color:var(--title-color);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  position:relative;
-}
-.pill-title .scroll-inner{ display:inline-block; white-space:nowrap; }
-.pill-title.marquee{ text-overflow:unset; }
-.pill-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:50px; }
-
-.pill-meta{
-  display:flex;
-  align-items:center;
+  min-height:0;
   gap:8px;
-  font-size:calc(11px * var(--text-scale));
-  color:var(--text-secondary);
-}
-
-.pill-artist{
-  color:var(--artist-color);
-  white-space:nowrap;
   overflow:hidden;
-  text-overflow:ellipsis;
-  min-width:0;
-}
-.pill-artist.italic, .full-artist.italic{ font-style:italic; }
-
-.pill-album{
-  color:var(--album-color);
-  opacity:0.7;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  font-size:calc(10px * var(--text-scale));
 }
 
-.pill-time{
-  color:var(--time-color);
-  font-weight:600;
-  font-family:var(--font-mono);
-  flex:0 0 auto;
+.art-shapeable{
+  border-radius:var(--art-shape-radius);
 }
+.art-shapeable.shape-circle{ border-radius:50%; }
+.art-shapeable.shape-square{ border-radius:0; }
+.art-shapeable.shape-rounded-rect{ border-radius:calc(var(--art-shape-radius) * 1.2); }
+.art-shapeable.shape-hexagon{ clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+.art-shapeable.shape-octagon{ clip-path:polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%); }
+.art-shapeable.shape-diamond{ clip-path:polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.art-shapeable.shape-shield{ clip-path:polygon(50% 0%, 100% 0%, 100% 50%, 85% 100%, 50% 95%, 15% 100%, 0% 50%, 0% 0%); }
 
-.eq-bars{
-  display:flex;
-  align-items:flex-end;
-  gap:2px;
-  height:12px;
-  flex:0 0 auto;
-}
-.eq-bars .bar{
-  width:3px;
-  border-radius:2px;
-  background:linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
-  height:30%;
-  animation:eq-bounce 1.1s ease-in-out infinite;
-}
-.eq-bars .bar:nth-child(1){ animation-delay:-0.9s; }
-.eq-bars .bar:nth-child(2){ animation-delay:-0.5s; }
-.eq-bars .bar:nth-child(3){ animation-delay:-1.1s; }
-.eq-bars .bar:nth-child(4){ animation-delay:-0.2s; }
-.eq-bars.paused .bar{ animation-play-state:paused; height:18%; }
-
-.art-badge{
-  position:absolute;
-  bottom:-2px;
-  right:-2px;
-  width:24px;
-  height:24px;
-  border-radius:50%;
-  background:rgba(10,9,21,0.85);
-  border:1px solid rgba(255,255,255,0.18);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 2px 8px rgba(0,0,0,0.4);
-  z-index:2;
-}
-.art-badge svg{ width:12px; height:12px; fill:var(--text-primary); }
-.art-badge.paused .icon-play{ display:block; }
-.art-badge.paused .icon-pause{ display:none; }
-.art-badge:not(.paused) .icon-play{ display:none; }
-.art-badge:not(.paused) .icon-pause{ display:block; }
-
-/* ============================================================
-   FULL LAYOUT
-   ============================================================ */
-.layout-full{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-
-.full-top{
-  display:flex;
-  gap:16px;
-}
-
-.art-wrap-square{
-  flex:0 0 auto;
-  width:140px;
-  height:140px;
-  border-radius:calc(var(--corner-radius) * 0.6);
-  overflow:hidden;
-  background:#1a1825;
-  box-shadow:
-    0 8px 32px rgba(0,0,0,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.08);
-  animation-name:var(--reveal-anim-name, art-roll-in);
-  animation-duration:0.8s;
-  animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
-  animation-fill-mode:both;
-  position:relative;
-}
-.art-wrap-square img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-.art-wrap-square::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1);
-}
-
-.full-meta{
-  flex:1 1 auto;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:6px;
-  min-width:0;
-}
-
-.full-title{
-  font-family:var(--font-display);
-  font-weight:700;
-  font-size:calc(17px * var(--text-scale));
-  color:var(--title-color);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  position:relative;
-}
-.full-title .scroll-inner{ display:inline-block; white-space:nowrap; }
-.full-title.marquee{ text-overflow:unset; }
-.full-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:60px; }
-
-.full-artist{
-  font-family:var(--font-mono);
-  font-size:calc(13px * var(--text-scale));
-  color:var(--artist-color);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.full-album{
-  font-family:var(--font-mono);
-  font-size:calc(11px * var(--text-scale));
-  color:var(--album-color);
-  opacity:0.7;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.control-bar{
+.progress-container{
+  grid-column:1;
+  grid-row:3;
   background:rgba(255,255,255,0.04);
   border:1px solid var(--glass-border);
   border-radius:14px;
-  padding:12px 14px;
+  padding:8px 12px;
+  transition:background 0.3s ease, border-color 0.3s ease;
+  flex:0 0 auto;
+}
+
+.progress-container.bare-progress{
+  background:transparent;
+  border:none;
+  padding:4px 0;
 }
 
 .progress-row{
@@ -393,7 +209,7 @@ html,body{
 .progress-track{
   flex:1 1 auto;
   height:5px;
-  border-radius:4px;
+  border-radius:8px;
   background:rgba(255,255,255,0.08);
   overflow:visible;
   position:relative;
@@ -402,11 +218,10 @@ html,body{
 .progress-fill{
   position:relative;
   height:100%;
-  border-radius:4px;
+  border-radius:8px;
   background:linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
   box-shadow:0 0 8px var(--accent-primary);
   width:0%;
-  /* Smooth half-second transition matches the tick interval */
   transition:width 0.5s linear;
 }
 
@@ -434,73 +249,170 @@ html,body{
 .progress-track.show-scrubber .progress-scrubber{ display:block; }
 
 /* ============================================================
-   MINIMAL LAYOUT
+   COMPACT LAYOUT — Sized art with refined spacing
    ============================================================ */
-.layout-minimal{ display:flex; flex-direction:column; gap:10px; }
-.minimal-row{ display:flex; align-items:center; gap:12px; }
+.layout-compact{
+  display:grid;
+  grid-template-columns:var(--compact-art-size) 1fr;
+  gap:var(--compact-right-gap);
+  flex:1;
+  min-height:0;
+  align-items:flex-start;
+}
 
-.minimal-art-wrap{
-  flex:0 0 auto;
-  width:52px;
-  height:52px;
+.art-wrap-square{
+  width:var(--compact-art-size);
+  height:var(--compact-art-size);
+  border-radius:calc(var(--corner-radius) * 0.55);
   overflow:hidden;
   background:#1a1825;
-  position:relative;
-  border-radius:calc(var(--corner-radius) * 0.5);
+  box-shadow:0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
   animation-name:var(--reveal-anim-name, art-roll-in);
   animation-duration:0.8s;
   animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
   animation-fill-mode:both;
+  position:relative;
+  flex:0 0 auto;
+  margin-top:0;
 }
-.minimal-art-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
+.art-wrap-square img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.art-wrap-square::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1);
+}
 
-.minimal-meta{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
-.minimal-title{
-  font-family:var(--font-display);
+.metadata-container{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  gap:3px;
+  min-width:0;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--glass-border);
+  border-radius:12px;
+  padding:10px 12px;
+  opacity:var(--metadata-opacity);
+  transition:opacity 0.3s ease;
+}
+
+.metadata-container.no-background{
+  background:transparent;
+  border:none;
+}
+
+#layoutCompact .metadata-container{
+  background:transparent;
+  border:none;
+  padding:0;
+  gap:6px;
+  flex-direction:column;
+}
+
+.compact-right-column{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  gap:var(--compact-right-gap);
+  min-width:0;
+  min-height:0;
+}
+
+.compact-title-section{
+  flex:0 0 auto;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.compact-title-section .pill-title{
+  font-size:var(--compact-title-size);
   font-weight:700;
-  font-size:calc(15px * var(--text-scale));
+  line-height:1.3;
+  letter-spacing:-0.4px;
   color:var(--title-color);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  position:relative;
+  min-width:0;
 }
-.minimal-title .scroll-inner{ display:inline-block; white-space:nowrap; }
-.minimal-title.marquee{ text-overflow:unset; }
-.minimal-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:50px; }
-.minimal-artist{
-  font-family:var(--font-mono);
-  font-size:calc(12px * var(--text-scale));
+
+.compact-title-section .pill-artist{
+  font-size:var(--compact-artist-size);
   color:var(--artist-color);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  min-width:0;
+  font-family:var(--font-mono);
 }
-.minimal-progress-row{ display:flex; align-items:center; gap:10px; }
 
-/* ============================================================
-   BANNER LAYOUT
-   ============================================================ */
-.layout-banner{ display:flex; flex-direction:column; gap:10px; }
-.banner-row{ display:flex; align-items:center; gap:12px; }
-
-.banner-art-wrap{
+.compact-middle-section{
   flex:0 0 auto;
-  width:38px;
-  height:38px;
-  overflow:hidden;
-  background:#1a1825;
-  position:relative;
-  border-radius:calc(var(--corner-radius) * 0.45);
-  animation-name:var(--reveal-anim-name, art-roll-in);
-  animation-duration:0.8s;
-  animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
-  animation-fill-mode:both;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:6px;
+  min-width:0;
 }
-.banner-art-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-.banner-meta{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:1px; }
-.banner-title{
+.compact-middle-section .time-stamp{
+  font-size:calc(9px * var(--text-scale));
+  color:var(--time-color);
+  font-weight:600;
+  flex:0 0 auto;
+  min-width:28px;
+  font-family:var(--font-mono);
+}
+
+.compact-middle-section .eq-bars{
+  display:flex;
+  align-items:flex-end;
+  gap:2px;
+  height:var(--compact-eq-bars-height);
+  flex:0 0 auto;
+}
+
+.compact-middle-section .eq-bars .bar{
+  width:var(--compact-eq-bar-width);
+  border-radius:2px;
+  background:linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
+  height:30%;
+  animation:eq-bounce 1.1s ease-in-out infinite;
+  will-change:height;
+}
+
+.compact-middle-section .eq-bars .bar:nth-child(1){ animation-delay:-0.9s; }
+.compact-middle-section .eq-bars .bar:nth-child(2){ animation-delay:-0.5s; }
+.compact-middle-section .eq-bars .bar:nth-child(3){ animation-delay:-1.1s; }
+.compact-middle-section .eq-bars .bar:nth-child(4){ animation-delay:-0.2s; }
+
+.compact-middle-section .eq-bars.paused .bar{ animation-play-state:paused; height:18%; }
+
+.compact-progress-section{
+  flex:0 0 auto;
+  min-width:0;
+  width:100%;
+}
+
+.compact-progress-section .progress-track{
+  width:100%;
+  height:var(--compact-progress-height);
+  border-radius:6px;
+  background:rgba(255,255,255,0.08);
+  overflow:visible;
+  position:relative;
+}
+
+.pill-title{
   font-family:var(--font-display);
   font-weight:700;
   font-size:calc(13px * var(--text-scale));
@@ -508,31 +420,404 @@ html,body{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  position:relative;
+  min-width:0;
+  line-height:1.2;
 }
-.banner-title .scroll-inner{ display:inline-block; white-space:nowrap; }
-.banner-title.marquee{ text-overflow:unset; }
-.banner-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:40px; }
-.banner-artist{
+
+.pill-title .scroll-inner{ display:inline-block; white-space:nowrap; }
+
+.pill-title.marquee{ text-overflow:unset; }
+.pill-title.marquee .scroll-inner{ animation:marquee-scroll 10s linear infinite; padding-right:50px; }
+
+#layoutCompact .pill-title{
+  font-size:var(--compact-title-size);
+  font-weight:700;
+  line-height:1.3;
+  letter-spacing:-0.4px;
+  color:var(--title-color);
+}
+
+.pill-artist{
   font-family:var(--font-mono);
-  font-size:calc(10.5px * var(--text-scale));
+  font-size:calc(10px * var(--text-scale));
   color:var(--artist-color);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  min-width:0;
 }
-.banner-times{
+
+.pill-artist.italic{ font-style:italic; }
+
+.pill-album{
+  font-family:var(--font-mono);
+  font-size:calc(9px * var(--text-scale));
+  color:var(--album-color);
+  opacity:0.7;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+
+#layoutCompact .pill-album{
+  display:none;
+}
+
+.eq-bars{
+  display:flex;
+  align-items:flex-end;
+  gap:2px;
+  height:12px;
   flex:0 0 auto;
+}
+
+.eq-bars .bar{
+  width:3px;
+  border-radius:2px;
+  background:linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
+  height:30%;
+  animation:eq-bounce 1.1s ease-in-out infinite;
+  will-change:height;
+}
+
+.eq-bars .bar:nth-child(1){ animation-delay:-0.9s; }
+.eq-bars .bar:nth-child(2){ animation-delay:-0.5s; }
+.eq-bars .bar:nth-child(3){ animation-delay:-1.1s; }
+.eq-bars .bar:nth-child(4){ animation-delay:-0.2s; }
+
+.eq-bars.paused .bar{ animation-play-state:paused; height:18%; }
+
+.art-badge{
+  position:absolute;
+  bottom:-2px;
+  right:-2px;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  background:rgba(10,9,21,0.85);
+  border:1px solid rgba(255,255,255,0.18);
   display:flex;
   align-items:center;
-  gap:4px;
-  font-family:var(--font-mono);
-  font-size:calc(10px * var(--text-scale));
-  color:var(--time-color);
-  font-weight:600;
+  justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.4);
+  z-index:2;
 }
-.banner-time-sep{ opacity:0.45; }
-.banner-progress-track{ height:3px; width:100%; }
+
+.art-badge svg{
+  width:12px;
+  height:12px;
+  fill:var(--text-primary);
+}
+
+.art-badge.paused .icon-play{ display:block; }
+.art-badge.paused .icon-pause{ display:none; }
+.art-badge:not(.paused) .icon-play{ display:none; }
+.art-badge:not(.paused) .icon-pause{ display:block; }
+/* ============================================================
+   MINIMAL LAYOUT
+   ============================================================ */
+.layout-minimal{ 
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:8px;
+  flex:1;
+  width:100%;
+  min-height:0;
+  background:rgba(25, 22, 20, 0.85);
+  border-radius:50px;
+  padding:6px 12px 6px 6px;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.3);
+  border:1px solid rgba(255,255,255,0.06);
+  -webkit-backdrop-filter:blur(16px);
+  backdrop-filter:blur(16px);
+}
+
+.minimal-art-wrap{
+  width:32px;
+  height:32px;
+  overflow:hidden;
+  background:#1a1825;
+  position:relative;
+  border-radius:8px;
+  animation-name:var(--reveal-anim-name, art-roll-in);
+  animation-duration:0.8s;
+  animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-fill-mode:both;
+  flex:0 0 auto;
+  box-shadow:0 4px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.minimal-art-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
+.minimal-art-wrap::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.15);
+}
+
+.minimal-meta{ 
+  display:flex; 
+  flex-direction:row;
+  align-items:center;
+  gap:5px;
+  min-width:0;
+  flex:1 1 auto;
+  opacity:var(--metadata-opacity);
+  transition:opacity 0.3s ease;
+}
+
+.minimal-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:calc(13px * var(--text-scale));
+  color:#f3f1f8;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  position:relative;
+  flex:0 0 auto;
+  min-width:0;
+}
+.minimal-title .scroll-inner{ display:inline-block; white-space:nowrap; }
+.minimal-title.marquee{ text-overflow:unset; }
+.minimal-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:30px; }
+
+.minimal-separator {
+  color:var(--artist-color);
+  font-family:var(--font-mono);
+  font-size:calc(11px * var(--text-scale));
+  opacity:0.4;
+  flex:0 0 auto;
+}
+
+.minimal-artist{
+  font-family:var(--font-mono);
+  font-size:calc(11px * var(--text-scale));
+  color:var(--artist-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+  flex:0 1 auto;
+}
+.minimal-artist.italic{ font-style:italic; }
+
+.minimal-album{ display:none; }
+
+.minimal-progress-wrap{
+  display:flex;
+  align-items:center;
+  flex:0 0 auto;
+  gap:6px;
+  min-width:0;
+}
+
+.minimal-progress-wrap .time-stamp{
+  display:none; 
+}
+
+.minimal-progress-wrap .progress-track{
+  width:56px;
+  height:6px;
+  background:rgba(0,0,0,0.4);
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.5);
+  flex:0 0 auto;
+}
+
+.minimal-progress-wrap .progress-fill{
+  height:100%;
+  background:linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+  border-radius:10px;
+  width:0%;
+  transition:width 0.5s linear;
+}
+
+/* ============================================================
+   STACKED LAYOUT
+   ============================================================ */
+.layout-stacked{ 
+  display:grid;
+  grid-template-rows:1fr auto auto;
+  gap:0;
+  flex:1;
+  min-height:0;
+  width:100%;
+}
+
+.stacked-art-wrap{
+  width:100%;
+  flex:1;
+  overflow:hidden;
+  background:#1a1825;
+  position:relative;
+  border-radius:calc(var(--corner-radius) * 0.6);
+  animation-name:var(--reveal-anim-name, art-roll-in);
+  animation-duration:0.8s;
+  animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-fill-mode:both;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
+  min-height:0;
+}
+
+.stacked-art-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.stacked-art-wrap::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.stacked-meta{
+  background:rgba(15,14,24,0.85);
+  border-top:1px solid var(--glass-border);
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  opacity:var(--metadata-opacity);
+  transition:opacity 0.3s ease;
+  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(18px);
+  flex:0 0 auto;
+}
+
+.stacked-meta.no-background{
+  background:transparent;
+  border:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  padding:8px 0;
+}
+
+.stacked-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:calc(16px * var(--text-scale));
+  color:var(--title-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  position:relative;
+  min-width:0;
+  display:block;
+}
+
+.stacked-title .scroll-inner{ display:inline-block; white-space:nowrap; }
+.stacked-title.marquee{ text-overflow:unset; }
+.stacked-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:50px; }
+
+.stacked-artist-row{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:calc(12px * var(--text-scale));
+  min-width:0;
+}
+
+.stacked-artist{
+  color:var(--artist-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+
+.stacked-artist.italic{ font-style:italic; }
+
+.stacked-album{
+  color:var(--album-color);
+  opacity:0.7;
+  font-size:calc(10.5px * var(--text-scale));
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+
+.stacked-progress-wrap{
+  flex:0 0 auto;
+  background:rgba(15,14,24,0.85);
+  border-top:1px solid var(--glass-border);
+  padding:8px 12px;
+  -webkit-backdrop-filter:blur(18px);
+  backdrop-filter:blur(18px);
+}
+
+.stacked-progress-wrap.bare{
+  background:transparent;
+  border:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  padding:4px 0;
+}
+
+/* ============================================================
+   SQUARE LAYOUT
+   ============================================================ */
+.layout-square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+#layoutSquare .art-wrap-square {
+  width: 320px;
+  height: 320px;
+  border-radius: 36px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.art-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.4) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+#layoutSquare .metadata-container {
+  position: absolute;
+  bottom: 24px;
+  left: 26px;
+  right: 26px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  justify-content: flex-end;
+  z-index: 2;
+}
+
+#layoutSquare .pill-title {
+  font-size: calc(24px * var(--text-scale));
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+#layoutSquare .pill-artist {
+  font-size: calc(16px * var(--text-scale));
+  color: rgba(255, 255, 255, 0.75);
+}
+
 
 /* ============================================================
    IDLE / OFFLINE STATE
@@ -568,6 +853,7 @@ html,body{
   letter-spacing:1.5px;
   color:var(--text-secondary);
   text-transform:uppercase;
+  min-width:0;
 }
 
 /* ============================================================
@@ -581,16 +867,6 @@ html,body{
 @keyframes dot-pulse{
   0%,100%{ opacity:0.5; transform:scale(0.85); }
   50%{ opacity:1; transform:scale(1); }
-}
-
-@keyframes spin-ring{
-  from{ transform:rotate(0deg); }
-  to{ transform:rotate(360deg); }
-}
-
-@keyframes eq-bounce{
-  0%,100%{ height:25%; }
-  50%{ height:90%; }
 }
 
 @keyframes idle-breathe{
@@ -607,14 +883,17 @@ html,body{
   from{ opacity:0; }
   to{ opacity:1; }
 }
+
 @keyframes art-slide-left-in{
   from{ opacity:0; transform:translateX(-26px); }
   to{ opacity:1; transform:translateX(0); }
 }
+
 @keyframes art-slide-up-in{
   from{ opacity:0; transform:translateY(22px); }
   to{ opacity:1; transform:translateY(0); }
 }
+
 @keyframes art-swing-in{
   0%{ opacity:0; transform:rotate(-14deg) scale(0.9); }
   60%{ opacity:1; transform:rotate(4deg) scale(1.02); }
@@ -626,25 +905,9 @@ html,body{
   100%{ transform:translateX(-100%); }
 }
 
-@keyframes art-pulse{
-  0%,100%{ transform:scale(1); }
-  50%{ transform:scale(1.02); }
-}
-
 @media (prefers-reduced-motion: reduce){
-  .logo-mark .bar,
-  .status-dot,
-  .art-ring,
-  .eq-bars .bar,
-  .idle-icon,
-  .art-circle,
-  .art-wrap-square,
-  .minimal-art-wrap,
-  .banner-art-wrap,
-  .pill-title.marquee .scroll-inner,
-  .full-title.marquee .scroll-inner,
-  .minimal-title.marquee .scroll-inner,
-  .banner-title.marquee .scroll-inner{
+  .logo-mark .bar, .status-dot, .idle-icon, .art-wrap-square, .minimal-art-wrap, .stacked-art-wrap,
+  .pill-title.marquee .scroll-inner, .minimal-title.marquee .scroll-inner, .stacked-title.marquee .scroll-inner{
     animation:none !important;
   }
 }
@@ -670,59 +933,44 @@ html,body{
       <div class="status-dot" id="statusDot"></div>
     </div>
 
-    <!-- COMPACT LAYOUT -->
-    <div class="layout-compact" id="layoutCompact">
-      <div class="art-wrap-circle">
-        <div class="art-ring" id="artRing"></div>
-        <div class="art-circle" id="artCircle">
-          <img id="artImgCompact" data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Album art" referrerpolicy="no-referrer">
-        </div>
-        <div class="art-badge hidden" id="artBadgeCompact" data-role="art-badge">
-          <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
-        </div>
-      </div>
-      <div class="info-pill">
-        <div class="pill-title" id="titleCompact" data-role="title"><span class="scroll-inner">—</span></div>
-        <div class="pill-meta">
-          <div class="pill-artist" id="artistCompact" data-role="artist">—</div>
-          <div class="eq-bars" id="eqCompact">
-            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
-          </div>
-        </div>
-        <div class="pill-album" id="albumCompact" data-role="album">—</div>
-        <div class="pill-time" id="timeCompact">0:00</div>
-      </div>
-    </div>
-
-    <!-- FULL LAYOUT -->
-    <div class="layout-full" id="layoutFull">
-      <div class="full-top">
+    <div class="layout-wrapper">
+      
+     <!-- COMPACT LAYOUT -->
+      <div class="layout-compact" id="layoutCompact">
         <div class="art-wrap-square art-shapeable">
-          <img id="artImgFull" data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
-          <div class="art-badge hidden" id="artBadgeFull" data-role="art-badge">
+          <img id="artImgCompact" data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
+          <div class="art-badge hidden" id="artBadgeCompact" data-role="art-badge">
             <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14HM14 5h4v14h-4z"/></svg>
           </div>
         </div>
-        <div class="full-meta">
-          <div class="full-title" id="titleFull" data-role="title"><span class="scroll-inner">—</span></div>
-          <div class="full-artist" id="artistFull" data-role="artist">—</div>
-          <div class="full-album" id="albumFull" data-role="album">—</div>
+        <div class="compact-right-column">
+          <div class="compact-title-section">
+            <div class="pill-title" id="titleCompact" data-role="title"><span class="scroll-inner">—</span></div>
+            <div class="pill-artist" id="artistCompact" data-role="artist">—</div>
+          </div>
+          <div class="compact-middle-section">
+            <span class="time-stamp" data-role="time-elapsed">0:00</span>
+            <div class="eq-bars" data-role="eq-bars">
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+            </div>
+            <span class="time-stamp remaining" data-role="time-remaining">-0:00</span>
+          </div>
+          <div class="compact-progress-section">
+            <div class="progress-track" id="compactTrack">
+              <div class="progress-fill" data-role="progress-fill">
+                <span class="progress-scrubber"></span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="control-bar">
-        <div class="progress-row">
-          <span class="time-stamp" id="timeElapsed" data-role="time-elapsed">0:00</span>
-          <div class="progress-track" id="progressTrack"><div class="progress-fill" data-role="progress-fill"><span class="progress-scrubber"></span></div></div>
-          <span class="time-stamp remaining" id="timeRemaining" data-role="time-remaining">-0:00</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- MINIMAL LAYOUT -->
-    <div class="layout-minimal hidden" id="layoutMinimal">
-      <div class="minimal-row">
+      <!-- MINIMAL LAYOUT -->
+      <div class="layout-minimal hidden" id="layoutMinimal">
         <div class="minimal-art-wrap art-shapeable">
           <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
           <div class="art-badge hidden" data-role="art-badge">
@@ -732,177 +980,165 @@ html,body{
         </div>
         <div class="minimal-meta">
           <div class="minimal-title" data-role="title"><span class="scroll-inner">—</span></div>
+          <span class="minimal-separator">•</span>
           <div class="minimal-artist" data-role="artist">—</div>
+          <div class="minimal-album" data-role="album">—</div>
+        </div>
+        <div class="minimal-progress-wrap">
+          <span class="time-stamp" data-role="time-elapsed">0:00</span>
+          <div class="progress-track" id="minimalTrack">
+            <div class="progress-fill" data-role="progress-fill"></div>
+          </div>
+          <span class="time-stamp remaining" data-role="time-remaining">-0:00</span>
         </div>
       </div>
-      <div class="minimal-progress-row">
-        <span class="time-stamp" data-role="time-elapsed">0:00</span>
-        <div class="progress-track"><div class="progress-fill" data-role="progress-fill"><span class="progress-scrubber"></span></div></div>
-        <span class="time-stamp remaining" data-role="time-remaining">-0:00</span>
-      </div>
-    </div>
 
-    <!-- BANNER LAYOUT -->
-    <div class="layout-banner hidden" id="layoutBanner">
-      <div class="banner-row">
-        <div class="banner-art-wrap art-shapeable">
+      <!-- STACKED LAYOUT -->
+      <div class="layout-stacked hidden" id="layoutStacked">
+        <div class="stacked-art-wrap art-shapeable">
           <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
+          <div class="art-badge hidden" data-role="art-badge">
+            <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14HM14 5h4v14h-4z"/></svg>
+          </div>
+        </div>
+        <div class="stacked-meta">
+          <div class="stacked-title" id="titleStacked" data-role="title"><span class="scroll-inner">—</span></div>
+          <div class="stacked-artist-row">
+            <div class="stacked-artist" id="artistStacked" data-role="artist">—</div>
+          </div>
+          <div class="stacked-album" id="albumStacked" data-role="album">—</div>
+        </div>
+        <div class="stacked-progress-wrap" id="stackedProgressWrap">
+          <div class="progress-row">
+            <span class="time-stamp" data-role="time-elapsed">0:00</span>
+            <div class="progress-track" id="stackedTrack">
+              <div class="progress-fill" data-role="progress-fill">
+                <span class="progress-scrubber"></span>
+              </div>
+            </div>
+            <span class="time-stamp remaining" data-role="time-remaining">-0:00</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- SQUARE LAYOUT -->
+      <div class="layout-square hidden" id="layoutSquare">
+        <div class="art-wrap-square art-shapeable">
+          <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
+          <div class="art-gradient-overlay"></div>
+          <div class="metadata-container">
+            <div class="pill-title" id="titleSquare" data-role="title"><span class="scroll-inner">—</span></div>
+            <div class="pill-artist" id="artistSquare" data-role="artist">—</div>
+            
+            <!-- Integrated Progress Row -->
+            <div class="progress-row">
+              <span class="time-stamp" data-role="time-elapsed">0:00</span>
+              <div class="progress-track" id="squareTrack">
+                <div class="progress-fill" data-role="progress-fill">
+                  <span class="progress-scrubber"></span>
+                </div>
+              </div>
+              <span class="time-stamp remaining" data-role="time-remaining">-0:00</span>
+            </div>
+          </div>
           <div class="art-badge hidden" data-role="art-badge">
             <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
           </div>
         </div>
-        <div class="banner-meta">
-          <div class="banner-title" data-role="title"><span class="scroll-inner">—</span></div>
-          <div class="banner-artist" data-role="artist">—</div>
-        </div>
-        <div class="banner-times">
-          <span data-role="time-elapsed">0:00</span>
-          <span class="banner-time-sep">/</span>
-          <span data-role="time-remaining">-0:00</span>
-        </div>
       </div>
-      <div class="banner-progress-track progress-track"><div class="progress-fill" data-role="progress-fill"><span class="progress-scrubber"></span></div></div>
+
+      <!-- IDLE STATE -->
+      <div class="idle-state hidden" id="idleState">
+        <div class="idle-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg></div>
+        <div class="idle-text" id="idleText">NOTHING PLAYING</div>
+      </div>
     </div>
 
-    <!-- IDLE STATE -->
-    <div class="idle-state hidden" id="idleState">
-      <div class="idle-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg></div>
-      <div class="idle-text" id="idleText">NOTHING PLAYING</div>
+    <!-- PROGRESS CONTAINER -->
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-row">
+        <span class="time-stamp" data-role="time-elapsed">0:00</span>
+        <div class="progress-track" id="progressTrack">
+          <div class="progress-fill" data-role="progress-fill">
+            <span class="progress-scrubber"></span>
+          </div>
+        </div>
+        <span class="time-stamp remaining" data-role="time-remaining">-0:00</span>
+      </div>
     </div>
+
   </div>
 </div>
 
 <script>
-/* ============================================================
-   CONSTANTS
-   ============================================================ */
-const LS_CONFIG_KEY   = 'fallenoneart_music_player_config';
-const LS_AUTH_KEY     = 'fallenoneart_spotify_auth';
-const BROADCAST_NAME  = 'fallenoneart-music-player-sync';
+const LS_CONFIG_KEY = 'fallenoneart_music_player_config';
+const LS_AUTH_KEY = 'fallenoneart_spotify_auth';
+const BROADCAST_NAME = 'fallenoneart-music-player-sync';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_NOW_PLAYING_URL = 'https://api.spotify.com/v1/me/player/currently-playing';
 const TOKEN_REFRESH_BUFFER_MS = 60000;
 const MIN_POLL_SECONDS = 3;
 
 const FONT_PAIRINGS = {
-  signature:{ display:"'Orbitron', sans-serif",        mono:"'Share Tech Mono', monospace" },
-  modern:   { display:"'Poppins', sans-serif",          mono:"'Poppins', sans-serif" },
-  tech:     { display:"'Rajdhani', sans-serif",         mono:"'JetBrains Mono', monospace" },
-  retro:    { display:"'Bebas Neue', sans-serif",       mono:"'VT323', monospace" },
-  elegant:  { display:"'Playfair Display', serif",      mono:"'Inter', sans-serif" }
+  signature:{ display:"'Orbitron', sans-serif", mono:"'Share Tech Mono', monospace" },
+  modern:{ display:"'Poppins', sans-serif", mono:"'Poppins', sans-serif" },
+  tech:{ display:"'Rajdhani', sans-serif", mono:"'JetBrains Mono', monospace" },
+  retro:{ display:"'Bebas Neue', sans-serif", mono:"'VT323', monospace" },
+  elegant:{ display:"'Playfair Display', serif", mono:"'Inter', sans-serif" }
 };
 
 const REVEAL_ANIM_MAP = {
-  roll:'art-roll-in',
-  fade:'art-fade-in',
-  'slide-left':'art-slide-left-in',
-  'slide-up':'art-slide-up-in',
-  swing:'art-swing-in'
+  roll:'art-roll-in', fade:'art-fade-in', 'slide-left':'art-slide-left-in', 'slide-up':'art-slide-up-in', swing:'art-swing-in'
 };
 
+const SHAPE_OPTIONS = ['rounded', 'circle', 'square', 'rounded-rect', 'hexagon', 'octagon', 'diamond', 'shield'];
 const LAYOUT_IDS = [
   { mode:'compact', id:'layoutCompact' },
-  { mode:'full',    id:'layoutFull' },
   { mode:'minimal', id:'layoutMinimal' },
-  { mode:'banner',  id:'layoutBanner' }
+  { mode:'stacked', id:'layoutStacked' },
+  { mode:'square', id:'layoutSquare' }
 ];
 
 const DEFAULT_CONFIG = {
-  layoutMode:'compact',
-  accentPrimary:'#7de8c8',
-  accentSecondary:'#c8a2ff',
-  glassOpacity:0.45,
-  blurStrength:18,
-  cornerRadius:22,
-  albumArtShape:'rounded',
-  showProgressBar:true,
-  showArtist:true,
-  showAlbum:false,
-  showTimecode:true,
-  showEqualizer:true,
-  showBranding:true,
-  idleBehavior:'message',
-  idleMessage:'NOTHING PLAYING',
-  pollInterval:5,
-  glowIntensity:0.6,
-  pulseSpeed:6,
-  fontPairing:'signature',
-  textScale:1,
-  cardWidth:420,
-  timeColor:'#7de8c8',
-  titleColor:'#f3f1f8',
-  artistColor:'#a39fb5',
-  albumColor:'#a39fb5',
-  artRevealStyle:'roll',
-  marqueeEnabled:true,
-  marqueeSpeed:36,
-  progressBarStyle:'solid',
-  showScrubberDot:false,
-  showArtBadge:false,
-  artistItalic:false
+  layoutMode:'compact', accentPrimary:'#7de8c8', accentSecondary:'#c8a2ff', glassOpacity:0.45,
+  blurStrength:18, cornerRadius:22, albumArtShape:'rounded', showProgressBar:true, showArtist:true,
+  showAlbum:false, showTimecode:true, showEqualizer:true, showBranding:true, showContainerBackground:true,
+  idleBehavior:'message', idleMessage:'NOTHING PLAYING', pollInterval:5, glowIntensity:0.6, pulseSpeed:6,
+  fontPairing:'signature', textScale:1, cardWidth:420, cardHeight:480, timeColor:'#7de8c8',
+  titleColor:'#f3f1f8', artistColor:'#a39fb5', albumColor:'#a39fb5', artRevealStyle:'roll',
+  marqueeEnabled:true, marqueeSpeed:36, progressBarStyle:'solid', showScrubberDot:false,
+  showArtBadge:false, artistItalic:false, showMetadataPill:true, metadataBackground:true,
+  metadataOpacity:1, progressBackground:true, showStartTime:false,
+  compactArtSize:120, compactRightGap:12, compactTitleSize:16, compactArtistSize:11,
+  compactEqBarsHeight:16, compactEqBarWidth:2, compactProgressHeight:6
 };
 
 let currentConfig = { ...DEFAULT_CONFIG };
 let pollTimer = null;
 let lastTrackId = null;
-
-/* ============================================================
-   REAL-TIME TICK — interpolates progress between API polls
-   so the bar and clock advance every 500 ms without waiting
-   for the next Spotify request.
-   ============================================================ */
-let playbackState = {
-  progressMs:  0,
-  durationMs:  0,
-  isPlaying:   false,
-  lastSyncTime: 0   // performance.now() timestamp of last Spotify response
-};
+let playbackState = { progressMs:0, durationMs:0, isPlaying:false, lastSyncTime:0 };
 let tickTimer = null;
 
 function tick() {
   if (!playbackState.isPlaying || !playbackState.durationMs) return;
-
-  // Calculate how far we are right now based on wall-clock time since last sync
   const wallElapsed = performance.now() - playbackState.lastSyncTime;
-  const currentMs   = Math.min(playbackState.progressMs + wallElapsed, playbackState.durationMs);
-
-  // Update all time displays
-  const elapsedStr   = formatTime(currentMs);
+  const currentMs = Math.min(playbackState.progressMs + wallElapsed, playbackState.durationMs);
+  const elapsedStr = formatTime(currentMs);
   const remainingStr = formatTime(playbackState.durationMs - currentMs);
-
-  document.getElementById('timeCompact').textContent = elapsedStr;
   document.querySelectorAll('[data-role="time-elapsed"]').forEach(el => el.textContent = elapsedStr);
   document.querySelectorAll('[data-role="time-remaining"]').forEach(el => el.textContent = '-' + remainingStr);
-
-  // Update all progress fills
   if (currentConfig.showProgressBar) {
     const pct = (currentMs / playbackState.durationMs) * 100;
-    document.querySelectorAll('[data-role="progress-fill"]').forEach(el => {
-      el.style.width = pct + '%';
-    });
+    document.querySelectorAll('[data-role="progress-fill"]').forEach(el => el.style.width = pct + '%');
   }
-
-  // Song appears to have ended — kick off a fresh poll immediately
-  if (currentMs >= playbackState.durationMs) {
-    playbackState.isPlaying = false;
-    pollNowPlaying();
-  }
+  if (currentMs >= playbackState.durationMs) { playbackState.isPlaying = false; pollNowPlaying(); }
 }
 
-function startTick() {
-  stopTick();
-  tick();                                   // run once right away
-  tickTimer = setInterval(tick, 500);       // then every 500 ms
-}
+function startTick() { if (tickTimer) clearInterval(tickTimer); tick(); tickTimer = setInterval(tick, 500); }
+function stopTick() { if (tickTimer) { clearInterval(tickTimer); tickTimer = null; } }
 
-function stopTick() {
-  if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
-}
-
-/* ============================================================
-   CONFIG APPLICATION
-   ============================================================ */
 function loadConfig(){
   try{
     const raw = localStorage.getItem(LS_CONFIG_KEY);
@@ -922,25 +1158,37 @@ function applyConfig(cfg){
   root.setProperty('--pulse-speed', `${Math.max(4, cfg.pulseSpeed)}s`);
   root.setProperty('--text-scale', cfg.textScale);
   root.setProperty('--card-width', `${cfg.cardWidth}px`);
+  root.setProperty('--card-height', `${cfg.cardHeight}px`);
   root.setProperty('--time-color', cfg.timeColor || '#7de8c8');
   root.setProperty('--title-color', cfg.titleColor || '#f3f1f8');
   root.setProperty('--artist-color', cfg.artistColor || '#a39fb5');
   root.setProperty('--album-color', cfg.albumColor || '#a39fb5');
   root.setProperty('--reveal-anim-name', REVEAL_ANIM_MAP[cfg.artRevealStyle] || 'art-roll-in');
+  root.setProperty('--metadata-opacity', cfg.showMetadataPill ? cfg.metadataOpacity : '0');
+  root.setProperty('--compact-art-size', `${cfg.compactArtSize}px`);
+  root.setProperty('--compact-right-gap', `${cfg.compactRightGap}px`);
+  root.setProperty('--compact-title-size', `calc(${cfg.compactTitleSize}px * var(--text-scale))`);
+  root.setProperty('--compact-artist-size', `calc(${cfg.compactArtistSize}px * var(--text-scale))`);
+  root.setProperty('--compact-eq-bars-height', `${cfg.compactEqBarsHeight}px`);
+  root.setProperty('--compact-eq-bar-width', `${cfg.compactEqBarWidth}px`);
+  root.setProperty('--compact-progress-height', `${cfg.compactProgressHeight}px`);
 
   const fonts = FONT_PAIRINGS[cfg.fontPairing] || FONT_PAIRINGS.signature;
   root.setProperty('--font-display', fonts.display);
   root.setProperty('--font-mono', fonts.mono);
 
-  LAYOUT_IDS.forEach(({mode, id})=>{
-    document.getElementById(id).classList.toggle('hidden', cfg.layoutMode !== mode);
-  });
+  LAYOUT_IDS.forEach(({mode, id})=> document.getElementById(id).classList.toggle('hidden', cfg.layoutMode !== mode));
 
-  let radiusVal;
-  if(cfg.albumArtShape === 'circle') radiusVal = '50%';
-  else if(cfg.albumArtShape === 'square') radiusVal = '0px';
-  else radiusVal = `${Math.round(cfg.cornerRadius*0.6)}px`;
-  document.querySelectorAll('.art-shapeable').forEach(el=>{ el.style.borderRadius = radiusVal; });
+  const card = document.getElementById('playerCard');
+  const showBg = cfg.showContainerBackground !== false;
+  card.style.background = showBg ? '' : 'transparent';
+  card.style.border = showBg ? '' : 'none';
+  card.style.backdropFilter = showBg ? '' : 'none';
+  card.style.webkitBackdropFilter = showBg ? '' : 'none';
+  card.style.boxShadow = showBg ? '' : 'none';
+  document.querySelectorAll('.hud-corner').forEach(el => el.style.display = showBg ? '' : 'none');
+
+  applyArtShape(cfg.albumArtShape);
 
   document.querySelectorAll('[data-role="artist"]').forEach(el=>{
     el.classList.toggle('hidden', !cfg.showArtist);
@@ -948,9 +1196,11 @@ function applyConfig(cfg){
   });
   document.querySelectorAll('[data-role="album"]').forEach(el=> el.classList.toggle('hidden', !cfg.showAlbum));
   document.querySelectorAll('[data-role="time-elapsed"], [data-role="time-remaining"]').forEach(el=> el.classList.toggle('hidden', !cfg.showTimecode));
-  document.getElementById('timeCompact').classList.toggle('hidden', !cfg.showTimecode);
-  document.querySelector('.control-bar').classList.toggle('hidden', !cfg.showProgressBar);
-  document.getElementById('eqCompact').classList.toggle('hidden', !cfg.showEqualizer);
+
+  const showProgressInContainer = cfg.showProgressBar && cfg.layoutMode !== 'stacked' && cfg.layoutMode !== 'square' && cfg.layoutMode !== 'compact' && cfg.layoutMode !== 'minimal';
+  document.getElementById('progressContainer').classList.toggle('hidden', !showProgressInContainer);
+
+  document.querySelectorAll('.eq-bars').forEach(el => el.classList.toggle('hidden', !cfg.showEqualizer));
   document.getElementById('headerRow').classList.toggle('hidden', !cfg.showBranding);
 
   document.querySelectorAll('.progress-track').forEach(track=>{
@@ -959,60 +1209,37 @@ function applyConfig(cfg){
   });
   document.querySelectorAll('[data-role="art-badge"]').forEach(el=> el.classList.toggle('hidden', !cfg.showArtBadge));
 
-  document.getElementById('idleText').textContent = cfg.idleMessage || 'NOTHING PLAYING';
+  document.getElementById('progressContainer').classList.toggle('bare-progress', !cfg.progressBackground);
+  document.getElementById('stackedProgressWrap').classList.toggle('bare', !cfg.progressBackground);
 
+  document.getElementById('idleText').textContent = cfg.idleMessage || 'NOTHING PLAYING';
   restartPolling();
 }
 
-/* ============================================================
-   LIVE SYNC
-   ============================================================ */
-window.addEventListener('storage', (e)=>{
-  if(e.key === LS_CONFIG_KEY && e.newValue){
-    try{ currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(e.newValue) }; applyConfig(currentConfig); }catch(err){}
-  }
-});
+function applyArtShape(shape){
+  const shapeClass = 'shape-' + shape;
+  document.querySelectorAll('.art-shapeable').forEach(el => {
+    SHAPE_OPTIONS.forEach(opt => el.classList.remove('shape-' + opt));
+    el.classList.add(shapeClass);
+  });
+}
+
+window.addEventListener('storage', (e)=>{ if(e.key === LS_CONFIG_KEY && e.newValue){ try{ currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(e.newValue) }; applyConfig(currentConfig); }catch(err){} } });
 
 let bc = null;
-try{
-  bc = new BroadcastChannel(BROADCAST_NAME);
-  bc.onmessage = (e)=>{
-    if(e.data && e.data.type === 'config-update'){
-      currentConfig = { ...DEFAULT_CONFIG, ...e.data.config };
-      applyConfig(currentConfig);
-    }
-  };
-}catch(e){}
+try{ bc = new BroadcastChannel(BROADCAST_NAME); bc.onmessage = (e)=>{ if(e.data && e.data.type === 'config-update'){ currentConfig = { ...DEFAULT_CONFIG, ...e.data.config }; applyConfig(currentConfig); } }; }catch(e){}
 
-window.addEventListener('message', (e)=>{
-  if(e.data && e.data.type === 'config-update'){
-    currentConfig = { ...DEFAULT_CONFIG, ...e.data.config };
-    applyConfig(currentConfig);
-  }
-});
+window.addEventListener('message', (e)=>{ if(e.data && e.data.type === 'config-update'){ currentConfig = { ...DEFAULT_CONFIG, ...e.data.config }; applyConfig(currentConfig); } });
 
-/* ============================================================
-   SPOTIFY AUTH
-   ============================================================ */
-function getAuth(){
-  try{ return JSON.parse(localStorage.getItem(LS_AUTH_KEY) || 'null'); }catch(e){ return null; }
-}
+function getAuth(){ try{ return JSON.parse(localStorage.getItem(LS_AUTH_KEY) || 'null'); }catch(e){ return null; } }
 function saveAuth(auth){ localStorage.setItem(LS_AUTH_KEY, JSON.stringify(auth)); }
 
 async function refreshAccessToken(auth){
-  const body = new URLSearchParams({
-    client_id: auth.clientId,
-    grant_type: 'refresh_token',
-    refresh_token: auth.refreshToken
-  });
-  const res = await fetch(SPOTIFY_TOKEN_URL, {
-    method:'POST',
-    headers:{ 'Content-Type':'application/x-www-form-urlencoded' },
-    body
-  });
+  const body = new URLSearchParams({client_id:auth.clientId, grant_type:'refresh_token', refresh_token:auth.refreshToken});
+  const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body});
   if(!res.ok) throw new Error('Refresh failed');
   const data = await res.json();
-  const updated = { ...auth, accessToken:data.access_token, refreshToken:data.refresh_token || auth.refreshToken, expiresAt: Date.now() + (data.expires_in * 1000) };
+  const updated = {...auth, accessToken:data.access_token, refreshToken:data.refresh_token || auth.refreshToken, expiresAt:Date.now() + (data.expires_in * 1000)};
   saveAuth(updated);
   return updated;
 }
@@ -1026,16 +1253,10 @@ async function getValidAccessToken(){
   return auth.accessToken;
 }
 
-/* ============================================================
-   NOW PLAYING POLLING
-   ============================================================ */
 function showIdle(message){
-  stopTick(); // nothing to tick while idle
+  stopTick();
   const cfg = currentConfig;
-  if(cfg.idleBehavior === 'hide'){
-    document.getElementById('playerCard').classList.remove('visible');
-    return;
-  }
+  if(cfg.idleBehavior === 'hide'){ document.getElementById('playerCard').classList.remove('visible'); return; }
   LAYOUT_IDS.forEach(({id})=> document.getElementById(id).classList.add('hidden'));
   document.getElementById('idleState').classList.remove('hidden');
   if(message) document.getElementById('idleText').textContent = message;
@@ -1045,9 +1266,7 @@ function showIdle(message){
 function showTrack(){
   const cfg = currentConfig;
   document.getElementById('idleState').classList.add('hidden');
-  LAYOUT_IDS.forEach(({mode, id})=>{
-    document.getElementById(id).classList.toggle('hidden', cfg.layoutMode !== mode);
-  });
+  LAYOUT_IDS.forEach(({mode, id})=> document.getElementById(id).classList.toggle('hidden', cfg.layoutMode !== mode));
   document.getElementById('playerCard').classList.add('visible');
 }
 
@@ -1084,10 +1303,10 @@ function retriggerRevealAnimation(el){
 }
 
 function renderTrack(data){
-  const item      = data.item;
+  const item = data.item;
   const isPlaying = !!data.is_playing;
-  const artUrl    = (item.album && item.album.images && item.album.images[0]) ? item.album.images[0].url : '';
-  const artists   = (item.artists || []).map(a => a.name).join(', ');
+  const artUrl = (item.album && item.album.images && item.album.images[0]) ? item.album.images[0].url : '';
+  const artists = (item.artists || []).map(a => a.name).join(', ');
   const albumName = (item.album && item.album.name) || '—';
   const isNewTrack = item.id !== lastTrackId;
 
@@ -1097,55 +1316,33 @@ function renderTrack(data){
   });
   document.querySelectorAll('[data-role="artist"]').forEach(el => el.textContent = artists || '—');
   document.querySelectorAll('[data-role="album"]').forEach(el => el.textContent = albumName);
-  document.querySelectorAll('[data-role="art-img"]').forEach(img =>{
-    if(img.src !== artUrl) img.src = artUrl;
-  });
+  document.querySelectorAll('[data-role="art-img"]').forEach(img => { if(img.src !== artUrl) img.src = artUrl; });
 
   if(isNewTrack){
-    document.querySelectorAll('.art-circle, .art-shapeable').forEach(retriggerRevealAnimation);
+    document.querySelectorAll('.art-wrap-square, .minimal-art-wrap, .stacked-art-wrap').forEach(retriggerRevealAnimation);
     lastTrackId = item.id;
   }
 
-  document.getElementById('artCircle').classList.toggle('paused', !isPlaying);
-  document.getElementById('artRing').classList.toggle('paused', !isPlaying);
   document.getElementById('statusDot').classList.toggle('paused', !isPlaying);
-  document.getElementById('eqCompact').classList.toggle('paused', !isPlaying);
   document.querySelectorAll('[data-role="art-badge"]').forEach(el => el.classList.toggle('paused', !isPlaying));
 
-  /* ----------------------------------------------------------
-     Sync playback state so the tick interpolator knows where
-     we are and whether the track is playing or paused.
-     ---------------------------------------------------------- */
-  playbackState = {
-    progressMs:   data.progress_ms,
-    durationMs:   item.duration_ms,
-    isPlaying:    isPlaying,
-    lastSyncTime: performance.now()   // wall-clock anchor for interpolation
-  };
-
-  // Kick off (or re-sync) the real-time ticker
+  playbackState = { progressMs:data.progress_ms, durationMs:item.duration_ms, isPlaying:isPlaying, lastSyncTime:performance.now() };
   startTick();
-
   showTrack();
 }
 
 async function pollNowPlaying(){
   const token = await getValidAccessToken();
-  if(!token){
-    showIdle('CONNECT SPOTIFY IN DASHBOARD');
-    return;
-  }
+  if(!token){ showIdle('CONNECT SPOTIFY IN DASHBOARD'); return; }
   try{
-    const res = await fetch(SPOTIFY_NOW_PLAYING_URL, { headers:{ 'Authorization': `Bearer ${token}` } });
+    const res = await fetch(SPOTIFY_NOW_PLAYING_URL, {headers:{'Authorization':`Bearer ${token}`}});
     if(res.status === 204){ showIdle(currentConfig.idleMessage); lastTrackId = null; return; }
     if(res.status === 401){ showIdle('TOKEN EXPIRED — RECONNECT'); return; }
     if(!res.ok){ showIdle('SPOTIFY UNAVAILABLE'); return; }
     const data = await res.json();
     if(!data || !data.item){ showIdle(currentConfig.idleMessage); lastTrackId = null; return; }
     renderTrack(data);
-  }catch(e){
-    showIdle('CONNECTION ERROR');
-  }
+  }catch(e){ showIdle('CONNECTION ERROR'); }
 }
 
 function restartPolling(){
@@ -1155,9 +1352,6 @@ function restartPolling(){
   pollTimer = setInterval(pollNowPlaying, seconds * 1000);
 }
 
-/* ============================================================
-   INIT
-   ============================================================ */
 loadConfig();
 </script>
 </body>
