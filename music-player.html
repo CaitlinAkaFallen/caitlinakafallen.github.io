@@ -37,6 +37,7 @@
   --compact-eq-bars-height:16px;
   --compact-eq-bar-width:2px;
   --compact-progress-height:6px;
+  --vinyl-rotation:0deg;
 }
 
 *{box-sizing:border-box; margin:0; padding:0;}
@@ -249,7 +250,7 @@ html,body{
 .progress-track.show-scrubber .progress-scrubber{ display:block; }
 
 /* ============================================================
-   COMPACT LAYOUT — Sized art with refined spacing
+   COMPACT LAYOUT
    ============================================================ */
 .layout-compact{
   display:grid;
@@ -514,6 +515,7 @@ html,body{
 .art-badge.paused .icon-pause{ display:none; }
 .art-badge:not(.paused) .icon-play{ display:none; }
 .art-badge:not(.paused) .icon-pause{ display:block; }
+
 /* ============================================================
    MINIMAL LAYOUT
    ============================================================ */
@@ -785,12 +787,7 @@ html,body{
 .art-gradient-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.85) 0%,
-    rgba(0, 0, 0, 0.4) 40%,
-    transparent 70%
-  );
+  background: transparent;
   pointer-events: none;
   z-index: 1;
 }
@@ -818,6 +815,244 @@ html,body{
   color: rgba(255, 255, 255, 0.75);
 }
 
+/* ============================================================
+   VINTAGE LAYOUT — Rotating Vinyl Record
+   ============================================================ */
+.layout-vintage{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  flex:1;
+  min-height:0;
+  width:100%;
+  position:relative;
+  gap: 16px;
+}
+
+.vintage-title-container {
+  width: 100%;
+  text-align: center;
+  padding: 0 10px;
+  z-index: 5;
+}
+
+.vinyl-title{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:calc(20px * var(--text-scale));
+  color:var(--title-color);
+  letter-spacing:-0.5px;
+  line-height:1.2;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-shadow: none; /* No shadow */
+}
+
+.vinyl-title .scroll-inner{ display:inline-block; white-space:nowrap; }
+.vinyl-title.marquee{ text-overflow:unset; }
+.vinyl-title.marquee .scroll-inner{ animation:marquee-scroll 10s linear infinite; padding-right:50px; }
+
+.vintage-container{
+  position:relative;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.vinyl-record{
+  position:relative;
+  width:280px;
+  height:280px;
+  flex:0 0 auto;
+  z-index:2;
+}
+
+.vinyl-surface{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #1a1620, #0f0d15);
+  box-shadow:inset -6px -6px 16px rgba(0,0,0,0.4), inset 2px 2px 8px rgba(255,255,255,0.05), 0 0 48px rgba(125,232,200,calc(var(--glow-intensity) * 0.3));
+  overflow:hidden;
+  transform:rotate(var(--vinyl-rotation)); /* Applies rotation ONLY to the art and grooves */
+  transition:none;
+  will-change: transform;
+}
+
+.vinyl-surface img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:50%;
+  opacity:0.85;
+}
+
+.vinyl-groove{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background:none;
+  pointer-events:none;
+}
+
+.vinyl-groove-1{ inset:calc(100% * 0.15); border:2px solid rgba(255,255,255,0.04); }
+.vinyl-groove-2{ inset:calc(100% * 0.30); border:1px solid rgba(255,255,255,0.03); }
+.vinyl-groove-3{ inset:calc(100% * 0.45); border:1px solid rgba(255,255,255,0.02); }
+.vinyl-groove-4{ inset:calc(100% * 0.60); border:1px solid rgba(255,255,255,0.02); }
+.vinyl-groove-5{ inset:calc(100% * 0.75); border:1px solid rgba(255,255,255,0.02); }
+
+.vinyl-label{
+  position:absolute;
+  inset:50%;
+  transform:translate(-50%, -50%);
+  width:70px;
+  height:70px;
+  background:radial-gradient(circle at 35% 35%, #2a1f3d, #1a0e2a);
+  border-radius:50%;
+  z-index:3;
+  box-shadow:0 12px 32px rgba(0,0,0,0.85), 0 4px 12px rgba(0,0,0,0.6), inset -3px -3px 12px rgba(0,0,0,0.6), inset 2px 2px 6px rgba(125,232,200,0.2), 0 0 24px rgba(125,232,200,calc(var(--glow-intensity) * 0.4));
+  border:2px solid rgba(125,232,200,0.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.vinyl-label-inner{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:2px solid rgba(125,232,200,0.5);
+}
+
+.vinyl-label-dot{
+  width:12px;
+  height:12px;
+  background:radial-gradient(circle at 30% 30%, #3d2a5a, #1a0e2a);
+  border-radius:50%;
+  box-shadow:inset -1px -1px 3px rgba(0,0,0,0.7), 0 0 6px rgba(125,232,200,0.4);
+}
+
+/* EQ Container - Decoupled from rotation, positioned dead center */
+.vinyl-eq-container{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:4;
+  pointer-events:none;
+}
+
+.vinyl-eq-bars{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:4px;
+  height:30px;
+}
+
+.vinyl-eq-bars .bar{
+  width:4px;
+  border-radius:2px;
+  background:linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
+  height:15%;
+  animation:eq-bounce 0.9s ease-in-out infinite;
+  will-change:height;
+  box-shadow: none; /* No shadow */
+  opacity:1;
+}
+
+.vinyl-eq-bars .bar:nth-child(1){ animation-delay:-0.7s; }
+.vinyl-eq-bars .bar:nth-child(2){ animation-delay:-0.4s; }
+.vinyl-eq-bars .bar:nth-child(3){ animation-delay:-0.9s; }
+.vinyl-eq-bars .bar:nth-child(4){ animation-delay:-0.1s; }
+
+.vinyl-eq-bars.paused .bar{ animation-play-state:paused; height:12%; }
+
+/* Vinyl metadata overlay - Decoupled from rotation, overlays the vinyl surface */
+.vinyl-metadata-overlay{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:5;
+}
+
+.vinyl-bottom-section{
+  position:absolute;
+  top:50%;
+  left:0;
+  right:0;
+  transform:translateY(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 24px;
+}
+
+.vinyl-side-left,
+.vinyl-side-right{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+}
+
+.vinyl-artist-label,
+.vinyl-time-label{
+  font-family:var(--font-mono);
+  font-size:calc(7.5px * var(--text-scale));
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--accent-secondary);
+  opacity:0.9;
+  font-weight:700;
+}
+
+.vinyl-artist,
+.vinyl-time-display{
+  font-family:var(--font-mono);
+  font-size:calc(11px * var(--text-scale));
+  font-weight:700;
+  color:#ffffff;
+  text-shadow: none; /* No shadow */
+}
+
+.vinyl-artist{
+  max-width:80px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.vinyl-artist.italic{ font-style:italic; }
+
+.vinyl-time-display{
+  color:var(--time-color);
+}
+
+.vinyl-status-section{
+  position:absolute;
+  bottom:24px;
+  left:0;
+  right:0;
+  text-align:center;
+}
+
+.vinyl-status{
+  font-family:var(--font-mono);
+  font-size:calc(10px * var(--text-scale));
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--accent-primary);
+  font-weight:700;
+  text-shadow: none; /* No shadow */
+}
 
 /* ============================================================
    IDLE / OFFLINE STATE
@@ -865,11 +1100,10 @@ html,body{
 }
 
 @keyframes eq-bounce{
-  0%{ height:20%; }
-  25%{ height:75%; }
-  50%{ height:40%; }
-  75%{ height:80%; }
-  100%{ height:20%; }
+  0%,100%{ height:15%; }
+  25%{ height:45%; }
+  50%{ height:65%; }
+  75%{ height:35%; }
 }
 
 @keyframes dot-pulse{
@@ -914,8 +1148,9 @@ html,body{
 }
 
 @media (prefers-reduced-motion: reduce){
-  .logo-mark .bar, .status-dot, .idle-icon, .art-wrap-square, .minimal-art-wrap, .stacked-art-wrap,
-  .pill-title.marquee .scroll-inner, .minimal-title.marquee .scroll-inner, .stacked-title.marquee .scroll-inner{
+  .logo-mark .bar, .status-dot, .idle-icon, .art-wrap-square, .minimal-art-wrap, .stacked-art-wrap, .vinyl-surface,
+  .pill-title.marquee .scroll-inner, .minimal-title.marquee .scroll-inner, .stacked-title.marquee .scroll-inner, .vinyl-title.marquee .scroll-inner,
+  .vinyl-eq-bars .bar{
     animation:none !important;
   }
 }
@@ -1052,7 +1287,66 @@ html,body{
           </div>
           <div class="art-badge hidden" data-role="art-badge">
             <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14HM14 5h4v14h-4z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- VINTAGE LAYOUT — Rotating Vinyl Record -->
+      <div class="layout-vintage hidden" id="layoutVintage">
+        
+        <!-- TITLE OUTSIDE -->
+        <div class="vintage-title-container">
+          <div class="vinyl-title" id="titleVintage" data-role="title"><span class="scroll-inner">—</span></div>
+        </div>
+
+        <div class="vintage-container">
+          <!-- Vinyl Wrapper -->
+          <div class="vinyl-record" id="vinylRecord">
+            <!-- Rotating Vinyl Surface -->
+            <div class="vinyl-surface" id="vinylSurface">
+              <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer" class="vinyl-art">
+              <!-- Vinyl grooves effect -->
+              <div class="vinyl-groove vinyl-groove-1"></div>
+              <div class="vinyl-groove vinyl-groove-2"></div>
+              <div class="vinyl-groove vinyl-groove-3"></div>
+              <div class="vinyl-groove vinyl-groove-4"></div>
+              <div class="vinyl-groove vinyl-groove-5"></div>
+              <!-- Center label -->
+              <div class="vinyl-label">
+                <div class="vinyl-label-inner">
+                  <div class="vinyl-label-dot"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- STATIC OVERLAYS (Non-spinning) -->
+            <!-- Equalizer bars perfectly centered over label -->
+            <div class="vinyl-eq-container">
+              <div class="vinyl-eq-bars" data-role="eq-bars">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </div>
+            </div>
+            
+            <!-- Metadata inside vinyl (Artist left, Time right) -->
+            <div class="vinyl-metadata-overlay">
+              <div class="vinyl-bottom-section">
+                <div class="vinyl-side-left">
+                  <div class="vinyl-artist-label">ARTIST</div>
+                  <div class="vinyl-artist" id="artistVintage" data-role="artist">—</div>
+                </div>
+                <div class="vinyl-side-right">
+                  <div class="vinyl-time-label">TIME</div>
+                  <div class="vinyl-time-display" data-role="time-remaining">-0:00</div>
+                </div>
+              </div>
+              <div class="vinyl-status-section">
+                <div class="vinyl-status" id="vinylStatus">NOW PLAYING</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1106,7 +1400,8 @@ const LAYOUT_IDS = [
   { mode:'compact', id:'layoutCompact' },
   { mode:'minimal', id:'layoutMinimal' },
   { mode:'stacked', id:'layoutStacked' },
-  { mode:'square', id:'layoutSquare' }
+  { mode:'square', id:'layoutSquare' },
+  { mode:'vintage', id:'layoutVintage' }
 ];
 
 const DEFAULT_CONFIG = {
@@ -1128,6 +1423,24 @@ let pollTimer = null;
 let lastTrackId = null;
 let playbackState = { progressMs:0, durationMs:0, isPlaying:false, lastSyncTime:0 };
 let tickTimer = null;
+let vinylRotationDeg = 0;
+let vinylStartTime = 0;
+
+function updateVinylRotation(){
+  if(!playbackState.isPlaying) return;
+  
+  const now = performance.now();
+  if(vinylStartTime === 0) vinylStartTime = now;
+  
+  const elapsedMs = now - vinylStartTime;
+  const rotationsPerSecond = 1 / 12; // 1 rotation every 12 seconds
+  const totalRotations = (elapsedMs / 1000) * rotationsPerSecond;
+  vinylRotationDeg = (totalRotations * 360) % 360;
+  
+  // Targets the surface, keeping overlays strictly stationary
+  const vinylEl = document.getElementById('vinylSurface');
+  if(vinylEl) vinylEl.style.setProperty('--vinyl-rotation', vinylRotationDeg + 'deg');
+}
 
 function tick() {
   if (!playbackState.isPlaying || !playbackState.durationMs) return;
@@ -1141,10 +1454,11 @@ function tick() {
     const pct = (currentMs / playbackState.durationMs) * 100;
     document.querySelectorAll('[data-role="progress-fill"]').forEach(el => el.style.width = pct + '%');
   }
+  updateVinylRotation();
   if (currentMs >= playbackState.durationMs) { playbackState.isPlaying = false; pollNowPlaying(); }
 }
 
-function startTick() { if (tickTimer) clearInterval(tickTimer); tick(); tickTimer = setInterval(tick, 500); }
+function startTick() { if (tickTimer) clearInterval(tickTimer); tick(); tickTimer = setInterval(tick, 16); }
 function stopTick() { if (tickTimer) { clearInterval(tickTimer); tickTimer = null; } }
 
 function loadConfig(){
@@ -1205,7 +1519,7 @@ function applyConfig(cfg){
   document.querySelectorAll('[data-role="album"]').forEach(el=> el.classList.toggle('hidden', !cfg.showAlbum));
   document.querySelectorAll('[data-role="time-elapsed"], [data-role="time-remaining"]').forEach(el=> el.classList.toggle('hidden', !cfg.showTimecode));
 
-  const showProgressInContainer = cfg.showProgressBar && cfg.layoutMode !== 'stacked' && cfg.layoutMode !== 'square' && cfg.layoutMode !== 'compact' && cfg.layoutMode !== 'minimal';
+  const showProgressInContainer = cfg.showProgressBar && cfg.layoutMode !== 'stacked' && cfg.layoutMode !== 'square' && cfg.layoutMode !== 'compact' && cfg.layoutMode !== 'minimal' && cfg.layoutMode !== 'vintage';
   document.getElementById('progressContainer').classList.toggle('hidden', !showProgressInContainer);
 
   document.querySelectorAll('.eq-bars').forEach(el => el.classList.toggle('hidden', !cfg.showEqualizer));
@@ -1263,6 +1577,7 @@ async function getValidAccessToken(){
 
 function showIdle(message){
   stopTick();
+  vinylStartTime = 0;
   const cfg = currentConfig;
   if(cfg.idleBehavior === 'hide'){ document.getElementById('playerCard').classList.remove('visible'); return; }
   LAYOUT_IDS.forEach(({id})=> document.getElementById(id).classList.add('hidden'));
@@ -1328,11 +1643,13 @@ function renderTrack(data){
 
   if(isNewTrack){
     document.querySelectorAll('.art-wrap-square, .minimal-art-wrap, .stacked-art-wrap').forEach(retriggerRevealAnimation);
+    vinylStartTime = 0; // Reset vinyl rotation for new track
     lastTrackId = item.id;
   }
 
   document.getElementById('statusDot').classList.toggle('paused', !isPlaying);
   document.querySelectorAll('[data-role="art-badge"]').forEach(el => el.classList.toggle('paused', !isPlaying));
+  document.querySelectorAll('[data-role="eq-bars"]').forEach(el => el.classList.toggle('paused', !isPlaying));
 
   playbackState = { progressMs:data.progress_ms, durationMs:item.duration_ms, isPlaying:isPlaying, lastSyncTime:performance.now() };
   startTick();
