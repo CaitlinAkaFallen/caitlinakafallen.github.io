@@ -69,6 +69,13 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   flex-direction:column;
   gap:2px;
   border-right:1px solid var(--border-medium);
+  overflow-y:auto;
+  /* Hide scrollbar for all browsers */
+  scrollbar-width:none; /* Firefox */
+  -ms-overflow-style:none; /* IE10+ */
+}
+.sidebar::-webkit-scrollbar {
+  display:none; /* Chrome, Safari, Edge */
 }
 
 .brand{
@@ -150,17 +157,13 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   padding:36px 40px 80px; 
   overflow-y:auto; 
   background:linear-gradient(180deg, transparent, rgba(125,232,200,0.02));
+  /* Hide scrollbar for all browsers */
+  scrollbar-width:none; /* Firefox */
+  -ms-overflow-style:none; /* IE10+ */
 }
-@supports (scrollbar-width: thin) {
-  .main{
-    scrollbar-width:thin;
-    scrollbar-color:transparent transparent;
-  }
+.main::-webkit-scrollbar {
+  display:none; /* Chrome, Safari, Edge */
 }
-.main::-webkit-scrollbar{width:8px;}
-.main::-webkit-scrollbar-track{background:transparent;}
-.main::-webkit-scrollbar-thumb{background:transparent; border-radius:4px;}
-.main::-webkit-scrollbar-thumb:hover{background:transparent;}
 
 .panel{ display:none; max-width:660px; }
 .panel.active{ display:block; animation:fadein-adv .4s cubic-bezier(0.4,0,0.2,1); }
@@ -607,27 +610,13 @@ button.icon-btn:active{
   top: 0;
   height: 100vh;
   overflow-y: auto;
-}
-
-@supports (scrollbar-width: thin) {
-  .preview-col {
-    scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
-  }
+  /* Hide scrollbar for all browsers */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE10+ */
 }
 
 .preview-col::-webkit-scrollbar {
-  width: 8px;
-}
-.preview-col::-webkit-scrollbar-track {
-  background: transparent;
-}
-.preview-col::-webkit-scrollbar-thumb {
-  background: transparent; 
-  border-radius: 4px;
-}
-.preview-col::-webkit-scrollbar-thumb:hover {
-  background: transparent;
+  display: none; /* Chrome, Safari, Edge */
 }
 
 .preview-col h3 { 
