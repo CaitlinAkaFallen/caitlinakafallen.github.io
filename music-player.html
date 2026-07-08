@@ -93,7 +93,12 @@ html,body{
   --card-height:80px;
 }
 
-.player-card:not(:has(#layoutStacked:not(.hidden))):not(:has(#layoutMinimal:not(.hidden))) {
+.player-card:has(#layoutSpectrum:not(.hidden)) {
+  height:auto;
+  --card-height:120px;
+}
+
+.player-card:not(:has(#layoutStacked:not(.hidden))):not(:has(#layoutMinimal:not(.hidden))):not(:has(#layoutSpectrum:not(.hidden))) {
   height:var(--card-height);
 }
 
@@ -248,6 +253,149 @@ html,body{
   transform:translateY(-50%);
 }
 .progress-track.show-scrubber .progress-scrubber{ display:block; }
+
+/* ============================================================
+   SPECTRUM LAYOUT — Horizontal EQ Bars
+   ============================================================ */
+.layout-spectrum{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:flex-start;
+  gap:12px;
+  flex:1;
+  min-height:0;
+  width:100%;
+  padding:0;
+}
+
+.spectrum-art-wrap{
+  width:80px;
+  height:80px;
+  flex:0 0 auto;
+  border-radius:calc(var(--corner-radius) * 0.5);
+  overflow:hidden;
+  background:#1a1825;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+  animation-name:var(--reveal-anim-name, art-roll-in);
+  animation-duration:0.8s;
+  animation-timing-function:cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-fill-mode:both;
+  position:relative;
+}
+
+.spectrum-art-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.spectrum-art-wrap::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.spectrum-meta{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+  min-width:100px;
+  flex:0 0 auto;
+  opacity:var(--metadata-opacity);
+  transition:opacity 0.3s ease;
+}
+
+.spectrum-eyebrow{
+  font-family:var(--font-mono);
+  font-size:calc(9px * var(--text-scale));
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--accent-primary);
+  font-weight:700;
+  line-height:1;
+}
+
+.spectrum-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:calc(15px * var(--text-scale));
+  color:var(--title-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  line-height:1.2;
+  min-width:0;
+}
+
+.spectrum-artist{
+  font-family:var(--font-mono);
+  font-size:calc(11px * var(--text-scale));
+  color:var(--artist-color);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+
+.spectrum-artist.italic{ font-style:italic; }
+
+.spectrum-eq-bars-container{
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-end;
+  gap:2px;
+  height:60px;
+  flex:1 1 auto;
+  min-width:0;
+}
+
+.spectrum-eq-bars{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:2px;
+  height:100%;
+  flex:1;
+}
+
+.spectrum-eq-bars .bar{
+  width:3px;
+  border-radius:2px;
+  background:linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
+  height:25%;
+  animation:eq-bounce 0.9s ease-in-out infinite;
+  will-change:height;
+  box-shadow:0 0 4px var(--accent-primary);
+  flex:1;
+  max-width:8px;
+}
+
+.spectrum-eq-bars .bar:nth-child(1){ animation-delay:-0.7s; }
+.spectrum-eq-bars .bar:nth-child(2){ animation-delay:-0.4s; }
+.spectrum-eq-bars .bar:nth-child(3){ animation-delay:-0.9s; }
+.spectrum-eq-bars .bar:nth-child(4){ animation-delay:-0.1s; }
+.spectrum-eq-bars .bar:nth-child(5){ animation-delay:-0.6s; }
+.spectrum-eq-bars .bar:nth-child(6){ animation-delay:-0.3s; }
+.spectrum-eq-bars .bar:nth-child(7){ animation-delay:-0.8s; }
+.spectrum-eq-bars .bar:nth-child(8){ animation-delay:-0.2s; }
+.spectrum-eq-bars .bar:nth-child(9){ animation-delay:-0.5s; }
+.spectrum-eq-bars .bar:nth-child(10){ animation-delay:-0.7s; }
+.spectrum-eq-bars .bar:nth-child(11){ animation-delay:-0.4s; }
+.spectrum-eq-bars .bar:nth-child(12){ animation-delay:-0.9s; }
+.spectrum-eq-bars .bar:nth-child(13){ animation-delay:-0.1s; }
+.spectrum-eq-bars .bar:nth-child(14){ animation-delay:-0.6s; }
+.spectrum-eq-bars .bar:nth-child(15){ animation-delay:-0.3s; }
+.spectrum-eq-bars .bar:nth-child(16){ animation-delay:-0.8s; }
+
+.spectrum-eq-bars.paused .bar{
+  animation-play-state:paused;
+  height:15%;
+}
 
 /* ============================================================
    COMPACT LAYOUT
@@ -1148,9 +1296,9 @@ html,body{
 }
 
 @media (prefers-reduced-motion: reduce){
-  .logo-mark .bar, .status-dot, .idle-icon, .art-wrap-square, .minimal-art-wrap, .stacked-art-wrap, .vinyl-surface,
-  .pill-title.marquee .scroll-inner, .minimal-title.marquee .scroll-inner, .stacked-title.marquee .scroll-inner, .vinyl-title.marquee .scroll-inner,
-  .vinyl-eq-bars .bar{
+  .logo-mark .bar, .status-dot, .idle-icon, .art-wrap-square, .minimal-art-wrap, .stacked-art-wrap, .spectrum-art-wrap, .vinyl-surface,
+  .pill-title.marquee .scroll-inner, .minimal-title.marquee .scroll-inner, .stacked-title.marquee .scroll-inner, .spectrum-title, .vinyl-title.marquee .scroll-inner,
+  .vinyl-eq-bars .bar, .spectrum-eq-bars .bar{
     animation:none !important;
   }
 }
@@ -1178,7 +1326,39 @@ html,body{
 
     <div class="layout-wrapper">
       
-     <!-- COMPACT LAYOUT -->
+      <!-- SPECTRUM LAYOUT -->
+      <div class="layout-spectrum hidden" id="layoutSpectrum">
+        <div class="spectrum-art-wrap art-shapeable">
+          <img id="artImgSpectrum" data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
+        </div>
+        <div class="spectrum-meta">
+          <div class="spectrum-eyebrow">NOW PLAYING</div>
+          <div class="spectrum-title" id="titleSpectrum" data-role="title">—</div>
+          <div class="spectrum-artist" id="artistSpectrum" data-role="artist">—</div>
+        </div>
+        <div class="spectrum-eq-bars-container">
+          <div class="spectrum-eq-bars" data-role="eq-bars">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPACT LAYOUT -->
       <div class="layout-compact" id="layoutCompact">
         <div class="art-wrap-square art-shapeable">
           <img id="artImgCompact" data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
@@ -1293,63 +1473,63 @@ html,body{
       </div>
 
       <!-- VINTAGE LAYOUT — Rotating Vinyl Record -->
-      <div class="layout-vintage hidden" id="layoutVintage">
-        
-        <!-- TITLE OUTSIDE -->
-        <div class="vintage-title-container">
-          <div class="vinyl-title" id="titleVintage" data-role="title"><span class="scroll-inner">—</span></div>
+<div class="layout-vintage hidden" id="layoutVintage">
+  
+  <!-- TITLE OUTSIDE -->
+  <div class="vintage-title-container">
+    <div class="vinyl-title" id="titleVintage" data-role="title"><span class="scroll-inner">—</span></div>
+  </div>
+
+  <div class="vintage-container">
+    <!-- Vinyl Wrapper -->
+    <div class="vinyl-record" id="vinylRecord">
+      <!-- Rotating Vinyl Surface -->
+      <div class="vinyl-surface" id="vinylSurface">
+        <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer" class="vinyl-art">
+        <!-- Vinyl grooves effect -->
+        <div class="vinyl-groove vinyl-groove-1"></div>
+        <div class="vinyl-groove vinyl-groove-2"></div>
+        <div class="vinyl-groove vinyl-groove-3"></div>
+        <div class="vinyl-groove vinyl-groove-4"></div>
+        <div class="vinyl-groove vinyl-groove-5"></div>
+        <!-- Center label -->
+        <div class="vinyl-label">
+          <div class="vinyl-label-inner">
+            <div class="vinyl-label-dot"></div>
+          </div>
         </div>
 
-        <div class="vintage-container">
-          <!-- Vinyl Wrapper -->
-          <div class="vinyl-record" id="vinylRecord">
-            <!-- Rotating Vinyl Surface -->
-            <div class="vinyl-surface" id="vinylSurface">
-              <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer" class="vinyl-art">
-              <!-- Vinyl grooves effect -->
-              <div class="vinyl-groove vinyl-groove-1"></div>
-              <div class="vinyl-groove vinyl-groove-2"></div>
-              <div class="vinyl-groove vinyl-groove-3"></div>
-              <div class="vinyl-groove vinyl-groove-4"></div>
-              <div class="vinyl-groove vinyl-groove-5"></div>
-              <!-- Center label -->
-              <div class="vinyl-label">
-                <div class="vinyl-label-inner">
-                  <div class="vinyl-label-dot"></div>
-                </div>
-              </div>
+        <!-- ✨ MOVED HERE: Metadata rotates WITH vinyl surface -->
+        <div class="vinyl-metadata-overlay">
+          <div class="vinyl-bottom-section">
+            <div class="vinyl-side-left">
+              <div class="vinyl-artist-label"></div>
+              <div class="vinyl-artist" id="artistVintage" data-role="artist">—</div>
             </div>
-            
-            <!-- STATIC OVERLAYS (Non-spinning) -->
-            <!-- Equalizer bars perfectly centered over label -->
-            <div class="vinyl-eq-container">
-              <div class="vinyl-eq-bars" data-role="eq-bars">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-              </div>
+            <div class="vinyl-side-right">
+              <div class="vinyl-time-label"></div>
+              <div class="vinyl-time-display" data-role="time-remaining">-0:00</div>
             </div>
-            
-            <!-- Metadata inside vinyl (Artist left, Time right) -->
-            <div class="vinyl-metadata-overlay">
-              <div class="vinyl-bottom-section">
-                <div class="vinyl-side-left">
-                  <div class="vinyl-artist-label">ARTIST</div>
-                  <div class="vinyl-artist" id="artistVintage" data-role="artist">—</div>
-                </div>
-                <div class="vinyl-side-right">
-                  <div class="vinyl-time-label">TIME</div>
-                  <div class="vinyl-time-display" data-role="time-remaining">-0:00</div>
-                </div>
-              </div>
-              <div class="vinyl-status-section">
-                <div class="vinyl-status" id="vinylStatus">NOW PLAYING</div>
-              </div>
-            </div>
+          </div>
+          <div class="vinyl-status-section">
+            <div class="vinyl-status" id="vinylStatus">NOW PLAYING</div>
           </div>
         </div>
       </div>
+      
+      <!-- STATIC OVERLAYS (Non-spinning) -->
+      <!-- Equalizer bars perfectly centered over label -->
+      <div class="vinyl-eq-container">
+        <div class="vinyl-eq-bars" data-role="eq-bars">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
       <!-- IDLE STATE -->
       <div class="idle-state hidden" id="idleState">
@@ -1397,6 +1577,7 @@ const REVEAL_ANIM_MAP = {
 
 const SHAPE_OPTIONS = ['rounded', 'circle', 'square', 'rounded-rect', 'hexagon', 'octagon', 'diamond', 'shield'];
 const LAYOUT_IDS = [
+  { mode:'spectrum', id:'layoutSpectrum' },
   { mode:'compact', id:'layoutCompact' },
   { mode:'minimal', id:'layoutMinimal' },
   { mode:'stacked', id:'layoutStacked' },
@@ -1443,19 +1624,27 @@ function updateVinylRotation(){
 }
 
 function tick() {
-  if (!playbackState.isPlaying || !playbackState.durationMs) return;
+  if (!playbackState.durationMs) return;
   const wallElapsed = performance.now() - playbackState.lastSyncTime;
-  const currentMs = Math.min(playbackState.progressMs + wallElapsed, playbackState.durationMs);
+  const currentMs = playbackState.isPlaying 
+    ? Math.min(playbackState.progressMs + wallElapsed, playbackState.durationMs)
+    : playbackState.progressMs;
+  
   const elapsedStr = formatTime(currentMs);
   const remainingStr = formatTime(playbackState.durationMs - currentMs);
+  
   document.querySelectorAll('[data-role="time-elapsed"]').forEach(el => el.textContent = elapsedStr);
   document.querySelectorAll('[data-role="time-remaining"]').forEach(el => el.textContent = '-' + remainingStr);
-  if (currentConfig.showProgressBar) {
-    const pct = (currentMs / playbackState.durationMs) * 100;
-    document.querySelectorAll('[data-role="progress-fill"]').forEach(el => el.style.width = pct + '%');
-  }
+  
+  const pct = (currentMs / playbackState.durationMs) * 100;
+  document.querySelectorAll('[data-role="progress-fill"]').forEach(el => el.style.width = pct + '%');
+  
   updateVinylRotation();
-  if (currentMs >= playbackState.durationMs) { playbackState.isPlaying = false; pollNowPlaying(); }
+  
+  if (playbackState.isPlaying && currentMs >= playbackState.durationMs) { 
+    playbackState.isPlaying = false; 
+    pollNowPlaying(); 
+  }
 }
 
 function startTick() { if (tickTimer) clearInterval(tickTimer); tick(); tickTimer = setInterval(tick, 16); }
@@ -1519,10 +1708,11 @@ function applyConfig(cfg){
   document.querySelectorAll('[data-role="album"]').forEach(el=> el.classList.toggle('hidden', !cfg.showAlbum));
   document.querySelectorAll('[data-role="time-elapsed"], [data-role="time-remaining"]').forEach(el=> el.classList.toggle('hidden', !cfg.showTimecode));
 
-  const showProgressInContainer = cfg.showProgressBar && cfg.layoutMode !== 'stacked' && cfg.layoutMode !== 'square' && cfg.layoutMode !== 'compact' && cfg.layoutMode !== 'minimal' && cfg.layoutMode !== 'vintage';
+  const showProgressInContainer = cfg.showProgressBar && cfg.layoutMode !== 'stacked' && cfg.layoutMode !== 'square' && cfg.layoutMode !== 'compact' && cfg.layoutMode !== 'minimal' && cfg.layoutMode !== 'spectrum';
   document.getElementById('progressContainer').classList.toggle('hidden', !showProgressInContainer);
 
   document.querySelectorAll('.eq-bars').forEach(el => el.classList.toggle('hidden', !cfg.showEqualizer));
+  document.querySelectorAll('.spectrum-eq-bars').forEach(el => el.classList.toggle('hidden', !cfg.showEqualizer));
   document.getElementById('headerRow').classList.toggle('hidden', !cfg.showBranding);
 
   document.querySelectorAll('.progress-track').forEach(track=>{
@@ -1634,15 +1824,19 @@ function renderTrack(data){
   const isNewTrack = item.id !== lastTrackId;
 
   document.querySelectorAll('[data-role="title"]').forEach(el=>{
-    el.querySelector('.scroll-inner').textContent = item.name || '—';
-    setupMarquee(el);
+    if(el.querySelector('.scroll-inner')){
+      el.querySelector('.scroll-inner').textContent = item.name || '—';
+      setupMarquee(el);
+    }else{
+      el.textContent = item.name || '—';
+    }
   });
   document.querySelectorAll('[data-role="artist"]').forEach(el => el.textContent = artists || '—');
   document.querySelectorAll('[data-role="album"]').forEach(el => el.textContent = albumName);
   document.querySelectorAll('[data-role="art-img"]').forEach(img => { if(img.src !== artUrl) img.src = artUrl; });
 
   if(isNewTrack){
-    document.querySelectorAll('.art-wrap-square, .minimal-art-wrap, .stacked-art-wrap').forEach(retriggerRevealAnimation);
+    document.querySelectorAll('.art-wrap-square, .minimal-art-wrap, .stacked-art-wrap, .spectrum-art-wrap').forEach(retriggerRevealAnimation);
     vinylStartTime = 0; // Reset vinyl rotation for new track
     lastTrackId = item.id;
   }
