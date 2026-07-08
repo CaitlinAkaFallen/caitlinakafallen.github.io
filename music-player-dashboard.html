@@ -61,7 +61,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
 @media (max-width:1100px){ .shell{ grid-template-columns:1fr; } }
 
 .sidebar{
-  background:linear-gradient(180deg, rgba(22, 20, 34, 0.308), rgba(15, 12, 25, 0.363));
+  background:linear-gradient(180deg, rgba(22,20,34,0.8), rgba(15,12,25,0.9));
   -webkit-backdrop-filter:blur(10px);
   backdrop-filter:blur(10px);
   padding:28px 16px;
@@ -151,16 +151,16 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   overflow-y:auto; 
   background:linear-gradient(180deg, transparent, rgba(125,232,200,0.02));
 }
-.main::-webkit-scrollbar{width:6px;}
-.main::-webkit-scrollbar-track{background:transparent;}
-.main::-webkit-scrollbar-thumb{background:rgba(125,232,200,0.2); border-radius:3px; transition:background 0.2s ease;}
-.main::-webkit-scrollbar-thumb:hover{background:rgba(125,232,200,0.35);}
 @supports (scrollbar-width: thin) {
-  .main {
-    scrollbar-color:rgba(125,232,200,0.2) transparent;
+  .main{
     scrollbar-width:thin;
+    scrollbar-color:transparent transparent;
   }
 }
+.main::-webkit-scrollbar{width:8px;}
+.main::-webkit-scrollbar-track{background:transparent;}
+.main::-webkit-scrollbar-thumb{background:transparent; border-radius:4px;}
+.main::-webkit-scrollbar-thumb:hover{background:transparent;}
 
 .panel{ display:none; max-width:660px; }
 .panel.active{ display:block; animation:fadein-adv .4s cubic-bezier(0.4,0,0.2,1); }
@@ -508,28 +508,29 @@ button.ghost-btn:hover{
 }
 
 button.icon-btn{
-  background:linear-gradient(135deg, rgba(30,25,50,0.7), rgba(25,22,40,0.8));
+  background:rgba(22,20,34,0.8);
   border:1.5px solid var(--border-medium);
   color:var(--text-primary);
   border-radius:11px;
   width:42px;
   height:42px;
   cursor:pointer;
-  font-size:15px;
+  font-size:16px;
   transition:all .25s ease;
   display:flex;
   align-items:center;
   justify-content:center;
+  font-weight:bold;
 }
 button.icon-btn:hover{ 
   border-color:var(--accent-primary);
   color:var(--accent-primary);
-  box-shadow:var(--glow-primary);
-  background:rgba(125,232,200,0.1);
-  transform:scale(1.05);
+  box-shadow:0 0 12px rgba(125,232,200,0.3);
+  background:rgba(22,20,34,1);
+  transform:scale(1.08);
 }
 button.icon-btn:active{
-  transform:scale(0.98);
+  transform:scale(0.96);
 }
 
 .input-group{
@@ -608,16 +609,26 @@ button.icon-btn:active{
   overflow-y: auto;
 }
 
+@supports (scrollbar-width: thin) {
+  .preview-col {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+}
+
 /* CUSTOM SCROLLBAR */
 .preview-col::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 .preview-col::-webkit-scrollbar-track {
   background: transparent;
 }
 .preview-col::-webkit-scrollbar-thumb {
-  background: rgba(125, 232, 200, 0.2); 
-  border-radius: 3px;
+  background: transparent; 
+  border-radius: 4px;
+}
+.preview-col::-webkit-scrollbar-thumb:hover {
+  background: transparent;
 }
 
 /* TYPOGRAPHY */
@@ -1340,6 +1351,14 @@ button.icon-btn:active{
         </div>
       </div>
 
+      <div class="field">
+        <label>Tab Text Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDashNavTextColor" value="#9a97ab">
+          <span class="swatch-label">Navigation tab text</span>
+        </div>
+      </div>
+
       <div class="field" id="fieldBgSolid">
         <label>Solid Color</label>
         <div class="color-field"><input type="color" id="inputDashBgColor1" value="#0a0915"></div>
@@ -1351,14 +1370,6 @@ button.icon-btn:active{
         <div class="color-field"><input type="color" id="inputDashGradColor2" value="#c8a2ff"><span class="swatch-label">Color 2</span></div>
         <div class="hint">Angle</div>
         <div class="range-row"><input type="range" id="inputDashGradAngle" min="0" max="360" step="5"><span class="val" id="valDashGradAngle"></span></div>
-      </div>
-
-      <div class="field">
-        <label>Tab Text Color</label>
-        <div class="color-field">
-          <input type="color" id="inputDashNavTextColor" value="#9a97ab">
-          <span class="swatch-label">Navigation tab text</span>
-        </div>
       </div>
 
       <div class="field hidden" id="fieldBgImage">
