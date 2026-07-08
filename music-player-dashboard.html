@@ -521,6 +521,7 @@ button.icon-btn{
   align-items:center;
   justify-content:center;
   font-weight:bold;
+  padding:0;
 }
 button.icon-btn:hover{ 
   border-color:var(--accent-primary);
@@ -595,7 +596,6 @@ button.icon-btn:active{
 /* PREVIEW COLUMN MAIN WRAPPER */
 .preview-col {
   border-left: 1px solid var(--border-medium);
-  /* Using the lighter blur/gradient so the character background stays sharp */
   background: linear-gradient(180deg, rgba(22, 20, 34, 0.3) 0%, transparent 60%);
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
@@ -616,7 +616,6 @@ button.icon-btn:active{
   }
 }
 
-/* CUSTOM SCROLLBAR */
 .preview-col::-webkit-scrollbar {
   width: 8px;
 }
@@ -631,7 +630,6 @@ button.icon-btn:active{
   background: transparent;
 }
 
-/* TYPOGRAPHY */
 .preview-col h3 { 
   font-family: var(--font-display); 
   font-size: 13px; 
@@ -642,9 +640,6 @@ button.icon-btn:active{
   color: var(--accent-primary);
 }
 
-/* -----------------------------------------
-   PREVIEW OPACITY SLIDER STYLES
------------------------------------------ */
 .preview-field {
   display: flex;
   flex-direction: column;
@@ -689,9 +684,6 @@ button.icon-btn:active{
   text-align: right;
 }
 
-/* -----------------------------------------
-   IFRAME WRAPPER & CHECKERBOARD BACKGROUND 
------------------------------------------ */
 .preview-frame-wrap {
   flex: 1;
   border: 2px solid var(--border-medium);
@@ -699,10 +691,8 @@ button.icon-btn:active{
   position: relative;
   overflow: hidden;
   box-shadow: 0 0 24px rgba(125, 232, 200, 0.1), inset 0 0 24px rgba(125, 232, 200, 0.02);
-  /* NOTE: Opacity and Background removed from here so the container stays solid */
 }
 
-/* The checkerboard background layer controlled by the slider */
 .preview-frame-wrap::before {
   content: '';
   position: absolute;
@@ -714,7 +704,6 @@ button.icon-btn:active{
   transition: opacity 0.25s ease;
 }
 
-/* The iframe stays opaque on top of the fading background */
 .preview-frame-wrap iframe { 
   position: relative;
   z-index: 1;
@@ -724,7 +713,6 @@ button.icon-btn:active{
   display: block;
 }
 
-/* FOOTER NOTE */
 .preview-note { 
   font-size: 11px; 
   color: var(--text-tertiary); 
@@ -734,6 +722,7 @@ button.icon-btn:active{
   padding: 8px 0;
   margin: 0;
 }
+
 .save-bar{
   position:sticky;
   bottom:0;
@@ -929,12 +918,23 @@ button.icon-btn:active{
   transition:all .25s ease;
   z-index:2;
   font-weight:bold;
+  padding:0;
 }
 .upload-clear:hover{
   background:linear-gradient(135deg, rgba(200,162,255,0.35), rgba(200,162,255,0.2));
   border-color:var(--accent-secondary);
   box-shadow:0 0 16px rgba(200,162,255,0.4);
   transform:scale(1.12) rotate(90deg);
+}
+
+/* SVG ICON STYLES */
+.svg-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
 }
 
 .hidden{ display:none !important; }
@@ -983,7 +983,11 @@ button.icon-btn:active{
         <label for="inputClientId">Spotify Client ID</label>
         <div class="input-group">
           <input type="password" id="inputClientId" placeholder="Paste your Spotify app Client ID">
-          <button type="button" class="icon-btn" id="btnToggleClientId" title="Show/Hide Client ID">👁</button>
+          <button type="button" class="icon-btn" id="btnToggleClientId" title="Show/Hide Client ID">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+          </button>
         </div>
         <div class="hint">Get this from <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a> → Create app</div>
       </div>
@@ -992,7 +996,11 @@ button.icon-btn:active{
         <label for="inputRedirectUri">Redirect URI</label>
         <div class="input-group">
           <input type="text" id="inputRedirectUri" readonly>
-          <button type="button" class="icon-btn" id="btnCopyRedirectUri" title="Copy URL">📋</button>
+          <button type="button" class="icon-btn" id="btnCopyRedirectUri" title="Copy URL">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
         </div>
         <div class="hint">Add this exact URL to your Spotify app's Redirect URIs in Edit Settings.</div>
       </div>
@@ -1001,7 +1009,11 @@ button.icon-btn:active{
         <label for="inputOBSURL">OBS Browser URL</label>
         <div class="input-group">
           <input type="text" id="inputOBSURL" readonly>
-          <button type="button" class="icon-btn" id="btnCopyOBSURL" title="Copy URL">📋</button>
+          <button type="button" class="icon-btn" id="btnCopyOBSURL" title="Copy URL">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
         </div>
         <div class="hint">Copy the URL and paste it into OBS Studio's Browser source to display your music player.</div>
       </div>
@@ -1010,9 +1022,21 @@ button.icon-btn:active{
       <button type="button" class="primary-btn hidden" id="btnDisconnect">Disconnect Spotify</button>
 
       <div class="spotify-controls" id="playbackControls">
-        <button class="icon-btn" id="btnPrev" title="Previous">⏮</button>
-        <button class="icon-btn" id="btnPlayPause" title="Play/Pause">⏯</button>
-        <button class="icon-btn" id="btnNext" title="Next">⏭</button>
+        <button class="icon-btn" id="btnPrev" title="Previous">
+          <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6z"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btnPlayPause" title="Play/Pause">
+          <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btnNext" title="Next">
+          <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 18h2V6h-2v12zM2 6l8.5 6-8.5 6z"/>
+          </svg>
+        </button>
       </div>
     </section>
 
@@ -1395,7 +1419,11 @@ button.icon-btn:active{
               <div class="preview-filename" id="previewFilename"></div>
               <div class="preview-size" id="previewSize"></div>
             </div>
-            <button type="button" class="upload-clear" id="uploadClear" title="Remove">✕</button>
+            <button type="button" class="upload-clear" id="uploadClear" title="Remove">
+              <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -1480,12 +1508,21 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
   });
 });
 
-// Show/Hide Client ID toggle
+// Icon visibility toggle with state tracking
+let isEyeOpen = false;
 document.getElementById('btnToggleClientId').addEventListener('click', ()=>{
   const input = document.getElementById('inputClientId');
-  const isPassword = input.type === 'password';
-  input.type = isPassword ? 'text' : 'password';
-  document.getElementById('btnToggleClientId').textContent = isPassword ? '🙈' : '👁';
+  const btn = document.getElementById('btnToggleClientId');
+  const svg = btn.querySelector('svg');
+  
+  isEyeOpen = !isEyeOpen;
+  input.type = isEyeOpen ? 'text' : 'password';
+  
+  if(isEyeOpen){
+    svg.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
+  } else {
+    svg.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28L3.46 8.84C2.08 10.29 1 12.04 1 12s1.73 4.39 6 7.5c1.55.84 3.15 1.31 4.8 1.53l3.02 3.02c1.25.125 2.47.1 3.38.084l2.85 2.85c.36.36.93.36 1.28 0l1.28-1.28c.36-.36.36-.92 0-1.28L3.54 3c-.36-.36-.92-.36-1.28 0l-1.28 1.27c-.36.36-.36.92 0 1.28zm9.5 6.12L9.48 9.65C9.5 9.77 9.5 9.88 9.5 10c0 1.66 1.34 3 3 3 .12 0 .23 0 .35-.02l2.5 2.5c-.67.33-1.41.5-2.2.5-2.76 0-5-2.24-5-5 0-.79.17-1.53.5-2.2zm5.7-6.41c-.89.6-1.96 1.37-2.3 1.69L15.13 2c.64-.3 1.21-.59 1.69-.82l1.41 1.41zM19 13.5c0-3.59-2.91-6.5-6.5-6.5-.62 0-1.23.09-1.82.23l1.5 1.5c.4-.05.81-.08 1.21-.08 2.76 0 5 2.24 5 5 0 .4-.03.81-.08 1.21l1.5 1.5c.14-.59.23-1.2.23-1.82z"/>';
+  }
 });
 
 // Copy Redirect URI button
