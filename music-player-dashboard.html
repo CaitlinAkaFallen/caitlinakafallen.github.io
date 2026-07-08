@@ -11,13 +11,23 @@
 :root{
   --accent-primary:#7de8c8;
   --accent-secondary:#c8a2ff;
+  --accent-tertiary:#ff6b9d;
   --bg-deep:#0a0915;
   --bg-panel:rgba(22,20,34,0.55);
+  --bg-panel-elevated:rgba(30,25,50,0.7);
   --border-soft:rgba(255,255,255,0.1);
+  --border-medium:rgba(255,255,255,0.15);
   --text-primary:#f3f1f8;
   --text-secondary:#9a97ab;
+  --text-tertiary:#6f6c80;
   --font-display:'Orbitron', sans-serif;
   --font-mono:'Share Tech Mono', monospace;
+  --preview-opacity:1;
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md:0 8px 24px rgba(0,0,0,0.4);
+  --shadow-lg:0 16px 48px rgba(0,0,0,0.5);
+  --glow-primary:0 0 20px rgba(125,232,200,0.3);
+  --glow-secondary:0 0 20px rgba(200,162,255,0.3);
 }
 
 *{box-sizing:border-box;}
@@ -28,54 +38,69 @@ html,body{
   color:var(--text-primary);
   font-family:var(--font-mono);
   min-height:100vh;
+  font-weight:400;
+  letter-spacing:0.5px;
 }
 
 body{
   background:
-    radial-gradient(circle at 15% 0%, rgba(125,232,200,0.10), transparent 45%),
-    radial-gradient(circle at 90% 10%, rgba(200,162,255,0.10), transparent 45%),
+    radial-gradient(ellipse at 15% -20%, rgba(125,232,200,0.15), transparent 50%),
+    radial-gradient(ellipse at 110% 20%, rgba(200,162,255,0.12), transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(255,107,157,0.05), transparent 60%),
     var(--bg-deep);
+  -webkit-backdrop-filter:blur(1px);
+  backdrop-filter:blur(1px);
+  transition:background-color 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background-image 0.8s ease;
 }
 
-a{ color:var(--accent-primary); }
+a{ color:var(--accent-primary); text-decoration:none; transition:all .3s ease; }
+a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.5); }
 
-.shell{ display:grid; grid-template-columns:220px 1fr 380px; min-height:100vh; }
+.shell{ display:grid; grid-template-columns:240px 1fr 400px; min-height:100vh; gap:1px; background:var(--border-soft); }
 @media (max-width:1100px){ .shell{ grid-template-columns:1fr; } }
 
 .sidebar{
-  border-right:1px solid var(--border-soft);
-  padding:24px 14px;
+  background:linear-gradient(180deg, rgba(22, 20, 34, 0.459), rgba(15, 12, 25, 0.459));
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  padding:28px 16px;
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:2px;
+  border-right:1px solid var(--border-medium);
 }
 
 .brand{
   font-family:var(--font-display);
-  font-weight:800;
-  font-size:15px;
-  letter-spacing:1px;
+  font-weight:900;
+  font-size:14px;
+  letter-spacing:2px;
   color:var(--text-primary);
   display:flex;
   align-items:center;
-  gap:10px;
-  padding:0 10px 22px;
+  gap:12px;
+  padding:12px 14px 24px;
+  background:linear-gradient(135deg, rgba(125,232,200,0.05), rgba(200,162,255,0.03));
+  border-radius:12px;
+  margin-bottom:8px;
 }
 .brand .dot{
-  width:8px;
-  height:8px;
+  width:10px;
+  height:10px;
   border-radius:50%;
-  background:var(--accent-primary);
-  box-shadow:0 0 8px var(--accent-primary);
+  background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  box-shadow:var(--glow-primary), inset 0 0 8px rgba(125,232,200,0.4);
+  animation:pulse-dot 2s ease-in-out infinite;
 }
+@keyframes pulse-dot{0%,100%{opacity:1;box-shadow:var(--glow-primary), inset 0 0 8px rgba(125,232,200,0.4);}50%{opacity:0.7;box-shadow:var(--glow-primary), inset 0 0 12px rgba(125,232,200,0.6);}}
 .brand small{
   display:block;
   font-family:var(--font-mono);
-  font-size:10px;
-  color:var(--text-secondary);
+  font-size:9px;
+  color:var(--text-tertiary);
   letter-spacing:2px;
-  font-weight:400;
-  margin-top:2px;
+  font-weight:500;
+  margin-top:4px;
 }
 
 .nav-btn{
@@ -84,272 +109,815 @@ a{ color:var(--accent-primary); }
   border:1px solid transparent;
   color:var(--text-secondary);
   font-family:var(--font-mono);
-  font-size:12.5px;
-  letter-spacing:1px;
-  padding:11px 12px;
+  font-size:12px;
+  letter-spacing:0.5px;
+  padding:12px 14px;
   border-radius:10px;
   cursor:pointer;
   display:flex;
   align-items:center;
-  gap:9px;
-  transition:all .2s ease;
+  gap:10px;
+  transition:all .25s cubic-bezier(0.4,0,0.2,1);
+  position:relative;
+  overflow:hidden;
 }
-.nav-btn:hover{ color:var(--text-primary); background:rgba(255,255,255,0.04); }
-.nav-btn.active{
+.nav-btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg, transparent, rgba(125,232,200,0.1), transparent);
+  opacity:0;
+  transition:opacity .25s ease;
+}
+.nav-btn:hover{
   color:var(--text-primary);
-  background:linear-gradient(90deg, rgba(125,232,200,0.14), rgba(200,162,255,0.08));
-  border-color:rgba(125,232,200,0.3);
+  background:rgba(125,232,200,0.08);
+  border-color:rgba(125,232,200,0.2);
+  transform:translateX(2px);
 }
-.nav-btn .num{ font-size:10px; opacity:.6; }
+.nav-btn:hover::before{opacity:1;}
+.nav-btn.active{
+  color:var(--accent-primary);
+  background:linear-gradient(135deg, rgba(125,232,200,0.15), rgba(200,162,255,0.08));
+  border:1px solid rgba(125,232,200,0.4);
+  box-shadow:var(--glow-primary);
+  font-weight:600;
+}
+.nav-btn .num{ font-size:10px; opacity:.5; font-weight:600; }
 
-.main{ padding:28px 32px 60px; overflow-y:auto; }
-.panel{ display:none; max-width:640px; }
-.panel.active{ display:block; animation:fadein .35s ease; }
-@keyframes fadein{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+.main{ 
+  padding:36px 40px 80px; 
+  overflow-y:auto; 
+  background:linear-gradient(180deg, transparent, rgba(125,232,200,0.02));
+}
+.main::-webkit-scrollbar{width:8px;}
+.main::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);}
+.main::-webkit-scrollbar-thumb{background:rgba(125,232,200,0.3); border-radius:4px;}
+.main::-webkit-scrollbar-thumb:hover{background:rgba(125,232,200,0.5);}
 
-.panel h2{ font-family:var(--font-display); font-size:18px; letter-spacing:1px; margin:0 0 4px; }
-.panel .sub{ color:var(--text-secondary); font-size:12px; margin-bottom:24px; line-height:1.6; }
+.panel{ display:none; max-width:660px; }
+.panel.active{ display:block; animation:fadein-adv .4s cubic-bezier(0.4,0,0.2,1); }
+@keyframes fadein-adv{ from{opacity:0; transform:translateY(8px); filter:blur(2px);} to{opacity:1; transform:translateY(0); filter:blur(0);} }
+
+.panel h2{ 
+  font-family:var(--font-display); 
+  font-size:26px; 
+  letter-spacing:2px; 
+  margin:0 0 8px;
+  background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  font-weight:900;
+}
+.panel .sub{ 
+  color:var(--text-secondary); 
+  font-size:13px; 
+  margin-bottom:32px; 
+  line-height:1.7;
+  font-weight:400;
+}
 
 .section-divider{
-  margin:28px 0 24px;
-  padding-top:20px;
-  border-top:1px solid var(--border-soft);
+  margin:36px 0 28px;
+  padding-top:24px;
+  border-top:1px solid var(--border-medium);
+  position:relative;
+}
+.section-divider::before{
+  content:'';
+  position:absolute;
+  top:-1px;
+  left:0;
+  right:0;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(125,232,200,0.3), transparent);
 }
 .section-divider h3{
   font-family:var(--font-display);
-  font-size:14px;
-  letter-spacing:1px;
-  margin:0 0 2px;
-  color:var(--text-primary);
+  font-size:15px;
+  letter-spacing:1.5px;
+  margin:0 0 4px;
+  color:var(--accent-primary);
+  font-weight:700;
 }
 .section-divider .sub{
   margin-bottom:0;
-  font-size:11px;
-  color:var(--text-secondary);
+  font-size:12px;
+  color:var(--text-tertiary);
+  line-height:1.5;
 }
 
-.field{ margin-bottom:20px; }
-.field label{ display:block; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-secondary); margin-bottom:8px; }
-.field .hint{ font-size:11px; color:var(--text-secondary); opacity:.75; margin-top:6px; line-height:1.5; }
+.field{ margin-bottom:24px; }
+.field label{ 
+  display:block; 
+  font-size:11px; 
+  letter-spacing:1.8px; 
+  text-transform:uppercase; 
+  color:var(--text-secondary); 
+  margin-bottom:10px;
+  font-weight:600;
+  opacity:0.9;
+}
+.field .hint{ 
+  font-size:11px; 
+  color:var(--text-tertiary); 
+  opacity:.85; 
+  margin-top:8px; 
+  line-height:1.6;
+  font-weight:400;
+}
 
 input[type="text"],
+input[type="password"],
 input[type="url"],
+input[type="file"],
 select{
   width:100%;
-  background:var(--bg-panel);
-  border:1px solid var(--border-soft);
-  border-radius:8px;
+  background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.8));
+  border:1px solid var(--border-medium);
+  border-radius:10px;
   color:var(--text-primary);
   font-family:var(--font-mono);
   font-size:13px;
-  padding:10px 12px;
+  padding:12px 14px;
+  transition:all .25s ease;
+  -webkit-backdrop-filter:blur(4px);
+  backdrop-filter:blur(4px);
+}
+input[type="text"]:hover,
+input[type="password"]:hover,
+input[type="url"]:hover,
+input[type="file"]:hover,
+select:hover{
+  border-color:rgba(125,232,200,0.3);
+  background:linear-gradient(135deg, rgba(30,25,50,0.8), rgba(25,22,40,1));
 }
 input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="url"]:focus,
+input[type="file"]:focus,
 select:focus{
-  outline:2px solid var(--accent-primary);
-  outline-offset:1px;
+  outline:none;
+  border-color:var(--accent-primary);
+  background:linear-gradient(135deg, rgba(30,25,50,1), rgba(25,22,40,1));
+  box-shadow:0 0 0 2px rgba(125,232,200,0.2), var(--glow-primary);
 }
 
-input[type="range"]{ width:100%; accent-color:var(--accent-primary); }
-.range-row{ display:flex; align-items:center; gap:12px; }
-.range-row .val{ font-size:12px; color:var(--accent-primary); width:48px; text-align:right; flex:0 0 auto; }
+input[type="range"]{ 
+  width:100%; 
+  accent-color:var(--accent-primary);
+  height:6px;
+  cursor:pointer;
+}
+input[type="range"]::-webkit-slider-thumb{
+  appearance:none;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  border:2px solid rgba(255,255,255,0.2);
+  cursor:pointer;
+  box-shadow:var(--glow-primary);
+  transition:all .2s ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover{
+  transform:scale(1.2);
+  box-shadow:var(--glow-primary), 0 0 30px rgba(125,232,200,0.4);
+}
+input[type="range"]::-moz-range-thumb{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  border:2px solid rgba(255,255,255,0.2);
+  cursor:pointer;
+  box-shadow:var(--glow-primary);
+}
+
+.range-row{ display:flex; align-items:center; gap:14px; }
+.range-row .val{ 
+  font-size:13px; 
+  color:var(--accent-primary); 
+  width:60px; 
+  text-align:right; 
+  flex:0 0 auto;
+  font-weight:600;
+  font-family:var(--font-display);
+  letter-spacing:1px;
+}
 
 input[type="color"]{
-  width:46px;
-  height:36px;
-  border:1px solid var(--border-soft);
-  border-radius:8px;
-  background:none;
+  width:50px;
+  height:40px;
+  border:2px solid var(--border-medium);
+  border-radius:10px;
+  background:linear-gradient(135deg, #1a1a2e, #2d2d3d);
   cursor:pointer;
-  padding:2px;
+  padding:3px;
+  transition:all .25s ease;
 }
-.color-field{ display:flex; align-items:center; gap:12px; }
-.color-field .swatch-label{ font-size:12px; color:var(--text-secondary); }
+input[type="color"]:hover{
+  border-color:var(--accent-primary);
+  box-shadow:var(--glow-primary);
+}
+.color-field{ display:flex; align-items:center; gap:14px; }
+.color-field .swatch-label{ 
+  font-size:12px; 
+  color:var(--text-secondary);
+  font-weight:500;
+}
 
 .toggle-row{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,0.06);
+  padding:12px 0;
+  border-bottom:1px solid var(--border-soft);
+  transition:all .25s ease;
+}
+.toggle-row:hover{
+  background:rgba(125,232,200,0.02);
+  padding:12px 8px;
+  margin:0 -8px;
+  border-radius:6px;
 }
 .toggle-row:last-child{ border-bottom:none; }
-.toggle-row span{ font-size:13px; }
+.toggle-row span{ 
+  font-size:13px;
+  font-weight:500;
+  color:var(--text-primary);
+}
 
 .switch{
   position:relative;
-  width:40px;
-  height:22px;
+  width:44px;
+  height:24px;
   flex:0 0 auto;
 }
 .switch input{ opacity:0; width:0; height:0; }
 .switch .track{
   position:absolute;
   inset:0;
-  background:rgba(255,255,255,0.12);
-  border-radius:20px;
+  background:linear-gradient(90deg, rgba(125,232,200,0.1), rgba(200,162,255,0.1));
+  border:1px solid var(--border-medium);
+  border-radius:24px;
   cursor:pointer;
-  transition:.2s;
+  transition:all .3s cubic-bezier(0.4,0,0.2,1);
 }
 .switch .track:before{
   content:'';
   position:absolute;
-  width:16px;
-  height:16px;
+  width:18px;
+  height:18px;
   left:3px;
-  top:3px;
-  background:#fff;
+  top:2px;
+  background:linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));
   border-radius:50%;
-  transition:.2s;
+  transition:all .3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
 }
 .switch input:checked + .track{
-  background:var(--accent-primary);
+  background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  border-color:var(--accent-primary);
+  box-shadow:var(--glow-primary);
 }
 .switch input:checked + .track:before{
-  transform:translateX(18px);
+  transform:translateX(20px);
+  box-shadow:0 0 12px rgba(125,232,200,0.6), inset 0 0 4px rgba(0,0,0,0.2);
 }
 
 .choice-cards{ display:flex; gap:10px; flex-wrap:wrap; }
 .choice-cards .choice-card{ flex:1 1 130px; }
 .choice-card{
   flex:1;
-  border:1px solid var(--border-soft);
-  border-radius:10px;
-  padding:12px;
+  border:1.5px solid var(--border-medium);
+  border-radius:12px;
+  padding:14px 12px;
   cursor:pointer;
-  background:var(--bg-panel);
+  background:linear-gradient(135deg, rgba(30,25,50,0.5), rgba(25,22,40,0.6));
   text-align:center;
   font-size:12px;
   color:var(--text-secondary);
-  transition:.2s;
+  transition:all .25s ease;
+  position:relative;
+  overflow:hidden;
+}
+.choice-card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(125,232,200,0.1), transparent 50%);
+  opacity:0;
+  transition:opacity .3s ease;
+  pointer-events:none;
+}
+.choice-card:hover{
+  border-color:rgba(125,232,200,0.4);
+  background:linear-gradient(135deg, rgba(30,25,50,0.7), rgba(25,22,40,0.8));
+  transform:translateY(-2px);
 }
 .choice-card.selected{
   border-color:var(--accent-primary);
   color:var(--text-primary);
-  box-shadow:0 0 0 1px var(--accent-primary) inset;
+  background:linear-gradient(135deg, rgba(125,232,200,0.15), rgba(200,162,255,0.08));
+  box-shadow:0 0 0 1px var(--accent-primary) inset, var(--glow-primary);
+  font-weight:600;
 }
-.choice-card .ico{ font-size:20px; display:block; margin-bottom:6px; }
+.choice-card .ico{ 
+  font-size:22px; 
+  display:block; 
+  margin-bottom:6px;
+  transition:all .25s ease;
+}
+.choice-card:hover .ico{ transform:scale(1.1); }
 
 button.primary-btn{
   font-family:var(--font-display);
   font-weight:700;
   font-size:13px;
-  letter-spacing:1px;
-  background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-  color:#0a0915;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  background:transparent;
+  color:var(--accent-primary);
   border:none;
-  border-radius:10px;
-  padding:12px 22px;
+  padding:14px 24px;
   cursor:pointer;
-  box-shadow:0 0 18px rgba(125,232,200,0.35);
-  transition:transform .15s ease;
+  position:relative;
+  overflow:hidden;
+  transition:all 0.3s ease;
 }
-button.primary-btn:hover{ transform:translateY(-1px); }
-button.primary-btn:disabled{ opacity:0.5; cursor:not-allowed; box-shadow:none; }
+
+button.primary-btn::after{
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:0;
+  height:3px;
+  background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  transition:width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+button.primary-btn:hover{
+  transform:scale(1.05);
+  text-shadow:0 0 20px rgba(125,232,200,0.5);
+}
+
+button.primary-btn:hover::after{
+  width:100%;
+}
+
+button.primary-btn:active{
+  transform:scale(0.98);
+}
+
+button.primary-btn:disabled{ 
+  opacity:0.5; 
+  cursor:not-allowed;
+  transform:none;
+}
 
 button.ghost-btn{
   font-family:var(--font-mono);
   font-size:12px;
-  letter-spacing:.5px;
+  letter-spacing:1px;
   background:transparent;
-  border:1px solid var(--border-soft);
+  border:1.5px solid var(--border-medium);
   color:var(--text-secondary);
-  border-radius:9px;
-  padding:10px 16px;
+  border-radius:10px;
+  padding:11px 18px;
   cursor:pointer;
-  transition:.2s;
+  transition:all .25s ease;
+  font-weight:500;
+  text-transform:uppercase;
 }
 button.ghost-btn:hover{
   color:var(--text-primary);
   border-color:var(--accent-primary);
+  background:rgba(125,232,200,0.08);
+  box-shadow:0 0 16px rgba(125,232,200,0.2);
+  transform:translateY(-1px);
 }
 
 button.icon-btn{
-  background:var(--bg-panel);
-  border:1px solid var(--border-soft);
+  background:linear-gradient(135deg, rgba(30,25,50,0.7), rgba(25,22,40,0.8));
+  border:1.5px solid var(--border-medium);
   color:var(--text-primary);
-  border-radius:10px;
-  width:38px;
-  height:38px;
+  border-radius:11px;
+  width:42px;
+  height:42px;
   cursor:pointer;
-  font-size:14px;
-  transition:all .2s ease;
+  font-size:15px;
+  transition:all .25s ease;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 button.icon-btn:hover{ 
   border-color:var(--accent-primary);
   color:var(--accent-primary);
-  box-shadow:0 0 12px rgba(125,232,200,0.2);
+  box-shadow:var(--glow-primary);
+  background:rgba(125,232,200,0.1);
+  transform:scale(1.05);
+}
+button.icon-btn:active{
+  transform:scale(0.98);
+}
+
+.input-group{
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+}
+.input-group input{
+  flex:1;
 }
 
 .status-card{
-  border:1px solid var(--border-soft);
-  border-radius:12px;
-  background:var(--bg-panel);
-  padding:16px;
-  margin-bottom:20px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.status-led{ width:9px; height:9px; border-radius:50%; background:#6f6c80; flex:0 0 auto; }
-.status-led.on{ background:var(--accent-primary); box-shadow:0 0 8px var(--accent-primary); }
-.status-text{ font-size:12.5px; line-height:1.5; }
-.status-text strong{ color:var(--text-primary); }
-
-.preview-col{
-  border-left:1px solid var(--border-soft);
-  padding:24px 22px;
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-  position:sticky;
-  top:0;
-  height:100vh;
-}
-.preview-col h3{ font-family:var(--font-display); font-size:13px; letter-spacing:1.5px; margin:0; }
-.preview-frame-wrap{
-  flex:1;
-  border:1px solid var(--border-soft);
+  border:1.5px solid var(--border-medium);
   border-radius:14px;
-  background:repeating-conic-gradient(#15131f 0% 25%, #181626 0% 50%) 50% / 24px 24px;
+  background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.7));
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+  padding:18px;
+  margin-bottom:24px;
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
   position:relative;
   overflow:hidden;
 }
-.preview-frame-wrap iframe{ width:100%; height:100%; border:none; }
-.preview-note{ font-size:11px; color:var(--text-secondary); line-height:1.6; }
+.status-card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(125,232,200,0.05), transparent);
+  pointer-events:none;
+}
+.status-led{ 
+  width:12px; 
+  height:12px; 
+  border-radius:50%; 
+  background:rgba(111,108,128,0.6);
+  flex:0 0 auto;
+  position:relative;
+  border:2px solid rgba(111,108,128,0.4);
+  top:2px;
+}
+.status-led.on{ 
+  background:var(--accent-primary); 
+  border-color:rgba(125,232,200,0.6);
+  box-shadow:0 0 12px var(--accent-primary), inset 0 0 4px rgba(255,255,255,0.3);
+  animation:pulse-led 2s ease-in-out infinite;
+}
+@keyframes pulse-led{0%,100%{opacity:1;}50%{opacity:0.7;}}
+.status-text{ 
+  font-size:13px; 
+  line-height:1.6;
+  position:relative;
+  z-index:1;
+  font-weight:500;
+}
+.status-text strong{ 
+  color:var(--accent-primary);
+  font-weight:700;
+}
 
+/* PREVIEW COLUMN MAIN WRAPPER */
+.preview-col {
+  border-left: 1px solid var(--border-medium);
+  /* Using the lighter blur/gradient so the character background stays sharp */
+  background: linear-gradient(180deg, rgba(22, 20, 34, 0.123) 0%, transparent 60%);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* CUSTOM SCROLLBAR */
+.preview-col::-webkit-scrollbar {
+  width: 6px;
+}
+.preview-col::-webkit-scrollbar-track {
+  background: transparent;
+}
+.preview-col::-webkit-scrollbar-thumb {
+  background: rgba(125, 232, 200, 0.2); 
+  border-radius: 3px;
+}
+
+/* TYPOGRAPHY */
+.preview-col h3 { 
+  font-family: var(--font-display); 
+  font-size: 13px; 
+  letter-spacing: 2px; 
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+/* -----------------------------------------
+   PREVIEW OPACITY SLIDER STYLES
+----------------------------------------- */
+.preview-field {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.preview-field label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  font-weight: 600;
+}
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.range-row input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.3);
+  height: 2px;
+  border-radius: 2px;
+  outline: none;
+}
+.range-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  cursor: pointer;
+}
+.range-row .val {
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--accent-primary);
+  font-weight: 700;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* -----------------------------------------
+   IFRAME WRAPPER & CHECKERBOARD BACKGROUND 
+----------------------------------------- */
+.preview-frame-wrap {
+  flex: 1;
+  border: 2px solid var(--border-medium);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 24px rgba(125, 232, 200, 0.1), inset 0 0 24px rgba(125, 232, 200, 0.02);
+  /* NOTE: Opacity and Background removed from here so the container stays solid */
+}
+
+/* The checkerboard background layer controlled by the slider */
+.preview-frame-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(#15131f 0% 25%, #181626 0% 50%) 50% / 24px 24px;
+  opacity: var(--preview-opacity, 1);
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.25s ease;
+}
+
+/* The iframe stays opaque on top of the fading background */
+.preview-frame-wrap iframe { 
+  position: relative;
+  z-index: 1;
+  width: 100%; 
+  height: 100%; 
+  border: none;
+  display: block;
+}
+
+/* FOOTER NOTE */
+.preview-note { 
+  font-size: 11px; 
+  color: var(--text-tertiary); 
+  line-height: 1.7;
+  font-weight: 500;
+  text-align: center;
+  padding: 8px 0;
+  margin: 0;
+}
 .save-bar{
   position:sticky;
   bottom:0;
   left:0;
-  background:linear-gradient(180deg, transparent, rgba(10,9,21,0.92) 30%);
-  padding:24px 0 4px;
+  right:0;
+  background:linear-gradient(180deg, rgba(125,232,200,0.02), rgba(10,9,21,0.95));
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+  border-top:1px solid var(--border-medium);
+  padding:28px 32px 20px;
   display:flex;
   align-items:center;
-  gap:14px;
-  margin-top:18px;
+  gap:18px;
+  margin-top:24px;
+  z-index:40;
 }
 
 .toast{
   position:fixed;
-  top:20px;
-  right:20px;
-  background:var(--bg-panel);
-  border:1px solid var(--accent-primary);
+  top:24px;
+  right:24px;
+  background:linear-gradient(135deg, rgba(30,25,50,0.95), rgba(25,22,40,1));
+  border:1.5px solid var(--accent-primary);
   color:var(--text-primary);
-  padding:12px 18px;
-  border-radius:10px;
-  font-size:12.5px;
-  box-shadow:0 0 20px rgba(125,232,200,0.25);
-  transform:translateY(-12px);
+  padding:14px 20px;
+  border-radius:12px;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  box-shadow:0 8px 32px rgba(125,232,200,0.3), 0 0 20px rgba(125,232,200,0.2);
+  transform:translateY(-20px);
   opacity:0;
-  transition:.25s ease;
+  transition:all .35s cubic-bezier(0.4,0,0.2,1);
   pointer-events:none;
-  z-index:50;
+  z-index:1000;
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
 }
-.toast.show{ transform:translateY(0); opacity:1; }
+.toast.show{ 
+  transform:translateY(0); 
+  opacity:1;
+  pointer-events:auto;
+}
 
-.spotify-controls{ display:flex; gap:10px; margin-top:6px; }
+.spotify-controls{ display:flex; gap:10px; margin-top:8px; }
+
+.upload-zone{
+  border:2px dashed var(--accent-primary);
+  border-radius:14px;
+  padding:36px 24px;
+  text-align:center;
+  background:linear-gradient(135deg, rgba(125,232,200,0.08), rgba(200,162,255,0.04));
+  cursor:pointer;
+  transition:all .3s cubic-bezier(0.4,0,0.2,1);
+  position:relative;
+  overflow:hidden;
+}
+.upload-zone::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at center, rgba(125,232,200,0.08), transparent 70%);
+  opacity:0;
+  transition:opacity .3s ease;
+  pointer-events:none;
+}
+.upload-zone::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(45deg, transparent 30%, rgba(125,232,200,0.05), transparent 70%);
+  opacity:0;
+  animation:shimmer-zone 3s infinite;
+  pointer-events:none;
+}
+@keyframes shimmer-zone{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.upload-zone:hover{
+  background:linear-gradient(135deg, rgba(125,232,200,0.14), rgba(200,162,255,0.08));
+  border-color:var(--accent-secondary);
+  box-shadow:0 0 24px rgba(125,232,200,0.25);
+  transform:translateY(-2px);
+}
+.upload-zone:hover::before{ opacity:1; }
+.upload-zone.drag-over{
+  background:linear-gradient(135deg, rgba(125,232,200,0.2), rgba(200,162,255,0.12));
+  border-color:var(--accent-primary);
+  box-shadow:0 0 32px rgba(125,232,200,0.4), inset 0 0 32px rgba(125,232,200,0.05);
+  transform:scale(1.02);
+}
+
+.upload-icon{
+  font-size:36px;
+  background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:12px;
+  display:block;
+  animation:float-adv 2.5s ease-in-out infinite;
+  font-weight:bold;
+}
+@keyframes float-adv{ 0%,100%{ transform:translateY(0) scale(1); } 50%{ transform:translateY(-8px) scale(1.05); } }
+
+.upload-text{
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--text-primary);
+  margin-bottom:6px;
+  font-weight:600;
+  letter-spacing:0.5px;
+}
+
+.upload-subtext{
+  font-size:11px;
+  color:var(--text-secondary);
+  opacity:.85;
+  font-weight:500;
+}
+
+.upload-preview{
+  border:1.5px solid var(--border-medium);
+  border-radius:12px;
+  background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.7));
+  padding:16px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  position:relative;
+  overflow:hidden;
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
+.upload-preview::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg, transparent, rgba(125,232,200,0.15), transparent);
+  animation:shimmer-preview 2.5s infinite;
+  pointer-events:none;
+}
+@keyframes shimmer-preview{ 0%{ transform:translateX(-100%); } 100%{ transform:translateX(100%); } }
+
+.upload-preview img{
+  width:68px;
+  height:68px;
+  border-radius:10px;
+  object-fit:cover;
+  border:1.5px solid rgba(125,232,200,0.4);
+  flex:0 0 auto;
+  box-shadow:0 4px 12px rgba(125,232,200,0.2);
+}
+
+.preview-info{
+  flex:1;
+  min-width:0;
+  z-index:1;
+}
+
+.preview-filename{
+  font-size:12px;
+  color:var(--text-primary);
+  font-weight:600;
+  margin-bottom:4px;
+  word-break:break-all;
+  font-family:var(--font-mono);
+  letter-spacing:0.5px;
+}
+
+.preview-size{
+  font-size:10px;
+  color:var(--text-secondary);
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  font-weight:600;
+}
+
+.upload-clear{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:linear-gradient(135deg, rgba(200,162,255,0.2), rgba(200,162,255,0.1));
+  border:1.5px solid rgba(200,162,255,0.5);
+  color:var(--accent-secondary);
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all .25s ease;
+  z-index:2;
+  font-weight:bold;
+}
+.upload-clear:hover{
+  background:linear-gradient(135deg, rgba(200,162,255,0.35), rgba(200,162,255,0.2));
+  border-color:var(--accent-secondary);
+  box-shadow:0 0 16px rgba(200,162,255,0.4);
+  transform:scale(1.12) rotate(90deg);
+}
 
 .hidden{ display:none !important; }
 
@@ -362,7 +930,7 @@ button.icon-btn:hover{
   <nav class="sidebar">
     <div class="brand">
       <span class="dot"></span>
-      <span>FALLENONEART<br><small>MUSIC PLAYER</small></span>
+      <span>FALLENONEART<br><small>MUSIC PLAYER Dashboard</small></span>
     </div>
     <button class="nav-btn active" data-tab="connection"><span class="num">01</span> Connection</button>
     <button class="nav-btn" data-tab="layout"><span class="num">02</span> Layout & Shapes</button>
@@ -395,18 +963,33 @@ button.icon-btn:hover{
 
       <div class="field">
         <label for="inputClientId">Spotify Client ID</label>
-        <input type="text" id="inputClientId" placeholder="Paste your Spotify app Client ID">
+        <div class="input-group">
+          <input type="password" id="inputClientId" placeholder="Paste your Spotify app Client ID">
+          <button type="button" class="icon-btn" id="btnToggleClientId" title="Show/Hide Client ID">👁</button>
+        </div>
         <div class="hint">Get this from <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a> → Create app</div>
       </div>
 
       <div class="field">
         <label for="inputRedirectUri">Redirect URI</label>
-        <input type="text" id="inputRedirectUri" readonly>
+        <div class="input-group">
+          <input type="text" id="inputRedirectUri" readonly>
+          <button type="button" class="icon-btn" id="btnCopyRedirectUri" title="Copy URL">📋</button>
+        </div>
         <div class="hint">Add this exact URL to your Spotify app's Redirect URIs in Edit Settings.</div>
       </div>
 
+      <div class="field">
+        <label for="inputOBSURL">OBS Browser URL</label>
+        <div class="input-group">
+          <input type="text" id="inputOBSURL" readonly>
+          <button type="button" class="icon-btn" id="btnCopyOBSURL" title="Copy URL">📋</button>
+        </div>
+        <div class="hint">Copy the URL and paste it into OBS Studio's Browser source to display your music player.</div>
+      </div>
+
       <button type="button" class="primary-btn" id="btnConnect">Connect Spotify</button>
-      <button type="button" class="ghost-btn hidden" id="btnDisconnect">Disconnect</button>
+      <button type="button" class="primary-btn hidden" id="btnDisconnect">Disconnect Spotify</button>
 
       <div class="spotify-controls" id="playbackControls">
         <button class="icon-btn" id="btnPrev" title="Previous">⏮</button>
@@ -425,6 +1008,7 @@ button.icon-btn:hover{
         <div class="choice-cards">
           <div class="choice-card" data-choice="layoutMode" data-value="compact"><span class="ico">◉ ▭</span>Compact</div>
           <div class="choice-card" data-choice="layoutMode" data-value="minimal"><span class="ico">▢ ▭</span>Minimal</div>
+          <div class="choice-card" data-choice="layoutMode" data-value="spectrum"><span class="ico">≈≈≈</span>Spectrum</div>
           <div class="choice-card" data-choice="layoutMode" data-value="stacked"><span class="ico">⊟ ⊟</span>Stacked</div>
           <div class="choice-card" data-choice="layoutMode" data-value="square"><span class="ico">▭ ▭</span>Square</div>
           <div class="choice-card" data-choice="layoutMode" data-value="vintage"><span class="ico">●</span>Vintage</div>
@@ -452,7 +1036,7 @@ button.icon-btn:hover{
       <div class="field">
         <label>Card Height (px)</label>
         <div class="range-row"><input type="range" id="inputCardHeight" min="300" max="700" step="10"><span class="val" id="valCardHeight"></span></div>
-        <div class="hint">Adjust the overall player card size. Compact/Minimal/Square use this. Stacked layout is unconstrained (full-bleed art).</div>
+        <div class="hint">Adjust the overall player card size. Compact/Minimal/Spectrum/Square use this. Stacked layout is unconstrained (full-bleed art).</div>
       </div>
 
       <div class="field">
@@ -552,6 +1136,14 @@ button.icon-btn:hover{
         <label>Album Name Color</label>
         <div class="color-field">
           <input type="color" id="inputAlbumColor" value="#a39fb5">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Time/Progress Color</label>
+        <div class="color-field">
+          <input type="color" id="inputTimeColor" value="#7de8c8">
+          <span class="swatch-label">Elapsed time & timestamps</span>
         </div>
       </div>
 
@@ -668,14 +1260,6 @@ button.icon-btn:hover{
         <div class="hint">Fades the entire title/artist/album section while preserving readability.</div>
       </div>
 
-      <div class="field">
-        <label>Time/Progress Color</label>
-        <div class="color-field">
-          <input type="color" id="inputTimeColor" value="#7de8c8">
-          <span class="swatch-label">Elapsed time & timestamps</span>
-        </div>
-      </div>
-
       <div class="section-divider">
         <h3>Progress Bar & Timing</h3>
         <div class="sub">Progress bar position adapts per layout. Stacked: below metadata. Others: at layout bottom.</div>
@@ -763,8 +1347,32 @@ button.icon-btn:hover{
       </div>
 
       <div class="field hidden" id="fieldBgImage">
-        <label for="inputDashBgImageUrl">Image URL</label>
-        <input type="text" id="inputDashBgImageUrl" placeholder="https://example.com/background.jpg">
+        <label>Image Source</label>
+        <div class="toggle-row"><span>Upload file</span><label class="switch"><input type="checkbox" id="toggleBgImageSource"><span class="track"></span></label><span class="hint">URL</span></div>
+
+        <div id="bgImageUrlSection">
+          <label for="inputDashBgImageUrl">Image URL</label>
+          <input type="text" id="inputDashBgImageUrl" placeholder="https://example.com/background.jpg">
+        </div>
+
+        <div id="bgImageUploadSection" class="hidden">
+          <label>Upload Wallpaper</label>
+          <input type="file" id="inputDashBgImageUpload" accept="image/*" class="hidden">
+          <div class="upload-zone" id="uploadZone">
+            <div class="upload-icon">▲</div>
+            <div class="upload-text">Drag wallpaper here or click to browse</div>
+            <div class="upload-subtext">JPG, PNG, WebP, GIF (max 5MB)</div>
+          </div>
+          <div id="uploadPreview" class="upload-preview hidden">
+            <img id="previewImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Preview">
+            <div class="preview-info">
+              <div class="preview-filename" id="previewFilename"></div>
+              <div class="preview-size" id="previewSize"></div>
+            </div>
+            <button type="button" class="upload-clear" id="uploadClear" title="Remove">✕</button>
+          </div>
+        </div>
+
         <label>Position</label>
         <select id="inputDashBgPosition">
           <option value="cover">Cover (fill, crop edges)</option>
@@ -784,13 +1392,24 @@ button.icon-btn:hover{
 
   </main>
 
-  <aside class="preview-col">
-    <h3>LIVE PREVIEW</h3>
-    <div class="preview-frame-wrap">
-      <iframe id="previewFrame" src="music-player.html" title="Live preview"></iframe>
+<aside class="preview-col">
+  <h3>LIVE PREVIEW</h3>
+  
+  <div class="field preview-field">
+    <label for="inputPreviewOpacity">Preview Opacity</label>
+    <div class="range-row">
+      <input type="range" id="inputPreviewOpacity" title="Preview opacity" min="0.1" max="1" step="0.05">
+      <span class="val" id="valPreviewOpacity"></span>
     </div>
-    <p class="preview-note">All layouts supported: Compact, Minimal, Stacked, Square, Vintage. Add to OBS as browser source.</p>
-  </aside>
+  </div>
+  
+  <div class="preview-frame-wrap" id="previewFrameWrap">
+    <iframe id="previewFrame" src="music-player.html" title="Live preview"></iframe>
+  </div>
+  
+  <p class="preview-note">All layouts supported: Compact, Minimal, Spectrum, Stacked, Square, Vintage. Add to OBS as browser source.</p>
+</aside>
+
 
 </div>
 
@@ -802,6 +1421,7 @@ const LS_AUTH_KEY = 'fallenoneart_spotify_auth';
 const LS_PKCE_KEY = 'fallenoneart_spotify_pkce_verifier';
 const LS_CLIENT_ID_KEY = 'fallenoneart_spotify_client_id';
 const LS_DASH_THEME_KEY = 'fallenoneart_dashboard_theme';
+const LS_PREVIEW_OPACITY_KEY = 'fallenoneart_preview_opacity';
 const BROADCAST_NAME = 'fallenoneart-music-player-sync';
 const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
@@ -817,10 +1437,11 @@ const DEFAULT_CONFIG = {
   compactArtSize:120,compactRightGap:6,compactTitleSize:16,compactArtistSize:11,compactEqBarsHeight:16,compactEqBarWidth:2,compactProgressHeight:6
 };
 
-const DEFAULT_DASH_THEME = {bgType:'gradient',bgColor1:'#0a0915',gradColor1:'#7de8c8',gradColor2:'#c8a2ff',gradAngle:135,bgImageUrl:'',bgPosition:'cover'};
+const DEFAULT_DASH_THEME = {bgType:'gradient',bgColor1:'#0a0915',gradColor1:'#7de8c8',gradColor2:'#c8a2ff',gradAngle:135,bgImageUrl:'',bgImageSourceType:'url',bgImageUpload:'',bgPosition:'cover'};
 
 let config = { ...DEFAULT_CONFIG };
 let dashTheme = { ...DEFAULT_DASH_THEME };
+let previewOpacity = 1;
 let bc = null;
 try{ bc = new BroadcastChannel(BROADCAST_NAME); }catch(e){}
 
@@ -833,7 +1454,43 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
   });
 });
 
+// Show/Hide Client ID toggle
+document.getElementById('btnToggleClientId').addEventListener('click', ()=>{
+  const input = document.getElementById('inputClientId');
+  const isPassword = input.type === 'password';
+  input.type = isPassword ? 'text' : 'password';
+  document.getElementById('btnToggleClientId').textContent = isPassword ? '🙈' : '👁';
+});
+
+// Copy Redirect URI button
+document.getElementById('btnCopyRedirectUri').addEventListener('click', ()=>{
+  const url = document.getElementById('inputRedirectUri').value;
+  if(url){
+    navigator.clipboard.writeText(url).then(()=>{
+      showToast('Redirect URI copied to clipboard ✓');
+    }).catch(()=>{
+      showToast('Failed to copy URL');
+    });
+  }
+});
+
+// Copy OBS URL button
+document.getElementById('btnCopyOBSURL').addEventListener('click', ()=>{
+  const url = document.getElementById('inputOBSURL').value;
+  if(url){
+    navigator.clipboard.writeText(url).then(()=>{
+      showToast('OBS URL copied to clipboard ✓');
+    }).catch(()=>{
+      showToast('Failed to copy URL');
+    });
+  }
+});
+
 function loadConfig(){try{const raw = localStorage.getItem(LS_CONFIG_KEY);if(raw) config = { ...DEFAULT_CONFIG, ...JSON.parse(raw) }}catch(e){}}
+function loadPreviewOpacity(){try{const saved = localStorage.getItem(LS_PREVIEW_OPACITY_KEY);if(saved) previewOpacity = parseFloat(saved)}catch(e){}}
+function savePreviewOpacity(){localStorage.setItem(LS_PREVIEW_OPACITY_KEY, previewOpacity.toString())}
+function applyPreviewOpacity(){document.documentElement.style.setProperty('--preview-opacity', previewOpacity);document.getElementById('inputPreviewOpacity').value = previewOpacity;document.getElementById('valPreviewOpacity').textContent = (previewOpacity * 100).toFixed(0) + '%'}
+
 function populateForm(){
   document.getElementById('toggleShowContainerBackground').checked = config.showContainerBackground;
   document.getElementById('inputTitleColor').value = config.titleColor;
@@ -885,14 +1542,22 @@ function populateForm(){
 function loadDashTheme(){try{const raw = localStorage.getItem(LS_DASH_THEME_KEY);if(raw) dashTheme = { ...DEFAULT_DASH_THEME, ...JSON.parse(raw) }}catch(e){}}
 function saveDashTheme(){localStorage.setItem(LS_DASH_THEME_KEY, JSON.stringify(dashTheme))}
 function applyDashTheme(){
+  document.documentElement.style.setProperty('--nav-text-color', dashTheme.navTextColor);
   const body = document.body;
   if(dashTheme.bgType === 'solid'){body.style.background = dashTheme.bgColor1}
   else if(dashTheme.bgType === 'gradient'){body.style.background = `linear-gradient(${dashTheme.gradAngle}deg, ${dashTheme.gradColor1}33, ${dashTheme.gradColor2}33), var(--bg-deep)`}
-  else if(dashTheme.bgType === 'image' && dashTheme.bgImageUrl){const posMap = {cover:'background-size:cover; background-repeat:no-repeat; background-position:center;',contain:'background-size:contain; background-repeat:no-repeat; background-position:center;',center:'background-size:auto; background-repeat:no-repeat; background-position:center;',repeat:'background-size:auto; background-repeat:repeat; background-position:top left;'};body.setAttribute('style', `background-image:url('${dashTheme.bgImageUrl}'); ${posMap[dashTheme.bgPosition] || posMap.cover}`)}
+  else if(dashTheme.bgType === 'image'){
+    const bgSource = dashTheme.bgImageSourceType === 'upload' && dashTheme.bgImageUpload ? dashTheme.bgImageUpload : dashTheme.bgImageUrl;
+    if(bgSource){
+      const posMap = {cover:'background-size:cover; background-repeat:no-repeat; background-position:center;',contain:'background-size:contain; background-repeat:no-repeat; background-position:center;',center:'background-size:auto; background-repeat:no-repeat; background-position:center;',repeat:'background-size:auto; background-repeat:repeat; background-position:top left;'};
+      body.setAttribute('style', `background-image:url('${bgSource}'); ${posMap[dashTheme.bgPosition] || posMap.cover}; transition: background-color 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background-image 0.8s ease;`)
+    }
+  }
   document.querySelectorAll('[data-dash-choice]').forEach(card=>{card.classList.toggle('selected', dashTheme[card.dataset.dashChoice] === card.dataset.value)});
   document.getElementById('fieldBgSolid').style.display = dashTheme.bgType === 'solid' ? 'block' : 'none';
   document.getElementById('fieldBgGradient').style.display = dashTheme.bgType === 'gradient' ? 'block' : 'none';
   document.getElementById('fieldBgImage').classList.toggle('hidden', dashTheme.bgType !== 'image');
+  updateImageSourceToggle();
 }
 
 function populateDashThemeForm(){
@@ -903,10 +1568,164 @@ function populateDashThemeForm(){
   document.getElementById('valDashGradAngle').textContent = dashTheme.gradAngle + '°';
   document.getElementById('inputDashBgImageUrl').value = dashTheme.bgImageUrl;
   document.getElementById('inputDashBgPosition').value = dashTheme.bgPosition;
+  document.getElementById('toggleBgImageSource').checked = dashTheme.bgImageSourceType === 'upload';
+  updateImageSourceToggle();
 }
+
+function updateImageSourceToggle(){
+  const isUpload = document.getElementById('toggleBgImageSource').checked;
+  document.getElementById('bgImageUrlSection').classList.toggle('hidden', isUpload);
+  document.getElementById('bgImageUploadSection').classList.toggle('hidden', !isUpload);
+}
+
+document.getElementById('toggleBgImageSource').addEventListener('change', ()=>{
+  dashTheme.bgImageSourceType = document.getElementById('toggleBgImageSource').checked ? 'upload' : 'url';
+  updateImageSourceToggle();
+  applyDashTheme();
+  saveDashTheme();
+});
+
+function formatFileSize(bytes){
+  if(bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function extractImageColors(dataUrl){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = ()=>{
+      try{
+        const canvas = document.createElement('canvas');
+        canvas.width = 150;
+        canvas.height = 150;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, 150, 150);
+        
+        const imageData = ctx.getImageData(0, 0, 150, 150);
+        const data = imageData.data;
+        
+        const colorMap = {};
+        for(let i = 0; i < data.length; i += 4){
+          const r = data[i];
+          const g = data[i+1];
+          const b = data[i+2];
+          const a = data[i+3];
+          if(a < 125) continue;
+          
+          const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+          if(brightness < 30 || brightness > 230) continue;
+          
+          const hex = `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+          colorMap[hex] = (colorMap[hex] || 0) + 1;
+        }
+        
+        const sorted = Object.entries(colorMap)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+          .map(entry => entry[0]);
+        
+        resolve(sorted);
+      }catch(e){
+        resolve(['#7de8c8', '#c8a2ff']);
+      }
+    };
+    img.onerror = ()=> resolve(['#7de8c8', '#c8a2ff']);
+    img.src = dataUrl;
+  });
+}
+
+function handleFile(file){
+  if(!file.type.startsWith('image/')){showToast('Please select an image file.');return}
+  if(file.size > 5242880){showToast('File too large (max 5MB)');return}
+  const reader = new FileReader();
+  reader.onload = async (evt)=>{
+    dashTheme.bgImageUpload = evt.target.result;
+    
+    const colors = await extractImageColors(evt.target.result);
+    if(colors.length >= 2){
+      dashTheme.gradColor1 = colors[0];
+      dashTheme.gradColor2 = colors[colors.length > 1 ? 1 : 0];
+      dashTheme.navTextColor = colors[colors.length > 2 ? 2 : colors[0]];
+      
+      document.getElementById('inputDashGradColor1').value = dashTheme.gradColor1;
+      document.getElementById('inputDashGradColor2').value = dashTheme.gradColor2;
+      
+      showToast('Colors extracted & applied ✓');
+    }
+    
+    applyDashTheme();
+    saveDashTheme();
+    showUploadPreview(file, evt.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function showUploadPreview(file, dataUrl){
+  const zone = document.getElementById('uploadZone');
+  const preview = document.getElementById('uploadPreview');
+  const img = document.getElementById('previewImg');
+  const filename = document.getElementById('previewFilename');
+  const size = document.getElementById('previewSize');
+  
+  img.src = dataUrl;
+  filename.textContent = file.name;
+  size.textContent = formatFileSize(file.size);
+  
+  zone.style.display = 'none';
+  preview.classList.remove('hidden');
+}
+
+function clearUploadPreview(){
+  const zone = document.getElementById('uploadZone');
+  const preview = document.getElementById('uploadPreview');
+  const fileInput = document.getElementById('inputDashBgImageUpload');
+  
+  fileInput.value = '';
+  dashTheme.bgImageUpload = '';
+  applyDashTheme();
+  saveDashTheme();
+  
+  zone.style.display = 'block';
+  preview.classList.add('hidden');
+  showToast('Wallpaper cleared');
+}
+
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('inputDashBgImageUpload');
+const uploadClear = document.getElementById('uploadClear');
+
+uploadZone.addEventListener('click', ()=> fileInput.click());
+
+fileInput.addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(file) handleFile(file);
+});
+
+uploadZone.addEventListener('dragover', (e)=>{
+  e.preventDefault();
+  uploadZone.classList.add('drag-over');
+});
+
+uploadZone.addEventListener('dragleave', ()=>{
+  uploadZone.classList.remove('drag-over');
+});
+
+uploadZone.addEventListener('drop', (e)=>{
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if(file) handleFile(file);
+});
+
+uploadClear.addEventListener('click', clearUploadPreview);
 
 document.querySelectorAll('#panel-theme input, #panel-theme select').forEach(el=>{
   el.addEventListener('input', ()=>{
+    if(el.id === 'toggleBgImageSource' || el.id === 'inputDashBgImageUpload') return;
     dashTheme.bgColor1 = document.getElementById('inputDashBgColor1').value;
     dashTheme.gradColor1 = document.getElementById('inputDashGradColor1').value;
     dashTheme.gradColor2 = document.getElementById('inputDashGradColor2').value;
@@ -924,6 +1743,12 @@ document.querySelectorAll('[data-dash-choice]').forEach(card=>{
 });
 
 document.getElementById('btnResetDashTheme').addEventListener('click', ()=>{dashTheme = { ...DEFAULT_DASH_THEME };populateDashThemeForm();applyDashTheme();saveDashTheme();showToast('Dashboard theme reset ✓')});
+
+document.getElementById('inputPreviewOpacity').addEventListener('input', (e)=>{
+  previewOpacity = parseFloat(e.target.value);
+  applyPreviewOpacity();
+  savePreviewOpacity();
+});
 
 function updateChoiceCards(){document.querySelectorAll('.choice-card').forEach(card=>{const key = card.dataset.choice;card.classList.toggle('selected', config[key] === card.dataset.value)})}
 function updateRangeLabels(){
@@ -995,6 +1820,8 @@ function readFormIntoConfig(){
 
 function pushLivePreview(){const frame = document.getElementById('previewFrame');if(frame.contentWindow) frame.contentWindow.postMessage({ type:'config-update', config }, '*')}
 
+function getOBSUrl(){return window.location.origin + '/music-player.html'}
+
 document.querySelectorAll('#panel-layout input, #panel-layout select, #panel-compact input, #panel-compact select, #panel-appearance input, #panel-appearance select, #panel-metadata input, #panel-metadata select, #panel-behavior input, #panel-behavior select').forEach(el=>{
   el.addEventListener('input', ()=>{readFormIntoConfig();updateRangeLabels();pushLivePreview()});
 });
@@ -1018,16 +1845,21 @@ async function startSpotifyLogin(){const clientId = document.getElementById('inp
 async function exchangeCodeForToken(code){const verifier = localStorage.getItem(LS_PKCE_KEY);const clientId = localStorage.getItem(LS_CLIENT_ID_KEY) || document.getElementById('inputClientId').value.trim();const body = new URLSearchParams({client_id: clientId,grant_type: 'authorization_code',code,redirect_uri: getRedirectUri(),code_verifier: verifier});const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST',headers:{ 'Content-Type':'application/x-www-form-urlencoded' },body});if(!res.ok){ throw new Error('Token exchange failed: ' + res.status); }const data = await res.json();const auth = {clientId,redirectUri: getRedirectUri(),accessToken: data.access_token,refreshToken: data.refresh_token,expiresAt: Date.now() + (data.expires_in * 1000)};saveAuth(auth);localStorage.removeItem(LS_PKCE_KEY);return auth}
 async function refreshAccessToken(auth){const body = new URLSearchParams({client_id: auth.clientId,grant_type: 'refresh_token',refresh_token: auth.refreshToken});const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST',headers:{ 'Content-Type':'application/x-www-form-urlencoded' },body});if(!res.ok) throw new Error('Refresh failed: ' + res.status);const data = await res.json();const updated = { ...auth, accessToken:data.access_token,refreshToken:data.refresh_token || auth.refreshToken,expiresAt: Date.now() + (data.expires_in*1000) };saveAuth(updated);return updated}
 async function getValidAccessToken(){let auth = getAuth();if(!auth) return null;if(!auth.expiresAt || Date.now() > (auth.expiresAt - 60000)){try{ auth = await refreshAccessToken(auth); }catch(e){ return null; }}return auth.accessToken}
-async function refreshConnectionStatus(){const auth = getAuth();const led = document.getElementById('statusLed');const text = document.getElementById('statusText');const connectBtn = document.getElementById('btnConnect');const disconnectBtn = document.getElementById('btnDisconnect');const controls = document.getElementById('playbackControls');if(!auth){led.classList.remove('on');text.textContent = 'Not connected yet.';connectBtn.style.display = 'inline-block';disconnectBtn.style.display = 'none';controls.style.display = 'none';return}document.getElementById('inputClientId').value = auth.clientId;connectBtn.style.display = 'none';disconnectBtn.style.display = 'inline-block';controls.style.display = 'flex';const token = await getValidAccessToken();if(!token){led.classList.remove('on');text.innerHTML = '<strong>Connection expired.</strong> Reconnect below.';connectBtn.style.display = 'inline-block';return}led.classList.add('on');try{const res = await fetch(SPOTIFY_ME_URL, { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok){const me = await res.json();text.innerHTML = `Connected as <strong>${me.display_name || me.id}</strong>.`}else{text.innerHTML = '<strong>Connected.</strong>'}}catch(e){text.innerHTML = '<strong>Connected.</strong>'}}
+async function refreshConnectionStatus(){const auth = getAuth();const led = document.getElementById('statusLed');const text = document.getElementById('statusText');const connectBtn = document.getElementById('btnConnect');const disconnectBtn = document.getElementById('btnDisconnect');const controls = document.getElementById('playbackControls');if(!auth){led.classList.remove('on');text.textContent = 'Not connected yet.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');controls.style.display = 'none';return}document.getElementById('inputClientId').value = auth.clientId;connectBtn.classList.add('hidden');disconnectBtn.classList.remove('hidden');controls.style.display = 'flex';const token = await getValidAccessToken();if(!token){led.classList.remove('on');text.innerHTML = '<strong>Connection expired.</strong> Reconnect below.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');return}led.classList.add('on');try{const res = await fetch(SPOTIFY_ME_URL, { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok){const me = await res.json();text.innerHTML = `Connected as <strong>${me.display_name || me.id}</strong>.`}else{text.innerHTML = '<strong>Connected.</strong>'}}catch(e){text.innerHTML = '<strong>Connected.</strong>'}}
 document.getElementById('btnConnect').addEventListener('click', startSpotifyLogin);
-document.getElementById('btnDisconnect').addEventListener('click', ()=>{localStorage.removeItem(LS_AUTH_KEY);if(bc) bc.postMessage({ type:'auth-cleared' });refreshConnectionStatus();showToast('Disconnected from Spotify.')});
+document.getElementById('btnDisconnect').addEventListener('click', async ()=>{
+  localStorage.removeItem(LS_AUTH_KEY);
+  if(bc) bc.postMessage({ type:'auth-cleared' });
+  await refreshConnectionStatus();
+  showToast('Disconnected from Spotify ✓');
+});
 async function playbackAction(method, path){const token = await getValidAccessToken();if(!token){ showToast('Not connected to Spotify.'); return; }try{const res = await fetch(`https://api.spotify.com/v1/me/player/${path}`, { method, headers:{ 'Authorization': `Bearer ${token}` } });if(res.status === 404){ showToast('No active Spotify device found.'); }}catch(e){ showToast('Playback control failed.'); }}
 let isPlayingGuess = true;
 document.getElementById('btnPlayPause').addEventListener('click', ()=>{playbackAction('PUT', isPlayingGuess ? 'pause' : 'play');isPlayingGuess = !isPlayingGuess});
 document.getElementById('btnPrev').addEventListener('click', ()=> playbackAction('POST','previous'));
 document.getElementById('btnNext').addEventListener('click', ()=> playbackAction('POST','next'));
 async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
-(async function init(){loadConfig();populateForm();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme()})();
+(async function init(){loadConfig();populateForm();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity()})();
 </script>
 </body>
 </html>
