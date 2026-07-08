@@ -69,13 +69,6 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   flex-direction:column;
   gap:2px;
   border-right:1px solid var(--border-medium);
-  overflow-y:auto;
-  /* Hide scrollbar for all browsers */
-  scrollbar-width:none; /* Firefox */
-  -ms-overflow-style:none; /* IE10+ */
-}
-.sidebar::-webkit-scrollbar {
-  display:none; /* Chrome, Safari, Edge */
 }
 
 .brand{
@@ -157,13 +150,17 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   padding:36px 40px 80px; 
   overflow-y:auto; 
   background:linear-gradient(180deg, transparent, rgba(125,232,200,0.02));
-  /* Hide scrollbar for all browsers */
-  scrollbar-width:none; /* Firefox */
-  -ms-overflow-style:none; /* IE10+ */
 }
-.main::-webkit-scrollbar {
-  display:none; /* Chrome, Safari, Edge */
+@supports (scrollbar-width: thin) {
+  .main{
+    scrollbar-width:thin;
+    scrollbar-color:transparent transparent;
+  }
 }
+.main::-webkit-scrollbar{width:8px;}
+.main::-webkit-scrollbar-track{background:transparent;}
+.main::-webkit-scrollbar-thumb{background:transparent; border-radius:4px;}
+.main::-webkit-scrollbar-thumb:hover{background:transparent;}
 
 .panel{ display:none; max-width:660px; }
 .panel.active{ display:block; animation:fadein-adv .4s cubic-bezier(0.4,0,0.2,1); }
@@ -610,13 +607,27 @@ button.icon-btn:active{
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  /* Hide scrollbar for all browsers */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE10+ */
+}
+
+@supports (scrollbar-width: thin) {
+  .preview-col {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
 }
 
 .preview-col::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  width: 8px;
+}
+.preview-col::-webkit-scrollbar-track {
+  background: transparent;
+}
+.preview-col::-webkit-scrollbar-thumb {
+  background: transparent; 
+  border-radius: 4px;
+}
+.preview-col::-webkit-scrollbar-thumb:hover {
+  background: transparent;
 }
 
 .preview-col h3 { 
@@ -1900,7 +1911,14 @@ async function startSpotifyLogin(){const clientId = document.getElementById('inp
 async function exchangeCodeForToken(code){const verifier = localStorage.getItem(LS_PKCE_KEY);const clientId = localStorage.getItem(LS_CLIENT_ID_KEY) || document.getElementById('inputClientId').value.trim();const body = new URLSearchParams({client_id: clientId,grant_type: 'authorization_code',code,redirect_uri: getRedirectUri(),code_verifier: verifier});const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST',headers:{ 'Content-Type':'application/x-www-form-urlencoded' },body});if(!res.ok){ throw new Error('Token exchange failed: ' + res.status); }const data = await res.json();const auth = {clientId,redirectUri: getRedirectUri(),accessToken: data.access_token,refreshToken: data.refresh_token,expiresAt: Date.now() + (data.expires_in * 1000)};saveAuth(auth);localStorage.removeItem(LS_PKCE_KEY);return auth}
 async function refreshAccessToken(auth){const body = new URLSearchParams({client_id: auth.clientId,grant_type: 'refresh_token',refresh_token: auth.refreshToken});const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST',headers:{ 'Content-Type':'application/x-www-form-urlencoded' },body});if(!res.ok) throw new Error('Refresh failed: ' + res.status);const data = await res.json();const updated = { ...auth, accessToken:data.access_token,refreshToken:data.refresh_token || auth.refreshToken,expiresAt: Date.now() + (data.expires_in*1000) };saveAuth(updated);return updated}
 async function getValidAccessToken(){let auth = getAuth();if(!auth) return null;if(!auth.expiresAt || Date.now() > (auth.expiresAt - 60000)){try{ auth = await refreshAccessToken(auth); }catch(e){ return null; }}return auth.accessToken}
-async function refreshConnectionStatus(){const auth = getAuth();const led = document.getElementById('statusLed');const text = document.getElementById('statusText');const connectBtn = document.getElementById('btnConnect');const disconnectBtn = document.getElementById('btnDisconnect');const controls = document.getElementById('playbackControls');if(!auth){led.classList.remove('on');text.textContent = 'Not connected yet.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');controls.style.display = 'none';return}document.getElementById('inputClientId').value = auth.clientId;connectBtn.classList.add('hidden');disconnectBtn.classList.remove('hidden');controls.style.display = 'flex';const token = await getValidAccessToken();if(!token){led.classList.remove('on');text.innerHTML = '<strong>Connection expired.</strong> Reconnect below.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');return}led.classList.add('on');try{const res = await fetch(SPOTIFY_ME_URL, { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok){const me = await res.json();text.innerHTML = `Connected as <strong>${me.display_name || me.id}</strong>.`}else{text.innerHTML = '<strong>Connected.</strong>'}}catch(e){text.innerHTML = '<strong>Connected.</strong>'}}
+
+// NEW: Get actual playback state from Spotify
+async function getPlaybackState(){const token = await getValidAccessToken();if(!token) return null;try{const res = await fetch('https://api.spotify.com/v1/me/player', { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok) return await res.json();return null}catch(e){return null}}
+
+// NEW: Update play/pause icon based on actual Spotify state
+async function updatePlayPauseIcon(){const state = await getPlaybackState();const btn = document.getElementById('btnPlayPause');if(!state || !state.is_playing){btn.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>'}else{btn.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>'}updatePlayPauseIcon.lastState = state?.is_playing}
+
+async function refreshConnectionStatus(){const auth = getAuth();const led = document.getElementById('statusLed');const text = document.getElementById('statusText');const connectBtn = document.getElementById('btnConnect');const disconnectBtn = document.getElementById('btnDisconnect');const controls = document.getElementById('playbackControls');if(!auth){led.classList.remove('on');text.textContent = 'Not connected yet.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');controls.style.display = 'none';return}document.getElementById('inputClientId').value = auth.clientId;connectBtn.classList.add('hidden');disconnectBtn.classList.remove('hidden');controls.style.display = 'flex';const token = await getValidAccessToken();if(!token){led.classList.remove('on');text.innerHTML = '<strong>Connection expired.</strong> Reconnect below.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');return}led.classList.add('on');updatePlayPauseIcon();try{const res = await fetch(SPOTIFY_ME_URL, { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok){const me = await res.json();text.innerHTML = `Connected as <strong>${me.display_name || me.id}</strong>.`}else{text.innerHTML = '<strong>Connected.</strong>'}}catch(e){text.innerHTML = '<strong>Connected.</strong>'}}
 document.getElementById('btnConnect').addEventListener('click', startSpotifyLogin);
 document.getElementById('btnDisconnect').addEventListener('click', async ()=>{
   localStorage.removeItem(LS_AUTH_KEY);
@@ -1908,13 +1926,12 @@ document.getElementById('btnDisconnect').addEventListener('click', async ()=>{
   await refreshConnectionStatus();
   showToast('Disconnected from Spotify ✓');
 });
-async function playbackAction(method, path){const token = await getValidAccessToken();if(!token){ showToast('Not connected to Spotify.'); return; }try{const res = await fetch(`https://api.spotify.com/v1/me/player/${path}`, { method, headers:{ 'Authorization': `Bearer ${token}` } });if(res.status === 404){ showToast('No active Spotify device found.'); }}catch(e){ showToast('Playback control failed.'); }}
-let isPlayingGuess = true;
-document.getElementById('btnPlayPause').addEventListener('click', ()=>{playbackAction('PUT', isPlayingGuess ? 'pause' : 'play');isPlayingGuess = !isPlayingGuess});
+async function playbackAction(method, path){const token = await getValidAccessToken();if(!token){ showToast('Not connected to Spotify.'); return; }try{const res = await fetch(`https://api.spotify.com/v1/me/player/${path}`, { method, headers:{ 'Authorization': `Bearer ${token}` } });if(res.status === 404){ showToast('No active Spotify device found.'); }else{setTimeout(updatePlayPauseIcon, 300)}}catch(e){ showToast('Playback control failed.'); }}
+document.getElementById('btnPlayPause').addEventListener('click', ()=> playbackAction('PUT', updatePlayPauseIcon.lastState ? 'pause' : 'play'));
 document.getElementById('btnPrev').addEventListener('click', ()=> playbackAction('POST','previous'));
 document.getElementById('btnNext').addEventListener('click', ()=> playbackAction('POST','next'));
 async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
-(async function init(){loadConfig();populateForm();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity()})();
+(async function init(){loadConfig();populateForm();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();setInterval(updatePlayPauseIcon, 2000)})();
 </script>
 </body>
 </html>
