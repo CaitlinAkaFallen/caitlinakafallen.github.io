@@ -6,6 +6,9 @@
 <title>FallenOneArt — Music Player Control Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+ <!-- Icons -->
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
 <style>
 
 :root{
@@ -61,7 +64,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
 @media (max-width:1100px){ .shell{ grid-template-columns:1fr; } }
 
 .sidebar{
-  background:linear-gradient(180deg, rgba(22,20,34,0.8), rgba(15,12,25,0.9));
+  background:linear-gradient(180deg, rgba(22, 20, 34, 0.3rgba(15, 12, 25, 0.315),0.9));
   -webkit-backdrop-filter:blur(10px);
   backdrop-filter:blur(10px);
   padding:28px 16px;
@@ -939,6 +942,115 @@ button.icon-btn:active{
 
 .hidden{ display:none !important; }
 
+/* ==========================================
+   NEW ADDON: NOW PLAYING & QUEUE STYLES 
+   ========================================== */
+.now-playing-large-card {
+  background: var(--bg-panel-elevated);
+  border: 1px solid var(--border-medium);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  box-shadow: var(--shadow-md);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.now-playing-large-card img {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: var(--glow-primary);
+}
+.now-playing-large-info {
+  flex: 1;
+  min-width: 0;
+}
+.now-playing-large-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.now-playing-large-artist {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.queue-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.queue-row-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.queue-row-item:hover {
+  background: rgba(125,232,200,0.08);
+  border-color: var(--accent-primary);
+  transform: translateX(4px);
+}
+.queue-row-index {
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  width: 16px;
+  text-align: center;
+}
+.queue-row-item img {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.queue-row-details {
+  flex: 1;
+  min-width: 0;
+}
+.queue-row-title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.queue-row-artist {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.queue-row-duration {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-secondary);
+  padding-right: 4px;
+}
+
 </style>
 </head>
 <body>
@@ -951,12 +1063,13 @@ button.icon-btn:active{
       <span>FALLENONEART<br><small>MUSIC PLAYER Dashboard</small></span>
     </div>
     <button class="nav-btn active" data-tab="connection"><span class="num">01</span> Connection</button>
-    <button class="nav-btn" data-tab="layout"><span class="num">02</span> Layout & Shapes</button>
-    <button class="nav-btn" data-tab="compact"><span class="num">03</span> Compact Layout</button>
-    <button class="nav-btn" data-tab="appearance"><span class="num">04</span> Appearance</button>
-    <button class="nav-btn" data-tab="metadata"><span class="num">05</span> Metadata & Progress</button>
-    <button class="nav-btn" data-tab="behavior"><span class="num">06</span> Behavior</button>
-    <button class="nav-btn" data-tab="theme"><span class="num">07</span> Dashboard Theme</button>
+    <button class="nav-btn" data-tab="queue"><span class="num">02</span> Now Playing & Queue</button>
+    <button class="nav-btn" data-tab="layout"><span class="num">03</span> Layout & Shapes</button>
+    <button class="nav-btn" data-tab="compact"><span class="num">04</span> Compact Layout</button>
+    <button class="nav-btn" data-tab="appearance"><span class="num">05</span> Appearance</button>
+    <button class="nav-btn" data-tab="metadata"><span class="num">06</span> Metadata & Progress</button>
+    <button class="nav-btn" data-tab="behavior"><span class="num">07</span> Behavior</button>
+    <button class="nav-btn" data-tab="theme"><span class="num">08</span> Dashboard Theme</button>
   </nav>
 
   <main class="main">
@@ -1021,6 +1134,33 @@ button.icon-btn:active{
       <button type="button" class="primary-btn" id="btnConnect">Connect Spotify</button>
       <button type="button" class="primary-btn hidden" id="btnDisconnect">Disconnect Spotify</button>
 
+      
+    </section>
+
+    <!-- NEW ADDON PANEL: QUEUE & NOW PLAYING -->
+    <section class="panel" id="panel-queue">
+      <h2>Now Playing &amp; Queue</h2>
+      <p class="sub">View what is currently broadcasting and choose from the upcoming tracks to instantly skip ahead.</p>
+
+      <div class="field">
+        <label>Currently Playing</label>
+        <div class="now-playing-large-card" id="queueActiveTrack">
+          <div class="status-placeholder">
+            Connecting to track stream...
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Upcoming Queue</h3>
+        <div class="sub">Next 5-10 tracks parsed from your Spotify session. Click a row to skip directly to that track.</div>
+      </div>
+
+      <div class="queue-list-container" id="queueListTracks">
+        <div class="status-placeholder">
+          Queue stream idle.
+        </div>
+      </div>
       <div class="spotify-controls" id="playbackControls">
         <button class="icon-btn" id="btnPrev" title="Previous">
           <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1918,6 +2058,97 @@ async function getPlaybackState(){const token = await getValidAccessToken();if(!
 // NEW: Update play/pause icon based on actual Spotify state
 async function updatePlayPauseIcon(){const state = await getPlaybackState();const btn = document.getElementById('btnPlayPause');if(!state || !state.is_playing){btn.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>'}else{btn.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>'}updatePlayPauseIcon.lastState = state?.is_playing}
 
+/* ==========================================
+   NEW ADDON: FETCH & UPDATE QUEUE REAL-TIME
+   ========================================== */
+async function fetchAndUpdateQueue() {
+  const token = await getValidAccessToken();
+  if (!token) return;
+  
+  try {
+    const res = await fetch('https://api.spotify.com/v1/me/player/queue', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    
+    // 1. Update Currently Playing View Card
+    const cardActive = document.getElementById('queueActiveTrack');
+    if (data.currently_playing) {
+      const activeTrack = data.currently_playing;
+      const albumArt = activeTrack.album?.images?.[0]?.url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      const parsedArtists = activeTrack.artists?.map(a => a.name).join(', ') || 'Unknown Artist';
+      
+      cardActive.innerHTML = `
+        <img src="${albumArt}" alt="Album Cover">
+        <div class="now-playing-large-info">
+          <div class="now-playing-large-title">${activeTrack.name}</div>
+          <div class="now-playing-large-artist">${parsedArtists}</div>
+        </div>
+      `;
+    } else {
+      cardActive.innerHTML = `<div style="text-align:center; width:100%; color:var(--text-secondary); font-family:var(--font-mono); font-size:12px;">Nothing streaming right now.</div>`;
+    }
+    
+    // 2. Update Upcoming Queue Row Layout (Capped to next 10 songs)
+    const tracksContainer = document.getElementById('queueListTracks');
+    if (data.queue && data.queue.length > 0) {
+      tracksContainer.innerHTML = '';
+      const displayQueueLimit = data.queue.slice(0, 10);
+      
+      displayQueueLimit.forEach((track, index) => {
+        const thumbArt = track.album?.images?.[2]?.url || track.album?.images?.[0]?.url || '';
+        const trackArtists = track.artists?.map(a => a.name).join(', ') || 'Unknown Artist';
+        const mins = Math.floor(track.duration_ms / 60000);
+        const secs = Math.floor((track.duration_ms % 60000) / 1000).toString().padStart(2, '0');
+        
+        const row = document.createElement('div');
+        row.className = 'queue-row-item';
+        row.innerHTML = `
+          <div class="queue-row-index">${(index + 1).toString().padStart(2, '0')}</div>
+          <img src="${thumbArt}" alt="Art">
+          <div class="queue-row-details">
+            <div class="queue-row-title">${track.name}</div>
+            <div class="queue-row-artist">${trackArtists}</div>
+          </div>
+          <div class="queue-row-duration">${mins}:${secs}</div>
+        `;
+        // Click action plays track directly via custom index request helper
+        row.addEventListener('click', () => jumpToQueueTrack(track.uri));
+        tracksContainer.appendChild(row);
+      });
+    } else {
+      tracksContainer.innerHTML = `<div style="text-align:center; color:var(--text-tertiary); padding:20px; font-family:var(--font-mono); font-size:12px;">No upcoming tracks waiting in your Spotify queue.</div>`;
+    }
+  } catch(e) {
+    console.error("Queue execution interval failed dynamically: ", e);
+  }
+}
+
+// Skips straight to selected item by pushing item to context playback handler
+async function jumpToQueueTrack(trackUri) {
+  const token = await getValidAccessToken();
+  if (!token) { showToast('Not connected to Spotify.'); return; }
+  try {
+    const res = await fetch('https://api.spotify.com/v1/me/player/play', {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ uris: [trackUri] })
+    });
+    if (res.ok) {
+      showToast('Jumping to track ✓');
+      setTimeout(fetchAndUpdateQueue, 400);
+    } else {
+      showToast('Unable to skip directly. Premium account required.');
+    }
+  } catch(e) {
+    showToast('Playback request communication drop.');
+  }
+}
+
 async function refreshConnectionStatus(){const auth = getAuth();const led = document.getElementById('statusLed');const text = document.getElementById('statusText');const connectBtn = document.getElementById('btnConnect');const disconnectBtn = document.getElementById('btnDisconnect');const controls = document.getElementById('playbackControls');if(!auth){led.classList.remove('on');text.textContent = 'Not connected yet.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');controls.style.display = 'none';return}document.getElementById('inputClientId').value = auth.clientId;connectBtn.classList.add('hidden');disconnectBtn.classList.remove('hidden');controls.style.display = 'flex';const token = await getValidAccessToken();if(!token){led.classList.remove('on');text.innerHTML = '<strong>Connection expired.</strong> Reconnect below.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');return}led.classList.add('on');updatePlayPauseIcon();try{const res = await fetch(SPOTIFY_ME_URL, { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok){const me = await res.json();text.innerHTML = `Connected as <strong>${me.display_name || me.id}</strong>.`}else{text.innerHTML = '<strong>Connected.</strong>'}}catch(e){text.innerHTML = '<strong>Connected.</strong>'}}
 document.getElementById('btnConnect').addEventListener('click', startSpotifyLogin);
 document.getElementById('btnDisconnect').addEventListener('click', async ()=>{
@@ -1931,7 +2162,12 @@ document.getElementById('btnPlayPause').addEventListener('click', ()=> playbackA
 document.getElementById('btnPrev').addEventListener('click', ()=> playbackAction('POST','previous'));
 document.getElementById('btnNext').addEventListener('click', ()=> playbackAction('POST','next'));
 async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
-(async function init(){loadConfig();populateForm();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();setInterval(updatePlayPauseIcon, 2000)})();
+(async function init(){loadConfig();populateForm();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();
+  // Polling loops executing strictly every 2 seconds for status & data additions
+  setInterval(updatePlayPauseIcon, 2000);
+  setInterval(fetchAndUpdateQueue, 2000);
+  fetchAndUpdateQueue();
+})();
 </script>
 </body>
 </html>
