@@ -32,6 +32,13 @@
   --shadow-lg:0 16px 48px rgba(0,0,0,0.5);
   --glow-primary:0 0 20px rgba(125,232,200,0.3);
   --glow-secondary:0 0 20px rgba(200,162,255,0.3);
+  --dash-panel-opacity:0.55;
+  --dash-border-opacity:0.15;
+  --dash-blur:10px;
+  --dash-glow-intensity:1;
+  --dash-corner-radius:12px;
+  --dash-sidebar-opacity:0.5;
+  --dash-transition-speed:0.25s;
 }
 
 *{box-sizing:border-box;}
@@ -65,13 +72,13 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
 
 .sidebar{
   background:linear-gradient(180deg, rgba(22, 20, 34, 0.3rgba(15, 12, 25, 0.315),0.9));
-  -webkit-backdrop-filter:blur(10px);
-  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(var(--dash-blur));
+  backdrop-filter:blur(var(--dash-blur));
   padding:28px 16px;
   display:flex;
   flex-direction:column;
   gap:2px;
-  border-right:1px solid var(--border-medium);
+  border-right:1px solid rgba(255,255,255,var(--dash-border-opacity));
 }
 
 .brand{
@@ -85,7 +92,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   gap:12px;
   padding:12px 14px 24px;
   background:linear-gradient(135deg, rgba(125,232,200,0.05), rgba(200,162,255,0.03));
-  border-radius:12px;
+  border-radius:var(--dash-corner-radius);
   margin-bottom:8px;
 }
 .brand .dot{
@@ -116,12 +123,12 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   font-size:12px;
   letter-spacing:0.5px;
   padding:12px 14px;
-  border-radius:10px;
+  border-radius:var(--dash-corner-radius);
   cursor:pointer;
   display:flex;
   align-items:center;
   gap:10px;
-  transition:all .25s cubic-bezier(0.4,0,0.2,1);
+  transition:all var(--dash-transition-speed) cubic-bezier(0.4,0,0.2,1);
   position:relative;
   overflow:hidden;
 }
@@ -131,7 +138,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   inset:0;
   background:linear-gradient(90deg, transparent, rgba(125,232,200,0.1), transparent);
   opacity:0;
-  transition:opacity .25s ease;
+  transition:opacity var(--dash-transition-speed) ease;
 }
 .nav-btn:hover{
   color:var(--text-primary);
@@ -144,7 +151,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   color:var(--accent-primary);
   background:linear-gradient(135deg, rgba(125,232,200,0.15), rgba(200,162,255,0.08));
   border:1px solid rgba(125,232,200,0.4);
-  box-shadow:var(--glow-primary);
+  box-shadow:calc(var(--glow-primary) * var(--dash-glow-intensity));
   font-weight:600;
 }
 .nav-btn .num{ font-size:10px; opacity:.5; font-weight:600; }
@@ -245,15 +252,15 @@ input[type="file"],
 select{
   width:100%;
   background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.8));
-  border:1px solid var(--border-medium);
-  border-radius:10px;
+  border:1px solid rgba(255,255,255,var(--dash-border-opacity));
+  border-radius:var(--dash-corner-radius);
   color:var(--text-primary);
   font-family:var(--font-mono);
   font-size:13px;
   padding:12px 14px;
-  transition:all .25s ease;
-  -webkit-backdrop-filter:blur(4px);
-  backdrop-filter:blur(4px);
+  transition:all var(--dash-transition-speed) ease;
+  -webkit-backdrop-filter:blur(var(--dash-blur));
+  backdrop-filter:blur(var(--dash-blur));
 }
 input[type="text"]:hover,
 input[type="password"]:hover,
@@ -321,11 +328,11 @@ input[type="color"]{
   width:50px;
   height:40px;
   border:2px solid var(--border-medium);
-  border-radius:10px;
+  border-radius:var(--dash-corner-radius);
   background:linear-gradient(135deg, #1a1a2e, #2d2d3d);
   cursor:pointer;
   padding:3px;
-  transition:all .25s ease;
+  transition:all var(--dash-transition-speed) ease;
 }
 input[type="color"]:hover{
   border-color:var(--accent-primary);
@@ -344,7 +351,7 @@ input[type="color"]:hover{
   justify-content:space-between;
   padding:12px 0;
   border-bottom:1px solid var(--border-soft);
-  transition:all .25s ease;
+  transition:all var(--dash-transition-speed) ease;
 }
 .toggle-row:hover{
   background:rgba(125,232,200,0.02);
@@ -402,14 +409,14 @@ input[type="color"]:hover{
 .choice-card{
   flex:1;
   border:1.5px solid var(--border-medium);
-  border-radius:12px;
+  border-radius:var(--dash-corner-radius);
   padding:14px 12px;
   cursor:pointer;
   background:linear-gradient(135deg, rgba(30,25,50,0.5), rgba(25,22,40,0.6));
   text-align:center;
   font-size:12px;
   color:var(--text-secondary);
-  transition:all .25s ease;
+  transition:all var(--dash-transition-speed) ease;
   position:relative;
   overflow:hidden;
 }
@@ -438,7 +445,7 @@ input[type="color"]:hover{
   font-size:22px; 
   display:block; 
   margin-bottom:6px;
-  transition:all .25s ease;
+  transition:all var(--dash-transition-speed) ease;
 }
 .choice-card:hover .ico{ transform:scale(1.1); }
 
@@ -455,7 +462,7 @@ button.primary-btn{
   cursor:pointer;
   position:relative;
   overflow:hidden;
-  transition:all 0.3s ease;
+  transition:all var(--dash-transition-speed) ease;
 }
 
 button.primary-btn::after{
@@ -495,10 +502,10 @@ button.ghost-btn{
   background:transparent;
   border:1.5px solid var(--border-medium);
   color:var(--text-secondary);
-  border-radius:10px;
+  border-radius:var(--dash-corner-radius);
   padding:11px 18px;
   cursor:pointer;
-  transition:all .25s ease;
+  transition:all var(--dash-transition-speed) ease;
   font-weight:500;
   text-transform:uppercase;
 }
@@ -514,12 +521,12 @@ button.icon-btn{
   background:rgba(22,20,34,0.8);
   border:1.5px solid var(--border-medium);
   color:var(--text-primary);
-  border-radius:11px;
+  border-radius:var(--dash-corner-radius);
   width:42px;
   height:42px;
   cursor:pointer;
   font-size:16px;
-  transition:all .25s ease;
+  transition:all var(--dash-transition-speed) ease;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -548,10 +555,10 @@ button.icon-btn:active{
 
 .status-card{
   border:1.5px solid var(--border-medium);
-  border-radius:14px;
+  border-radius:var(--dash-corner-radius);
   background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.7));
-  -webkit-backdrop-filter:blur(8px);
-  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(var(--dash-blur));
+  backdrop-filter:blur(var(--dash-blur));
   padding:18px;
   margin-bottom:24px;
   display:flex;
@@ -751,7 +758,7 @@ button.icon-btn:active{
   border:1.5px solid var(--accent-primary);
   color:var(--text-primary);
   padding:14px 20px;
-  border-radius:12px;
+  border-radius:var(--dash-corner-radius);
   font-size:12px;
   font-weight:600;
   letter-spacing:0.5px;
@@ -774,7 +781,7 @@ button.icon-btn:active{
 
 .upload-zone{
   border:2px dashed var(--accent-primary);
-  border-radius:14px;
+  border-radius:var(--dash-corner-radius);
   padding:36px 24px;
   text-align:center;
   background:linear-gradient(135deg, rgba(125,232,200,0.08), rgba(200,162,255,0.04));
@@ -847,7 +854,7 @@ button.icon-btn:active{
 
 .upload-preview{
   border:1.5px solid var(--border-medium);
-  border-radius:12px;
+  border-radius:var(--dash-corner-radius);
   background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.7));
   padding:16px;
   display:flex;
@@ -872,7 +879,7 @@ button.icon-btn:active{
 .upload-preview img{
   width:68px;
   height:68px;
-  border-radius:10px;
+  border-radius:var(--dash-corner-radius);
   object-fit:cover;
   border:1.5px solid rgba(125,232,200,0.4);
   flex:0 0 auto;
@@ -918,7 +925,7 @@ button.icon-btn:active{
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:all .25s ease;
+  transition:all var(--dash-transition-speed) ease;
   z-index:2;
   font-weight:bold;
   padding:0;
@@ -943,7 +950,7 @@ button.icon-btn:active{
 .hidden{ display:none !important; }
 
 /* ==========================================
-   NEW ADDON: NOW PLAYING & QUEUE STYLES 
+   QUEUE & NOW PLAYING STYLES 
    ========================================== */
 .now-playing-large-card {
   background: var(--bg-panel-elevated);
@@ -1137,7 +1144,7 @@ button.icon-btn:active{
       
     </section>
 
-    <!-- NEW ADDON PANEL: QUEUE & NOW PLAYING -->
+    <!-- QUEUE & NOW PLAYING -->
     <section class="panel" id="panel-queue">
       <h2>Now Playing &amp; Queue</h2>
       <p class="sub">View what is currently broadcasting and choose from the upcoming tracks to instantly skip ahead.</p>
@@ -1501,10 +1508,14 @@ button.icon-btn:active{
       <button class="ghost-btn" id="btnResetDefaults">Reset all to defaults</button>
     </section>
 
-    <!-- DASHBOARD THEME -->
+    <!-- DASHBOARD THEME - EXPANDED -->
     <section class="panel" id="panel-theme">
       <h2>Dashboard Theme</h2>
-      <p class="sub">This changes the control panel appearance — it never affects the overlay.</p>
+      <p class="sub">Customize the control panel appearance — this never affects the overlay playback display.</p>
+
+      <div class="section-divider">
+        <h3>Background</h3>
+      </div>
 
       <div class="field">
         <label>Background Style</label>
@@ -1512,14 +1523,6 @@ button.icon-btn:active{
           <div class="choice-card" data-dash-choice="bgType" data-value="gradient">Gradient</div>
           <div class="choice-card" data-dash-choice="bgType" data-value="solid">Solid</div>
           <div class="choice-card" data-dash-choice="bgType" data-value="image">Image</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Tab Text Color</label>
-        <div class="color-field">
-          <input type="color" id="inputDashNavTextColor" value="#9a97ab">
-          <span class="swatch-label">Navigation tab text</span>
         </div>
       </div>
 
@@ -1576,6 +1579,128 @@ button.icon-btn:active{
         </select>
       </div>
 
+      <div class="section-divider">
+        <h3>Text Colors</h3>
+      </div>
+
+      <div class="field">
+        <label>Navigation Tab Text</label>
+        <div class="color-field">
+          <input type="color" id="inputDashNavTextColor" value="#9a97ab">
+          <span class="swatch-label">Inactive tab color</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Primary Text Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDashPrimaryText" value="#f3f1f8">
+          <span class="swatch-label">Headings & main text</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Secondary Text Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDashSecondaryText" value="#9a97ab">
+          <span class="swatch-label">Labels & descriptions</span>
+        </div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Panel & Card Styling</h3>
+      </div>
+
+      <div class="field">
+        <label>Panel Background Opacity</label>
+        <div class="range-row"><input type="range" id="inputDashPanelOpacity" min="0.1" max="1" step="0.05"><span class="val" id="valDashPanelOpacity"></span></div>
+        <div class="hint">Glassmorphism effect for card backgrounds.</div>
+      </div>
+
+      <div class="field">
+        <label>Panel Border Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDashPanelBorder" value="#ffffff">
+          <span class="swatch-label">Card & input borders</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Panel Border Opacity</label>
+        <div class="range-row"><input type="range" id="inputDashBorderOpacity" min="0" max="0.3" step="0.02"><span class="val" id="valDashBorderOpacity"></span></div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Accent Colors</h3>
+      </div>
+
+      <div class="field">
+        <label>Primary Accent (Buttons & Active States)</label>
+        <div class="color-field">
+          <input type="color" id="inputDashAccent1" value="#7de8c8">
+          <span class="swatch-label">Main interactive color</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Secondary Accent (Glows & Highlights)</label>
+        <div class="color-field">
+          <input type="color" id="inputDashAccent2" value="#c8a2ff">
+          <span class="swatch-label">Gradient & glow accents</span>
+        </div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Glassmorphism & Effects</h3>
+      </div>
+
+      <div class="field">
+        <label>Blur Strength (px)</label>
+        <div class="range-row"><input type="range" id="inputDashBlur" min="0" max="20" step="1"><span class="val" id="valDashBlur"></span></div>
+        <div class="hint">Backdrop blur on panels and inputs.</div>
+      </div>
+
+      <div class="field">
+        <label>Glow Intensity</label>
+        <div class="range-row"><input type="range" id="inputDashGlowIntensity" min="0" max="1" step="0.1"><span class="val" id="valDashGlowIntensity"></span></div>
+        <div class="hint">How bright accent glows appear.</div>
+      </div>
+
+      <div class="field">
+        <label>Corner Radius</label>
+        <div class="range-row"><input type="range" id="inputDashCornerRadius" min="0" max="24" step="1"><span class="val" id="valDashCornerRadius"></span></div>
+        <div class="hint">Roundness of cards, buttons, inputs.</div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Sidebar Styling</h3>
+      </div>
+
+      <div class="field">
+        <label>Sidebar Background Opacity</label>
+        <div class="range-row"><input type="range" id="inputDashSidebarOpacity" min="0.1" max="1" step="0.05"><span class="val" id="valDashSidebarOpacity"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Active Tab Glow</label>
+        <div class="toggle-row"><span>Show glow on active nav button</span><label class="switch"><input type="checkbox" id="toggleDashSidebarGlow" checked><span class="track"></span></label></div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Animation Speed</h3>
+      </div>
+
+      <div class="field">
+        <label>Transition Speed</label>
+        <select id="inputDashTransitionSpeed">
+          <option value="instant">Instant</option>
+          <option value="fast">Fast (100ms)</option>
+          <option value="normal" selected>Normal (250ms)</option>
+          <option value="slow">Slow (500ms)</option>
+          <option value="leisurely">Leisurely (800ms)</option>
+        </select>
+      </div>
+
       <button class="ghost-btn" id="btnResetDashTheme">Reset dashboard theme</button>
     </section>
 
@@ -1604,7 +1729,6 @@ button.icon-btn:active{
   <p class="preview-note">All layouts supported: Compact, Minimal, Spectrum, Stacked, Square, Vintage. Add to OBS as browser source.</p>
 </aside>
 
-
 </div>
 
 <div class="toast" id="toast">Saved ✓</div>
@@ -1631,7 +1755,11 @@ const DEFAULT_CONFIG = {
   compactArtSize:120,compactRightGap:6,compactTitleSize:16,compactArtistSize:11,compactEqBarsHeight:16,compactEqBarWidth:2,compactProgressHeight:6
 };
 
-const DEFAULT_DASH_THEME = {bgType:'gradient',bgColor1:'#0a0915',gradColor1:'#7de8c8',gradColor2:'#c8a2ff',gradAngle:135,bgImageUrl:'',bgImageSourceType:'url',bgImageUpload:'',bgPosition:'cover',navTextColor:'#9a97ab'};
+const DEFAULT_DASH_THEME = {
+  bgType:'gradient',bgColor1:'#0a0915',gradColor1:'#7de8c8',gradColor2:'#c8a2ff',gradAngle:135,bgImageUrl:'',bgImageSourceType:'url',bgImageUpload:'',bgPosition:'cover',navTextColor:'#9a97ab',
+  primaryText:'#f3f1f8',secondaryText:'#9a97ab',panelOpacity:0.55,panelBorder:'#ffffff',borderOpacity:0.15,accent1:'#7de8c8',accent2:'#c8a2ff',blurStrength:10,glowIntensity:1,
+  cornerRadius:12,sidebarOpacity:0.5,sidebarGlow:true,transitionSpeed:'normal'
+};
 
 let config = { ...DEFAULT_CONFIG };
 let dashTheme = { ...DEFAULT_DASH_THEME };
@@ -1648,7 +1776,6 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
   });
 });
 
-// Icon visibility toggle with state tracking
 let isEyeOpen = false;
 document.getElementById('btnToggleClientId').addEventListener('click', ()=>{
   const input = document.getElementById('inputClientId');
@@ -1665,7 +1792,6 @@ document.getElementById('btnToggleClientId').addEventListener('click', ()=>{
   }
 });
 
-// Copy Redirect URI button
 document.getElementById('btnCopyRedirectUri').addEventListener('click', ()=>{
   const url = document.getElementById('inputRedirectUri').value;
   if(url){
@@ -1677,7 +1803,6 @@ document.getElementById('btnCopyRedirectUri').addEventListener('click', ()=>{
   }
 });
 
-// Copy OBS URL button
 document.getElementById('btnCopyOBSURL').addEventListener('click', ()=>{
   const url = document.getElementById('inputOBSURL').value;
   if(url){
@@ -1744,8 +1869,23 @@ function populateForm(){
 
 function loadDashTheme(){try{const raw = localStorage.getItem(LS_DASH_THEME_KEY);if(raw) dashTheme = { ...DEFAULT_DASH_THEME, ...JSON.parse(raw) }}catch(e){}}
 function saveDashTheme(){localStorage.setItem(LS_DASH_THEME_KEY, JSON.stringify(dashTheme))}
+
 function applyDashTheme(){
+  // Root CSS variables for dashboard theme
   document.documentElement.style.setProperty('--nav-text-color', dashTheme.navTextColor);
+  document.documentElement.style.setProperty('--text-primary', dashTheme.primaryText);
+  document.documentElement.style.setProperty('--text-secondary', dashTheme.secondaryText);
+  document.documentElement.style.setProperty('--dash-panel-opacity', dashTheme.panelOpacity);
+  document.documentElement.style.setProperty('--dash-border-opacity', dashTheme.borderOpacity);
+  document.documentElement.style.setProperty('--dash-blur', dashTheme.blurStrength + 'px');
+  document.documentElement.style.setProperty('--dash-glow-intensity', dashTheme.glowIntensity);
+  document.documentElement.style.setProperty('--dash-corner-radius', dashTheme.cornerRadius + 'px');
+  document.documentElement.style.setProperty('--dash-sidebar-opacity', dashTheme.sidebarOpacity);
+  
+  const speedMap = { instant:'0s', fast:'0.1s', normal:'0.25s', slow:'0.5s', leisurely:'0.8s' };
+  document.documentElement.style.setProperty('--dash-transition-speed', speedMap[dashTheme.transitionSpeed] || '0.25s');
+
+  // Background
   const body = document.body;
   if(dashTheme.bgType === 'solid'){body.style.background = dashTheme.bgColor1}
   else if(dashTheme.bgType === 'gradient'){body.style.background = `linear-gradient(${dashTheme.gradAngle}deg, ${dashTheme.gradColor1}33, ${dashTheme.gradColor2}33), var(--bg-deep)`}
@@ -1772,6 +1912,25 @@ function populateDashThemeForm(){
   document.getElementById('inputDashBgImageUrl').value = dashTheme.bgImageUrl;
   document.getElementById('inputDashBgPosition').value = dashTheme.bgPosition;
   document.getElementById('inputDashNavTextColor').value = dashTheme.navTextColor;
+  document.getElementById('inputDashPrimaryText').value = dashTheme.primaryText;
+  document.getElementById('inputDashSecondaryText').value = dashTheme.secondaryText;
+  document.getElementById('inputDashPanelOpacity').value = dashTheme.panelOpacity;
+  document.getElementById('valDashPanelOpacity').textContent = (dashTheme.panelOpacity * 100).toFixed(0) + '%';
+  document.getElementById('inputDashPanelBorder').value = dashTheme.panelBorder;
+  document.getElementById('inputDashBorderOpacity').value = dashTheme.borderOpacity;
+  document.getElementById('valDashBorderOpacity').textContent = (dashTheme.borderOpacity * 100).toFixed(1) + '%';
+  document.getElementById('inputDashAccent1').value = dashTheme.accent1;
+  document.getElementById('inputDashAccent2').value = dashTheme.accent2;
+  document.getElementById('inputDashBlur').value = dashTheme.blurStrength;
+  document.getElementById('valDashBlur').textContent = dashTheme.blurStrength + 'px';
+  document.getElementById('inputDashGlowIntensity').value = dashTheme.glowIntensity;
+  document.getElementById('valDashGlowIntensity').textContent = (dashTheme.glowIntensity * 100).toFixed(0) + '%';
+  document.getElementById('inputDashCornerRadius').value = dashTheme.cornerRadius;
+  document.getElementById('valDashCornerRadius').textContent = dashTheme.cornerRadius + 'px';
+  document.getElementById('inputDashSidebarOpacity').value = dashTheme.sidebarOpacity;
+  document.getElementById('valDashSidebarOpacity').textContent = (dashTheme.sidebarOpacity * 100).toFixed(0) + '%';
+  document.getElementById('toggleDashSidebarGlow').checked = dashTheme.sidebarGlow;
+  document.getElementById('inputDashTransitionSpeed').value = dashTheme.transitionSpeed;
   document.getElementById('toggleBgImageSource').checked = dashTheme.bgImageSourceType === 'upload';
   updateImageSourceToggle();
 }
@@ -1787,6 +1946,7 @@ document.getElementById('toggleBgImageSource').addEventListener('change', ()=>{
   updateImageSourceToggle();
   applyDashTheme();
   saveDashTheme();
+  showToast('Image source toggled ✓');
 });
 
 function formatFileSize(bytes){
@@ -1848,6 +2008,7 @@ function handleFile(file){
   const reader = new FileReader();
   reader.onload = async (evt)=>{
     dashTheme.bgImageUpload = evt.target.result;
+    dashTheme.bgImageSourceType = 'upload';
     
     const colors = await extractImageColors(evt.target.result);
     if(colors.length >= 2){
@@ -1862,6 +2023,8 @@ function handleFile(file){
       showToast('Colors extracted & applied ✓');
     }
     
+    document.getElementById('toggleBgImageSource').checked = true;
+    updateImageSourceToggle();
     applyDashTheme();
     saveDashTheme();
     showUploadPreview(file, evt.target.result);
@@ -1928,9 +2091,14 @@ uploadZone.addEventListener('drop', (e)=>{
 
 uploadClear.addEventListener('click', clearUploadPreview);
 
+// ============================================
+// AUTO-SAVE FOR DASHBOARD THEME - FIXED
+// ============================================
 document.querySelectorAll('#panel-theme input, #panel-theme select').forEach(el=>{
   el.addEventListener('input', ()=>{
-    if(el.id === 'toggleBgImageSource' || el.id === 'inputDashBgImageUpload') return;
+    if(el.id === 'inputDashBgImageUpload') return;
+    
+    // Read all theme values from form
     dashTheme.bgColor1 = document.getElementById('inputDashBgColor1').value;
     dashTheme.gradColor1 = document.getElementById('inputDashGradColor1').value;
     dashTheme.gradColor2 = document.getElementById('inputDashGradColor2').value;
@@ -1938,18 +2106,57 @@ document.querySelectorAll('#panel-theme input, #panel-theme select').forEach(el=
     dashTheme.bgImageUrl = document.getElementById('inputDashBgImageUrl').value;
     dashTheme.bgPosition = document.getElementById('inputDashBgPosition').value;
     dashTheme.navTextColor = document.getElementById('inputDashNavTextColor').value;
+    dashTheme.primaryText = document.getElementById('inputDashPrimaryText').value;
+    dashTheme.secondaryText = document.getElementById('inputDashSecondaryText').value;
+    dashTheme.panelOpacity = parseFloat(document.getElementById('inputDashPanelOpacity').value);
+    dashTheme.panelBorder = document.getElementById('inputDashPanelBorder').value;
+    dashTheme.borderOpacity = parseFloat(document.getElementById('inputDashBorderOpacity').value);
+    dashTheme.accent1 = document.getElementById('inputDashAccent1').value;
+    dashTheme.accent2 = document.getElementById('inputDashAccent2').value;
+    dashTheme.blurStrength = parseInt(document.getElementById('inputDashBlur').value);
+    dashTheme.glowIntensity = parseFloat(document.getElementById('inputDashGlowIntensity').value);
+    dashTheme.cornerRadius = parseInt(document.getElementById('inputDashCornerRadius').value);
+    dashTheme.sidebarOpacity = parseFloat(document.getElementById('inputDashSidebarOpacity').value);
+    dashTheme.sidebarGlow = document.getElementById('toggleDashSidebarGlow').checked;
+    dashTheme.transitionSpeed = document.getElementById('inputDashTransitionSpeed').value;
+    
+    // Update display labels
     document.getElementById('valDashGradAngle').textContent = dashTheme.gradAngle + '°';
+    document.getElementById('valDashPanelOpacity').textContent = (dashTheme.panelOpacity * 100).toFixed(0) + '%';
+    document.getElementById('valDashBorderOpacity').textContent = (dashTheme.borderOpacity * 100).toFixed(1) + '%';
+    document.getElementById('valDashBlur').textContent = dashTheme.blurStrength + 'px';
+    document.getElementById('valDashGlowIntensity').textContent = (dashTheme.glowIntensity * 100).toFixed(0) + '%';
+    document.getElementById('valDashCornerRadius').textContent = dashTheme.cornerRadius + 'px';
+    document.getElementById('valDashSidebarOpacity').textContent = (dashTheme.sidebarOpacity * 100).toFixed(0) + '%';
+    
+    // Apply and save
     applyDashTheme();
     saveDashTheme();
   });
 });
 
+// Background style choice cards
 document.querySelectorAll('[data-dash-choice]').forEach(card=>{
-  card.addEventListener('click', ()=>{dashTheme[card.dataset.dashChoice] = card.dataset.value;applyDashTheme();saveDashTheme()});
+  card.addEventListener('click', ()=>{
+    dashTheme[card.dataset.dashChoice] = card.dataset.value;
+    applyDashTheme();
+    saveDashTheme();
+    showToast('Background style updated ✓');
+  });
 });
 
-document.getElementById('btnResetDashTheme').addEventListener('click', ()=>{dashTheme = { ...DEFAULT_DASH_THEME };populateDashThemeForm();applyDashTheme();saveDashTheme();showToast('Dashboard theme reset ✓')});
+// Reset dashboard theme
+document.getElementById('btnResetDashTheme').addEventListener('click', ()=>{
+  dashTheme = { ...DEFAULT_DASH_THEME };
+  populateDashThemeForm();
+  applyDashTheme();
+  saveDashTheme();
+  showToast('Dashboard theme reset ✓');
+});
 
+// ============================================
+// PREVIEW OPACITY AUTO-SAVE
+// ============================================
 document.getElementById('inputPreviewOpacity').addEventListener('input', (e)=>{
   previewOpacity = parseFloat(e.target.value);
   applyPreviewOpacity();
@@ -2035,7 +2242,7 @@ document.querySelectorAll('#panel-layout input, #panel-layout select, #panel-com
 document.querySelectorAll('.choice-card').forEach(card=>{card.addEventListener('click', ()=>{if(card.dataset.choice){config[card.dataset.choice] = card.dataset.value;updateChoiceCards();pushLivePreview()}})});
 
 document.getElementById('btnResetDefaults').addEventListener('click', ()=>{config = { ...DEFAULT_CONFIG };populateForm();pushLivePreview();showToast('Reset to defaults ✓')});
-document.getElementById('btnSave').addEventListener('click', ()=>{readFormIntoConfig();localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(config));if(bc) bc.postMessage({ type:'config-update', config });pushLivePreview();showToast('Saved & pushed to overlay ✓')});
+document.getElementById('btnSave').addEventListener('click', ()=>{readFormIntoConfig();localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(config));saveDashTheme();if(bc) bc.postMessage({ type:'config-update', config });pushLivePreview();showToast('Saved & pushed to overlay ✓')});
 
 function showToast(msg){const t = document.getElementById('toast');t.textContent = msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'), 2400)}
 
@@ -2052,15 +2259,10 @@ async function exchangeCodeForToken(code){const verifier = localStorage.getItem(
 async function refreshAccessToken(auth){const body = new URLSearchParams({client_id: auth.clientId,grant_type: 'refresh_token',refresh_token: auth.refreshToken});const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST',headers:{ 'Content-Type':'application/x-www-form-urlencoded' },body});if(!res.ok) throw new Error('Refresh failed: ' + res.status);const data = await res.json();const updated = { ...auth, accessToken:data.access_token,refreshToken:data.refresh_token || auth.refreshToken,expiresAt: Date.now() + (data.expires_in*1000) };saveAuth(updated);return updated}
 async function getValidAccessToken(){let auth = getAuth();if(!auth) return null;if(!auth.expiresAt || Date.now() > (auth.expiresAt - 60000)){try{ auth = await refreshAccessToken(auth); }catch(e){ return null; }}return auth.accessToken}
 
-// NEW: Get actual playback state from Spotify
 async function getPlaybackState(){const token = await getValidAccessToken();if(!token) return null;try{const res = await fetch('https://api.spotify.com/v1/me/player', { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok) return await res.json();return null}catch(e){return null}}
 
-// NEW: Update play/pause icon based on actual Spotify state
 async function updatePlayPauseIcon(){const state = await getPlaybackState();const btn = document.getElementById('btnPlayPause');if(!state || !state.is_playing){btn.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>'}else{btn.innerHTML = '<svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>'}updatePlayPauseIcon.lastState = state?.is_playing}
 
-/* ==========================================
-   NEW ADDON: FETCH & UPDATE QUEUE REAL-TIME
-   ========================================== */
 async function fetchAndUpdateQueue() {
   const token = await getValidAccessToken();
   if (!token) return;
@@ -2072,7 +2274,6 @@ async function fetchAndUpdateQueue() {
     if (!res.ok) return;
     const data = await res.json();
     
-    // 1. Update Currently Playing View Card
     const cardActive = document.getElementById('queueActiveTrack');
     if (data.currently_playing) {
       const activeTrack = data.currently_playing;
@@ -2090,7 +2291,6 @@ async function fetchAndUpdateQueue() {
       cardActive.innerHTML = `<div style="text-align:center; width:100%; color:var(--text-secondary); font-family:var(--font-mono); font-size:12px;">Nothing streaming right now.</div>`;
     }
     
-    // 2. Update Upcoming Queue Row Layout (Capped to next 10 songs)
     const tracksContainer = document.getElementById('queueListTracks');
     if (data.queue && data.queue.length > 0) {
       tracksContainer.innerHTML = '';
@@ -2113,7 +2313,6 @@ async function fetchAndUpdateQueue() {
           </div>
           <div class="queue-row-duration">${mins}:${secs}</div>
         `;
-        // Click action plays track directly via custom index request helper
         row.addEventListener('click', () => jumpToQueueTrack(track.uri));
         tracksContainer.appendChild(row);
       });
@@ -2121,11 +2320,10 @@ async function fetchAndUpdateQueue() {
       tracksContainer.innerHTML = `<div style="text-align:center; color:var(--text-tertiary); padding:20px; font-family:var(--font-mono); font-size:12px;">No upcoming tracks waiting in your Spotify queue.</div>`;
     }
   } catch(e) {
-    console.error("Queue execution interval failed dynamically: ", e);
+    console.error("Queue fetch failed: ", e);
   }
 }
 
-// Skips straight to selected item by pushing item to context playback handler
 async function jumpToQueueTrack(trackUri) {
   const token = await getValidAccessToken();
   if (!token) { showToast('Not connected to Spotify.'); return; }
@@ -2145,7 +2343,7 @@ async function jumpToQueueTrack(trackUri) {
       showToast('Unable to skip directly. Premium account required.');
     }
   } catch(e) {
-    showToast('Playback request communication drop.');
+    showToast('Playback request failed.');
   }
 }
 
@@ -2163,7 +2361,6 @@ document.getElementById('btnPrev').addEventListener('click', ()=> playbackAction
 document.getElementById('btnNext').addEventListener('click', ()=> playbackAction('POST','next'));
 async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
 (async function init(){loadConfig();populateForm();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();
-  // Polling loops executing strictly every 2 seconds for status & data additions
   setInterval(updatePlayPauseIcon, 2000);
   setInterval(fetchAndUpdateQueue, 2000);
   fetchAndUpdateQueue();
