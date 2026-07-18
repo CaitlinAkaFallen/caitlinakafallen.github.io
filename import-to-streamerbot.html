@@ -1285,7 +1285,7 @@
         <select id="codeSections" aria-label="Choose a stream section">
           <option value="tutorial">Tutorial</option>
           <option value="d&d-class">D&D Class</option>   <!--1-->
-          <option value="hogwarts-sorting-house">Hogwarts Sorting House</option>  <!--2-->
+          <option value="music-player">MP Dashboard/Music Player</option>  <!--2-->
           <option value="game-quiz">Game Quiz</option> <!--3-->
           <option value="welcome-back-message">Welcome Back Message</option> <!--4-->
           <option value="first-second-third">TCP 1st, 2nd and 3rd</option> <!--5-->
@@ -1422,17 +1422,18 @@
           </div>
 
 
-          <!--Hogwarts Sorting House-->
-          <div class="grid-item" id="hogwarts-sorting-house">
-            <h3>Hogwarts Sorting House</h3>
+          <!--Music Player Dashboard and Player-->
+          <div class="grid-item" id="music-player">
+            <h3>Music Player & Dashboard</h3>
             <div class="main-layout-wrapper">
               <div class="side-column">
                 
                 <div class="select-copy-container">
-                  <label for="obs-select-2" style="display: block; margin-bottom: 5px; font-size: 0.9em">Select Overlay to Copy Link:</label>
+                  <label for="obs-select-2" style="display: block; margin-bottom: 5px; font-size: 0.9em">Copy and paste in OBS Custom Browser Dock:</label>
                   <select id="obs-select-2" class="code-select-glassy" onchange="copySelectValue(this)">
                     <option value="" disabled selected>Choose an overlay...</option>
-                    <option value="https://caitlinscreativespace.xyz/hogwarts-sorting-house.html">Hogwarts Sorting House Overlay</option>
+                    <option value="https://caitlinscreativespace.xyz/music-player-dashboard.html">Music Player Dashboard</option>
+                    
                   </select>
                   <p id="copy-status-2" style="font-size: 12px; color: #00ffcc; margin-top: 5px; height: 15px; font-weight: bold;"></p>
                 </div>
@@ -1440,10 +1441,10 @@
                 <div style="margin-top: 15px"></div>
 
                 <div class="select-copy-container">
-                  <label for="import-select-2" style="display: block; margin-bottom: 5px; font-size: 0.9em">Select Import Code to Copy:</label>
+                  <label for="import-select-2" style="display: block; margin-bottom: 5px; font-size: 0.9em">Copy and paste into OBS Browser Source:</label>
                   <select id="import-select-2" class="code-select-glassy" onchange="copySelectValue(this)">
-                    <option value="" disabled selected>Choose a code...</option>
-                    <option value="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">Sorting House Script</option>
+                    <option value="" disabled selected>Choose an overlay...</option>
+                    <option value="https://caitlinscreativespace.xyz/music-player.html">Music Player Overlay</option>
                   </select>
                   <p id="copy-status-import-2" style="font-size: 12px; color: #00ffcc; margin-top: 5px; height: 15px; font-weight: bold;"></p>
                 </div>
@@ -1452,26 +1453,26 @@
 
               <div class="center-column">
                 <p class="instruction-text">
-                  Import the code into Streamer.bot and use the link as an OBS Browser Source.
+                  use the TWO URLs as for OBS.
                 </p>
-                <img src="images/hogwarts-sorting-house.png" alt="Hogwarts Sorting House" class="feature-img" />
+                <img src="images/music-player.png" alt="Music Player" class="feature-img" />
               </div>
 
               <div class="side-column">
                 <div class="video-container">
-                  <video class="modal-trigger feature-video" data-modal="modal-hogwarts-sorting-house" data-src="Videos/hogwarts-sorting-house.mp4" controls>
-                    <source src="Videos/hogwarts-sorting-house.mp4" type="video/mp4" />
+                  <video class="modal-trigger feature-video" data-modal="modal-music-player" data-src="Videos/music-player.mp4" controls>
+                    <source src="Videos/music-player.mp4" type="video/mp4" />
                   </video>
                 </div>
               </div>
             </div>
           </div>
 
-          <div id="modal-hogwarts-sorting-house" class="video-modal">
+          <div id="modal-music-player" class="video-modal">
             <div class="video-wrapper">
               <span class="close">&times;</span>
               <video controls>
-                <source src="Videos/hogwarts-sorting-house.mp4" type="video/mp4" />
+                <source src="Videos/music-player.mp4" type="video/mp4" />
               </video>
             </div>
           </div>
