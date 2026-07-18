@@ -33,6 +33,7 @@
   --glow-primary:0 0 20px rgba(125,232,200,0.3);
   --glow-secondary:0 0 20px rgba(200,162,255,0.3);
   --dash-panel-opacity:0.55;
+  --dash-panel-color-rgb:30,25,50;
   --dash-border-opacity:0.15;
   --dash-panel-border-rgb:255,255,255;
   --dash-blur:10px;
@@ -1220,7 +1221,7 @@ button.icon-btn:active{
 }
 
 .panel.active > .field{
-  background:rgba(30,25,50, var(--dash-panel-opacity));
+  background:rgba(var(--dash-panel-color-rgb), var(--dash-panel-opacity));
   border:1px solid rgba(var(--dash-panel-border-rgb), var(--dash-border-opacity));
   border-radius:var(--dash-corner-radius);
   padding:16px 18px;
@@ -1491,21 +1492,10 @@ button.icon-btn:active{
         <div class="hint">Layout Mode picks the player structure. Album Art Shape applies universally to all layouts — no layout-specific setup needed.</div>
       </div>
 
-         <div class="field">
-        <label>Card Width (px)</label>
-        <div class="range-row"><input type="range" id="inputCardWidth" min="320" max="560" step="10"><span class="val" id="valCardWidth"></span></div>
-      </div>
-
-      <div class="field">
-        <label>Card Height (px)</label>
-        <div class="range-row"><input type="range" id="inputCardHeight" min="300" max="700" step="10"><span class="val" id="valCardHeight"></span></div>
-        <div class="hint">Adjust the overall player card size. Compact/Minimal/Spectrum/Square use this. Stacked and Full Vinyl layouts are unconstrained (full-bleed / frameless).</div>
-      </div>
-
       <div class="field">
         <label>Container Background</label>
         <div class="toggle-row"><span>Show dark backing container behind player</span><label class="switch"><input type="checkbox" id="toggleShowContainerBackground" checked><span class="track"></span></label></div>
-        <div class="hint">When OFF: creates a frameless appearance. Stacked always respects its own layering, and Full Vinyl is always frameless by design regardless of this toggle.</div>
+        <div class="hint">When OFF: creates a frameless appearance. Square, Stacked, and Full Vinyl always respect their own layering / frameless design regardless of this toggle.</div>
       </div>
 
       <div class="section-divider">
@@ -1924,8 +1914,24 @@ button.icon-btn:active{
         </div>
       </div>
 
+      <div class="field">
+        <label>Hint Text Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDashTertiaryText" value="#6f6c80">
+          <span class="swatch-label">Small hint text under fields</span>
+        </div>
+      </div>
+
       <div class="section-divider">
         <h3>Panel & Card Styling</h3>
+      </div>
+
+      <div class="field">
+        <label>Panel Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDashPanelColor" value="#1e1932">
+          <span class="swatch-label">Base color behind card backgrounds</span>
+        </div>
       </div>
 
       <div class="field">
@@ -2076,7 +2082,7 @@ const DEFAULT_CONFIG = {
 
 const DEFAULT_DASH_THEME = {
   bgType:'gradient',bgColor1:'#0a0915',gradColor1:'#7de8c8',gradColor2:'#c8a2ff',gradAngle:135,bgImageUrl:'',bgImageSourceType:'url',bgImageUpload:'',bgPosition:'cover',navTextColor:'#9a97ab',
-  primaryText:'#f3f1f8',secondaryText:'#9a97ab',panelOpacity:0.55,panelBorder:'#ffffff',borderOpacity:0.15,accent1:'#7de8c8',accent2:'#c8a2ff',blurStrength:10,glowIntensity:1,
+  primaryText:'#f3f1f8',secondaryText:'#9a97ab',tertiaryText:'#6f6c80',panelColor:'#1e1932',panelOpacity:0.55,panelBorder:'#ffffff',borderOpacity:0.15,accent1:'#7de8c8',accent2:'#c8a2ff',blurStrength:10,glowIntensity:1,
   cornerRadius:12,sidebarOpacity:0.5,sidebarGlow:true,transitionSpeed:'normal'
 };
 
@@ -2159,8 +2165,6 @@ function populateForm(){
   document.getElementById('inputGlowIntensity').value = config.glowIntensity;
   document.getElementById('inputPulseSpeed').value = config.pulseSpeed;
   document.getElementById('inputTextScale').value = config.textScale;
-  document.getElementById('inputCardWidth').value = config.cardWidth;
-  document.getElementById('inputCardHeight').value = config.cardHeight;
   document.getElementById('inputFontPairing').value = config.fontPairing;
   document.getElementById('inputArtRevealStyle').value = config.artRevealStyle;
   document.getElementById('toggleMarqueeEnabled').checked = config.marqueeEnabled;
@@ -2210,7 +2214,9 @@ function applyDashTheme(){
   document.documentElement.style.setProperty('--nav-text-color', dashTheme.navTextColor);
   document.documentElement.style.setProperty('--text-primary', dashTheme.primaryText);
   document.documentElement.style.setProperty('--text-secondary', dashTheme.secondaryText);
+  document.documentElement.style.setProperty('--text-tertiary', dashTheme.tertiaryText);
   document.documentElement.style.setProperty('--dash-panel-opacity', dashTheme.panelOpacity);
+  document.documentElement.style.setProperty('--dash-panel-color-rgb', hexToRgbTriplet(dashTheme.panelColor));
   document.documentElement.style.setProperty('--dash-border-opacity', dashTheme.borderOpacity);
   document.documentElement.style.setProperty('--dash-panel-border-rgb', hexToRgbTriplet(dashTheme.panelBorder));
   document.documentElement.style.setProperty('--dash-blur', dashTheme.blurStrength + 'px');
@@ -2253,6 +2259,8 @@ function populateDashThemeForm(){
   document.getElementById('inputDashNavTextColor').value = dashTheme.navTextColor;
   document.getElementById('inputDashPrimaryText').value = dashTheme.primaryText;
   document.getElementById('inputDashSecondaryText').value = dashTheme.secondaryText;
+  document.getElementById('inputDashTertiaryText').value = dashTheme.tertiaryText;
+  document.getElementById('inputDashPanelColor').value = dashTheme.panelColor;
   document.getElementById('inputDashPanelOpacity').value = dashTheme.panelOpacity;
   document.getElementById('valDashPanelOpacity').textContent = (dashTheme.panelOpacity * 100).toFixed(0) + '%';
   document.getElementById('inputDashPanelBorder').value = dashTheme.panelBorder;
@@ -2447,6 +2455,8 @@ document.querySelectorAll('#panel-theme input, #panel-theme select').forEach(el=
     dashTheme.navTextColor = document.getElementById('inputDashNavTextColor').value;
     dashTheme.primaryText = document.getElementById('inputDashPrimaryText').value;
     dashTheme.secondaryText = document.getElementById('inputDashSecondaryText').value;
+    dashTheme.tertiaryText = document.getElementById('inputDashTertiaryText').value;
+    dashTheme.panelColor = document.getElementById('inputDashPanelColor').value;
     dashTheme.panelOpacity = parseFloat(document.getElementById('inputDashPanelOpacity').value);
     dashTheme.panelBorder = document.getElementById('inputDashPanelBorder').value;
     dashTheme.borderOpacity = parseFloat(document.getElementById('inputDashBorderOpacity').value);
@@ -2510,8 +2520,6 @@ function updateRangeLabels(){
   document.getElementById('valGlowIntensity').textContent = config.glowIntensity;
   document.getElementById('valPulseSpeed').textContent = config.pulseSpeed + 's';
   document.getElementById('valTextScale').textContent = config.textScale + 'x';
-  document.getElementById('valCardWidth').textContent = config.cardWidth + 'px';
-  document.getElementById('valCardHeight').textContent = config.cardHeight + 'px';
   document.getElementById('valPollInterval').textContent = config.pollInterval + 's';
   document.getElementById('valMarqueeSpeed').textContent = config.marqueeSpeed + 'px/s';
   document.getElementById('valMetadataOpacity').textContent = (config.metadataOpacity * 100).toFixed(0) + '%';
@@ -2596,8 +2604,6 @@ function readFormIntoConfig(){
   config.glowIntensity = parseFloat(document.getElementById('inputGlowIntensity').value);
   config.pulseSpeed = parseInt(document.getElementById('inputPulseSpeed').value);
   config.textScale = parseFloat(document.getElementById('inputTextScale').value);
-  config.cardWidth = parseInt(document.getElementById('inputCardWidth').value);
-  config.cardHeight = parseInt(document.getElementById('inputCardHeight').value);
   config.fontPairing = document.getElementById('inputFontPairing').value;
   config.artRevealStyle = document.getElementById('inputArtRevealStyle').value;
   config.marqueeEnabled = document.getElementById('toggleMarqueeEnabled').checked;
@@ -2733,8 +2739,7 @@ async function jumpToQueueTrack(trackUri) {
     });
     if (res.ok) {
       showToast('Jumping to track ✓');
-      setTimeout(fetchAndUpdateQueue, 500);
-      setTimeout(updateQueuePlayPauseIcon, 500);
+      setTimeout(fetchAndUpdateQueue, 400);
     } else {
       showToast('Unable to skip directly. Premium account required.');
     }
@@ -2770,29 +2775,19 @@ async function updateQueuePlayPauseIcon(){
 
 document.getElementById('queueBtnPrev').addEventListener('click', async ()=>{
   await playbackAction('POST', 'previous');
-  setTimeout(()=>{ fetchAndUpdateQueue(); updateQueuePlayPauseIcon(); }, 500);
+  setTimeout(()=>{ fetchAndUpdateQueue(); updateQueuePlayPauseIcon(); }, 400);
 });
 
 document.getElementById('queueBtnPlayPause').addEventListener('click', async ()=>{
   const btn = document.getElementById('queueBtnPlayPause');
   const isPlaying = btn.dataset.playing === '1';
-  
-  // --- OPTIMISTIC UI UPDATE (INSTANT) ---
-  btn.dataset.playing = isPlaying ? '0' : '1';
-  const svg = btn.querySelector('svg');
-  svg.innerHTML = isPlaying 
-    ? '<path d="M8 5v14l11-7z"/>' // It was playing, switch instantly to Play icon
-    : '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>'; // It was paused, switch instantly to Pause icon
-    
   await playbackAction('PUT', isPlaying ? 'pause' : 'play');
-  
-  // Verify with Spotify API after a slight delay to ensure it caught the state
-  setTimeout(updateQueuePlayPauseIcon, 600);
+  setTimeout(updateQueuePlayPauseIcon, 400);
 });
 
 document.getElementById('queueBtnPlaybackNext').addEventListener('click', async ()=>{
   await playbackAction('POST', 'next');
-  setTimeout(()=>{ fetchAndUpdateQueue(); updateQueuePlayPauseIcon(); }, 500);
+  setTimeout(()=>{ fetchAndUpdateQueue(); updateQueuePlayPauseIcon(); }, 400);
 });
 async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
 (async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();
