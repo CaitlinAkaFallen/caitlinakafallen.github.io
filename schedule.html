@@ -1101,6 +1101,193 @@
                   text-shadow: 0 0 4px #c8ffff, 0 0 8px #e6ffff;
                 }
               }
+
+              /* =========================================================
+                 🎯 NEW: Advanced "Stream Goals" Card (Upcoming Streams tab)
+                 This renders the same goal data as the Twitch Sub Goals
+                 tab, but as a glassy progress/milestone tracker for
+                 whatever day is currently active.
+                 ========================================================= */
+              @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Share+Tech+Mono&display=swap');
+
+              .goals-card-wrapper {
+                max-width: 700px;
+                margin: 24px auto 0 auto;
+                padding: 24px;
+                background: linear-gradient(160deg, rgba(190,46,221,0.10), rgba(0,168,255,0.08));
+                border: 1px solid rgba(190,46,221,0.35);
+                border-radius: 16px;
+                box-shadow: 0 0 24px rgba(190,46,221,0.25), inset 0 0 30px rgba(0,168,255,0.05);
+                -webkit-backdrop-filter: blur(12px) saturate(160%);
+                backdrop-filter: blur(12px) saturate(160%);
+                color: #eee;
+                text-align: center;
+                box-sizing: border-box;
+                animation: goalsCardFadeIn 0.5s ease-out;
+              }
+
+              @keyframes goalsCardFadeIn {
+                from { opacity: 0; transform: translateY(6px); }
+                to   { opacity: 1; transform: translateY(0); }
+              }
+
+              .goals-card-wrapper.off-day {
+                padding: 30px 24px;
+              }
+
+              .goals-card-header {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                margin-bottom: 18px;
+              }
+
+              .goals-card-emoji {
+                font-size: 1.6rem;
+                filter: drop-shadow(0 0 6px rgba(181,255,255,0.6));
+              }
+
+              .goals-card-title {
+                font-family: 'Orbitron', "Poppins", sans-serif;
+                font-size: 1.15rem;
+                letter-spacing: 0.5px;
+                margin: 0;
+                color: #aee5f3;
+                text-shadow: 0 0 2px #a0e4fd, 0 0 8px #b5ffff;
+              }
+
+              /* Progress Bar */
+              .goals-progress-track {
+                position: relative;
+                width: 100%;
+                height: 16px;
+                border-radius: 999px;
+                background: rgba(255,255,255,0.08);
+                border: 1px solid rgba(190,46,221,0.3);
+                overflow: hidden;
+                margin: 0 auto 10px auto;
+                box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+              }
+
+              .goals-progress-fill {
+                height: 100%;
+                border-radius: 999px;
+                background: linear-gradient(90deg, #be2edd, #00a8ff, #4ae4e9);
+                box-shadow: 0 0 12px rgba(0,168,255,0.7);
+                transition: width 0.6s ease-in-out;
+              }
+
+              .goals-progress-text {
+                font-family: 'Share Tech Mono', monospace;
+                font-size: 0.95rem;
+                color: #d9f8ff;
+                margin: 0 0 18px 0;
+                letter-spacing: 0.5px;
+              }
+
+              /* Milestone Grid */
+              .milestone-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+                gap: 14px;
+              }
+
+              .milestone-card {
+                position: relative;
+                padding: 14px 10px 12px 10px;
+                border-radius: 12px;
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(145,71,255,0.3);
+                transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+              }
+
+              .milestone-card.locked {
+                opacity: 0.55;
+              }
+
+              .milestone-card.achieved {
+                border-color: rgba(74,228,233,0.6);
+                background: rgba(74,228,233,0.08);
+                box-shadow: 0 0 14px rgba(74,228,233,0.35);
+              }
+
+              .milestone-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 0 16px rgba(190,46,221,0.35);
+              }
+
+              /* Slow ambient glow on the next goal you're working toward.
+                 Kept to a 4s+ cycle so it never reads as a rapid flash. */
+              .milestone-card.next-target {
+                border-color: rgba(255,102,204,0.7);
+                box-shadow: 0 0 14px rgba(255,102,204,0.4);
+                animation: nextTargetPulse 4.5s ease-in-out infinite;
+              }
+
+              @keyframes nextTargetPulse {
+                0%, 100% { box-shadow: 0 0 10px rgba(255,102,204,0.3); }
+                50%      { box-shadow: 0 0 20px rgba(255,102,204,0.65); }
+              }
+
+              .milestone-icon {
+                font-size: 1rem;
+                margin-bottom: 4px;
+              }
+
+              .milestone-card.achieved .milestone-icon {
+                color: #4ae4e9;
+                text-shadow: 0 0 6px rgba(74,228,233,0.8);
+              }
+
+              .milestone-card.locked .milestone-icon {
+                color: #b9b9c8;
+              }
+
+              .milestone-amount {
+                font-family: 'Orbitron', "Poppins", sans-serif;
+                font-size: 1.25rem;
+                font-weight: 800;
+                color: #fff;
+                line-height: 1.1;
+              }
+
+              .milestone-label {
+                font-size: 0.7rem;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                color: rgba(255,255,255,0.55);
+                margin-bottom: 6px;
+              }
+
+              .milestone-reward {
+                font-size: 0.78rem;
+                color: #dfefff;
+                line-height: 1.3;
+              }
+
+              .goals-off-text {
+                color: #d9f8ff;
+                font-size: 1rem;
+                margin: 0;
+              }
+
+              @media (max-width: 600px) {
+                .goals-card-wrapper {
+                  padding: 18px;
+                  margin-top: 18px;
+                }
+                .milestone-grid {
+                  grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+                  gap: 10px;
+                }
+                .milestone-amount {
+                  font-size: 1.05rem;
+                }
+                .milestone-reward {
+                  font-size: 0.72rem;
+                }
+              }
             </style>
           </head>
           <body>
@@ -1416,9 +1603,10 @@
         <h1>Stream Goals<span class="underline"></span></h1>
       </div>
 
-        <p id="stream-goals-summary">
-  <span id="stream-goals">[Date]</span> — Let's see what the goals are today!
-</p>
+        <!-- 🎯 NEW: This is where the live goals card for the active day renders.
+             It's a separate container from #schedule-grid on purpose — see the
+             note in the <script> section about why. -->
+        <div id="stream-goals-card"></div>
 
       </section>
 
@@ -1621,6 +1809,134 @@
       }
 
       // ===============================
+      // 🎯 Stream Goals Data — single source of truth
+      // -------------------------------------------------
+      // This is the SAME goal/reward data shown in the
+      // "Twitch Sub Goals" tab tables further down the page.
+      // Edit amounts/rewards here whenever they change.
+      // ===============================
+      const streamGoalsData = {
+          Wednesday: {
+              emoji: "🎨",
+              label: "Wednesday Stream Goals & Rewards",
+              goals: [
+                  { amount: 5,   reward: "" },
+                  { amount: 10,  reward: "" },
+                  { amount: 15,  reward: "" },
+                  { amount: 25,  reward: "" },
+                  { amount: 35,  reward: "" },
+                  { amount: 45,  reward: "" },
+                  { amount: 55,  reward: "" },
+                  { amount: 65,  reward: "Winner Chooses Game" },
+                  { amount: 85,  reward: "Art Stream – Chat Picks Theme" },
+                  { amount: 95,  reward: "Viking Cosplay + Valhalla Stream" },
+                  { amount: 100, reward: "Community Game Night" }
+              ]
+          },
+          Friday: {
+              emoji: "🕹️",
+              label: "Friday Stream Goals & Rewards",
+              goals: [
+                  { amount: 75,  reward: "Community Movie Night" },
+                  { amount: 150, reward: "Interactive Stream Challenges" },
+                  { amount: 250, reward: "Behind the Scenes Stream" },
+                  { amount: 500, reward: "24-Hour Stream" }
+              ]
+          },
+          Saturday: {
+              emoji: "🎧",
+              label: "Saturday Stream Goals & Rewards",
+              goals: [
+                  { amount: 85,  reward: "Lofi Art or Chill Stream" },
+                  { amount: 350, reward: "Unlock New Emote Slots" },
+                  { amount: 400, reward: "Q&A Stream (Ask Me Anything)" },
+                  { amount: 750, reward: "Free Custom Commission" }
+              ]
+          }
+      };
+
+      // -------------------------------------------------
+      // 👉 Update this number by hand with your current sub
+      // count whenever it changes. (There is no live Twitch
+      // subscriber API call wired in yet — that requires a
+      // different OAuth scope than the public stream/game
+      // lookups already on this page. Ask me to add that
+      // next if you want it to update automatically.)
+      // -------------------------------------------------
+      let CURRENT_SUBS = 0;
+
+      // ===============================
+      // 🎯 Render the advanced Stream Goals card
+      // for the Upcoming Streams tab (#stream-goals-card)
+      // ===============================
+      function renderGoalsForDay(dayName) {
+          const container = document.getElementById("stream-goals-card");
+          if (!container) return;
+
+          const dayData = streamGoalsData[dayName];
+
+          // Off day (Mon/Tue/Thu/Sun) — no goals scheduled
+          if (!dayData) {
+              container.innerHTML = `
+                  <div class="goals-card-wrapper off-day">
+                      <h3 class="goals-card-title">😴 No Stream Goals Today</h3>
+                      <p class="goals-off-text">${dayName} is an off day — check back on Wednesday, Friday, or Saturday!</p>
+                  </div>
+              `;
+              return;
+          }
+
+          // Figure out the next unmet goal and the one before it,
+          // so we can draw a progress bar between them.
+          const nextGoal = dayData.goals.find(g => g.amount > CURRENT_SUBS);
+          const prevGoals = dayData.goals.filter(g => g.amount <= CURRENT_SUBS);
+          const prevAmount = prevGoals.length ? prevGoals[prevGoals.length - 1].amount : 0;
+
+          const progressPercent = nextGoal
+              ? Math.min(100, Math.max(0, Math.round(((CURRENT_SUBS - prevAmount) / (nextGoal.amount - prevAmount)) * 100)))
+              : 100;
+
+          const progressText = nextGoal
+              ? `${CURRENT_SUBS} / ${nextGoal.amount} subs — ${nextGoal.amount - CURRENT_SUBS} to go!`
+              : `🎉 All ${dayName} goals unlocked!`;
+
+          const milestonesHTML = dayData.goals.map(goal => {
+              const achieved = CURRENT_SUBS >= goal.amount;
+              const isNextTarget = !achieved && nextGoal && goal.amount === nextGoal.amount;
+              const rewardText = goal.reward || "Thank-You Shoutout";
+              const stateClass = achieved ? "achieved" : "locked";
+              const targetClass = isNextTarget ? " next-target" : "";
+
+              return `
+                  <div class="milestone-card ${stateClass}${targetClass}">
+                      <div class="milestone-icon">${achieved ? "✔" : "🔒"}</div>
+                      <div class="milestone-amount">${goal.amount}</div>
+                      <div class="milestone-label">Subs</div>
+                      <div class="milestone-reward">${rewardText}</div>
+                  </div>
+              `;
+          }).join("");
+
+          container.innerHTML = `
+              <div class="goals-card-wrapper">
+                  <div class="goals-card-header">
+                      <span class="goals-card-emoji">${dayData.emoji}</span>
+                      <h3 class="goals-card-title">${dayData.label}</h3>
+                  </div>
+
+                  <div class="goals-progress-track">
+                      <div class="goals-progress-fill" style="width:${progressPercent}%;"></div>
+                  </div>
+                  <p class="goals-progress-text">${progressText}</p>
+
+                  <div class="milestone-grid">
+                      ${milestonesHTML}
+                  </div>
+              </div>
+          `;
+      }
+
+      // ===============================
       // 🕹️ Show Stream Goals Section by Day
       // ===============================
       function showStreamGoalsForDay(dayName) {
@@ -1637,21 +1953,32 @@
       }
 
       // ===============================
-      // 📅 Update Stream Goals Date
+      // 📅 Keep the Stream Goals card synced to TODAY'S actual
+      // weekday — this is separate from "next upcoming stream
+      // day" used elsewhere on the page. On Mon/Tue/Thu/Sun
+      // this correctly shows the off-day message instead of
+      // borrowing Wednesday/Friday/Saturday's card.
+      // ===============================
+      let lastRenderedGoalsDay = null;
+
+      function syncGoalsCardToToday() {
+          const actualDayName = new Date().toLocaleDateString("en-US", { weekday: "long" });
+          if (actualDayName !== lastRenderedGoalsDay) {
+              lastRenderedGoalsDay = actualDayName;
+              renderGoalsForDay(actualDayName);
+          }
+      }
+
+      // ===============================
+      // 📅 Keep the Stream Goals card ticking
+      // (the visible "Today – [date]" text was removed since
+      // the goals card itself already shows the day/date context)
       // ===============================
       function updateStreamGoalsDate() {
-          const dateEl = document.getElementById("stream-goals");
-          const now = new Date();
-
-          const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
-          const formattedDate = now.toLocaleDateString("en-US", options);
-
-          const today = new Date();
-          const isToday = now.toDateString() === today.toDateString();
-
-          dateEl.textContent = isToday
-              ? `Today – ${formattedDate}:`
-              : `${formattedDate}:`;
+          // 🆕 Keep the goals card in sync with today's real date.
+          // Guarded so it only re-renders when the day actually
+          // changes, instead of re-drawing every second.
+          syncGoalsCardToToday();
       }
 
       // Run when page loads
