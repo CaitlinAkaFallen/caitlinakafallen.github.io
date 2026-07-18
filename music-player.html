@@ -6,6 +6,9 @@
 <title>FallenOneArt — Now Playing Overlay</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&family=Poppins:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Bebas+Neue&family=VT323&family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+ <!-- Icons -->
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
 <style>
 
 :root{
@@ -98,7 +101,11 @@ html,body{
   --card-height:120px;
 }
 
-.player-card:not(:has(#layoutStacked:not(.hidden))):not(:has(#layoutMinimal:not(.hidden))):not(:has(#layoutSpectrum:not(.hidden))) {
+.player-card:has(#layoutFullVinyl:not(.hidden)) {
+  height:auto;
+}
+
+.player-card:not(:has(#layoutStacked:not(.hidden))):not(:has(#layoutMinimal:not(.hidden))):not(:has(#layoutSpectrum:not(.hidden))):not(:has(#layoutFullVinyl:not(.hidden))) {
   height:var(--card-height);
 }
 
@@ -1203,6 +1210,213 @@ html,body{
 }
 
 /* ============================================================
+   FULL VINYL LAYOUT — Frameless, realistic turntable
+   No card container. Progress bar is fully replaced by the
+   equalizer bar row beneath the title/artist text, matching
+   the requested reference look (disc + tonearm + eq bars).
+   ============================================================ */
+.layout-fullvinyl{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  flex:1;
+  min-height:0;
+  width:100%;
+  padding:8px 0 4px;
+}
+
+.fv-turntable-wrap{
+  position:relative;
+  width:300px;
+  height:300px;
+  flex:0 0 auto;
+}
+
+/* The rotating disc itself. Sits slightly left/down within the
+   wrap so the tonearm pivot has room in the top-right corner. */
+.fv-vinyl-disc{
+  position:absolute;
+  left:6px;
+  top:36px;
+  width:264px;
+  height:264px;
+  border-radius:50%;
+  background:radial-gradient(circle at 32% 28%, #2a2632 0%, #17141c 45%, #0b0a10 100%);
+  box-shadow:
+    0 20px 46px rgba(0,0,0,0.55),
+    inset 0 0 0 1px rgba(255,255,255,0.06),
+    0 0 calc(36px * var(--glow-intensity)) rgba(125,232,200,calc(var(--glow-intensity) * 0.22));
+  transform:rotate(var(--vinyl-rotation));
+  will-change:transform;
+}
+
+/* Fine concentric grooves for a more accurate vinyl texture */
+.fv-vinyl-disc::before{
+  content:'';
+  position:absolute;
+  inset:10px;
+  border-radius:50%;
+  background:repeating-radial-gradient(circle at center,
+    rgba(255,255,255,0.055) 0px,
+    rgba(255,255,255,0.055) 1px,
+    transparent 1px,
+    transparent 3px);
+  opacity:0.65;
+  pointer-events:none;
+}
+
+/* Soft rotating light sheen so the disc reads as glossy, not flat */
+.fv-vinyl-disc::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background:conic-gradient(from 200deg at 50% 50%,
+    transparent 0deg,
+    rgba(255,255,255,0.10) 35deg,
+    transparent 85deg,
+    transparent 360deg);
+  mix-blend-mode:overlay;
+  pointer-events:none;
+}
+
+/* Label at the center of the disc, holds the album artwork */
+.fv-vinyl-label{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  width:34%;
+  height:34%;
+  border-radius:50%;
+  overflow:hidden;
+  background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  box-shadow:0 4px 14px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(255,255,255,0.18);
+  z-index:2;
+}
+.fv-vinyl-label img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+/* Spindle hole, drawn above the artwork so it always reads clearly */
+.fv-vinyl-spindle{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:9px;
+  height:9px;
+  transform:translate(-50%, -50%);
+  background:#0b0a10;
+  border-radius:50%;
+  box-shadow:0 0 0 2px rgba(255,255,255,0.18) inset, 0 1px 2px rgba(0,0,0,0.6);
+  z-index:3;
+}
+
+/* Tonearm — rendered as SVG for clean, precise geometry.
+   Pivot anchored in the top-right corner of the wrap, resting
+   the headshell/needle down onto the upper-right of the disc. */
+.fv-tonearm-svg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:4;
+  pointer-events:none;
+  overflow:visible;
+}
+
+/* Title / artist beneath the turntable */
+.fv-meta{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  text-align:center;
+  max-width:300px;
+  opacity:var(--metadata-opacity);
+  transition:opacity 0.3s ease;
+}
+
+.fv-title{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:calc(19px * var(--text-scale));
+  color:var(--title-color);
+  letter-spacing:-0.3px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:300px;
+}
+.fv-title .scroll-inner{ display:inline-block; white-space:nowrap; }
+.fv-title.marquee{ text-overflow:unset; }
+.fv-title.marquee .scroll-inner{ animation:marquee-scroll linear infinite; padding-right:40px; }
+
+.fv-artist{
+  font-family:var(--font-mono);
+  font-size:calc(12.5px * var(--text-scale));
+  color:var(--accent-primary);
+  letter-spacing:0.5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:300px;
+}
+.fv-artist.italic{ font-style:italic; }
+
+/* Equalizer row — this IS the progress indicator for Full Vinyl,
+   there is no separate progress bar rendered in this layout. */
+.fv-eq-bars{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:3px;
+  height:32px;
+  width:100%;
+  max-width:280px;
+}
+.fv-eq-bars .bar{
+  width:3.5px;
+  border-radius:2px;
+  background:linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
+  height:20%;
+  animation:eq-bounce 0.9s ease-in-out infinite;
+  will-change:height;
+  box-shadow:0 0 4px rgba(125,232,200,0.35);
+  flex:1;
+  max-width:6px;
+}
+.fv-eq-bars .bar:nth-child(1){ animation-delay:-0.7s; }
+.fv-eq-bars .bar:nth-child(2){ animation-delay:-0.4s; }
+.fv-eq-bars .bar:nth-child(3){ animation-delay:-0.9s; }
+.fv-eq-bars .bar:nth-child(4){ animation-delay:-0.1s; }
+.fv-eq-bars .bar:nth-child(5){ animation-delay:-0.6s; }
+.fv-eq-bars .bar:nth-child(6){ animation-delay:-0.3s; }
+.fv-eq-bars .bar:nth-child(7){ animation-delay:-0.8s; }
+.fv-eq-bars .bar:nth-child(8){ animation-delay:-0.2s; }
+.fv-eq-bars .bar:nth-child(9){ animation-delay:-0.5s; }
+.fv-eq-bars .bar:nth-child(10){ animation-delay:-0.7s; }
+.fv-eq-bars .bar:nth-child(11){ animation-delay:-0.4s; }
+.fv-eq-bars .bar:nth-child(12){ animation-delay:-0.9s; }
+.fv-eq-bars .bar:nth-child(13){ animation-delay:-0.1s; }
+.fv-eq-bars .bar:nth-child(14){ animation-delay:-0.6s; }
+.fv-eq-bars .bar:nth-child(15){ animation-delay:-0.3s; }
+.fv-eq-bars .bar:nth-child(16){ animation-delay:-0.8s; }
+.fv-eq-bars .bar:nth-child(17){ animation-delay:-0.5s; }
+.fv-eq-bars .bar:nth-child(18){ animation-delay:-0.2s; }
+.fv-eq-bars .bar:nth-child(19){ animation-delay:-0.9s; }
+.fv-eq-bars .bar:nth-child(20){ animation-delay:-0.6s; }
+
+.fv-eq-bars.paused .bar{
+  animation-play-state:paused;
+  height:12%;
+}
+
+/* ============================================================
    IDLE / OFFLINE STATE
    ============================================================ */
 .idle-state{
@@ -1296,9 +1510,9 @@ html,body{
 }
 
 @media (prefers-reduced-motion: reduce){
-  .logo-mark .bar, .status-dot, .idle-icon, .art-wrap-square, .minimal-art-wrap, .stacked-art-wrap, .spectrum-art-wrap, .vinyl-surface,
-  .pill-title.marquee .scroll-inner, .minimal-title.marquee .scroll-inner, .stacked-title.marquee .scroll-inner, .spectrum-title, .vinyl-title.marquee .scroll-inner,
-  .vinyl-eq-bars .bar, .spectrum-eq-bars .bar{
+  .logo-mark .bar, .status-dot, .idle-icon, .art-wrap-square, .minimal-art-wrap, .stacked-art-wrap, .spectrum-art-wrap, .vinyl-surface, .fv-vinyl-disc,
+  .pill-title.marquee .scroll-inner, .minimal-title.marquee .scroll-inner, .stacked-title.marquee .scroll-inner, .spectrum-title, .vinyl-title.marquee .scroll-inner, .fv-title.marquee .scroll-inner,
+  .vinyl-eq-bars .bar, .spectrum-eq-bars .bar, .fv-eq-bars .bar{
     animation:none !important;
   }
 }
@@ -1472,7 +1686,7 @@ html,body{
         </div>
       </div>
 
-      <!-- VINTAGE LAYOUT — Rotating Vinyl Record -->
+      <!-- VINTAGE LAYOUT — Rotating Vinyl Record (CD-style, has its own card) -->
 <div class="layout-vintage hidden" id="layoutVintage">
   
   <!-- TITLE OUTSIDE -->
@@ -1531,6 +1745,74 @@ html,body{
   </div>
 </div>
 
+      <!-- FULL VINYL LAYOUT — Frameless realistic turntable.
+           No metadata pill container, no progress bar container:
+           title/artist sit directly beneath the disc, and the
+           equalizer bar row stands in for the progress bar. -->
+      <div class="layout-fullvinyl hidden" id="layoutFullVinyl">
+        <div class="fv-turntable-wrap">
+          <div class="fv-vinyl-disc" id="fvVinylDisc">
+            <div class="fv-vinyl-label">
+              <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
+            </div>
+            <div class="fv-vinyl-spindle"></div>
+          </div>
+          <svg class="fv-tonearm-svg" viewBox="0 0 300 300" aria-hidden="true">
+            <defs>
+              <linearGradient id="fvArmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#eef0f5"/>
+                <stop offset="100%" stop-color="#9a97ab"/>
+              </linearGradient>
+              <radialGradient id="fvPivotGrad" cx="35%" cy="35%" r="70%">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="100%" stop-color="#8a879c"/>
+              </radialGradient>
+            </defs>
+            <!-- Rod from pivot to headshell -->
+            <line x1="250" y1="30" x2="192" y2="122" stroke="url(#fvArmGrad)" stroke-width="5" stroke-linecap="round"/>
+            <!-- Counterweight, angled along the rod -->
+            <rect x="208" y="72" width="13" height="24" rx="6.5" transform="rotate(58 214.5 84)" fill="url(#fvArmGrad)" opacity="0.92"/>
+            <!-- Pivot knob -->
+            <circle cx="250" cy="30" r="10" fill="url(#fvPivotGrad)" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
+            <circle cx="250" cy="30" r="3.5" fill="rgba(0,0,0,0.3)"/>
+            <!-- Headshell / needle resting on the disc -->
+            <circle cx="192" cy="122" r="5" fill="var(--accent-primary)" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="fv-meta">
+          <div class="fv-title" id="titleFullVinyl" data-role="title"><span class="scroll-inner">—</span></div>
+          <div class="fv-artist" id="artistFullVinyl" data-role="artist">—</div>
+        </div>
+        
+        <div class="fv-eq-bars" data-role="eq-bars">
+           <span class="time-stamp" data-role="time-elapsed">0:00</span>
+            
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+           <span class="time-stamp remaining" data-role="time-remaining">-0:00</span>
+        </div>
+       
+      </div>
+      
+
       <!-- IDLE STATE -->
       <div class="idle-state hidden" id="idleState">
         <div class="idle-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg></div>
@@ -1582,7 +1864,8 @@ const LAYOUT_IDS = [
   { mode:'minimal', id:'layoutMinimal' },
   { mode:'stacked', id:'layoutStacked' },
   { mode:'square', id:'layoutSquare' },
-  { mode:'vintage', id:'layoutVintage' }
+  { mode:'vintage', id:'layoutVintage' },
+  { mode:'fullvinyl', id:'layoutFullVinyl' }
 ];
 
 const DEFAULT_CONFIG = {
@@ -1618,9 +1901,10 @@ function updateVinylRotation(){
   const totalRotations = (elapsedMs / 1000) * rotationsPerSecond;
   vinylRotationDeg = (totalRotations * 360) % 360;
   
-  // Targets the surface, keeping overlays strictly stationary
-  const vinylEl = document.getElementById('vinylSurface');
-  if(vinylEl) vinylEl.style.setProperty('--vinyl-rotation', vinylRotationDeg + 'deg');
+  // Targets both the CD-style vinyl surface AND the Full Vinyl disc,
+  // keeping overlays (metadata, tonearm, eq bars) strictly stationary.
+  const vinylEls = document.querySelectorAll('#vinylSurface, #fvVinylDisc');
+  vinylEls.forEach(el => el.style.setProperty('--vinyl-rotation', vinylRotationDeg + 'deg'));
 }
 
 function tick() {
@@ -1691,7 +1975,9 @@ function applyConfig(cfg){
   LAYOUT_IDS.forEach(({mode, id})=> document.getElementById(id).classList.toggle('hidden', cfg.layoutMode !== mode));
 
   const card = document.getElementById('playerCard');
-  const showBg = cfg.showContainerBackground !== false;
+  // Full Vinyl is always frameless by design, regardless of the
+  // Container Background toggle — matches Stacked's own-layering rule.
+  const showBg = cfg.showContainerBackground !== false && cfg.layoutMode !== 'fullvinyl';
   card.style.background = showBg ? '' : 'transparent';
   card.style.border = showBg ? '' : 'none';
   card.style.backdropFilter = showBg ? '' : 'none';
@@ -1708,12 +1994,13 @@ function applyConfig(cfg){
   document.querySelectorAll('[data-role="album"]').forEach(el=> el.classList.toggle('hidden', !cfg.showAlbum));
   document.querySelectorAll('[data-role="time-elapsed"], [data-role="time-remaining"]').forEach(el=> el.classList.toggle('hidden', !cfg.showTimecode));
 
-  const showProgressInContainer = cfg.showProgressBar && cfg.layoutMode !== 'stacked' && cfg.layoutMode !== 'square' && cfg.layoutMode !== 'compact' && cfg.layoutMode !== 'minimal' && cfg.layoutMode !== 'spectrum';
+  const showProgressInContainer = cfg.showProgressBar && cfg.layoutMode !== 'stacked' && cfg.layoutMode !== 'square' && cfg.layoutMode !== 'compact' && cfg.layoutMode !== 'minimal' && cfg.layoutMode !== 'spectrum' && cfg.layoutMode !== 'fullvinyl';
   document.getElementById('progressContainer').classList.toggle('hidden', !showProgressInContainer);
 
   document.querySelectorAll('.eq-bars').forEach(el => el.classList.toggle('hidden', !cfg.showEqualizer));
   document.querySelectorAll('.spectrum-eq-bars').forEach(el => el.classList.toggle('hidden', !cfg.showEqualizer));
-  document.getElementById('headerRow').classList.toggle('hidden', !cfg.showBranding);
+  document.querySelectorAll('.fv-eq-bars').forEach(el => el.classList.toggle('hidden', !cfg.showEqualizer));
+  document.getElementById('headerRow').classList.toggle('hidden', !cfg.showBranding || cfg.layoutMode === 'fullvinyl');
 
   document.querySelectorAll('.progress-track').forEach(track=>{
     track.classList.toggle('style-segmented', cfg.progressBarStyle === 'segmented');
