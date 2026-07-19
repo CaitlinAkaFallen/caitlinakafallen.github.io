@@ -45,6 +45,8 @@
 }
 
 *{box-sizing:border-box;}
+/* utility class to replace inline margin-top styles */
+.mt-10{ margin-top:10px; }
 html,body{
   margin:0;
   padding:0;
@@ -198,12 +200,6 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   font-weight:400;
 }
 
-.section-divider{
-  margin:36px 0 28px;
-  padding-top:24px;
-  border-top:1px solid var(--border-medium);
-  position:relative;
-}
 .section-divider{
   margin:36px 0 28px;
   padding-top:24px;
@@ -381,6 +377,16 @@ input[type="range"]::-moz-range-thumb:hover{
   letter-spacing:1px;
 }
 
+img[type="color"]{
+  width:50px;
+  height:40px;
+  border:2px solid var(--border-medium);
+  border-radius:10px;
+  background:linear-gradient(135deg, #1a1a2e, #2d2d3d);
+  cursor:pointer;
+  padding:3px;
+  transition:all .25s ease;
+}
 input[type="color"]{
   width:50px;
   height:40px;
@@ -599,6 +605,13 @@ button.icon-btn:hover{
 }
 button.icon-btn:active{
   transform:scale(0.96);
+}
+
+button.icon-btn.active-toggle{
+  border-color:var(--accent-primary);
+  color:var(--accent-primary);
+  background:linear-gradient(135deg, rgba(125,232,200,0.15), rgba(200,162,255,0.08));
+  box-shadow:var(--glow-primary);
 }
 
 .input-group{
@@ -834,7 +847,7 @@ button.icon-btn:active{
   pointer-events:auto;
 }
 
-.spotify-controls{ display:flex; gap:10px; margin-top:8px; }
+.spotify-controls{ display:flex; gap:10px; margin-top:8px; align-items:center; }
 
 .upload-zone{
   border:2px dashed var(--accent-primary);
@@ -1052,6 +1065,16 @@ button.icon-btn:active{
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.now-playing-large-actions{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.now-playing-large-actions button.icon-btn{
+  width:38px;
+  height:38px;
+}
 .queue-list-container {
   display: flex;
   flex-direction: column;
@@ -1183,6 +1206,145 @@ button.icon-btn:active{
 .custom-select-wrapper.open .arrow{ transform:rotate(180deg); }
 
 /* ==========================================
+   NEW: VOLUME SLIDER (in playback controls row)
+   ========================================== */
+.volume-control{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-left:auto;
+  flex:0 1 160px;
+}
+.volume-control .svg-icon{ color:var(--text-secondary); flex:0 0 auto; }
+.volume-control input[type="range"]{ flex:1; height:4px; }
+.volume-control .val{
+  font-family:var(--font-display);
+  font-size:11px;
+  color:var(--accent-primary);
+  width:32px;
+  text-align:right;
+  flex:0 0 auto;
+}
+
+/* NEW: Device switcher */
+.device-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.device-row .custom-select-wrapper{ max-width:none; flex:1; }
+.device-status-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--text-tertiary);
+  flex:0 0 auto;
+}
+.device-status-dot.active{
+  background:var(--accent-primary);
+  box-shadow:0 0 8px var(--accent-primary);
+}
+
+/* NEW: Search + add track */
+.search-results-list{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:12px;
+  max-height:320px;
+  overflow-y:auto;
+}
+.search-result-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px 12px;
+  background:var(--bg-panel);
+  border:1px solid var(--border-soft);
+  border-radius:10px;
+}
+.search-result-row img{
+  width:38px;
+  height:38px;
+  border-radius:6px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,0.05);
+  flex:0 0 auto;
+}
+.search-result-details{ flex:1; min-width:0; }
+.search-result-title{
+  font-family:var(--font-mono);
+  font-size:13px;
+  font-weight:600;
+  color:var(--text-primary);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.search-result-artist{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--text-secondary);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.search-result-row button.icon-btn{
+  width:32px;
+  height:32px;
+  font-size:14px;
+  flex:0 0 auto;
+}
+
+/* NEW: Recently played mini history */
+.recent-list-container{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.recent-row-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px 12px;
+  background:var(--bg-panel);
+  border:1px solid var(--border-soft);
+  border-radius:10px;
+  opacity:0.85;
+}
+.recent-row-item img{
+  width:32px;
+  height:32px;
+  border-radius:6px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.recent-row-details{ flex:1; min-width:0; }
+.recent-row-title{
+  font-family:var(--font-mono);
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-primary);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.recent-row-artist{
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--text-secondary);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.recent-row-time{
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--text-tertiary);
+  flex:0 0 auto;
+}
+
+/* ==========================================
    REORGANIZED PANEL LAYOUT
    Groups related fields into a tidy card grid
    instead of one long vertical list. Full-width
@@ -1204,6 +1366,8 @@ button.icon-btn:active{
 .panel.active > .section-divider,
 .panel.active > .status-card,
 .panel.active > .queue-list-container,
+.panel.active > .recent-list-container,
+.panel.active > .search-results-list,
 .panel.active > .spotify-controls,
 .panel.active > .action-bar,
 .panel.active > .instructions-bar,
@@ -1552,7 +1716,7 @@ button.icon-btn:active{
     <!-- QUEUE & NOW PLAYING -->
     <section class="panel" id="panel-queue">
       <h2>Now Playing &amp; Queue</h2>
-      <p class="sub">View what is currently broadcasting and choose from the upcoming tracks to instantly skip ahead.</p>
+      <p class="sub">View what is currently broadcasting, control playback, search for tracks, and browse recent history.</p>
 
       <div class="field">
         <label>Currently Playing</label>
@@ -1561,6 +1725,26 @@ button.icon-btn:active{
             Connecting to track stream...
           </div>
         </div>
+      </div>
+
+      <div class="field">
+        <label>Active Device</label>
+        <div class="device-row">
+          <span class="device-status-dot" id="deviceStatusDot"></span>
+          <div class="custom-select-wrapper" data-choice="__device" id="deviceSelect">
+            <div class="select-trigger glass-element">
+              <span id="deviceSelectLabel">No devices found</span>
+            </div>
+            <div class="select-options glass-element hidden" id="deviceSelectOptions">
+            </div>
+          </div>
+          <button type="button" class="icon-btn" id="btnRefreshDevices" title="Refresh devices">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08a5.99 5.99 0 01-5.65 4c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L14 11h7V4l-2.35 2.35z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="hint">Pick which Spotify Connect device the dashboard and playback buttons should control.</div>
       </div>
 
       <div class="section-divider">
@@ -1589,6 +1773,51 @@ button.icon-btn:active{
             <path d="M16 18h2V6h-2v12zM2 6l8.5 6-8.5 6z"/>
           </svg>
         </button>
+        <button class="icon-btn" id="queueBtnShuffle" title="Shuffle">
+          <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="queueBtnRepeat" title="Repeat">
+          <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+          </svg>
+        </button>
+        <div class="volume-control">
+          <svg class="svg-icon" id="volumeIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.26 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+          </svg>
+          <input type="range" id="inputVolume" min="0" max="100" step="1" value="50">
+          <span class="val" id="valVolume">50%</span>
+        </div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Search & Add to Queue</h3>
+        <div class="sub">Search Spotify's catalog and add a track directly to the active device's queue.</div>
+      </div>
+
+      <div class="field">
+        <div class="input-group">
+          <input type="text" id="inputSearchQuery" placeholder="Search for a track or artist...">
+          <button type="button" class="icon-btn" id="btnSearchTrack" title="Search">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="search-results-list" id="searchResultsList"></div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Recently Played</h3>
+        <div class="sub">Your last few tracks, most recent first.</div>
+      </div>
+
+      <div class="recent-list-container" id="recentListTracks">
+        <div class="status-placeholder">
+          Recently played stream idle.
+        </div>
       </div>
     </section>
 
@@ -2065,11 +2294,12 @@ const LS_PKCE_KEY = 'fallenoneart_spotify_pkce_verifier';
 const LS_CLIENT_ID_KEY = 'fallenoneart_spotify_client_id';
 const LS_DASH_THEME_KEY = 'fallenoneart_dashboard_theme';
 const LS_PREVIEW_OPACITY_KEY = 'fallenoneart_preview_opacity';
+const LS_DEVICE_ID_KEY = 'fallenoneart_spotify_device_id';
 const BROADCAST_NAME = 'fallenoneart-music-player-sync';
 const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_ME_URL = 'https://api.spotify.com/v1/me';
-const SPOTIFY_SCOPES = 'user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-private';
+const SPOTIFY_SCOPES = 'user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-private user-read-recently-played user-library-read user-library-modify';
 
 const DEFAULT_CONFIG = {
   layoutMode:'compact',accentPrimary:'#7de8c8',accentSecondary:'#c8a2ff',timeColor:'#7de8c8',titleColor:'#f3f1f8',artistColor:'#a39fb5',albumColor:'#a39fb5',
@@ -2091,6 +2321,13 @@ let dashTheme = { ...DEFAULT_DASH_THEME };
 let previewOpacity = 1;
 let bc = null;
 try{ bc = new BroadcastChannel(BROADCAST_NAME); }catch(e){}
+
+// runtime-only state for playback UI (not persisted in config)
+let shuffleState = false;
+let repeatState = 'off'; // off -> context -> track -> off
+let selectedDeviceId = null;
+let deviceList = [];
+let searchDebounceTimer = null;
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -2439,7 +2676,7 @@ uploadZone.addEventListener('drop', (e)=>{
 uploadClear.addEventListener('click', clearUploadPreview);
 
 // ============================================
-// AUTO-SAVE FOR DASHBOARD THEME - FIXED
+// AUTO-SAVE FOR DASHBOARD THEME
 // ============================================
 document.querySelectorAll('#panel-theme input, #panel-theme select').forEach(el=>{
   el.addEventListener('input', ()=>{
@@ -2534,10 +2771,11 @@ function updateRangeLabels(){
 
 function initCustomSelects(){
   document.querySelectorAll('.custom-select-wrapper').forEach(wrapper=>{
+    const choiceKey = wrapper.dataset.choice;
+    if(choiceKey === '__device') return; // device select is handled separately (dynamic options, no config key)
     const trigger = wrapper.querySelector('.select-trigger');
     const triggerLabel = trigger.querySelector('span');
     const optionsList = wrapper.querySelector('.select-options');
-    const choiceKey = wrapper.dataset.choice;
 
     trigger.addEventListener('click', (e)=>{
       e.stopPropagation();
@@ -2566,6 +2804,23 @@ function initCustomSelects(){
     });
   });
 
+  // Device select trigger toggles open/closed the same way, options are populated dynamically
+  const deviceWrapper = document.getElementById('deviceSelect');
+  const deviceTrigger = deviceWrapper.querySelector('.select-trigger');
+  deviceTrigger.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const optionsList = document.getElementById('deviceSelectOptions');
+    const isOpen = !optionsList.classList.contains('hidden');
+    document.querySelectorAll('.custom-select-wrapper').forEach(w=>{
+      w.querySelector('.select-options').classList.add('hidden');
+      w.classList.remove('open');
+    });
+    if(!isOpen){
+      optionsList.classList.remove('hidden');
+      deviceWrapper.classList.add('open');
+    }
+  });
+
   // Click anywhere outside a custom select closes it
   document.addEventListener('click', ()=>{
     document.querySelectorAll('.custom-select-wrapper').forEach(w=>{
@@ -2578,6 +2833,7 @@ function initCustomSelects(){
 function syncCustomSelects(){
   document.querySelectorAll('.custom-select-wrapper').forEach(wrapper=>{
     const choiceKey = wrapper.dataset.choice;
+    if(choiceKey === '__device') return;
     const trigger = wrapper.querySelector('.select-trigger');
     const triggerLabel = trigger.querySelector('span');
     const optionsList = wrapper.querySelector('.select-options');
@@ -2664,6 +2920,368 @@ async function getValidAccessToken(){let auth = getAuth();if(!auth) return null;
 
 async function getPlaybackState(){const token = await getValidAccessToken();if(!token) return null;try{const res = await fetch('https://api.spotify.com/v1/me/player', { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok) return await res.json();return null}catch(e){return null}}
 
+// ============================================
+// NEW: DEVICE SWITCHER
+// ============================================
+function loadSelectedDeviceId(){
+  try{ selectedDeviceId = localStorage.getItem(LS_DEVICE_ID_KEY) || null; }catch(e){ selectedDeviceId = null; }
+}
+function saveSelectedDeviceId(id){
+  selectedDeviceId = id;
+  try{ localStorage.setItem(LS_DEVICE_ID_KEY, id); }catch(e){}
+}
+
+async function fetchDevices(){
+  const token = await getValidAccessToken();
+  if(!token) return;
+  try{
+    const res = await fetch('https://api.spotify.com/v1/me/player/devices', { headers:{ 'Authorization': `Bearer ${token}` } });
+    if(!res.ok) return;
+    const data = await res.json();
+    deviceList = data.devices || [];
+    renderDeviceOptions();
+  }catch(e){}
+}
+
+function renderDeviceOptions(){
+  const optionsList = document.getElementById('deviceSelectOptions');
+  const label = document.getElementById('deviceSelectLabel');
+  const dot = document.getElementById('deviceStatusDot');
+
+  if(!deviceList.length){
+    label.textContent = 'No devices found';
+    optionsList.innerHTML = '<div class="select-option" style="opacity:.6;cursor:default;">Open Spotify on a device first</div>';
+    dot.classList.remove('active');
+    return;
+  }
+
+  // If nothing selected yet, or previous selection vanished, default to the API-reported active device
+  const activeFromApi = deviceList.find(d=>d.is_active);
+  if(!selectedDeviceId || !deviceList.some(d=>d.id === selectedDeviceId)){
+    if(activeFromApi) saveSelectedDeviceId(activeFromApi.id);
+    else saveSelectedDeviceId(deviceList[0].id);
+  }
+
+  optionsList.innerHTML = '';
+  deviceList.forEach(dev=>{
+    const opt = document.createElement('div');
+    opt.className = 'select-option' + (dev.id === selectedDeviceId ? ' selected' : '');
+    opt.dataset.value = dev.id;
+    opt.textContent = `${dev.is_active ? '● ' : ''}${dev.name} (${dev.type})`;
+    opt.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      saveSelectedDeviceId(dev.id);
+      renderDeviceOptions();
+      transferPlaybackToDevice(dev.id);
+      document.getElementById('deviceSelectOptions').classList.add('hidden');
+      document.getElementById('deviceSelect').classList.remove('open');
+    });
+    optionsList.appendChild(opt);
+  });
+
+  const selectedDevice = deviceList.find(d=>d.id === selectedDeviceId);
+  label.textContent = selectedDevice ? `${selectedDevice.name} (${selectedDevice.type})` : 'Select a device';
+  dot.classList.toggle('active', !!(selectedDevice && selectedDevice.is_active));
+}
+
+async function transferPlaybackToDevice(deviceId){
+  const token = await getValidAccessToken();
+  if(!token) return;
+  try{
+    await fetch('https://api.spotify.com/v1/me/player', {
+      method:'PUT',
+      headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+      body: JSON.stringify({ device_ids:[deviceId], play:false })
+    });
+    showToast('Switched active device ✓');
+  }catch(e){
+    showToast('Could not switch device.');
+  }
+}
+
+document.getElementById('btnRefreshDevices').addEventListener('click', ()=>{ fetchDevices(); showToast('Refreshing devices...'); });
+
+
+// ============================================
+// NEW: VOLUME SLIDER
+// ============================================
+function updateVolumeIcon(vol){
+  const svg = document.getElementById('volumeIcon');
+  if(vol == 0){
+    svg.innerHTML = '<path d="M16.5 12A4.5 4.5 0 0014 7.97v2.21l2.45 2.45c.03-.2.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 003.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+  } else if(vol < 50){
+    svg.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.26 2.5-4.02z"/>';
+  } else {
+    svg.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.26 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+  }
+}
+
+let volumeDebounceTimer = null;
+document.getElementById('inputVolume').addEventListener('input', (e)=>{
+  const vol = parseInt(e.target.value);
+  document.getElementById('valVolume').textContent = vol + '%';
+  updateVolumeIcon(vol);
+  clearTimeout(volumeDebounceTimer);
+  volumeDebounceTimer = setTimeout(()=> setSpotifyVolume(vol), 300);
+});
+
+async function setSpotifyVolume(vol){
+  const token = await getValidAccessToken();
+  if(!token){ showToast('Not connected to Spotify.'); return; }
+  try{
+    const res = await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${vol}`, {
+      method:'PUT',
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    if(res.status === 404){ showToast('No active device to set volume on.'); }
+  }catch(e){
+    showToast('Volume change failed.');
+  }
+}
+
+// ============================================
+// NEW: SHUFFLE / REPEAT
+// ============================================
+function updateShuffleRepeatButtons(){
+  const shuffleBtn = document.getElementById('queueBtnShuffle');
+  const repeatBtn = document.getElementById('queueBtnRepeat');
+  shuffleBtn.classList.toggle('active-toggle', shuffleState);
+  repeatBtn.classList.toggle('active-toggle', repeatState !== 'off');
+  const svg = repeatBtn.querySelector('svg');
+  if(repeatState === 'track'){
+    svg.innerHTML = '<path d="M7 7h7v3l4-4-4-4v3H5v6h2V7zm10 10h-7v-3l-4 4 4 4v-3h9v-6h-2v4zm-6.8-6.8l1.4-1.4L13 11.17V9h-1v4.83l1.7-1.7-1.5-1.93z"/><text x="12" y="14" font-size="7" text-anchor="middle" fill="currentColor">1</text>';
+  } else {
+    svg.innerHTML = '<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>';
+  }
+}
+
+document.getElementById('queueBtnShuffle').addEventListener('click', async ()=>{
+  shuffleState = !shuffleState;
+  updateShuffleRepeatButtons();
+  const token = await getValidAccessToken();
+  if(!token){ showToast('Not connected to Spotify.'); return; }
+  try{
+    await fetch(`https://api.spotify.com/v1/me/player/shuffle?state=${shuffleState}`, {
+      method:'PUT',
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    showToast(shuffleState ? 'Shuffle on ✓' : 'Shuffle off');
+  }catch(e){
+    showToast('Shuffle toggle failed.');
+  }
+});
+
+document.getElementById('queueBtnRepeat').addEventListener('click', async ()=>{
+  const order = ['off','context','track'];
+  const idx = order.indexOf(repeatState);
+  repeatState = order[(idx + 1) % order.length];
+  updateShuffleRepeatButtons();
+  const token = await getValidAccessToken();
+  if(!token){ showToast('Not connected to Spotify.'); return; }
+  try{
+    await fetch(`https://api.spotify.com/v1/me/player/repeat?state=${repeatState}`, {
+      method:'PUT',
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    const labelMap = { off:'Repeat off', context:'Repeat: playlist', track:'Repeat: track' };
+    showToast(labelMap[repeatState]);
+  }catch(e){
+    showToast('Repeat toggle failed.');
+  }
+});
+
+async function syncShuffleRepeatFromState(){
+  const state = await getPlaybackState();
+  if(!state) return;
+  shuffleState = !!state.shuffle_state;
+  repeatState = state.repeat_state || 'off';
+  updateShuffleRepeatButtons();
+  if(typeof state.device?.volume_percent === 'number'){
+    document.getElementById('inputVolume').value = state.device.volume_percent;
+    document.getElementById('valVolume').textContent = state.device.volume_percent + '%';
+    updateVolumeIcon(state.device.volume_percent);
+  }
+}
+
+// ============================================
+// NEW: SEARCH + ADD TO QUEUE
+// ============================================
+async function searchTracks(query){
+  const token = await getValidAccessToken();
+  if(!token){ showToast('Not connected to Spotify.'); return; }
+  if(!query || !query.trim()){ document.getElementById('searchResultsList').innerHTML = ''; return; }
+  try{
+    const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=8`, {
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    if(!res.ok) return;
+    const data = await res.json();
+    renderSearchResults(data.tracks?.items || []);
+  }catch(e){
+    showToast('Search failed.');
+  }
+}
+
+function renderSearchResults(tracks){
+  const container = document.getElementById('searchResultsList');
+  if(!tracks.length){
+    container.innerHTML = '<div style="text-align:center; color:var(--text-tertiary); padding:14px; font-family:var(--font-mono); font-size:12px;">No results found.</div>';
+    return;
+  }
+  container.innerHTML = '';
+  tracks.forEach(track=>{
+    const art = track.album?.images?.[2]?.url || track.album?.images?.[0]?.url || '';
+    const artists = track.artists?.map(a=>a.name).join(', ') || 'Unknown Artist';
+    const row = document.createElement('div');
+    row.className = 'search-result-row';
+    row.innerHTML = `
+      <img src="${art}" alt="Art">
+      <div class="search-result-details">
+        <div class="search-result-title">${track.name}</div>
+        <div class="search-result-artist">${artists}</div>
+      </div>
+      <button type="button" class="icon-btn" title="Add to queue">
+        <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      </button>
+    `;
+    row.querySelector('button').addEventListener('click', ()=> addTrackToQueue(track.uri, track.name));
+    container.appendChild(row);
+  });
+}
+
+async function addTrackToQueue(uri, name){
+  const token = await getValidAccessToken();
+  if(!token){ showToast('Not connected to Spotify.'); return; }
+  try{
+    const deviceParam = selectedDeviceId ? `&device_id=${selectedDeviceId}` : '';
+    const res = await fetch(`https://api.spotify.com/v1/me/player/queue?uri=${encodeURIComponent(uri)}${deviceParam}`, {
+      method:'POST',
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    if(res.ok || res.status === 204){
+      showToast(`Added "${name}" to queue ✓`);
+      setTimeout(fetchAndUpdateQueue, 500);
+    } else if(res.status === 404){
+      showToast('No active device found. Open Spotify somewhere first.');
+    } else {
+      showToast('Could not add to queue.');
+    }
+  }catch(e){
+    showToast('Add to queue failed.');
+  }
+}
+
+document.getElementById('btnSearchTrack').addEventListener('click', ()=> searchTracks(document.getElementById('inputSearchQuery').value));
+document.getElementById('inputSearchQuery').addEventListener('input', (e)=>{
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(()=> searchTracks(e.target.value), 500);
+});
+document.getElementById('inputSearchQuery').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter'){ e.preventDefault(); searchTracks(e.target.value); }
+});
+
+// ============================================
+// NEW: RECENTLY PLAYED
+// ============================================
+function formatRelativeTime(isoString){
+  const then = new Date(isoString).getTime();
+  const diffMs = Date.now() - then;
+  const mins = Math.floor(diffMs / 60000);
+  if(mins < 1) return 'just now';
+  if(mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if(hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+async function fetchRecentlyPlayed(){
+  const token = await getValidAccessToken();
+  if(!token) return;
+  try{
+    const res = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=8', {
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    if(!res.ok) return;
+    const data = await res.json();
+    renderRecentlyPlayed(data.items || []);
+  }catch(e){}
+}
+
+function renderRecentlyPlayed(items){
+  const container = document.getElementById('recentListTracks');
+  if(!items.length){
+    container.innerHTML = '<div style="text-align:center; color:var(--text-tertiary); padding:14px; font-family:var(--font-mono); font-size:12px;">No recent history yet.</div>';
+    return;
+  }
+  container.innerHTML = '';
+  items.forEach(item=>{
+    const track = item.track;
+    const art = track.album?.images?.[2]?.url || track.album?.images?.[0]?.url || '';
+    const artists = track.artists?.map(a=>a.name).join(', ') || 'Unknown Artist';
+    const row = document.createElement('div');
+    row.className = 'recent-row-item';
+    row.innerHTML = `
+      <img src="${art}" alt="Art">
+      <div class="recent-row-details">
+        <div class="recent-row-title">${track.name}</div>
+        <div class="recent-row-artist">${artists}</div>
+      </div>
+      <div class="recent-row-time">${formatRelativeTime(item.played_at)}</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+// ============================================
+// NEW: LIKE / SAVE TO LIBRARY
+// ============================================
+let currentTrackId = null;
+async function checkSavedStatus(trackId){
+  const token = await getValidAccessToken();
+  if(!token || !trackId) return false;
+  try{
+    const res = await fetch(`https://api.spotify.com/v1/me/tracks/contains?ids=${trackId}`, {
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    if(!res.ok) return false;
+    const data = await res.json();
+    return !!data[0];
+  }catch(e){ return false; }
+}
+
+async function toggleSavedTrack(){
+  const token = await getValidAccessToken();
+  if(!token || !currentTrackId){ showToast('Not connected to Spotify.'); return; }
+  const btn = document.getElementById('btnLikeTrack');
+  const isSaved = btn.dataset.saved === '1';
+  try{
+    const res = await fetch(`https://api.spotify.com/v1/me/tracks?ids=${currentTrackId}`, {
+      method: isSaved ? 'DELETE' : 'PUT',
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    if(res.ok || res.status === 200 || res.status === 204){
+      setLikeButtonState(!isSaved);
+      showToast(isSaved ? 'Removed from Liked Songs' : 'Added to Liked Songs ✓');
+    }
+  }catch(e){
+    showToast('Could not update Liked Songs.');
+  }
+}
+
+function setLikeButtonState(saved){
+  const btn = document.getElementById('btnLikeTrack');
+  if(!btn) return;
+  btn.dataset.saved = saved ? '1' : '0';
+  btn.classList.toggle('active-toggle', saved);
+  btn.querySelector('svg').innerHTML = saved
+    ? '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>'
+    : '<path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>';
+}
+
+// ============================================
+// EXISTING: QUEUE & NOW PLAYING
+// ============================================
 async function fetchAndUpdateQueue() {
   const token = await getValidAccessToken();
   if (!token) return;
@@ -2681,14 +3299,27 @@ async function fetchAndUpdateQueue() {
       const albumArt = activeTrack.album?.images?.[0]?.url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       const parsedArtists = activeTrack.artists?.map(a => a.name).join(', ') || 'Unknown Artist';
       
+      if(currentTrackId !== activeTrack.id){
+        currentTrackId = activeTrack.id;
+        checkSavedStatus(currentTrackId).then(setLikeButtonState);
+      }
+
       cardActive.innerHTML = `
         <img src="${albumArt}" alt="Album Cover">
         <div class="now-playing-large-info">
           <div class="now-playing-large-title">${activeTrack.name}</div>
           <div class="now-playing-large-artist">${parsedArtists}</div>
         </div>
+        <div class="now-playing-large-actions">
+          <button type="button" class="icon-btn" id="btnLikeTrack" title="Save to Liked Songs" data-saved="0">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
+          </button>
+        </div>
       `;
+      document.getElementById('btnLikeTrack').addEventListener('click', toggleSavedTrack);
+      checkSavedStatus(currentTrackId).then(setLikeButtonState);
     } else {
+      currentTrackId = null;
       cardActive.innerHTML = `<div style="text-align:center; width:100%; color:var(--text-secondary); font-family:var(--font-mono); font-size:12px;">Nothing streaming right now.</div>`;
     }
     
@@ -2729,7 +3360,7 @@ async function jumpToQueueTrack(trackUri) {
   const token = await getValidAccessToken();
   if (!token) { showToast('Not connected to Spotify.'); return; }
   try {
-    const res = await fetch('https://api.spotify.com/v1/me/player/play', {
+    const res = await fetch('https://api.spotify.com/v1/me/player/play' + (selectedDeviceId ? `?device_id=${selectedDeviceId}` : ''), {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -2748,7 +3379,7 @@ async function jumpToQueueTrack(trackUri) {
   }
 }
 
-async function refreshConnectionStatus(){const auth = getAuth();const led = document.getElementById('statusLed');const text = document.getElementById('statusText');const connectBtn = document.getElementById('btnConnect');const disconnectBtn = document.getElementById('btnDisconnect');if(!auth){led.classList.remove('on');text.textContent = 'Not connected yet.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');return}document.getElementById('inputClientId').value = auth.clientId;connectBtn.classList.add('hidden');disconnectBtn.classList.remove('hidden');const token = await getValidAccessToken();if(!token){led.classList.remove('on');text.innerHTML = '<strong>Connection expired.</strong> Reconnect below.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');return}led.classList.add('on');try{const res = await fetch(SPOTIFY_ME_URL, { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok){const me = await res.json();text.innerHTML = `Connected as <strong>${me.display_name || me.id}</strong>.`}else{text.innerHTML = '<strong>Connected.</strong>'}}catch(e){text.innerHTML = '<strong>Connected.</strong>'}}
+async function refreshConnectionStatus(){const auth = getAuth();const led = document.getElementById('statusLed');const text = document.getElementById('statusText');const connectBtn = document.getElementById('btnConnect');const disconnectBtn = document.getElementById('btnDisconnect');if(!auth){led.classList.remove('on');text.textContent = 'Not connected yet.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');return}document.getElementById('inputClientId').value = auth.clientId;connectBtn.classList.add('hidden');disconnectBtn.classList.remove('hidden');const token = await getValidAccessToken();if(!token){led.classList.remove('on');text.innerHTML = '<strong>Connection expired.</strong> Reconnect below.';connectBtn.classList.remove('hidden');disconnectBtn.classList.add('hidden');return}led.classList.add('on');try{const res = await fetch(SPOTIFY_ME_URL, { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok){const me = await res.json();text.innerHTML = `Connected as <strong>${me.display_name || me.id}</strong>.`; }else{text.innerHTML = '<strong>Connected.</strong>'}}catch(e){text.innerHTML = '<strong>Connected.</strong>'}}
 document.getElementById('btnConnect').addEventListener('click', startSpotifyLogin);
 document.getElementById('btnDisconnect').addEventListener('click', async ()=>{
   localStorage.removeItem(LS_AUTH_KEY);
@@ -2756,7 +3387,7 @@ document.getElementById('btnDisconnect').addEventListener('click', async ()=>{
   await refreshConnectionStatus();
   showToast('Disconnected from Spotify ✓');
 });
-async function playbackAction(method, path){const token = await getValidAccessToken();if(!token){ showToast('Not connected to Spotify.'); return; }try{const res = await fetch(`https://api.spotify.com/v1/me/player/${path}`, { method, headers:{ 'Authorization': `Bearer ${token}` } });if(res.status === 404){ showToast('No active Spotify device found. Open Spotify somewhere first.'); }}catch(e){ showToast('Playback control failed.'); }}
+async function playbackAction(method, path){const token = await getValidAccessToken();if(!token){ showToast('Not connected to Spotify.'); return; }try{const devSuffix = selectedDeviceId ? (path.includes('?') ? `&device_id=${selectedDeviceId}` : `?device_id=${selectedDeviceId}`) : '';const res = await fetch(`https://api.spotify.com/v1/me/player/${path}${devSuffix}`, { method, headers:{ 'Authorization': `Bearer ${token}` } });if(res.status === 404){ showToast('No active Spotify device found. Open Spotify somewhere first.'); }}catch(e){ showToast('Playback control failed.'); }}
 
 // ============================================
 // QUEUE TAB PLAYBACK BUTTONS (Prev / Play-Pause / Next)
@@ -2790,11 +3421,16 @@ document.getElementById('queueBtnPlaybackNext').addEventListener('click', async 
   setTimeout(()=>{ fetchAndUpdateQueue(); updateQueuePlayPauseIcon(); }, 400);
 });
 async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
-(async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();
+(async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();loadSelectedDeviceId();
   setInterval(fetchAndUpdateQueue, 2000);
   setInterval(updateQueuePlayPauseIcon, 3000);
+  setInterval(fetchDevices, 15000);
+  setInterval(fetchRecentlyPlayed, 30000);
   fetchAndUpdateQueue();
   updateQueuePlayPauseIcon();
+  fetchDevices();
+  fetchRecentlyPlayed();
+  syncShuffleRepeatFromState();
   updateSaveBarVisibility('connection');
 })();
 </script>
