@@ -1741,9 +1741,50 @@
       </div>
 
       <div class="field">
-        <label for="inputDiscordBotAvatar">Webhook Bot Avatar URL</label>
-        <input type="text" id="inputDiscordBotAvatar" placeholder="https://example.com/avatar.png">
-        <div class="hint">Optional. Overrides the avatar shown next to the bot name.</div>
+        <label>Webhook Bot Avatar</label>
+        <div class="toggle-row"><span>Upload file</span><label class="switch"><input type="checkbox" id="toggleDiscordAvatarSource" aria-label="Toggle avatar upload vs URL"><span class="track"></span></label><span class="hint">URL</span></div>
+
+        <div id="discordAvatarUrlSection">
+          <label for="inputDiscordBotAvatar">Webhook Bot Avatar URL</label>
+          <input type="text" id="inputDiscordBotAvatar" placeholder="https://example.com/avatar.png">
+          <div class="hint">This is what Discord actually displays — it must be a public, hosted image link (Discord fetches it from its own servers).</div>
+
+          <div class="wallpaper-history-section" id="discordAvatarUrlHistorySection">
+            <label>URL History</label>
+            <div class="hint" id="discordAvatarUrlHistoryEmptyHint">URLs you've used before are saved here so you can switch back anytime.</div>
+            <div class="wallpaper-history-grid" id="discordAvatarUrlHistoryGrid"></div>
+          </div>
+        </div>
+
+        <div id="discordAvatarUploadSection" class="hidden">
+          <label>Upload Avatar Image</label>
+          <input type="file" id="inputDiscordAvatarUpload" accept="image/*" class="hidden">
+          <div class="upload-zone" id="discordAvatarUploadZone">
+            <div class="upload-icon">▲</div>
+            <div class="upload-text">Drag image here or click to browse</div>
+            <div class="upload-subtext">JPG, PNG, WebP, GIF (max 5MB)</div>
+          </div>
+          <div id="discordAvatarUploadPreview" class="upload-preview hidden">
+            <img id="discordAvatarPreviewImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Preview">
+            <div class="preview-info">
+              <div class="preview-filename" id="discordAvatarPreviewFilename"></div>
+              <div class="preview-size" id="discordAvatarPreviewSize"></div>
+            </div>
+            <button type="button" class="upload-clear" id="discordAvatarUploadClear" title="Remove">
+              <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="wallpaper-history-section" id="discordAvatarUploadHistorySection">
+            <label>Upload History</label>
+            <div class="hint" id="discordAvatarUploadHistoryEmptyHint">Uploaded images are saved here so you can reuse the hosted link anytime.</div>
+            <div class="wallpaper-history-grid" id="discordAvatarUploadHistoryGrid"></div>
+          </div>
+
+          <div class="hint" id="discordAvatarUploadStatusHint">Uploads are hosted automatically so Discord can actually display them. Once hosting finishes, the public link is filled in above for you.</div>
+        </div>
       </div>
 
       <div class="field">
@@ -1764,12 +1805,6 @@
         <label>Skip-Guard Delay</label>
         <div class="range-row"><input type="range" id="inputDiscordMinPlaySeconds" min="0" max="60" step="5"><span class="val" id="valDiscordMinPlaySeconds"></span></div>
         <div class="hint">Waits this many seconds before posting, so quick skips through tracks don't spam the channel. Set to 0 to post instantly.</div>
-      </div>
-
-      <div class="action-bar">
-        <button type="button" class="ghost-btn" id="btnDiscordTest">Send Test Message</button>
-        <button type="button" class="ghost-btn" id="btnDiscordPostNow">Post Current Track Now</button>
-        <span class="apphint" id="discordTestHint">Test sends a sample card. Post Now sends whatever is actually playing right now.</span>
       </div>
     </section>
 
@@ -2466,6 +2501,10 @@ const LS_DEVICE_ID_KEY = 'fallenoneart_spotify_device_id';
 const LS_DISCORD_KEY = 'fallenoneart_discord_webhook_config';
 const LS_WALLPAPER_HISTORY_KEY = 'fallenoneart_dashboard_wallpaper_history';
 const MAX_WALLPAPER_HISTORY = 8;
+const LS_DISCORD_AVATAR_URL_HISTORY_KEY = 'fallenoneart_discord_avatar_url_history';
+const LS_DISCORD_AVATAR_UPLOAD_HISTORY_KEY = 'fallenoneart_discord_avatar_upload_history';
+const MAX_AVATAR_HISTORY = 8;
+const IMGUR_CLIENT_ID = '546c25a59c58ad7';
 const BROADCAST_NAME = 'fallenoneart-music-player-sync';
 const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
@@ -2489,7 +2528,7 @@ const DEFAULT_DASH_THEME = {
 
 const DEFAULT_DISCORD_CONFIG = {
   enabled:false, webhookUrl:'', template:'🎵 Now playing: **{title}** by {artist}', includeArt:true, includeLink:true,
-  includeDuration:false, botUsername:'FallenOneArt Music Player', botAvatarUrl:'', embedColor:'#7de8c8', mentionText:'', minPlaySeconds:0
+  includeDuration:false, botUsername:'FallenOneArt Music Player', botAvatarUrl:'', botAvatarSourceType:'url', botAvatarUpload:'', embedColor:'#7de8c8', mentionText:'', minPlaySeconds:0
 };
 
 let config = { ...DEFAULT_CONFIG };
@@ -2497,6 +2536,8 @@ let dashTheme = { ...DEFAULT_DASH_THEME };
 let discordConfig = { ...DEFAULT_DISCORD_CONFIG };
 let previewOpacity = 1;
 let wallpaperHistory = [];
+let avatarUrlHistory = [];
+let avatarUploadHistory = [];
 let bc = null;
 try{ bc = new BroadcastChannel(BROADCAST_NAME); }catch(e){}
 
@@ -2602,6 +2643,19 @@ function populateDiscordForm(){
   document.getElementById('inputDiscordMention').value = discordConfig.mentionText;
   document.getElementById('inputDiscordMinPlaySeconds').value = discordConfig.minPlaySeconds;
   document.getElementById('valDiscordMinPlaySeconds').textContent = discordConfig.minPlaySeconds + 's';
+
+  // Avatar source toggle (URL vs local upload preview)
+  document.getElementById('toggleDiscordAvatarSource').checked = discordConfig.botAvatarSourceType === 'upload';
+  updateDiscordAvatarSourceToggle();
+  renderAvatarUrlHistory();
+  renderAvatarUploadHistory();
+  if(discordConfig.botAvatarUpload){
+    document.getElementById('discordAvatarUploadZone').style.display = 'none';
+    document.getElementById('discordAvatarUploadPreview').classList.remove('hidden');
+    document.getElementById('discordAvatarPreviewImg').src = discordConfig.botAvatarUpload;
+    document.getElementById('discordAvatarPreviewFilename').textContent = 'Restored upload';
+    document.getElementById('discordAvatarPreviewSize').textContent = 'Saved locally';
+  }
 }
 
 function readDiscordForm(){
@@ -2613,6 +2667,7 @@ function readDiscordForm(){
   discordConfig.includeDuration = document.getElementById('toggleDiscordDuration').checked;
   discordConfig.botUsername = document.getElementById('inputDiscordBotUsername').value.trim() || DEFAULT_DISCORD_CONFIG.botUsername;
   discordConfig.botAvatarUrl = document.getElementById('inputDiscordBotAvatar').value.trim();
+  discordConfig.botAvatarSourceType = document.getElementById('toggleDiscordAvatarSource').checked ? 'upload' : 'url';
   discordConfig.embedColor = document.getElementById('inputDiscordEmbedColor').value;
   discordConfig.mentionText = document.getElementById('inputDiscordMention').value.trim();
   discordConfig.minPlaySeconds = parseInt(document.getElementById('inputDiscordMinPlaySeconds').value) || 0;
@@ -2623,6 +2678,264 @@ document.querySelectorAll('#panel-connection #toggleDiscordEnabled, #panel-conne
   el.addEventListener('input', ()=>{ readDiscordForm(); saveDiscordConfigToStorage(); });
   el.addEventListener('change', ()=>{ readDiscordForm(); saveDiscordConfigToStorage(); });
 });
+
+// ============================================
+// NEW: WEBHOOK BOT AVATAR — URL vs UPLOAD TOGGLE
+// ============================================
+function updateDiscordAvatarSourceToggle(){
+  const isUpload = document.getElementById('toggleDiscordAvatarSource').checked;
+  document.getElementById('discordAvatarUrlSection').classList.toggle('hidden', isUpload);
+  document.getElementById('discordAvatarUploadSection').classList.toggle('hidden', !isUpload);
+}
+
+document.getElementById('toggleDiscordAvatarSource').addEventListener('change', ()=>{
+  discordConfig.botAvatarSourceType = document.getElementById('toggleDiscordAvatarSource').checked ? 'upload' : 'url';
+  updateDiscordAvatarSourceToggle();
+  saveDiscordConfigToStorage();
+  showToast(discordConfig.botAvatarSourceType === 'upload'
+    ? 'Upload mode — drop an image and it will be hosted automatically.'
+    : 'URL mode — paste or reuse a hosted link.');
+});
+
+// Track avatar URLs actually typed in, so they show up in history for reuse
+document.getElementById('inputDiscordBotAvatar').addEventListener('blur', ()=>{
+  const url = document.getElementById('inputDiscordBotAvatar').value.trim();
+  if(url) addToAvatarUrlHistory(url);
+});
+
+// ---- URL History ----
+function loadAvatarUrlHistory(){
+  try{
+    const raw = localStorage.getItem(LS_DISCORD_AVATAR_URL_HISTORY_KEY);
+    avatarUrlHistory = raw ? JSON.parse(raw) : [];
+  }catch(e){ avatarUrlHistory = []; }
+}
+function saveAvatarUrlHistory(){
+  try{ localStorage.setItem(LS_DISCORD_AVATAR_URL_HISTORY_KEY, JSON.stringify(avatarUrlHistory)); }catch(e){}
+}
+function addToAvatarUrlHistory(url){
+  if(!url || !url.trim()) return;
+  url = url.trim();
+  avatarUrlHistory = avatarUrlHistory.filter(item => item.url !== url);
+  avatarUrlHistory.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2,6), url, timestamp: Date.now() });
+  if(avatarUrlHistory.length > MAX_AVATAR_HISTORY) avatarUrlHistory = avatarUrlHistory.slice(0, MAX_AVATAR_HISTORY);
+  saveAvatarUrlHistory();
+  renderAvatarUrlHistory();
+}
+function removeFromAvatarUrlHistory(id){
+  avatarUrlHistory = avatarUrlHistory.filter(item => item.id !== id);
+  saveAvatarUrlHistory();
+  renderAvatarUrlHistory();
+  showToast('Removed from URL history');
+}
+function renderAvatarUrlHistory(){
+  const grid = document.getElementById('discordAvatarUrlHistoryGrid');
+  const emptyHint = document.getElementById('discordAvatarUrlHistoryEmptyHint');
+  if(!grid) return;
+  grid.innerHTML = '';
+  if(!avatarUrlHistory.length){
+    if(emptyHint) emptyHint.style.display = 'block';
+    return;
+  }
+  if(emptyHint) emptyHint.style.display = 'none';
+  avatarUrlHistory.forEach(item=>{
+    const cell = document.createElement('div');
+    cell.className = 'wallpaper-history-item' + (discordConfig.botAvatarUrl === item.url ? ' active' : '');
+    cell.title = item.url;
+    cell.innerHTML = `<img src="${item.url}" alt="Avatar" loading="lazy" onerror="this.style.opacity='0.15'"><button type="button" class="wallpaper-history-delete" title="Remove from history">✕</button>`;
+    cell.addEventListener('click', (e)=>{
+      if(e.target.closest('.wallpaper-history-delete')) return;
+      document.getElementById('inputDiscordBotAvatar').value = item.url;
+      discordConfig.botAvatarUrl = item.url;
+      saveDiscordConfigToStorage();
+      renderAvatarUrlHistory();
+      showToast('Avatar URL applied ✓');
+    });
+    cell.querySelector('.wallpaper-history-delete').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      removeFromAvatarUrlHistory(item.id);
+    });
+    grid.appendChild(cell);
+  });
+}
+
+// ---- Upload History (preview thumbnails; the actual Discord-facing link lives in URL history) ----
+function loadAvatarUploadHistory(){
+  try{
+    const raw = localStorage.getItem(LS_DISCORD_AVATAR_UPLOAD_HISTORY_KEY);
+    avatarUploadHistory = raw ? JSON.parse(raw) : [];
+  }catch(e){ avatarUploadHistory = []; }
+}
+function saveAvatarUploadHistory(){
+  try{
+    localStorage.setItem(LS_DISCORD_AVATAR_UPLOAD_HISTORY_KEY, JSON.stringify(avatarUploadHistory));
+  }catch(e){
+    if(avatarUploadHistory.length > 1){
+      avatarUploadHistory.pop();
+      try{ localStorage.setItem(LS_DISCORD_AVATAR_UPLOAD_HISTORY_KEY, JSON.stringify(avatarUploadHistory)); }catch(e2){
+        showToast('Avatar upload history is full — remove some to add more.');
+      }
+    }
+  }
+}
+function addToAvatarUploadHistory(dataUrl, name, hostedUrl){
+  avatarUploadHistory = avatarUploadHistory.filter(item => item.dataUrl !== dataUrl);
+  avatarUploadHistory.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2,6), dataUrl, name: name || 'Avatar', hostedUrl: hostedUrl || '', timestamp: Date.now() });
+  if(avatarUploadHistory.length > MAX_AVATAR_HISTORY) avatarUploadHistory = avatarUploadHistory.slice(0, MAX_AVATAR_HISTORY);
+  saveAvatarUploadHistory();
+  renderAvatarUploadHistory();
+}
+function removeFromAvatarUploadHistory(id){
+  avatarUploadHistory = avatarUploadHistory.filter(item => item.id !== id);
+  saveAvatarUploadHistory();
+  renderAvatarUploadHistory();
+  showToast('Removed from upload history');
+}
+function renderAvatarUploadHistory(){
+  const grid = document.getElementById('discordAvatarUploadHistoryGrid');
+  const emptyHint = document.getElementById('discordAvatarUploadHistoryEmptyHint');
+  if(!grid) return;
+  grid.innerHTML = '';
+  if(!avatarUploadHistory.length){
+    if(emptyHint) emptyHint.style.display = 'block';
+    return;
+  }
+  if(emptyHint) emptyHint.style.display = 'none';
+  avatarUploadHistory.forEach(item=>{
+    const cell = document.createElement('div');
+    cell.className = 'wallpaper-history-item' + (discordConfig.botAvatarUpload === item.dataUrl ? ' active' : '');
+    cell.title = item.name;
+    cell.innerHTML = `<img src="${item.dataUrl}" alt="${item.name}" loading="lazy"><button type="button" class="wallpaper-history-delete" title="Remove from history">✕</button>`;
+    cell.addEventListener('click', (e)=>{
+      if(e.target.closest('.wallpaper-history-delete')) return;
+      discordConfig.botAvatarUpload = item.dataUrl;
+      if(item.hostedUrl){
+        discordConfig.botAvatarUrl = item.hostedUrl;
+        document.getElementById('inputDiscordBotAvatar').value = item.hostedUrl;
+      }
+      saveDiscordConfigToStorage();
+      document.getElementById('discordAvatarUploadZone').style.display = 'none';
+      document.getElementById('discordAvatarUploadPreview').classList.remove('hidden');
+      document.getElementById('discordAvatarPreviewImg').src = item.dataUrl;
+      document.getElementById('discordAvatarPreviewFilename').textContent = item.name;
+      document.getElementById('discordAvatarPreviewSize').textContent = 'From history';
+      renderAvatarUploadHistory();
+      showToast(item.hostedUrl ? `Applied "${item.name}" — hosted link restored ✓` : `Applied "${item.name}" preview ✓`);
+    });
+    cell.querySelector('.wallpaper-history-delete').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      removeFromAvatarUploadHistory(item.id);
+    });
+    grid.appendChild(cell);
+  });
+}
+
+// ---- Upload zone: drag/drop + file picker, auto-hosted so Discord can display it ----
+async function uploadImageToHost(dataUrl){
+  const base64 = dataUrl.split(',')[1];
+  const res = await fetch('https://api.imgur.com/3/image', {
+    method:'POST',
+    headers:{
+      'Authorization':'Client-ID ' + IMGUR_CLIENT_ID,
+      'Content-Type':'application/json'
+    },
+    body: JSON.stringify({ image: base64, type:'base64' })
+  });
+  if(!res.ok) throw new Error('Image host upload failed: ' + res.status);
+  const data = await res.json();
+  if(!data.success || !data.data?.link) throw new Error('Image host returned no link');
+  return data.data.link;
+}
+
+function handleDiscordAvatarFile(file){
+  if(!file.type.startsWith('image/')){ showToast('Please select an image file.'); return; }
+  if(file.size > 5242880){ showToast('File too large (max 5MB)'); return; }
+  const reader = new FileReader();
+  reader.onload = async (evt)=>{
+    const originalDataUrl = evt.target.result;
+    const previewDataUrl = await resizeImageDataUrl(originalDataUrl, 512, 0.85);
+
+    discordConfig.botAvatarUpload = previewDataUrl;
+    saveDiscordConfigToStorage();
+    showDiscordAvatarUploadPreview(file, previewDataUrl);
+    showToast('Uploading image so Discord can display it...');
+
+    try{
+      const hostedUrl = await uploadImageToHost(previewDataUrl);
+      discordConfig.botAvatarUrl = hostedUrl;
+      discordConfig.botAvatarSourceType = 'url';
+      saveDiscordConfigToStorage();
+      document.getElementById('inputDiscordBotAvatar').value = hostedUrl;
+      document.getElementById('toggleDiscordAvatarSource').checked = false;
+      updateDiscordAvatarSourceToggle();
+      addToAvatarUrlHistory(hostedUrl);
+      addToAvatarUploadHistory(previewDataUrl, file.name, hostedUrl);
+      showToast('Image hosted — Discord will now show it as the bot avatar ✓');
+    }catch(err){
+      addToAvatarUploadHistory(previewDataUrl, file.name, '');
+      showToast('Could not auto-host that image — paste a hosted URL instead (Imgur, Discord CDN, etc).');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function showDiscordAvatarUploadPreview(file, dataUrl){
+  const zone = document.getElementById('discordAvatarUploadZone');
+  const preview = document.getElementById('discordAvatarUploadPreview');
+  const img = document.getElementById('discordAvatarPreviewImg');
+  const filename = document.getElementById('discordAvatarPreviewFilename');
+  const size = document.getElementById('discordAvatarPreviewSize');
+
+  img.src = dataUrl;
+  filename.textContent = file.name;
+  size.textContent = formatFileSize(file.size);
+
+  zone.style.display = 'none';
+  preview.classList.remove('hidden');
+}
+
+function clearDiscordAvatarUploadPreview(){
+  const zone = document.getElementById('discordAvatarUploadZone');
+  const preview = document.getElementById('discordAvatarUploadPreview');
+  const fileInput = document.getElementById('inputDiscordAvatarUpload');
+
+  fileInput.value = '';
+  discordConfig.botAvatarUpload = '';
+  saveDiscordConfigToStorage();
+
+  zone.style.display = 'block';
+  preview.classList.add('hidden');
+  showToast('Avatar preview cleared');
+}
+
+const discordAvatarUploadZone = document.getElementById('discordAvatarUploadZone');
+const discordAvatarFileInput = document.getElementById('inputDiscordAvatarUpload');
+const discordAvatarUploadClear = document.getElementById('discordAvatarUploadClear');
+
+discordAvatarUploadZone.addEventListener('click', ()=> discordAvatarFileInput.click());
+
+discordAvatarFileInput.addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(file) handleDiscordAvatarFile(file);
+});
+
+discordAvatarUploadZone.addEventListener('dragover', (e)=>{
+  e.preventDefault();
+  discordAvatarUploadZone.classList.add('drag-over');
+});
+
+discordAvatarUploadZone.addEventListener('dragleave', ()=>{
+  discordAvatarUploadZone.classList.remove('drag-over');
+});
+
+discordAvatarUploadZone.addEventListener('drop', (e)=>{
+  e.preventDefault();
+  discordAvatarUploadZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if(file) handleDiscordAvatarFile(file);
+});
+
+discordAvatarUploadClear.addEventListener('click', clearDiscordAvatarUploadPreview);
 
 function buildDiscordEmbed(track){
   const title = track.name || 'Unknown Track';
@@ -2658,7 +2971,8 @@ function buildDiscordEmbed(track){
   }
 
   const payload = { username: discordConfig.botUsername || 'FallenOneArt Music Player', embeds:[embed] };
-  if(discordConfig.botAvatarUrl) payload.avatar_url = discordConfig.botAvatarUrl;
+  // Only a real hosted URL can be sent as avatar_url — a local upload preview is never sent to Discord.
+  if(discordConfig.botAvatarSourceType !== 'upload' && discordConfig.botAvatarUrl) payload.avatar_url = discordConfig.botAvatarUrl;
   if(discordConfig.mentionText) payload.content = discordConfig.mentionText;
 
   return payload;
@@ -2685,7 +2999,7 @@ let pendingAnnounceTrackId = null;
 let lastTrackData = null;
 
 function maybeAnnounceTrack(track){
-  lastTrackData = track; // keep the latest track available for the manual "Post Now" button
+  lastTrackData = track; // keep the latest track available for reference
   if(!discordConfig.enabled || !discordConfig.webhookUrl) return;
   if(!track || !track.id) return;
   if(track.id === lastAnnouncedTrackId) return;
@@ -2708,31 +3022,6 @@ function maybeAnnounceTrack(track){
     pendingAnnounceTrackId = null;
   }, delayMs);
 }
-
-document.getElementById('btnDiscordPostNow').addEventListener('click', async ()=>{
-  readDiscordForm();
-  saveDiscordConfigToStorage();
-  if(!discordConfig.webhookUrl){ showToast('Paste a Discord Webhook URL first.'); return; }
-  if(!lastTrackData){ showToast('No track data yet — wait for a track to load.'); return; }
-  await postToDiscord(lastTrackData);
-  lastAnnouncedTrackId = lastTrackData.id;
-  showToast('Posted current track to Discord ✓');
-});
-
-document.getElementById('btnDiscordTest').addEventListener('click', async ()=>{
-  readDiscordForm();
-  saveDiscordConfigToStorage();
-  if(!discordConfig.webhookUrl){ showToast('Paste a Discord Webhook URL first.'); return; }
-  const sampleTrack = {
-    id:'test',
-    name:'Test Track Title',
-    artists:[{ name:'Test Artist' }],
-    album:{ name:'Test Album', images:[{ url:'https://i.scdn.co/image/ab67616d0000b273000000000000000000000000' }] },
-    external_urls:{ spotify:'https://open.spotify.com' }
-  };
-  await postToDiscord(sampleTrack);
-  showToast('Test message sent to Discord ✓');
-});
 
 function loadConfig(){try{const raw = localStorage.getItem(LS_CONFIG_KEY);if(raw) config = { ...DEFAULT_CONFIG, ...JSON.parse(raw) }}catch(e){}}
 function loadPreviewOpacity(){try{const saved = localStorage.getItem(LS_PREVIEW_OPACITY_KEY);if(saved) previewOpacity = parseFloat(saved)}catch(e){}}
@@ -3591,8 +3880,10 @@ async function syncShuffleRepeatFromState(){
 }
 
 // ============================================
-// NEW: SEARCH + ADD TO QUEUE
+// SEARCH + ADD/REMOVE FROM QUEUE (toggle select)
 // ============================================
+let queuedTrackUris = new Set();
+
 async function searchTracks(query){
   const token = await getValidAccessToken();
   if(!token){ showToast('Not connected to Spotify.'); return; }
@@ -3609,6 +3900,30 @@ async function searchTracks(query){
   }
 }
 
+function setQueueButtonState(btn, isQueued){
+  btn.dataset.queued = isQueued ? '1' : '0';
+  btn.classList.toggle('active-toggle', isQueued);
+  btn.title = isQueued ? 'Selected — click to deselect' : 'Add to queue';
+  btn.querySelector('svg').innerHTML = isQueued
+    ? '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>'
+    : '<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>';
+}
+
+async function toggleQueueSelection(uri, name, btn){
+  const isQueued = btn.dataset.queued === '1';
+  if(!isQueued){
+    const added = await addTrackToQueue(uri, name);
+    if(added){
+      queuedTrackUris.add(uri);
+      setQueueButtonState(btn, true);
+    }
+  } else {
+    queuedTrackUris.delete(uri);
+    setQueueButtonState(btn, false);
+    showToast("Deselected — Spotify's API can't remove a single track already in queue. Use Next/skip when it comes up.");
+  }
+}
+
 function renderSearchResults(tracks){
   const container = document.getElementById('searchResultsList');
   if(!tracks.length){
@@ -3619,6 +3934,7 @@ function renderSearchResults(tracks){
   tracks.forEach(track=>{
     const art = track.album?.images?.[2]?.url || track.album?.images?.[0]?.url || '';
     const artists = track.artists?.map(a=>a.name).join(', ') || 'Unknown Artist';
+    const isQueued = queuedTrackUris.has(track.uri);
     const row = document.createElement('div');
     row.className = 'search-result-row';
     row.innerHTML = `
@@ -3627,18 +3943,18 @@ function renderSearchResults(tracks){
         <div class="search-result-title">${track.name}</div>
         <div class="search-result-artist">${artists}</div>
       </div>
-      <button type="button" class="icon-btn" title="Add to queue">
-        <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      <button type="button" class="icon-btn${isQueued ? ' active-toggle' : ''}" data-queued="${isQueued ? '1' : '0'}" title="${isQueued ? 'Selected — click to deselect' : 'Add to queue'}">
+        <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${isQueued ? '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>' : '<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>'}</svg>
       </button>
     `;
-    row.querySelector('button').addEventListener('click', ()=> addTrackToQueue(track.uri, track.name));
+    row.querySelector('button').addEventListener('click', (e)=> toggleQueueSelection(track.uri, track.name, e.currentTarget));
     container.appendChild(row);
   });
 }
 
 async function addTrackToQueue(uri, name){
   const token = await getValidAccessToken();
-  if(!token){ showToast('Not connected to Spotify.'); return; }
+  if(!token){ showToast('Not connected to Spotify.'); return false; }
   try{
     const deviceParam = selectedDeviceId ? `&device_id=${selectedDeviceId}` : '';
     const res = await fetch(`https://api.spotify.com/v1/me/player/queue?uri=${encodeURIComponent(uri)}${deviceParam}`, {
@@ -3648,13 +3964,17 @@ async function addTrackToQueue(uri, name){
     if(res.ok || res.status === 204){
       showToast(`Added "${name}" to queue ✓`);
       setTimeout(fetchAndUpdateQueue, 500);
+      return true;
     } else if(res.status === 404){
       showToast('No active device found. Open Spotify somewhere first.');
+      return false;
     } else {
       showToast('Could not add to queue.');
+      return false;
     }
   }catch(e){
     showToast('Add to queue failed.');
+    return false;
   }
 }
 
@@ -3909,7 +4229,7 @@ document.getElementById('queueBtnPlaybackNext').addEventListener('click', async 
   setTimeout(()=>{ fetchAndUpdateQueue(); updateQueuePlayPauseIcon(); }, 400);
 });
 async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
-(async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();loadWallpaperHistory();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();loadSelectedDeviceId();loadDiscordConfig();populateDiscordForm();
+(async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();loadWallpaperHistory();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();loadSelectedDeviceId();loadDiscordConfig();loadAvatarUrlHistory();loadAvatarUploadHistory();populateDiscordForm();
   setInterval(fetchAndUpdateQueue, 2000);
   setInterval(updateQueuePlayPauseIcon, 3000);
   setInterval(fetchDevices, 15000);
