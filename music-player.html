@@ -2002,6 +2002,8 @@ let playbackState = { progressMs:0, durationMs:0, isPlaying:false, lastSyncTime:
 let tickTimer = null;
 let vinylRotationDeg = 0;
 let vinylStartTime = 0;
+let emptyPollStreak = 0;
+const IDLE_CONFIRM_STREAK = 2; // require this many consecutive "nothing playing" polls before actually going idle — Spotify can briefly report an empty player state during the gap between two tracks, and treating that instantly as idle is what caused the overlay to flash out and back in on every track change
 
 function updateVinylRotation(){
   if(!playbackState.isPlaying) return;
@@ -2040,7 +2042,8 @@ function tick() {
   
   if (playbackState.isPlaying && currentMs >= playbackState.durationMs) { 
     playbackState.isPlaying = false; 
-    pollNowPlaying(); 
+    // Add a 2.5-second delay to let Spotify transition to the next track
+    setTimeout(pollNowPlaying, 2500); 
   }
 }
 
@@ -2255,13 +2258,28 @@ async function pollNowPlaying(){
   if(!token){ showIdle('CONNECT SPOTIFY IN DASHBOARD'); return; }
   try{
     const res = await fetch(SPOTIFY_NOW_PLAYING_URL, {headers:{'Authorization':`Bearer ${token}`}});
-    if(res.status === 204){ showIdle(currentConfig.idleMessage); lastTrackId = null; return; }
+    if(res.status === 204){ handleEmptyPoll(); return; }
     if(res.status === 401){ showIdle('TOKEN EXPIRED — RECONNECT'); return; }
     if(!res.ok){ showIdle('SPOTIFY UNAVAILABLE'); return; }
     const data = await res.json();
-    if(!data || !data.item){ showIdle(currentConfig.idleMessage); lastTrackId = null; return; }
+    if(!data || !data.item){ handleEmptyPoll(); return; }
+    emptyPollStreak = 0;
     renderTrack(data);
   }catch(e){ showIdle('CONNECTION ERROR'); }
+}
+
+// Spotify's currently-playing endpoint can briefly report nothing
+// playing (204, or a response with no item) for a single poll right
+// as one track ends and the next begins. Reacting to that instantly
+// caused the overlay to flash to the idle state and back on every
+// track change. Requiring a couple of consecutive empty polls before
+// actually switching to idle rides out that gap.
+function handleEmptyPoll(){
+  emptyPollStreak++;
+  if(emptyPollStreak >= IDLE_CONFIRM_STREAK){
+    showIdle(currentConfig.idleMessage);
+    lastTrackId = null;
+  }
 }
 
 function restartPolling(){
