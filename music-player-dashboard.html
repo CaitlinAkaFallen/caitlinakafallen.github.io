@@ -640,7 +640,6 @@
         flex:1;
       }
 
-
       .status-card{
         border:1.5px solid var(--border-medium);
         border-radius:var(--dash-corner-radius);
@@ -1432,6 +1431,102 @@
         flex:0 0 auto;
       }
 
+      /* NEW: Playlist browser */
+      .playlist-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));
+        gap:14px;
+        margin-top:12px;
+        max-height:420px;
+        overflow-y:auto;
+      }
+      .playlist-card{
+        position:relative;
+        border:1px solid var(--border-soft);
+        border-radius:10px;
+        background:var(--bg-panel);
+        overflow:hidden;
+        transition:all .2s ease;
+      }
+      .playlist-card:hover{
+        border-color:rgba(125,232,200,0.4);
+        transform:translateY(-2px);
+        box-shadow:0 4px 16px rgba(125,232,200,0.15);
+      }
+      .playlist-card img{
+        width:100%;
+        aspect-ratio:1;
+        object-fit:cover;
+        display:block;
+      }
+      .playlist-card-info{
+        padding:8px 10px;
+        cursor:pointer;
+      }
+      .playlist-card-name{
+        font-family:var(--font-mono);
+        font-size:12px;
+        font-weight:600;
+        color:var(--text-primary);
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .playlist-card-meta{
+        font-family:var(--font-mono);
+        font-size:10px;
+        color:var(--text-tertiary);
+        margin-top:2px;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .playlist-card-play{
+        position:absolute;
+        top:8px;
+        right:8px;
+        width:32px;
+        height:32px;
+        border-radius:50%;
+        background:rgba(10,9,21,0.75);
+        border:1px solid rgba(125,232,200,0.5);
+        color:var(--accent-primary);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        opacity:0;
+        cursor:pointer;
+        transition:opacity .2s ease, background .2s ease;
+        padding:0;
+      }
+      .playlist-card:hover .playlist-card-play{ opacity:1; }
+      .playlist-card-play:hover{ background:rgba(125,232,200,0.25); }
+
+      .playlist-tracks-panel{
+        margin-top:14px;
+        border:1px solid var(--border-medium);
+        border-radius:10px;
+        padding:14px;
+        background:var(--bg-panel);
+      }
+      .playlist-tracks-header{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        margin-bottom:10px;
+        font-family:var(--font-display);
+        font-size:12px;
+        letter-spacing:1px;
+        color:var(--accent-primary);
+        font-weight:700;
+      }
+      .playlist-tracks-header button.icon-btn{
+        width:28px;
+        height:28px;
+        font-size:12px;
+      }
+      .playlist-tracks-list .search-result-row{ gap:10px; }
+
       /* ==========================================
         REORGANIZED PANEL LAYOUT
         Groups related fields into a tidy card grid
@@ -1619,10 +1714,10 @@
       <span>FALLENONEART<br><small>MUSIC PLAYER Dashboard</small></span>
     </div>
     <button class="nav-btn active" data-tab="connection"><span class="num">01</span> Connection</button>
-    <button class="nav-btn" data-tab="queue"><span class="num">02</span> Now Playing & Queue</button>
-    <button class="nav-btn" data-tab="layout"><span class="num">03</span> Layout & Shapes</button>
+    <button class="nav-btn" data-tab="queue"><span class="num">02</span> Now Playing &amp; Queue</button>
+    <button class="nav-btn" data-tab="layout"><span class="num">03</span> Layout &amp; Shapes</button>
     <button class="nav-btn" data-tab="appearance"><span class="num">04</span> Appearance</button>
-    <button class="nav-btn" data-tab="metadata"><span class="num">05</span> Metadata & Progress</button>
+    <button class="nav-btn" data-tab="metadata"><span class="num">05</span> Metadata &amp; Progress</button>
     <button class="nav-btn" data-tab="behavior"><span class="num">06</span> Behavior</button>
     <button class="nav-btn" data-tab="theme"><span class="num">07</span> Dashboard Theme</button>
   </nav>
@@ -1807,11 +1902,71 @@
         <div class="range-row"><input type="range" id="inputDiscordMinPlaySeconds" min="0" max="60" step="5"><span class="val" id="valDiscordMinPlaySeconds"></span></div>
         <div class="hint">Waits this many seconds before posting, so quick skips through tracks don't spam the channel. Set to 0 to post instantly.</div>
       </div>
+
+      <div class="section-divider">
+        <h3>Next Song Alert</h3>
+        <div class="sub">Post a separate "coming up next" message a few minutes before the current track ends, using the next track in your Spotify queue. Uses the same webhook, bot name, avatar, and embed color set above.</div>
+      </div>
+
+      <div class="field">
+        <label>Next Song Alert</label>
+        <div class="toggle-row"><label id="lblToggleNextSongEnabled">Post when trigger time is reached</label><label class="switch"><input type="checkbox" id="toggleNextSongEnabled" aria-labelledby="lblToggleNextSongEnabled"><span class="track"></span></label></div>
+        <div class="hint">Fires once per track, based on the current track's remaining play time — not a fixed timer. Needs a track waiting in your Spotify queue.</div>
+      </div>
+      
+         <div class="field">
+        <label>Next Song Embed Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDiscordNextSongEmbedColor" value="#7de8c8">
+          <span class="swatch-label">Left border color of the embed card</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Minutes Remaining Trigger</label>
+        <div class="range-row"><input type="range" id="inputNextSongMinutes" min="1" max="10" step="1"><span class="val" id="valNextSongMinutes"></span></div>
+        <div class="hint">Posts once remaining time on the current track drops to or below this many minutes.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputNextSongTemplate">Next Song Message Template</label>
+        <input type="text" id="inputNextSongTemplate" placeholder="⏭️ Coming up next: **{title}** by {artist}">
+        <div class="hint">Placeholders: {title}, {artist}, {album}, {remaining} (e.g. "4:12 left").</div>
+      </div>
+
+       <div class="section-divider">
+        <h3>Pause Song Alert</h3>
+        <div class="sub">Post a separate "pause" message when the current track is paused.</div>
+    </div>
+
+      <div class="field">
+        <label>Pause Song Alert</label>
+        <div class="toggle-row"><label id="lblTogglePauseSongEnabled">Post when the track is paused</label><label class="switch"><input type="checkbox" id="togglePauseSongEnabled" aria-labelledby="lblTogglePauseSongEnabled"><span class="track"></span></label></div>
+        <div class="hint">Fires once per track, when the current track is paused.</div>
+      </div>
+
+      <div class="field">
+        <label>Pause Song Embed Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDiscordPauseSongEmbedColor" value="#7de8c8">
+          <span class="swatch-label">Left border color of the embed card</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="inputPauseSongTemplate">Pause Song Message Template</label>
+        <input type="text" id="inputPauseSongTemplate" placeholder="⏸️ Paused: **{title}** by {artist}">
+        <div class="hint">Placeholders: {title}, {artist}, {album}.</div>
+      </div>
+      
+      
     </section>
+
+   
 
     <!-- LAYOUT & SHAPES (merged with former Compact Layout Sizing tab) -->
     <section class="panel" id="panel-layout">
-      <h2>Layout & Shapes</h2>
+      <h2>Layout &amp; Shapes</h2>
       <p class="sub">Choose your display mode and universal artwork shape, then fine-tune Compact layout sizing below.</p>
 
       <div class="field">
@@ -1892,7 +2047,7 @@
       </div>
 
       <div class="section-divider">
-        <h3>Equalizer & Progress</h3>
+        <h3>Equalizer &amp; Progress</h3>
       </div>
 
       <div class="field">
@@ -1946,6 +2101,26 @@
       </div>
 
       <div class="section-divider">
+        <h3>Your Playlists</h3>
+        <div class="sub">Browse your Spotify playlists and start one playing on the active device, or open one to queue individual tracks.</div>
+      </div>
+
+      <div class="field">
+        <div class="input-group">
+          <input type="text" id="inputPlaylistFilter" placeholder="Filter your playlists...">
+          <button type="button" class="icon-btn" id="btnRefreshPlaylists" title="Refresh playlists">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08a5.99 5.99 0 01-5.65 4c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L14 11h7V4l-2.35 2.35z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="playlist-grid" id="playlistGrid">
+          <div class="status-placeholder">Loading playlists...</div>
+        </div>
+        <div class="playlist-tracks-panel hidden" id="playlistTracksPanel"></div>
+      </div>
+
+      <div class="section-divider">
         <h3>Upcoming Queue</h3>
         <div class="sub">Next 5-10 tracks parsed from your Spotify session. Click a row to skip directly to that track.</div>
       </div>
@@ -1991,7 +2166,7 @@
       </div>
 
       <div class="section-divider">
-        <h3>Search & Add to Queue</h3>
+        <h3>Search &amp; Add to Queue</h3>
         <div class="sub">Search Spotify's catalog and add a track directly to the active device's queue.</div>
       </div>
 
@@ -2028,7 +2203,7 @@
         <label>Primary Accent Color</label>
         <div class="color-field">
           <input type="color" id="inputAccentPrimary" value="#7de8c8">
-          <span class="swatch-label">Main glow & highlights</span>
+          <span class="swatch-label">Main glow &amp; highlights</span>
         </div>
       </div>
 
@@ -2036,7 +2211,7 @@
         <label>Secondary Accent Color</label>
         <div class="color-field">
           <input type="color" id="inputAccentSecondary" value="#c8a2ff">
-          <span class="swatch-label">Accent glow & animations</span>
+          <span class="swatch-label">Accent glow &amp; animations</span>
         </div>
       </div>
 
@@ -2065,7 +2240,7 @@
         <label>Time/Progress Color</label>
         <div class="color-field">
           <input type="color" id="inputTimeColor" value="#7de8c8">
-          <span class="swatch-label">Elapsed time & timestamps</span>
+          <span class="swatch-label">Elapsed time &amp; timestamps</span>
         </div>
       </div>
 
@@ -2092,7 +2267,7 @@
       </div>
 
       <div class="section-divider">
-        <h3>Typography & Motion</h3>
+        <h3>Typography &amp; Motion</h3>
       </div>
 
       <div class="field">
@@ -2145,7 +2320,7 @@
       </div>
 
       <div class="field">
-        <label>Advanced Badge & Styling</label>
+        <label>Advanced Badge &amp; Styling</label>
         <div class="toggle-row"><span>Play/pause badge on artwork</span><label class="switch"><input type="checkbox" id="toggleShowArtBadge"><span class="track"></span></label></div>
       </div>
 
@@ -2158,7 +2333,7 @@
 
     <!-- METADATA & PROGRESS -->
     <section class="panel" id="panel-metadata">
-      <h2>Metadata Pill & Progress Bar</h2>
+      <h2>Metadata Pill &amp; Progress Bar</h2>
       <p class="sub">Controls for title/artist/album container and progress positioning — works across all layouts.</p>
 
       <div class="section-divider">
@@ -2185,7 +2360,7 @@
       </div>
 
       <div class="section-divider">
-        <h3>Progress Bar & Timing</h3>
+        <h3>Progress Bar &amp; Timing</h3>
         <div class="sub">Progress bar position adapts per layout. Stacked: below metadata. Others: at layout bottom. Full Vinyl replaces the progress bar with equalizer bars entirely.</div>
       </div>
 
@@ -2335,7 +2510,7 @@
         <label>Primary Text Color</label>
         <div class="color-field">
           <input type="color" id="inputDashPrimaryText" value="#f3f1f8">
-          <span class="swatch-label">Headings & main text</span>
+          <span class="swatch-label">Headings &amp; main text</span>
         </div>
       </div>
 
@@ -2343,7 +2518,7 @@
         <label>Secondary Text Color</label>
         <div class="color-field">
           <input type="color" id="inputDashSecondaryText" value="#9a97ab">
-          <span class="swatch-label">Labels & descriptions</span>
+          <span class="swatch-label">Labels &amp; descriptions</span>
         </div>
       </div>
 
@@ -2356,7 +2531,7 @@
       </div>
 
       <div class="section-divider">
-        <h3>Panel & Card Styling</h3>
+        <h3>Panel &amp; Card Styling</h3>
       </div>
 
       <div class="field">
@@ -2377,7 +2552,7 @@
         <label>Panel Border Color</label>
         <div class="color-field">
           <input type="color" id="inputDashPanelBorder" value="#ffffff">
-          <span class="swatch-label">Card & input borders</span>
+          <span class="swatch-label">Card &amp; input borders</span>
         </div>
       </div>
 
@@ -2391,7 +2566,7 @@
       </div>
 
       <div class="field">
-        <label>Primary Accent (Buttons & Active States)</label>
+        <label>Primary Accent (Buttons &amp; Active States)</label>
         <div class="color-field">
           <input type="color" id="inputDashAccent1" value="#7de8c8">
           <span class="swatch-label">Main interactive color</span>
@@ -2399,15 +2574,15 @@
       </div>
 
       <div class="field">
-        <label>Secondary Accent (Glows & Highlights)</label>
+        <label>Secondary Accent (Glows &amp; Highlights)</label>
         <div class="color-field">
           <input type="color" id="inputDashAccent2" value="#c8a2ff">
-          <span class="swatch-label">Gradient & glow accents</span>
+          <span class="swatch-label">Gradient &amp; glow accents</span>
         </div>
       </div>
 
       <div class="section-divider">
-        <h3>Glassmorphism & Effects</h3>
+        <h3>Glassmorphism &amp; Effects</h3>
       </div>
 
       <div class="field">
@@ -2529,7 +2704,9 @@ const DEFAULT_DASH_THEME = {
 
 const DEFAULT_DISCORD_CONFIG = {
   enabled:false, webhookUrl:'', template:'🎵 Now playing: **{title}** by {artist}', includeArt:true, includeLink:true,
-  includeDuration:false, botUsername:'FallenOneArt Music Player', botAvatarUrl:'', botAvatarSourceType:'url', botAvatarUpload:'', embedColor:'#7de8c8', mentionText:'', minPlaySeconds:0
+  includeDuration:false, botUsername:'FallenOneArt Music Player', botAvatarUrl:'', botAvatarSourceType:'url', botAvatarUpload:'', embedColor:'#7de8c8', mentionText:'', minPlaySeconds:0,
+  nextSongEnabled:false, nextSongMinutes:5, nextSongTemplate:'⏭️ Coming up next: **{title}** by {artist}', nextSongEmbedColor:'#7de8c8',
+  pauseSongEnabled:false, pauseSongEmbedColor:'#7de8c8', pauseSongTemplate:'⏸️ Paused: **{title}** by {artist}'
 };
 
 let config = { ...DEFAULT_CONFIG };
@@ -2549,6 +2726,18 @@ let selectedDeviceId = null;
 let deviceList = [];
 let searchDebounceTimer = null;
 let lastAnnouncedTrackId = null;
+
+// runtime-only state for playlist browser
+let allPlaylists = [];
+let expandedPlaylistId = null;
+
+// runtime-only state for the "next song" webhook alert
+let lastQueueTracks = [];
+let nextSongCheckTrackId = null;
+let nextSongAnnouncedForTrackId = null;
+
+// runtime-only state for the "pause song" webhook alert
+let pauseSongAnnouncedForTrackId = null;
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -2641,9 +2830,19 @@ function populateDiscordForm(){
   document.getElementById('inputDiscordBotUsername').value = discordConfig.botUsername;
   document.getElementById('inputDiscordBotAvatar').value = discordConfig.botAvatarUrl;
   document.getElementById('inputDiscordEmbedColor').value = discordConfig.embedColor;
+  document.getElementById('inputDiscordNextSongEmbedColor').value = discordConfig.nextSongEmbedColor;
   document.getElementById('inputDiscordMention').value = discordConfig.mentionText;
   document.getElementById('inputDiscordMinPlaySeconds').value = discordConfig.minPlaySeconds;
   document.getElementById('valDiscordMinPlaySeconds').textContent = discordConfig.minPlaySeconds + 's';
+  document.getElementById('toggleNextSongEnabled').checked = discordConfig.nextSongEnabled;
+  document.getElementById('inputNextSongMinutes').value = discordConfig.nextSongMinutes;
+  document.getElementById('valNextSongMinutes').textContent = discordConfig.nextSongMinutes + ' min';
+  document.getElementById('inputNextSongTemplate').value = discordConfig.nextSongTemplate;
+
+  // Pause Song Alert
+  document.getElementById('togglePauseSongEnabled').checked = discordConfig.pauseSongEnabled;
+  document.getElementById('inputDiscordPauseSongEmbedColor').value = discordConfig.pauseSongEmbedColor;
+  document.getElementById('inputPauseSongTemplate').value = discordConfig.pauseSongTemplate;
 
   // Avatar source toggle (URL vs local upload preview)
   document.getElementById('toggleDiscordAvatarSource').checked = discordConfig.botAvatarSourceType === 'upload';
@@ -2670,12 +2869,22 @@ function readDiscordForm(){
   discordConfig.botAvatarUrl = document.getElementById('inputDiscordBotAvatar').value.trim();
   discordConfig.botAvatarSourceType = document.getElementById('toggleDiscordAvatarSource').checked ? 'upload' : 'url';
   discordConfig.embedColor = document.getElementById('inputDiscordEmbedColor').value;
+  discordConfig.nextSongEmbedColor = document.getElementById('inputDiscordNextSongEmbedColor').value;
   discordConfig.mentionText = document.getElementById('inputDiscordMention').value.trim();
   discordConfig.minPlaySeconds = parseInt(document.getElementById('inputDiscordMinPlaySeconds').value) || 0;
   document.getElementById('valDiscordMinPlaySeconds').textContent = discordConfig.minPlaySeconds + 's';
+  discordConfig.nextSongEnabled = document.getElementById('toggleNextSongEnabled').checked;
+  discordConfig.nextSongMinutes = parseInt(document.getElementById('inputNextSongMinutes').value) || 5;
+  discordConfig.nextSongTemplate = document.getElementById('inputNextSongTemplate').value.trim() || DEFAULT_DISCORD_CONFIG.nextSongTemplate;
+  document.getElementById('valNextSongMinutes').textContent = discordConfig.nextSongMinutes + ' min';
+
+  // Pause Song Alert
+  discordConfig.pauseSongEnabled = document.getElementById('togglePauseSongEnabled').checked;
+  discordConfig.pauseSongEmbedColor = document.getElementById('inputDiscordPauseSongEmbedColor').value;
+  discordConfig.pauseSongTemplate = document.getElementById('inputPauseSongTemplate').value.trim() || DEFAULT_DISCORD_CONFIG.pauseSongTemplate;
 }
 
-document.querySelectorAll('#panel-connection #toggleDiscordEnabled, #panel-connection #inputDiscordWebhookUrl, #panel-connection #inputDiscordTemplate, #panel-connection #toggleDiscordArt, #panel-connection #toggleDiscordLink, #panel-connection #toggleDiscordDuration, #panel-connection #inputDiscordBotUsername, #panel-connection #inputDiscordBotAvatar, #panel-connection #inputDiscordEmbedColor, #panel-connection #inputDiscordMention, #panel-connection #inputDiscordMinPlaySeconds').forEach(el=>{
+document.querySelectorAll('#panel-connection #toggleDiscordEnabled, #panel-connection #inputDiscordWebhookUrl, #panel-connection #inputDiscordTemplate, #panel-connection #toggleDiscordArt, #panel-connection #toggleDiscordLink, #panel-connection #toggleDiscordDuration, #panel-connection #inputDiscordBotUsername, #panel-connection #inputDiscordBotAvatar, #panel-connection #inputDiscordEmbedColor, #panel-connection #inputDiscordMention, #panel-connection #inputDiscordMinPlaySeconds, #panel-connection #toggleNextSongEnabled, #panel-connection #inputNextSongMinutes, #panel-connection #inputNextSongTemplate, #panel-connection #inputDiscordNextSongEmbedColor, #panel-connection #togglePauseSongEnabled, #panel-connection #inputDiscordPauseSongEmbedColor, #panel-connection #inputPauseSongTemplate').forEach(el=>{
   el.addEventListener('input', ()=>{ readDiscordForm(); saveDiscordConfigToStorage(); });
   el.addEventListener('change', ()=>{ readDiscordForm(); saveDiscordConfigToStorage(); });
 });
@@ -2993,6 +3202,148 @@ async function postToDiscord(track){
   }catch(e){
     console.error('Discord webhook post error:', e);
   }
+}
+
+// ============================================
+// NEW: "NEXT SONG" WEBHOOK ALERT
+// Fires once per track once remaining play time
+// on the CURRENT track drops to the configured
+// minutes, announcing the NEXT track in queue.
+// ============================================
+function buildNextSongEmbed(nextTrack, remainingMs){
+  const title = nextTrack.name || 'Unknown Track';
+  const artist = nextTrack.artists?.map(a=>a.name).join(', ') || 'Unknown Artist';
+  const album = nextTrack.album?.name || '';
+  const artUrl = nextTrack.album?.images?.[0]?.url || '';
+  const trackUrl = nextTrack.external_urls?.spotify || '';
+  const mins = Math.max(0, Math.floor(remainingMs / 60000));
+  const secs = Math.max(0, Math.floor((remainingMs % 60000) / 1000)).toString().padStart(2,'0');
+  const remainingText = `${mins}:${secs}`;
+
+  const messageText = discordConfig.nextSongTemplate
+    .replace(/\{title\}/g, title)
+    .replace(/\{artist\}/g, artist)
+    .replace(/\{album\}/g, album)
+    .replace(/\{remaining\}/g, remainingText);
+
+  const embed = { description: messageText, fields: [] };
+  if(album) embed.fields.push({ name:'Album', value:album, inline:true });
+  if(discordConfig.includeLink && trackUrl) embed.fields.push({ name:'Listen', value:`[Open in Spotify](${trackUrl})`, inline:true });
+  if(discordConfig.includeArt && artUrl) embed.thumbnail = { url:artUrl };
+  embed.footer = { text:'FallenOneArt Music Player · Up Next' };
+
+if(discordConfig.nextSongEmbedColor){
+    const parsedColor = parseInt(discordConfig.nextSongEmbedColor.replace('#',''), 16);
+    if(!isNaN(parsedColor)) embed.color = parsedColor;
+  }
+
+  const payload = { username: discordConfig.botUsername || 'FallenOneArt Music Player', embeds:[embed] };
+  if(discordConfig.botAvatarSourceType !== 'upload' && discordConfig.botAvatarUrl) payload.avatar_url = discordConfig.botAvatarUrl;
+  return payload;
+}
+
+async function postNextSongToDiscord(nextTrack, remainingMs){
+  if(!discordConfig.webhookUrl) return;
+  try{
+    const res = await fetch(discordConfig.webhookUrl, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify(buildNextSongEmbed(nextTrack, remainingMs))
+    });
+    if(!res.ok && res.status !== 204){
+      console.error('Discord next-song webhook post failed:', res.status);
+    }
+  }catch(e){
+    console.error('Discord next-song webhook post error:', e);
+  }
+}
+
+function checkNextSongAlert(state){
+  if(!discordConfig.enabled || !discordConfig.nextSongEnabled || !discordConfig.webhookUrl) return;
+  if(!state || !state.item || typeof state.progress_ms !== 'number') return;
+
+  const current = state.item;
+  const nextTrack = lastQueueTracks[0];
+
+  // Reset the guard whenever the currently-playing track itself changes
+  if(current.id !== nextSongCheckTrackId){
+    nextSongCheckTrackId = current.id;
+    nextSongAnnouncedForTrackId = null;
+  }
+  if(!nextTrack || nextSongAnnouncedForTrackId === current.id) return;
+
+  const remainingMs = (current.duration_ms || 0) - state.progress_ms;
+  const thresholdMs = (discordConfig.nextSongMinutes || 5) * 60000;
+  if(remainingMs > 0 && remainingMs <= thresholdMs){
+    nextSongAnnouncedForTrackId = current.id;
+    postNextSongToDiscord(nextTrack, remainingMs);
+  }
+}
+
+// ============================================
+// NEW: "PAUSE SONG" WEBHOOK ALERT
+// Fires once per track whenever playback is
+// detected as paused (is_playing === false),
+// using the currently-loaded track's metadata.
+// ============================================
+function buildPauseSongEmbed(track){
+  const title = track.name || 'Unknown Track';
+  const artist = track.artists?.map(a=>a.name).join(', ') || 'Unknown Artist';
+  const album = track.album?.name || '';
+  const artUrl = track.album?.images?.[0]?.url || '';
+  const trackUrl = track.external_urls?.spotify || '';
+
+  const messageText = discordConfig.pauseSongTemplate
+    .replace(/\{title\}/g, title)
+    .replace(/\{artist\}/g, artist)
+    .replace(/\{album\}/g, album);
+
+  const embed = { description: messageText, fields: [] };
+  if(album) embed.fields.push({ name:'Album', value:album, inline:true });
+  if(discordConfig.includeLink && trackUrl) embed.fields.push({ name:'Listen', value:`[Open in Spotify](${trackUrl})`, inline:true });
+  if(discordConfig.includeArt && artUrl) embed.thumbnail = { url:artUrl };
+  embed.footer = { text:'FallenOneArt Music Player · Paused' };
+
+  if(discordConfig.pauseSongEmbedColor){
+    const parsedColor = parseInt(discordConfig.pauseSongEmbedColor.replace('#',''), 16);
+    if(!isNaN(parsedColor)) embed.color = parsedColor;
+  }
+
+  const payload = { username: discordConfig.botUsername || 'FallenOneArt Music Player', embeds:[embed] };
+  if(discordConfig.botAvatarSourceType !== 'upload' && discordConfig.botAvatarUrl) payload.avatar_url = discordConfig.botAvatarUrl;
+  return payload;
+}
+
+async function postPauseSongToDiscord(track){
+  if(!discordConfig.webhookUrl) return;
+  try{
+    const res = await fetch(discordConfig.webhookUrl, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify(buildPauseSongEmbed(track))
+    });
+    if(!res.ok && res.status !== 204){
+      console.error('Discord pause-song webhook post failed:', res.status);
+    }
+  }catch(e){
+    console.error('Discord pause-song webhook post error:', e);
+  }
+}
+
+function checkPauseSongAlert(state){
+  if(!discordConfig.enabled || !discordConfig.pauseSongEnabled || !discordConfig.webhookUrl) return;
+  if(!state || !state.item) return;
+
+  const track = state.item;
+  if(state.is_playing){
+    // Track is playing again; allow a future pause on this same track to re-fire.
+    if(pauseSongAnnouncedForTrackId === track.id) pauseSongAnnouncedForTrackId = null;
+    return;
+  }
+  if(pauseSongAnnouncedForTrackId === track.id) return;
+
+  pauseSongAnnouncedForTrackId = track.id;
+  postPauseSongToDiscord(track);
 }
 
 let pendingAnnounceTimer = null;
@@ -3881,6 +4232,185 @@ async function syncShuffleRepeatFromState(){
 }
 
 // ============================================
+// NEW: PLAYLIST BROWSER
+// ============================================
+async function fetchPlaylists(showToastOnDone){
+  const token = await getValidAccessToken();
+  if(!token){ showToast('Not connected to Spotify.'); return; }
+  const grid = document.getElementById('playlistGrid');
+  grid.innerHTML = '<div class="status-placeholder">Loading playlists...</div>';
+  let results = [];
+  let url = 'https://api.spotify.com/v1/me/playlists?limit=50';
+  try{
+    while(url){
+      const res = await fetch(url, { headers:{ 'Authorization': `Bearer ${token}` } });
+      if(!res.ok) break;
+      const data = await res.json();
+      results = results.concat(data.items || []);
+      url = data.next;
+    }
+    allPlaylists = results.filter(p => p); // Spotify can return null entries for removed playlists
+    renderPlaylistGrid(allPlaylists);
+    if(showToastOnDone) showToast('Playlists refreshed ✓');
+  }catch(e){
+    grid.innerHTML = '<div class="status-placeholder">Could not load playlists.</div>';
+  }
+}
+
+function renderPlaylistGrid(list){
+  const grid = document.getElementById('playlistGrid');
+  if(!list.length){
+    grid.innerHTML = '<div class="status-placeholder">No playlists found.</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  list.forEach(pl=>{
+    const art = pl.images?.[0]?.url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+    const card = document.createElement('div');
+    card.className = 'playlist-card';
+    card.innerHTML = `
+      <img src="${art}" alt="${pl.name}" loading="lazy">
+      <button type="button" class="playlist-card-play" title="Play this playlist">
+        <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <div class="playlist-card-info">
+        <div class="playlist-card-name">${pl.name}</div>
+        <div class="playlist-card-meta">${pl.tracks?.total ?? 0} tracks · ${pl.owner?.display_name || 'Unknown'}</div>
+      </div>
+    `;
+    card.querySelector('.playlist-card-play').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      playPlaylist(pl.uri, pl.name);
+    });
+    card.querySelector('.playlist-card-info').addEventListener('click', ()=> toggleExpandPlaylist(pl));
+    grid.appendChild(card);
+  });
+}
+
+async function playPlaylist(contextUri, name){
+  const token = await getValidAccessToken();
+  if(!token){ showToast('Not connected to Spotify.'); return; }
+  try{
+    const res = await fetch('https://api.spotify.com/v1/me/player/play' + (selectedDeviceId ? `?device_id=${selectedDeviceId}` : ''), {
+      method:'PUT',
+      headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+      body: JSON.stringify({ context_uri: contextUri })
+    });
+    if(res.ok || res.status === 204){
+      showToast(`Playing "${name}" ✓`);
+      setTimeout(fetchAndUpdateQueue, 500);
+    } else if(res.status === 404){
+      showToast('No active device found. Open Spotify somewhere first.');
+    } else {
+      showToast('Could not start playlist.');
+    }
+  }catch(e){
+    showToast('Playback request failed.');
+  }
+}
+
+async function toggleExpandPlaylist(pl){
+  const panel = document.getElementById('playlistTracksPanel');
+  if(expandedPlaylistId === pl.id){
+    expandedPlaylistId = null;
+    panel.classList.add('hidden');
+    panel.innerHTML = '';
+    return;
+  }
+  expandedPlaylistId = pl.id;
+  panel.classList.remove('hidden');
+  panel.innerHTML = '<div class="status-placeholder">Loading tracks...</div>';
+
+  const token = await getValidAccessToken();
+  if(!token){ showToast('Not connected to Spotify.'); return; }
+  try{
+    const res = await fetch(`https://api.spotify.com/v1/playlists/${pl.id}/tracks?limit=50&fields=items(track(uri,name,artists,album(name,images)))`, {
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    if(!res.ok){ panel.innerHTML = '<div class="status-placeholder">Could not load tracks.</div>'; return; }
+    const data = await res.json();
+    renderPlaylistTracksPanel(pl, (data.items || []).map(i=>i.track).filter(Boolean));
+  }catch(e){
+    panel.innerHTML = '<div class="status-placeholder">Could not load tracks.</div>';
+  }
+}
+
+function renderPlaylistTracksPanel(pl, tracks){
+  const panel = document.getElementById('playlistTracksPanel');
+  panel.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.className = 'playlist-tracks-header';
+  header.innerHTML = `<span>${pl.name}</span><button type="button" class="icon-btn" title="Close">✕</button>`;
+  header.querySelector('button').addEventListener('click', ()=> toggleExpandPlaylist(pl));
+  panel.appendChild(header);
+
+  if(!tracks.length){
+    const empty = document.createElement('div');
+    empty.className = 'status-placeholder';
+    empty.textContent = 'No tracks in this playlist.';
+    panel.appendChild(empty);
+    return;
+  }
+
+  const list = document.createElement('div');
+  list.className = 'search-results-list playlist-tracks-list';
+  tracks.forEach(track=>{
+    const art = track.album?.images?.[2]?.url || track.album?.images?.[0]?.url || '';
+    const artists = track.artists?.map(a=>a.name).join(', ') || 'Unknown Artist';
+    const row = document.createElement('div');
+    row.className = 'search-result-row';
+    row.innerHTML = `
+      <img src="${art}" alt="Art">
+      <div class="search-result-details">
+        <div class="search-result-title">${track.name}</div>
+        <div class="search-result-artist">${artists}</div>
+      </div>
+      <button type="button" class="icon-btn" title="Play from here">
+        <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button type="button" class="icon-btn" title="Add to queue">
+        <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      </button>
+    `;
+    const actionButtons = row.querySelectorAll('button');
+    actionButtons[0].addEventListener('click', ()=> playPlaylistFromTrack(pl.uri, track.uri, track.name));
+    actionButtons[1].addEventListener('click', ()=> addTrackToQueue(track.uri, track.name));
+    list.appendChild(row);
+  });
+  panel.appendChild(list);
+}
+
+async function playPlaylistFromTrack(contextUri, trackUri, name){
+  const token = await getValidAccessToken();
+  if(!token){ showToast('Not connected to Spotify.'); return; }
+  try{
+    const res = await fetch('https://api.spotify.com/v1/me/player/play' + (selectedDeviceId ? `?device_id=${selectedDeviceId}` : ''), {
+      method:'PUT',
+      headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+      body: JSON.stringify({ context_uri: contextUri, offset:{ uri:trackUri } })
+    });
+    if(res.ok || res.status === 204){
+      showToast(`Playing "${name}" ✓`);
+      setTimeout(fetchAndUpdateQueue, 500);
+    } else if(res.status === 404){
+      showToast('No active device found. Open Spotify somewhere first.');
+    } else {
+      showToast('Could not start track.');
+    }
+  }catch(e){
+    showToast('Playback request failed.');
+  }
+}
+
+document.getElementById('btnRefreshPlaylists').addEventListener('click', ()=> fetchPlaylists(true));
+document.getElementById('inputPlaylistFilter').addEventListener('input', (e)=>{
+  const q = e.target.value.trim().toLowerCase();
+  const filtered = q ? allPlaylists.filter(p=> p.name.toLowerCase().includes(q)) : allPlaylists;
+  renderPlaylistGrid(filtered);
+});
+
+// ============================================
 // SEARCH + ADD/REMOVE FROM QUEUE (toggle select)
 // ============================================
 let queuedTrackUris = new Set();
@@ -4100,6 +4630,8 @@ async function fetchAndUpdateQueue() {
     });
     if (!res.ok) return;
     const data = await res.json();
+
+    lastQueueTracks = data.queue || [];
     
     const cardActive = document.getElementById('queueActiveTrack');
     if (data.currently_playing) {
@@ -4109,6 +4641,7 @@ async function fetchAndUpdateQueue() {
       
       if(currentTrackId !== activeTrack.id){
         currentTrackId = activeTrack.id;
+        pauseSongAnnouncedForTrackId = null;
         checkSavedStatus(currentTrackId).then(setLikeButtonState);
         maybeAnnounceTrack(activeTrack);
       }
@@ -4211,6 +4744,8 @@ async function updateQueuePlayPauseIcon(){
     ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>'
     : '<path d="M8 5v14l11-7z"/>';
   btn.dataset.playing = isPlaying ? '1' : '0';
+  checkNextSongAlert(state);
+  checkPauseSongAlert(state);
 }
 
 document.getElementById('queueBtnPrev').addEventListener('click', async ()=>{
@@ -4239,6 +4774,7 @@ async function handleRedirectIfPresent(){const url = new URL(window.location.hre
   updateQueuePlayPauseIcon();
   fetchDevices();
   fetchRecentlyPlayed();
+  fetchPlaylists();
   syncShuffleRepeatFromState();
   updateSaveBarVisibility('connection');
 })();
