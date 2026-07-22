@@ -931,12 +931,32 @@ html,body{
   width: 100%;
 }
 
-#layoutSquare .art-wrap-square {
+.square-art-frame {
   width: 320px;
   height: 320px;
   border-radius: 36px;
   margin: 0 auto;
   position: relative;
+  overflow: hidden;
+}
+
+/* The reveal-animation retrigger (on new track) targets .art-wrap-square
+   elements. In every other layout that class wraps ONLY the album art
+   image, so retriggering the animation only replays the art's own
+   fade/roll-in. Square used to size/position .art-wrap-square as the
+   whole 320x320 card — with the title, artist, and progress bar nested
+   INSIDE it — so retriggering the animation blanked and replayed the
+   entire card, not just the art. Now .square-art-frame owns the box and
+   clipping, and .art-wrap-square is just an absolutely-positioned layer
+   inside it holding the image, matching the pattern every other layout
+   already uses. */
+#layoutSquare .art-wrap-square {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: inherit;
 }
 
 .art-gradient-overlay {
@@ -1764,8 +1784,10 @@ html,body{
       
       <!-- SQUARE LAYOUT -->
       <div class="layout-square hidden" id="layoutSquare">
-        <div class="art-wrap-square art-shapeable">
-          <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
+        <div class="square-art-frame">
+          <div class="art-wrap-square art-shapeable">
+            <img data-role="art-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" referrerpolicy="no-referrer">
+          </div>
           <div class="art-gradient-overlay"></div>
           <div class="metadata-container">
             <div class="pill-title" id="titleSquare" data-role="title"><span class="scroll-inner">—</span></div>
@@ -2003,7 +2025,7 @@ let tickTimer = null;
 let vinylRotationDeg = 0;
 let vinylStartTime = 0;
 let emptyPollStreak = 0;
-const IDLE_CONFIRM_STREAK = 2; // require this many consecutive "nothing playing" polls before actually going idle
+const IDLE_CONFIRM_STREAK = 2; // require this many consecutive "nothing playing" polls before actually going idle — Spotify can briefly report an empty player state during the gap between two tracks, and treating that instantly as idle is what caused the overlay to flash out and back in on every track change
 
 function updateVinylRotation(){
   if(!playbackState.isPlaying) return;
@@ -2012,10 +2034,12 @@ function updateVinylRotation(){
   if(vinylStartTime === 0) vinylStartTime = now;
   
   const elapsedMs = now - vinylStartTime;
-  const rotationsPerSecond = 1 / 12;
+  const rotationsPerSecond = 1 / 12; // 1 rotation every 12 seconds
   const totalRotations = (elapsedMs / 1000) * rotationsPerSecond;
   vinylRotationDeg = (totalRotations * 360) % 360;
   
+  // Targets both the CD-style vinyl surface AND the Full Vinyl disc,
+  // keeping overlays (metadata, tonearm, eq bars) strictly stationary.
   const vinylEls = document.querySelectorAll('#vinylSurface, #fvVinylDisc');
   vinylEls.forEach(el => el.style.setProperty('--vinyl-rotation', vinylRotationDeg + 'deg'));
 }
@@ -2040,6 +2064,7 @@ function tick() {
   
   if (playbackState.isPlaying && currentMs >= playbackState.durationMs) { 
     playbackState.isPlaying = false; 
+    // Add a 2.5-second delay to let Spotify transition to the next track
     setTimeout(pollNowPlaying, 2500); 
   }
 }
@@ -2088,6 +2113,8 @@ function applyConfig(cfg){
   LAYOUT_IDS.forEach(({mode, id})=> document.getElementById(id).classList.toggle('hidden', cfg.layoutMode !== mode));
 
   const card = document.getElementById('playerCard');
+  // Full Vinyl is always frameless by design, regardless of the
+  // Container Background toggle — matches Stacked's own-layering rule.
   const showBg = cfg.showContainerBackground !== false && cfg.layoutMode !== 'fullvinyl';
   card.style.background = showBg ? '' : 'transparent';
   card.style.border = showBg ? '' : 'none';
@@ -2235,7 +2262,7 @@ function renderTrack(data){
 
   if(isNewTrack){
     document.querySelectorAll('.art-wrap-square, .minimal-art-wrap, .stacked-art-wrap, .spectrum-art-wrap').forEach(retriggerRevealAnimation);
-    vinylStartTime = 0;
+    vinylStartTime = 0; // Reset vinyl rotation for new track
     lastTrackId = item.id;
   }
 
@@ -2258,15 +2285,17 @@ async function pollNowPlaying(){
     if(!res.ok){ showIdle('SPOTIFY UNAVAILABLE'); return; }
     const data = await res.json();
     if(!data || !data.item){ handleEmptyPoll(); return; }
-    
-    // Successfully received track data — reset streak and maintain visibility
     emptyPollStreak = 0;
     renderTrack(data);
-  }catch(e){ 
-    handleEmptyPoll(); 
-  }
+  }catch(e){ showIdle('CONNECTION ERROR'); }
 }
 
+// Spotify's currently-playing endpoint can briefly report nothing
+// playing (204, or a response with no item) for a single poll right
+// as one track ends and the next begins. Reacting to that instantly
+// caused the overlay to flash to the idle state and back on every
+// track change. Requiring a couple of consecutive empty polls before
+// actually switching to idle rides out that gap.
 function handleEmptyPoll(){
   emptyPollStreak++;
   if(emptyPollStreak >= IDLE_CONFIRM_STREAK){
