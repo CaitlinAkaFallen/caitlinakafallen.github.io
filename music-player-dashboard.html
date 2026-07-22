@@ -1958,8 +1958,31 @@
         <input type="text" id="inputPauseSongTemplate" placeholder="⏸️ Paused: **{title}** by {artist}">
         <div class="hint">Placeholders: {title}, {artist}, {album}.</div>
       </div>
-      
-      
+
+      <div class="section-divider">
+        <h3>Resume Play Alert</h3>
+        <div class="sub">Post a separate "resumed" message when playback resumes after being paused.</div>
+      </div>
+
+      <div class="field">
+        <label>Resume Play Alert</label>
+        <div class="toggle-row"><label id="lblToggleResumeSongEnabled">Post when playback resumes</label><label class="switch"><input type="checkbox" id="toggleResumeSongEnabled" aria-labelledby="lblToggleResumeSongEnabled"><span class="track"></span></label></div>
+        <div class="hint">Fires once each time playback goes from paused to playing.</div>
+      </div>
+
+      <div class="field">
+        <label>Resume Play Embed Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDiscordResumeSongEmbedColor" value="#7de8c8">
+          <span class="swatch-label">Left border color of the embed card</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="inputResumeSongTemplate">Resume Play Message Template</label>
+        <input type="text" id="inputResumeSongTemplate" placeholder="▶️ Resumed: **{title}** by {artist}">
+        <div class="hint">Placeholders: {title}, {artist}, {album}.</div>
+      </div>
     </section>
 
    
@@ -2706,7 +2729,8 @@ const DEFAULT_DISCORD_CONFIG = {
   enabled:false, webhookUrl:'', template:'🎵 Now playing: **{title}** by {artist}', includeArt:true, includeLink:true,
   includeDuration:false, botUsername:'FallenOneArt Music Player', botAvatarUrl:'', botAvatarSourceType:'url', botAvatarUpload:'', embedColor:'#7de8c8', mentionText:'', minPlaySeconds:0,
   nextSongEnabled:false, nextSongMinutes:5, nextSongTemplate:'⏭️ Coming up next: **{title}** by {artist}', nextSongEmbedColor:'#7de8c8',
-  pauseSongEnabled:false, pauseSongEmbedColor:'#7de8c8', pauseSongTemplate:'⏸️ Paused: **{title}** by {artist}'
+  pauseSongEnabled:false, pauseSongEmbedColor:'#7de8c8', pauseSongTemplate:'⏸️ Paused: **{title}** by {artist}',
+  resumeSongEnabled:false, resumeSongEmbedColor:'#7de8c8', resumeSongTemplate:'▶️ Resumed: **{title}** by {artist}'
 };
 
 let config = { ...DEFAULT_CONFIG };
@@ -2738,6 +2762,9 @@ let nextSongAnnouncedForTrackId = null;
 
 // runtime-only state for the "pause song" webhook alert
 let pauseSongAnnouncedForTrackId = null;
+
+// runtime-only state for the "resume play" webhook alert
+let wasPlayingLastForResume = null; // null = unknown yet, true/false = last observed is_playing state
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -2844,6 +2871,11 @@ function populateDiscordForm(){
   document.getElementById('inputDiscordPauseSongEmbedColor').value = discordConfig.pauseSongEmbedColor;
   document.getElementById('inputPauseSongTemplate').value = discordConfig.pauseSongTemplate;
 
+  // Resume Play Alert
+  document.getElementById('toggleResumeSongEnabled').checked = discordConfig.resumeSongEnabled;
+  document.getElementById('inputDiscordResumeSongEmbedColor').value = discordConfig.resumeSongEmbedColor;
+  document.getElementById('inputResumeSongTemplate').value = discordConfig.resumeSongTemplate;
+
   // Avatar source toggle (URL vs local upload preview)
   document.getElementById('toggleDiscordAvatarSource').checked = discordConfig.botAvatarSourceType === 'upload';
   updateDiscordAvatarSourceToggle();
@@ -2882,9 +2914,14 @@ function readDiscordForm(){
   discordConfig.pauseSongEnabled = document.getElementById('togglePauseSongEnabled').checked;
   discordConfig.pauseSongEmbedColor = document.getElementById('inputDiscordPauseSongEmbedColor').value;
   discordConfig.pauseSongTemplate = document.getElementById('inputPauseSongTemplate').value.trim() || DEFAULT_DISCORD_CONFIG.pauseSongTemplate;
+
+  // Resume Play Alert
+  discordConfig.resumeSongEnabled = document.getElementById('toggleResumeSongEnabled').checked;
+  discordConfig.resumeSongEmbedColor = document.getElementById('inputDiscordResumeSongEmbedColor').value;
+  discordConfig.resumeSongTemplate = document.getElementById('inputResumeSongTemplate').value.trim() || DEFAULT_DISCORD_CONFIG.resumeSongTemplate;
 }
 
-document.querySelectorAll('#panel-connection #toggleDiscordEnabled, #panel-connection #inputDiscordWebhookUrl, #panel-connection #inputDiscordTemplate, #panel-connection #toggleDiscordArt, #panel-connection #toggleDiscordLink, #panel-connection #toggleDiscordDuration, #panel-connection #inputDiscordBotUsername, #panel-connection #inputDiscordBotAvatar, #panel-connection #inputDiscordEmbedColor, #panel-connection #inputDiscordMention, #panel-connection #inputDiscordMinPlaySeconds, #panel-connection #toggleNextSongEnabled, #panel-connection #inputNextSongMinutes, #panel-connection #inputNextSongTemplate, #panel-connection #inputDiscordNextSongEmbedColor, #panel-connection #togglePauseSongEnabled, #panel-connection #inputDiscordPauseSongEmbedColor, #panel-connection #inputPauseSongTemplate').forEach(el=>{
+document.querySelectorAll('#panel-connection #toggleDiscordEnabled, #panel-connection #inputDiscordWebhookUrl, #panel-connection #inputDiscordTemplate, #panel-connection #toggleDiscordArt, #panel-connection #toggleDiscordLink, #panel-connection #toggleDiscordDuration, #panel-connection #inputDiscordBotUsername, #panel-connection #inputDiscordBotAvatar, #panel-connection #inputDiscordEmbedColor, #panel-connection #inputDiscordMention, #panel-connection #inputDiscordMinPlaySeconds, #panel-connection #toggleNextSongEnabled, #panel-connection #inputNextSongMinutes, #panel-connection #inputNextSongTemplate, #panel-connection #inputDiscordNextSongEmbedColor, #panel-connection #togglePauseSongEnabled, #panel-connection #inputDiscordPauseSongEmbedColor, #panel-connection #inputPauseSongTemplate, #panel-connection #toggleResumeSongEnabled, #panel-connection #inputDiscordResumeSongEmbedColor, #panel-connection #inputResumeSongTemplate').forEach(el=>{
   el.addEventListener('input', ()=>{ readDiscordForm(); saveDiscordConfigToStorage(); });
   el.addEventListener('change', ()=>{ readDiscordForm(); saveDiscordConfigToStorage(); });
 });
@@ -3344,6 +3381,90 @@ function checkPauseSongAlert(state){
 
   pauseSongAnnouncedForTrackId = track.id;
   postPauseSongToDiscord(track);
+}
+
+// ============================================
+// NEW: "RESUME PLAY" WEBHOOK ALERT
+// Fires once each time playback transitions from
+// paused (is_playing === false) to playing
+// (is_playing === true), using the currently
+// loaded track's metadata at the moment it resumes.
+//
+// FIX: Spotify's /v1/me/player endpoint can return
+// an empty/no-content response (state === null) when
+// a track has been paused for a while and the device
+// goes idle from Spotify's point of view. Previously
+// that caused wasPlayingLastForResume to be reset to
+// null, which broke the paused -> playing transition
+// check the next time a real state came back. Now we
+// simply skip the check when state is temporarily
+// unavailable and keep the last known playing state,
+// instead of wiping it out.
+// ============================================
+function buildResumeSongEmbed(track){
+  const title = track.name || 'Unknown Track';
+  const artist = track.artists?.map(a=>a.name).join(', ') || 'Unknown Artist';
+  const album = track.album?.name || '';
+  const artUrl = track.album?.images?.[0]?.url || '';
+  const trackUrl = track.external_urls?.spotify || '';
+
+  const messageText = discordConfig.resumeSongTemplate
+    .replace(/\{title\}/g, title)
+    .replace(/\{artist\}/g, artist)
+    .replace(/\{album\}/g, album);
+
+  const embed = { description: messageText, fields: [] };
+  if(album) embed.fields.push({ name:'Album', value:album, inline:true });
+  if(discordConfig.includeLink && trackUrl) embed.fields.push({ name:'Listen', value:`[Open in Spotify](${trackUrl})`, inline:true });
+  if(discordConfig.includeArt && artUrl) embed.thumbnail = { url:artUrl };
+  embed.footer = { text:'FallenOneArt Music Player · Resumed' };
+
+  if(discordConfig.resumeSongEmbedColor){
+    const parsedColor = parseInt(discordConfig.resumeSongEmbedColor.replace('#',''), 16);
+    if(!isNaN(parsedColor)) embed.color = parsedColor;
+  }
+
+  const payload = { username: discordConfig.botUsername || 'FallenOneArt Music Player', embeds:[embed] };
+  if(discordConfig.botAvatarSourceType !== 'upload' && discordConfig.botAvatarUrl) payload.avatar_url = discordConfig.botAvatarUrl;
+  return payload;
+}
+
+async function postResumeSongToDiscord(track){
+  if(!discordConfig.webhookUrl) return;
+  try{
+    const res = await fetch(discordConfig.webhookUrl, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify(buildResumeSongEmbed(track))
+    });
+    if(!res.ok && res.status !== 204){
+      console.error('Discord resume-song webhook post failed:', res.status);
+    }
+  }catch(e){
+    console.error('Discord resume-song webhook post error:', e);
+  }
+}
+
+function checkResumeSongAlert(state){
+  if(!discordConfig.enabled || !discordConfig.resumeSongEnabled || !discordConfig.webhookUrl) return;
+  if(!state || !state.item){
+    // Spotify can return an empty player state during a long pause (device
+    // goes idle from Spotify's perspective). Don't wipe out what we last knew —
+    // just wait for the next poll that actually has data. Resetting to null
+    // here was the bug: it broke the paused -> playing transition check below
+    // once real data came back after a long pause.
+    return;
+  }
+
+  const track = state.item;
+  const isPlaying = !!state.is_playing;
+
+  // Only fire the moment we detect a paused -> playing transition, never on first load.
+  if(wasPlayingLastForResume === false && isPlaying){
+    postResumeSongToDiscord(track);
+  }
+
+  wasPlayingLastForResume = isPlaying;
 }
 
 let pendingAnnounceTimer = null;
@@ -4046,7 +4167,7 @@ async function exchangeCodeForToken(code){const verifier = localStorage.getItem(
 async function refreshAccessToken(auth){const body = new URLSearchParams({client_id: auth.clientId,grant_type: 'refresh_token',refresh_token: auth.refreshToken});const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST',headers:{ 'Content-Type':'application/x-www-form-urlencoded' },body});if(!res.ok) throw new Error('Refresh failed: ' + res.status);const data = await res.json();const updated = { ...auth, accessToken:data.access_token,refreshToken:data.refresh_token || auth.refreshToken,expiresAt: Date.now() + (data.expires_in*1000) };saveAuth(updated);return updated}
 async function getValidAccessToken(){let auth = getAuth();if(!auth) return null;if(!auth.expiresAt || Date.now() > (auth.expiresAt - 60000)){try{ auth = await refreshAccessToken(auth); }catch(e){ return null; }}return auth.accessToken}
 
-async function getPlaybackState(){const token = await getValidAccessToken();if(!token) return null;try{const res = await fetch('https://api.spotify.com/v1/me/player', { headers:{ 'Authorization': `Bearer ${token}` } });if(res.ok) return await res.json();return null}catch(e){return null}}
+async function getPlaybackState(){const token = await getValidAccessToken();if(!token) return null;try{const res = await fetch('https://api.spotify.com/v1/me/player', { headers:{ 'Authorization': `Bearer ${token}` } });if(res.status === 204) return null;if(res.ok) return await res.json();return null}catch(e){return null}}
 
 // ============================================
 // NEW: DEVICE SWITCHER
@@ -4746,6 +4867,7 @@ async function updateQueuePlayPauseIcon(){
   btn.dataset.playing = isPlaying ? '1' : '0';
   checkNextSongAlert(state);
   checkPauseSongAlert(state);
+  checkResumeSongAlert(state);
 }
 
 document.getElementById('queueBtnPrev').addEventListener('click', async ()=>{
