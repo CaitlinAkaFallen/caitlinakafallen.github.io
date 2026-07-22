@@ -15,6 +15,7 @@
   --bg-deep:#0a0915;
   --bg-panel:rgba(22,20,34,0.55);
   --bg-panel-elevated:rgba(30,25,50,0.7);
+  --glass-bg:rgba(23,22,34,0.8);
   --border-soft:rgba(255,255,255,0.1);
   --border-medium:rgba(255,255,255,0.15);
   --text-primary:#f3f1f8;
@@ -25,9 +26,11 @@
   --glow-primary:0 0 20px rgba(125,232,200,0.3);
   --glow-secondary:0 0 20px rgba(200,162,255,0.3);
   --corner-radius:14px;
+  --ease:cubic-bezier(0.16,1,0.3,1);
 }
 
 *{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
 html,body{ margin:0; padding:0; }
 body{
   min-height:100vh;
@@ -41,12 +44,75 @@ body{
   font-weight:400;
   letter-spacing:0.3px;
   padding:56px 24px 100px;
+  position:relative;
+}
+
+/* subtle grain for depth — the difference between "flat gradient" and "material" */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:0.035;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 a{ color:var(--accent-primary); text-decoration:none; transition:all .2s ease; }
 a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.5); }
+:focus-visible{ outline:2px solid var(--accent-primary); outline-offset:3px; border-radius:4px; }
 
-.wrap{ max-width:760px; margin:0 auto; }
+.wrap{ max-width:760px; margin:0 auto; position:relative; z-index:1; }
+
+/* ===================== SCROLL-SYNCED PROGRESS RAIL ===================== */
+.progress-rail{
+  position:sticky;
+  top:16px;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  gap:0;
+  background:rgba(14,13,24,0.75);
+  border:1px solid var(--border-medium);
+  border-radius:999px;
+  padding:6px;
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:0 10px 30px rgba(0,0,0,0.45);
+  margin-bottom:44px;
+  max-width:fit-content;
+}
+.progress-rail a{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 16px;
+  border-radius:999px;
+  font-family:var(--font-display);
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+  color:var(--text-tertiary);
+  transition:color .3s ease;
+}
+.progress-rail a .rail-index{
+  width:6px; height:6px;
+  border-radius:50%;
+  background:var(--text-tertiary);
+  transition:all .3s ease;
+  flex:0 0 auto;
+}
+.progress-rail a.active{ color:var(--text-primary); }
+.progress-rail a.active .rail-index{
+  background:var(--accent-primary);
+  box-shadow:0 0 10px rgba(125,232,200,0.8);
+  transform:scale(1.4);
+}
+.progress-rail a:not(.active):hover{ color:var(--text-secondary); }
+.progress-rail a:hover .rail-index{ background:var(--text-secondary); }
 
 /* HEADER */
 .header{
@@ -66,7 +132,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
 .header h1{
   font-family:var(--font-display);
   font-weight:900;
-  font-size:26px;
+  font-size:clamp(22px, 3.2vw, 28px);
   letter-spacing:1.5px;
   margin:0;
   background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
@@ -82,7 +148,24 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   color:var(--text-tertiary);
   margin:0 0 12px;
   padding-left:26px;
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
+/* tiny animated signal bars — echoes the "connection" theme of the whole guide */
+.signal-bars{ display:inline-flex; align-items:flex-end; gap:2px; height:9px; }
+.signal-bars span{
+  width:2px;
+  background:var(--accent-primary);
+  border-radius:1px;
+  animation:sig 1.4s ease-in-out infinite;
+  opacity:0.85;
+}
+.signal-bars span:nth-child(1){ height:4px; animation-delay:0s; }
+.signal-bars span:nth-child(2){ height:9px; animation-delay:0.18s; }
+.signal-bars span:nth-child(3){ height:6px; animation-delay:0.36s; }
+@keyframes sig{ 0%,100%{ transform:scaleY(0.5); opacity:0.5; } 50%{ transform:scaleY(1); opacity:1; } }
+
 .lede{
   color:var(--text-secondary);
   font-size:13.5px;
@@ -97,6 +180,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   align-items:center;
   gap:12px;
   margin:48px 0 20px;
+  scroll-margin-top:90px;
 }
 .section-tag .num{
   font-family:var(--font-display);
@@ -132,6 +216,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   margin-bottom:24px;
   position:relative;
   overflow:hidden;
+  transition:border-color .35s ease, box-shadow .35s ease, transform .35s ease;
 }
 .card::before{
   content:'';
@@ -139,14 +224,40 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   background:linear-gradient(135deg, rgba(125,232,200,0.04), transparent);
   pointer-events:none;
 }
+.card:hover{
+  border-color:rgba(125,232,200,0.3);
+  box-shadow:0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(125,232,200,0.06);
+}
 
-/* STEP LIST */
+/* reveal-on-scroll — orchestrated once per card, not scattered per element */
+.reveal{
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .6s var(--ease), transform .6s var(--ease);
+}
+.reveal.is-visible{ opacity:1; transform:translateY(0); }
+@media (prefers-reduced-motion: reduce){
+  .reveal{ opacity:1; transform:none; transition:none; }
+  html{ scroll-behavior:auto; }
+}
+
+/* STEP LIST — connected by a signal line, since these steps are a literal, ordered hookup process */
 .steps{ list-style:none; margin:0; padding:0; position:relative; z-index:1; }
+.steps::before{
+  content:'';
+  position:absolute;
+  left:14px;
+  top:32px;
+  bottom:32px;
+  width:1px;
+  background:linear-gradient(180deg, rgba(125,232,200,0.5), rgba(200,162,255,0.35) 60%, transparent);
+}
 .steps li{
   display:flex;
   gap:16px;
   padding:18px 0;
   border-bottom:1px solid var(--border-soft);
+  position:relative;
 }
 .steps li:last-child{ border-bottom:none; }
 .step-marker{
@@ -154,13 +265,16 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   width:30px; height:30px;
   border-radius:50%;
   border:1.5px solid rgba(125,232,200,0.4);
-  background:rgba(125,232,200,0.08);
+  background:var(--bg-deep);
   color:var(--accent-primary);
   font-family:var(--font-display);
   font-weight:700;
   font-size:13px;
   display:flex; align-items:center; justify-content:center;
   margin-top:2px;
+  position:relative;
+  z-index:1;
+  box-shadow:0 0 0 4px rgba(10,9,21,0.9);
 }
 .step-body{ font-size:13.5px; line-height:1.7; color:var(--text-primary); }
 .step-body strong{ color:var(--accent-primary); font-weight:700; }
@@ -173,7 +287,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
 }
 .step-body code{ font-size:11.5px; padding:2px 7px; }
 
-/* SCREENSHOT FRAME — bleeds to the full card width so images stretch as large as possible while staying undistorted and uncropped */
+/* SCREENSHOT FRAME */
 .shot-frame{
   border:1.5px solid var(--border-medium);
   border-radius:var(--corner-radius);
@@ -217,7 +331,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
   background:rgba(10,9,21,0.5);
 }
 
-/* CONFIG FIELDS (App Name / Description / Redirect URI) */
+/* CONFIG FIELDS */
 .config-list{ position:relative; z-index:1; }
 .config-row{
   display:flex;
@@ -242,7 +356,7 @@ a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.
 }
 code{
   font-family:var(--font-mono);
-  background:rgba(23,22,34,0.8);
+  background:var(--glass-bg);
   border:1px solid rgba(93,226,212,0.3);
   color:var(--accent-primary);
   padding:4px 10px;
@@ -251,6 +365,35 @@ code{
   display:inline-block;
   word-break:break-all;
 }
+
+/* copy-to-clipboard — this guide's whole job is "copy this exact string", so make that literal action a first-class control */
+.copy-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.copy-btn{
+  font-family:var(--font-display);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--bg-deep);
+  background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  border:none;
+  border-radius:6px;
+  padding:6px 12px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:transform .18s var(--ease), box-shadow .18s ease;
+  flex:0 0 auto;
+}
+.copy-btn:hover{ transform:translateY(-1px); box-shadow:0 4px 14px rgba(125,232,200,0.35); }
+.copy-btn:active{ transform:translateY(0); }
+.copy-btn svg{ width:11px; height:11px; }
 .copy-hint{
   font-size:10.5px;
   color:var(--text-tertiary);
@@ -357,9 +500,7 @@ code{
   letter-spacing:0.5px;
 }
 
-.text-tertiary{
-  color:var(--text-tertiary);
-}
+.text-tertiary{ color:var(--text-tertiary); }
 
 @media (max-width:600px){
   body{ padding:36px 16px 80px; }
@@ -368,6 +509,8 @@ code{
   .shot-frame{ margin:16px -16px -18px; }
   .shot-frame .shot-img-holder{ max-height:260px; }
   .shot-frame img{ max-height:260px; }
+  .progress-rail{ max-width:100%; overflow-x:auto; }
+  .progress-rail a{ padding:9px 12px; }
 }
 </style>
 </head>
@@ -375,20 +518,26 @@ code{
 
 <div class="wrap">
 
+  <nav class="progress-rail" id="progressRail">
+    <a href="#step-1" class="rail-link active"><span class="rail-index"></span>Create</a>
+    <a href="#step-2" class="rail-link"><span class="rail-index"></span>Configure</a>
+    <a href="#step-3" class="rail-link"><span class="rail-index"></span>Link</a>
+  </nav>
+
   <div class="header">
     <span class="dot"></span>
     <h1>Spotify Setup Guide</h1>
   </div>
-  <p class="eyebrow">FallenOneArt · Music Player</p>
+  <p class="eyebrow">FallenOneArt · Music Player <span class="signal-bars" aria-hidden="true"><span></span><span></span><span></span></span></p>
   <p class="lede">Connect your Spotify account to the FallenOneArt Music Player overlay. This uses PKCE authentication — no backend server, no secrets stored anywhere but your own browser.</p>
 
   <!-- STEP 1 -->
-  <div class="section-tag">
+  <div class="section-tag" id="step-1">
     <span class="num">01</span>
     <h2>Create Your Spotify App</h2>
   </div>
 
-  <div class="card">
+  <div class="card reveal">
     <ol class="steps">
       <li>
         <span class="step-marker">1</span>
@@ -421,12 +570,12 @@ code{
   </div>
 
   <!-- STEP 2 -->
-  <div class="section-tag">
+  <div class="section-tag" id="step-2">
     <span class="num">02</span>
     <h2>Configure Your App</h2>
   </div>
 
-  <div class="card">
+  <div class="card reveal">
     <div class="config-list">
       <div class="config-row">
         <span class="config-label">App Name</span>
@@ -441,7 +590,13 @@ code{
 
       <div class="config-row">
         <span class="config-label">Redirect URI</span>
-        <code>https://caitlinscreativespace.xyz/music-player-dashboard</code>
+        <div class="copy-row">
+          <code id="redirect-uri">https://caitlinscreativespace.xyz/music-player-dashboard</code>
+          <button class="copy-btn" type="button" data-copy-target="redirect-uri" aria-label="Copy redirect URI">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            <span class="copy-btn-label">Copy</span>
+          </button>
+        </div>
         <div class="copy-hint">Paste this exactly into the Redirect URIs field, then save.</div>
       </div>
     </div>
@@ -455,12 +610,12 @@ code{
   </div>
 
   <!-- STEP 3 -->
-  <div class="section-tag">
+  <div class="section-tag" id="step-3">
     <span class="num">03</span>
     <h2>Link Your App to the Dashboard</h2>
   </div>
 
-  <div class="card">
+  <div class="card reveal">
     <ol class="steps">
       <li>
         <span class="step-marker">1</span>
@@ -496,13 +651,13 @@ code{
       <li>
         <span class="step-marker">6</span>
         <span class="step-body">
-          Copy the <strong>OBS Browser URL</strong> from the same tab and add it as a CustomBrowser Source in OBS. That's you can dock it on OBS — separate from this dashboard, which is only for you to control settings.
+          Copy the <strong>OBS Browser URL</strong> from the same tab and add it as a Browser Source in OBS if you want a dockable control panel — separate from this dashboard, which is only for you to control settings.
         </span>
       </li>
       <li>
         <span class="step-marker">7</span>
         <span class="step-body">
-          Copy the <strong>OBS Browser URL of Music Player URL</strong> from the same tab and add it as a Browser Source in OBS. That's the overlay itself — separate from this dashboard, which is only for you to control settings.
+          Copy the <strong>Music Player URL</strong> from the same tab and add it as a Browser Source in OBS. That's the overlay itself — separate from this dashboard, which is only for you to control settings.
         </span>
       </li>
     </ol>
@@ -515,17 +670,15 @@ code{
     </div>
   </div>
 
-  <div class="callout">
+  <div class="callout reveal">
     <span class="icon">✓</span>
     <p>Once your app is saved, grab <strong>only the Client ID</strong> — never the Client Secret — and paste it into the Connection tab of the Music Player Dashboard to link everything up.</p>
   </div>
 
-  <div class="callout warn">
+  <div class="callout warn reveal">
     <span class="icon">!</span>
     <p><strong>Nothing happening after you click Connect?</strong> The most common cause is a Redirect URI mismatch between the dashboard and your Spotify app settings — even a missing trailing slash will block it. Double-check both match character-for-character.</p>
   </div>
-
-
 
   <div class="action-bar">
     <a href="music-player-dashboard.html" class="primary-btn"><span class="arrow">←</span> Back to Dashboard</a>
@@ -533,6 +686,85 @@ code{
   </div>
 
 </div>
+
+<script>
+(function(){
+  // Reveal-on-scroll for cards and callouts
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('is-visible'); });
+  }
+
+  // Scroll-synced progress rail
+  var sections = document.querySelectorAll('.section-tag');
+  var railLinks = document.querySelectorAll('.rail-link');
+  if('IntersectionObserver' in window && sections.length){
+    var railObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          var id = entry.target.getAttribute('id');
+          railLinks.forEach(function(link){
+            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { threshold: 0, rootMargin: '-45% 0px -50% 0px' });
+    sections.forEach(function(sec){ railObserver.observe(sec); });
+  }
+
+  // Copy-to-clipboard for redirect URI (and any future data-copy-target values)
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var targetId = btn.getAttribute('data-copy-target');
+      var targetEl = document.getElementById(targetId);
+      if(!targetEl) return;
+      var text = targetEl.textContent.trim();
+      var label = btn.querySelector('.copy-btn-label');
+      var originalLabel = label ? label.textContent : '';
+
+      function markCopied(){
+        if(label) label.textContent = 'Copied';
+        btn.style.opacity = '0.85';
+        setTimeout(function(){
+          if(label) label.textContent = originalLabel;
+          btn.style.opacity = '';
+        }, 1600);
+      }
+
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(markCopied).catch(function(){
+          fallbackCopy(text);
+          markCopied();
+        });
+      } else {
+        fallbackCopy(text);
+        markCopied();
+      }
+    });
+  });
+
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+})();
+</script>
 
 </body>
 </html>
