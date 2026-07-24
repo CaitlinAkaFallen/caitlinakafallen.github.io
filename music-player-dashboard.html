@@ -1702,6 +1702,29 @@
         color:var(--text-tertiary);
         letter-spacing:0.5px;
       }
+
+      /* ==========================================
+        NEW: SETTINGS TAB — Keyword Binds table
+        ========================================== */
+      .keybind-table{
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        margin-top:12px;
+      }
+      .keybind-row{
+        display:grid;
+        grid-template-columns:1fr 1fr auto;
+        gap:10px;
+        align-items:center;
+        padding:10px 12px;
+        background:var(--bg-panel);
+        border:1px solid var(--border-soft);
+        border-radius:10px;
+      }
+      .keybind-row input, .keybind-row select{ padding:8px 10px; font-size:12px; }
+      .keybind-row button.icon-btn{ width:34px; height:34px; font-size:13px; }
+      .config-io-row{ display:flex; gap:12px; flex-wrap:wrap; }
     </style>
   </head>
 <body>
@@ -1720,6 +1743,7 @@
     <button class="nav-btn" data-tab="metadata"><span class="num">05</span> Metadata &amp; Progress</button>
     <button class="nav-btn" data-tab="behavior"><span class="num">06</span> Behavior</button>
     <button class="nav-btn" data-tab="theme"><span class="num">07</span> Dashboard Theme</button>
+    <button class="nav-btn" data-tab="settings"><span class="num">08</span> Settings</button>
   </nav>
 
   <main class="main">
@@ -1786,202 +1810,6 @@
         <button type="button" class="primary-btn" id="btnConnect">Connect Spotify</button>
         <button type="button" class="primary-btn hidden" id="btnDisconnect">Disconnect Spotify</button>
          <span class="apphint" id="hintCreateApp">Follow Instructions to create your app on the Spotify Developer Portal</span>
-      </div>
-
-      <div class="instructions-bar">
-        <a href="/instructions.html" class="primary-btn">Go to Instructions</a>
-        <span class="apphint" id="hintInstructions">FALLENONEART · Instructions</span>
-      </div>
-
-      <div class="section-divider">
-        <h3>Discord Notifications</h3>
-        <div class="sub">Auto-post to a Discord channel every time the track changes, using a Discord webhook. This runs from the dashboard only — keep this tab open (or your OBS/streaming PC) for posts to fire.</div>
-      </div>
-
-      <div class="field">
-        <label>Discord Auto-Post</label>
-        <div class="toggle-row"><label id="lblToggleDiscordEnabled">Post to Discord when the track changes</label><label class="switch"><input type="checkbox" id="toggleDiscordEnabled" aria-labelledby="lblToggleDiscordEnabled"><span class="track"></span></label></div>
-        <div class="hint">When ON, every new "now playing" track detected in the Queue tab gets posted automatically.</div>
-      </div>
-
-      <div class="field">
-        <label for="inputDiscordWebhookUrl">Discord Webhook URL</label>
-        <div class="input-group">
-          <input type="password" id="inputDiscordWebhookUrl" placeholder="https://discord.com/api/webhooks/...">
-          <button type="button" class="icon-btn" id="btnToggleDiscordWebhook" title="Show/Hide Webhook URL">
-            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-            </svg>
-          </button>
-        </div>
-        <div class="hint">In Discord: Channel Settings → Integrations → Webhooks → New Webhook → Copy Webhook URL.</div>
-      </div>
-
-      <div class="field">
-        <label for="inputDiscordTemplate">Message Template</label>
-        <input type="text" id="inputDiscordTemplate" placeholder="🎵 Now playing: **{title}** by {artist}">
-        <div class="hint">Placeholders: {title}, {artist}, {album}. This becomes the embed title text.</div>
-      </div>
-
-      <div class="field">
-        <label>Embed Options</label>
-        <div class="toggle-row"><span>Include album art thumbnail</span><label class="switch"><input type="checkbox" id="toggleDiscordArt" checked aria-label="Include album art thumbnail" title="Include album art thumbnail"><span class="track"></span></label></div>
-        <div class="toggle-row"><span>Include Spotify track link</span><label class="switch"><input type="checkbox" id="toggleDiscordLink" checked aria-label="Include Spotify track link" title="Include Spotify track link"><span class="track"></span></label></div>
-        <div class="toggle-row"><span>Include track duration</span><label class="switch"><input type="checkbox" id="toggleDiscordDuration" aria-label="Include track duration" title="Include track duration"><span class="track"></span></label></div>
-      </div>
-
-      <div class="field">
-        <label for="inputDiscordBotUsername">Webhook Bot Name</label>
-        <input type="text" id="inputDiscordBotUsername" placeholder="FallenOneArt Music Player">
-        <div class="hint">Overrides the name shown as the poster of the message in Discord.</div>
-      </div>
-
-      <div class="field">
-        <label>Webhook Bot Avatar</label>
-        <div class="toggle-row"><span>Upload file</span><label class="switch"><input type="checkbox" id="toggleDiscordAvatarSource" aria-label="Toggle avatar upload vs URL"><span class="track"></span></label><span class="hint">URL</span></div>
-
-        <div id="discordAvatarUrlSection">
-          <label for="inputDiscordBotAvatar">Webhook Bot Avatar URL</label>
-          <input type="text" id="inputDiscordBotAvatar" placeholder="https://example.com/avatar.png">
-          <div class="hint">This is what Discord actually displays — it must be a public, hosted image link (Discord fetches it from its own servers).</div>
-
-          <div class="wallpaper-history-section" id="discordAvatarUrlHistorySection">
-            <label>URL History</label>
-            <div class="hint" id="discordAvatarUrlHistoryEmptyHint">URLs you've used before are saved here so you can switch back anytime.</div>
-            <div class="wallpaper-history-grid" id="discordAvatarUrlHistoryGrid"></div>
-          </div>
-        </div>
-
-        <div id="discordAvatarUploadSection" class="hidden">
-          <label>Upload Avatar Image</label>
-          <input type="file" id="inputDiscordAvatarUpload" accept="image/*" class="hidden">
-          <div class="upload-zone" id="discordAvatarUploadZone">
-            <div class="upload-icon">▲</div>
-            <div class="upload-text">Drag image here or click to browse</div>
-            <div class="upload-subtext">JPG, PNG, WebP, GIF (max 5MB)</div>
-          </div>
-          <div id="discordAvatarUploadPreview" class="upload-preview hidden">
-            <img id="discordAvatarPreviewImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Preview">
-            <div class="preview-info">
-              <div class="preview-filename" id="discordAvatarPreviewFilename"></div>
-              <div class="preview-size" id="discordAvatarPreviewSize"></div>
-            </div>
-            <button type="button" class="upload-clear" id="discordAvatarUploadClear" title="Remove">
-              <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-              </svg>
-            </button>
-          </div>
-
-          <div class="wallpaper-history-section" id="discordAvatarUploadHistorySection">
-            <label>Upload History</label>
-            <div class="hint" id="discordAvatarUploadHistoryEmptyHint">Uploaded images are saved here so you can reuse the hosted link anytime.</div>
-            <div class="wallpaper-history-grid" id="discordAvatarUploadHistoryGrid"></div>
-          </div>
-
-          <div class="hint" id="discordAvatarUploadStatusHint">Uploads are hosted automatically so Discord can actually display them. Once hosting finishes, the public link is filled in above for you.</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Embed Accent Color</label>
-        <div class="color-field">
-          <input type="color" id="inputDiscordEmbedColor" value="#7de8c8">
-          <span class="swatch-label">Left border color of the embed card</span>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="inputDiscordMention">Mention Text (optional)</label>
-        <input type="text" id="inputDiscordMention" placeholder="@everyone or <@&roleID>">
-        <div class="hint">Posted as plain text above the embed. Leave blank for no mention.</div>
-      </div>
-
-      <div class="field">
-        <label>Skip-Guard Delay</label>
-        <div class="range-row"><input type="range" id="inputDiscordMinPlaySeconds" min="0" max="60" step="5"><span class="val" id="valDiscordMinPlaySeconds"></span></div>
-        <div class="hint">Waits this many seconds before posting, so quick skips through tracks don't spam the channel. Set to 0 to post instantly.</div>
-      </div>
-
-      <div class="section-divider">
-        <h3>Next Song Alert</h3>
-        <div class="sub">Post a separate "coming up next" message a few minutes before the current track ends, using the next track in your Spotify queue. Uses the same webhook, bot name, avatar, and embed color set above.</div>
-      </div>
-
-      <div class="field">
-        <label>Next Song Alert</label>
-        <div class="toggle-row"><label id="lblToggleNextSongEnabled">Post when trigger time is reached</label><label class="switch"><input type="checkbox" id="toggleNextSongEnabled" aria-labelledby="lblToggleNextSongEnabled"><span class="track"></span></label></div>
-        <div class="hint">Fires once per track, based on the current track's remaining play time — not a fixed timer. Needs a track waiting in your Spotify queue.</div>
-      </div>
-      
-         <div class="field">
-        <label>Next Song Embed Color</label>
-        <div class="color-field">
-          <input type="color" id="inputDiscordNextSongEmbedColor" value="#7de8c8">
-          <span class="swatch-label">Left border color of the embed card</span>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Minutes Remaining Trigger</label>
-        <div class="range-row"><input type="range" id="inputNextSongMinutes" min="1" max="10" step="1"><span class="val" id="valNextSongMinutes"></span></div>
-        <div class="hint">Posts once remaining time on the current track drops to or below this many minutes.</div>
-      </div>
-
-      <div class="field">
-        <label for="inputNextSongTemplate">Next Song Message Template</label>
-        <input type="text" id="inputNextSongTemplate" placeholder="⏭️ Coming up next: **{title}** by {artist}">
-        <div class="hint">Placeholders: {title}, {artist}, {album}, {remaining} (e.g. "4:12 left").</div>
-      </div>
-
-       <div class="section-divider">
-        <h3>Pause Song Alert</h3>
-        <div class="sub">Post a separate "pause" message when the current track is paused.</div>
-    </div>
-
-      <div class="field">
-        <label>Pause Song Alert</label>
-        <div class="toggle-row"><label id="lblTogglePauseSongEnabled">Post when the track is paused</label><label class="switch"><input type="checkbox" id="togglePauseSongEnabled" aria-labelledby="lblTogglePauseSongEnabled"><span class="track"></span></label></div>
-        <div class="hint">Fires once per track, when the current track is paused.</div>
-      </div>
-
-      <div class="field">
-        <label>Pause Song Embed Color</label>
-        <div class="color-field">
-          <input type="color" id="inputDiscordPauseSongEmbedColor" value="#7de8c8">
-          <span class="swatch-label">Left border color of the embed card</span>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="inputPauseSongTemplate">Pause Song Message Template</label>
-        <input type="text" id="inputPauseSongTemplate" placeholder="⏸️ Paused: **{title}** by {artist}">
-        <div class="hint">Placeholders: {title}, {artist}, {album}.</div>
-      </div>
-
-      <div class="section-divider">
-        <h3>Resume Play Alert</h3>
-        <div class="sub">Post a separate "resumed" message when playback resumes after being paused.</div>
-      </div>
-
-      <div class="field">
-        <label>Resume Play Alert</label>
-        <div class="toggle-row"><label id="lblToggleResumeSongEnabled">Post when playback resumes</label><label class="switch"><input type="checkbox" id="toggleResumeSongEnabled" aria-labelledby="lblToggleResumeSongEnabled"><span class="track"></span></label></div>
-        <div class="hint">Fires once each time playback goes from paused to playing.</div>
-      </div>
-
-      <div class="field">
-        <label>Resume Play Embed Color</label>
-        <div class="color-field">
-          <input type="color" id="inputDiscordResumeSongEmbedColor" value="#7de8c8">
-          <span class="swatch-label">Left border color of the embed card</span>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="inputResumeSongTemplate">Resume Play Message Template</label>
-        <input type="text" id="inputResumeSongTemplate" placeholder="▶️ Resumed: **{title}** by {artist}">
-        <div class="hint">Placeholders: {title}, {artist}, {album}.</div>
       </div>
     </section>
 
@@ -2143,16 +1971,12 @@
         <div class="playlist-tracks-panel hidden" id="playlistTracksPanel"></div>
       </div>
 
+
       <div class="section-divider">
-        <h3>Upcoming Queue</h3>
-        <div class="sub">Next 5-10 tracks parsed from your Spotify session. Click a row to skip directly to that track.</div>
+        <h3>Playback Controls</h3>
+        <div class="sub">Play/pause, skip, shuffle, repeat, and volume for the active device.</div>
       </div>
 
-      <div class="queue-list-container" id="queueListTracks">
-        <div class="status-placeholder">
-          Queue stream idle.
-        </div>
-      </div>
       <div class="spotify-controls" id="queuePlaybackControls">
         <button class="icon-btn" id="queueBtnPrev" title="Previous">
           <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -2185,6 +2009,17 @@
           </svg>
           <input type="range" id="inputVolume" min="0" max="100" step="1" value="50">
           <span class="val" id="valVolume">50%</span>
+        </div>
+      </div>
+      
+      <div class="section-divider">
+        <h3>Upcoming Queue</h3>
+        <div class="sub">Next 5-10 tracks parsed from your Spotify session. Click a row to skip directly to that track.</div>
+      </div>
+
+      <div class="queue-list-container" id="queueListTracks">
+        <div class="status-placeholder">
+          Queue stream idle.
         </div>
       </div>
 
@@ -2658,6 +2493,251 @@
       <button class="ghost-btn" id="btnResetDashTheme">Reset dashboard theme</button>
     </section>
 
+    <!-- SETTINGS (NEW) -->
+    <section class="panel" id="panel-settings">
+      <h2>Settings</h2>
+      <p class="sub">Discord notifications, playback controls, documentation, config backup, and keyboard hotkeys all live here.</p>
+
+      <div class="section-divider">
+        <h3>Documentation</h3>
+      </div>
+
+      <div class="instructions-bar">
+        <a href="/instructions.html" class="primary-btn">Go to Instructions</a>
+        <span class="apphint" id="hintInstructions">FALLENONEART · Instructions</span>
+      </div>
+
+      
+
+      <div class="section-divider">
+        <h3>Discord Notifications</h3>
+        <div class="sub">Auto-post to a Discord channel every time the track changes, using a Discord webhook. This runs from the dashboard only — keep this tab open (or your OBS/streaming PC) for posts to fire.</div>
+      </div>
+
+      <div class="field">
+        <label>Discord Auto-Post</label>
+        <div class="toggle-row"><label id="lblToggleDiscordEnabled">Post to Discord when the track changes</label><label class="switch"><input type="checkbox" id="toggleDiscordEnabled" aria-labelledby="lblToggleDiscordEnabled"><span class="track"></span></label></div>
+        <div class="hint">When ON, every new "now playing" track detected in the Queue tab gets posted automatically.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputDiscordWebhookUrl">Discord Webhook URL</label>
+        <div class="input-group">
+          <input type="password" id="inputDiscordWebhookUrl" placeholder="https://discord.com/api/webhooks/...">
+          <button type="button" class="icon-btn" id="btnToggleDiscordWebhook" title="Show/Hide Webhook URL">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="hint">In Discord: Channel Settings → Integrations → Webhooks → New Webhook → Copy Webhook URL.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputDiscordTemplate">Message Template</label>
+        <input type="text" id="inputDiscordTemplate" placeholder="🎵 Now playing: **{title}** by {artist}">
+        <div class="hint">Placeholders: {title}, {artist}, {album}. This becomes the embed title text.</div>
+      </div>
+
+      <div class="field">
+        <label>Embed Options</label>
+        <div class="toggle-row"><span>Include album art thumbnail</span><label class="switch"><input type="checkbox" id="toggleDiscordArt" checked aria-label="Include album art thumbnail" title="Include album art thumbnail"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Include Spotify track link</span><label class="switch"><input type="checkbox" id="toggleDiscordLink" checked aria-label="Include Spotify track link" title="Include Spotify track link"><span class="track"></span></label></div>
+        <div class="toggle-row"><span>Include track duration</span><label class="switch"><input type="checkbox" id="toggleDiscordDuration" aria-label="Include track duration" title="Include track duration"><span class="track"></span></label></div>
+      </div>
+
+      <div class="field">
+        <label for="inputDiscordBotUsername">Webhook Bot Name</label>
+        <input type="text" id="inputDiscordBotUsername" placeholder="FallenOneArt Music Player">
+        <div class="hint">Overrides the name shown as the poster of the message in Discord.</div>
+      </div>
+
+      <div class="field">
+        <label>Webhook Bot Avatar</label>
+        <div class="toggle-row"><span>Upload file</span><label class="switch"><input type="checkbox" id="toggleDiscordAvatarSource" aria-label="Toggle avatar upload vs URL"><span class="track"></span></label><span class="hint">URL</span></div>
+
+        <div id="discordAvatarUrlSection">
+          <label for="inputDiscordBotAvatar">Webhook Bot Avatar URL</label>
+          <input type="text" id="inputDiscordBotAvatar" placeholder="https://example.com/avatar.png">
+          <div class="hint">This is what Discord actually displays — it must be a public, hosted image link (Discord fetches it from its own servers).</div>
+
+          <div class="wallpaper-history-section" id="discordAvatarUrlHistorySection">
+            <label>URL History</label>
+            <div class="hint" id="discordAvatarUrlHistoryEmptyHint">URLs you've used before are saved here so you can switch back anytime.</div>
+            <div class="wallpaper-history-grid" id="discordAvatarUrlHistoryGrid"></div>
+          </div>
+        </div>
+
+        <div id="discordAvatarUploadSection" class="hidden">
+          <label>Upload Avatar Image</label>
+          <input type="file" id="inputDiscordAvatarUpload" accept="image/*" class="hidden">
+          <div class="upload-zone" id="discordAvatarUploadZone">
+            <div class="upload-icon">▲</div>
+            <div class="upload-text">Drag image here or click to browse</div>
+            <div class="upload-subtext">JPG, PNG, WebP, GIF (max 5MB)</div>
+          </div>
+          <div id="discordAvatarUploadPreview" class="upload-preview hidden">
+            <img id="discordAvatarPreviewImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Preview">
+            <div class="preview-info">
+              <div class="preview-filename" id="discordAvatarPreviewFilename"></div>
+              <div class="preview-size" id="discordAvatarPreviewSize"></div>
+            </div>
+            <button type="button" class="upload-clear" id="discordAvatarUploadClear" title="Remove">
+              <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="wallpaper-history-section" id="discordAvatarUploadHistorySection">
+            <label>Upload History</label>
+            <div class="hint" id="discordAvatarUploadHistoryEmptyHint">Uploaded images are saved here so you can reuse the hosted link anytime.</div>
+            <div class="wallpaper-history-grid" id="discordAvatarUploadHistoryGrid"></div>
+          </div>
+
+          <div class="hint" id="discordAvatarUploadStatusHint">Uploads are hosted automatically so Discord can actually display them. Once hosting finishes, the public link is filled in above for you.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Embed Accent Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDiscordEmbedColor" value="#7de8c8">
+          <span class="swatch-label">Left border color of the embed card</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="inputDiscordMention">Mention Text (optional)</label>
+        <input type="text" id="inputDiscordMention" placeholder="@everyone or <@&roleID>">
+        <div class="hint">Posted as plain text above the embed. Leave blank for no mention.</div>
+      </div>
+
+      <div class="field">
+        <label>Skip-Guard Delay</label>
+        <div class="range-row"><input type="range" id="inputDiscordMinPlaySeconds" min="0" max="60" step="5"><span class="val" id="valDiscordMinPlaySeconds"></span></div>
+        <div class="hint">Waits this many seconds before posting, so quick skips through tracks don't spam the channel. Set to 0 to post instantly.</div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Next Song Alert</h3>
+        <div class="sub">Post a separate "coming up next" message a few minutes before the current track ends, using the next track in your Spotify queue. Uses the same webhook, bot name, avatar, and embed color set above.</div>
+      </div>
+
+      <div class="field">
+        <label>Next Song Alert</label>
+        <div class="toggle-row"><label id="lblToggleNextSongEnabled">Post when trigger time is reached</label><label class="switch"><input type="checkbox" id="toggleNextSongEnabled" aria-labelledby="lblToggleNextSongEnabled"><span class="track"></span></label></div>
+        <div class="hint">Fires once per track, based on the current track's remaining play time — not a fixed timer. Needs a track waiting in your Spotify queue.</div>
+      </div>
+      
+         <div class="field">
+        <label>Next Song Embed Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDiscordNextSongEmbedColor" value="#7de8c8">
+          <span class="swatch-label">Left border color of the embed card</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Minutes Remaining Trigger</label>
+        <div class="range-row"><input type="range" id="inputNextSongMinutes" min="1" max="10" step="1"><span class="val" id="valNextSongMinutes"></span></div>
+        <div class="hint">Posts once remaining time on the current track drops to or below this many minutes.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputNextSongTemplate">Next Song Message Template</label>
+        <input type="text" id="inputNextSongTemplate" placeholder="⏭️ Coming up next: **{title}** by {artist}">
+        <div class="hint">Placeholders: {title}, {artist}, {album}, {remaining} (e.g. "4:12 left").</div>
+      </div>
+
+       <div class="section-divider">
+        <h3>Pause Song Alert</h3>
+        <div class="sub">Post a separate "pause" message when the current track is paused.</div>
+    </div>
+
+      <div class="field">
+        <label>Pause Song Alert</label>
+        <div class="toggle-row"><label id="lblTogglePauseSongEnabled">Post when the track is paused</label><label class="switch"><input type="checkbox" id="togglePauseSongEnabled" aria-labelledby="lblTogglePauseSongEnabled"><span class="track"></span></label></div>
+        <div class="hint">Fires once per track, when the current track is paused.</div>
+      </div>
+
+      <div class="field">
+        <label>Pause Song Embed Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDiscordPauseSongEmbedColor" value="#7de8c8">
+          <span class="swatch-label">Left border color of the embed card</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="inputPauseSongTemplate">Pause Song Message Template</label>
+        <input type="text" id="inputPauseSongTemplate" placeholder="⏸️ Paused: **{title}** by {artist}">
+        <div class="hint">Placeholders: {title}, {artist}, {album}.</div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Resume Play Alert</h3>
+        <div class="sub">Post a separate "resumed" message when playback resumes after being paused.</div>
+      </div>
+
+      <div class="field">
+        <label>Resume Play Alert</label>
+        <div class="toggle-row"><label id="lblToggleResumeSongEnabled">Post when playback resumes</label><label class="switch"><input type="checkbox" id="toggleResumeSongEnabled" aria-labelledby="lblToggleResumeSongEnabled"><span class="track"></span></label></div>
+        <div class="hint">Fires once each time playback goes from paused to playing.</div>
+      </div>
+
+      <div class="field">
+        <label>Resume Play Embed Color</label>
+        <div class="color-field">
+          <input type="color" id="inputDiscordResumeSongEmbedColor" value="#7de8c8">
+          <span class="swatch-label">Left border color of the embed card</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="inputResumeSongTemplate">Resume Play Message Template</label>
+        <input type="text" id="inputResumeSongTemplate" placeholder="▶️ Resumed: **{title}** by {artist}">
+        <div class="hint">Placeholders: {title}, {artist}, {album}.</div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Config Backup &amp; Restore</h3>
+        <div class="sub">Export everything (player config, dashboard theme, Discord settings, hotkeys) to a JSON file, or restore from a previously exported file.</div>
+      </div>
+
+      <div class="field">
+        <label>Config File</label>
+        <div class="config-io-row">
+          <button type="button" class="primary-btn" id="btnExportConfig">Download Config</button>
+          <button type="button" class="ghost-btn" id="btnImportConfigTrigger">Upload Config</button>
+          <input type="file" id="inputImportConfig" accept="application/json,.json" class="hidden">
+        </div>
+        <div class="hint" id="importConfigHint">Importing overrides your current settings on this device immediately.</div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Hotkeys</h3>
+        <div class="sub">Keyboard shortcuts only fire while this dashboard tab/window is focused, and never while you're typing in a text field.</div>
+      </div>
+
+      <div class="field">
+        <label>Enable Hotkeys</label>
+        <div class="toggle-row"><span>Spacebar = Play/Pause, ← / → = Skip Prev/Next</span><label class="switch"><input type="checkbox" id="toggleHotkeysEnabled" checked><span class="track"></span></label></div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Keyword Binds</h3>
+        <div class="sub">Map a custom key combo (e.g. "Shift+L") to an action, such as toggling shuffle or nudging the volume.</div>
+      </div>
+
+      <div class="field">
+        <label>Custom Binds</label>
+        <div class="keybind-table" id="keybindTable"></div>
+        <button type="button" class="ghost-btn mt-10" id="btnAddKeybind">+ Add Keybind</button>
+        <div class="hint">Click "Listen" then press the key combo you want, choose an action, then it saves automatically.</div>
+      </div>
+    </section>
+
     <div class="save-bar" id="saveBar">
       <button class="primary-btn" id="btnSave">Save &amp; Push to Overlay</button>
       <span class="hint" id="saveHint">Changes preview live. Click Save to push to all open instances.</span>
@@ -2703,6 +2783,8 @@ const MAX_WALLPAPER_HISTORY = 8;
 const LS_DISCORD_AVATAR_URL_HISTORY_KEY = 'fallenoneart_discord_avatar_url_history';
 const LS_DISCORD_AVATAR_UPLOAD_HISTORY_KEY = 'fallenoneart_discord_avatar_upload_history';
 const MAX_AVATAR_HISTORY = 8;
+const LS_HOTKEYS_ENABLED_KEY = 'fallenoneart_hotkeys_enabled';
+const LS_KEYBINDS_KEY = 'fallenoneart_custom_keybinds';
 const IMGUR_CLIENT_ID = '546c25a59c58ad7';
 const BROADCAST_NAME = 'fallenoneart-music-player-sync';
 const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
@@ -2733,6 +2815,8 @@ const DEFAULT_DISCORD_CONFIG = {
   resumeSongEnabled:false, resumeSongEmbedColor:'#7de8c8', resumeSongTemplate:'▶️ Resumed: **{title}** by {artist}'
 };
 
+const DEFAULT_KEYBINDS = [];
+
 let config = { ...DEFAULT_CONFIG };
 let dashTheme = { ...DEFAULT_DASH_THEME };
 let discordConfig = { ...DEFAULT_DISCORD_CONFIG };
@@ -2740,6 +2824,8 @@ let previewOpacity = 1;
 let wallpaperHistory = [];
 let avatarUrlHistory = [];
 let avatarUploadHistory = [];
+let hotkeysEnabled = true;
+let customKeybinds = [];
 let bc = null;
 try{ bc = new BroadcastChannel(BROADCAST_NAME); }catch(e){}
 
@@ -2778,7 +2864,7 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
 
 function updateSaveBarVisibility(tab){
   const saveBar = document.getElementById('saveBar');
-  const hideOn = ['connection', 'theme', 'queue'];
+  const hideOn = ['connection', 'theme', 'queue', 'settings'];
   saveBar.classList.toggle('hidden', hideOn.includes(tab));
 }
 
@@ -2921,7 +3007,7 @@ function readDiscordForm(){
   discordConfig.resumeSongTemplate = document.getElementById('inputResumeSongTemplate').value.trim() || DEFAULT_DISCORD_CONFIG.resumeSongTemplate;
 }
 
-document.querySelectorAll('#panel-connection #toggleDiscordEnabled, #panel-connection #inputDiscordWebhookUrl, #panel-connection #inputDiscordTemplate, #panel-connection #toggleDiscordArt, #panel-connection #toggleDiscordLink, #panel-connection #toggleDiscordDuration, #panel-connection #inputDiscordBotUsername, #panel-connection #inputDiscordBotAvatar, #panel-connection #inputDiscordEmbedColor, #panel-connection #inputDiscordMention, #panel-connection #inputDiscordMinPlaySeconds, #panel-connection #toggleNextSongEnabled, #panel-connection #inputNextSongMinutes, #panel-connection #inputNextSongTemplate, #panel-connection #inputDiscordNextSongEmbedColor, #panel-connection #togglePauseSongEnabled, #panel-connection #inputDiscordPauseSongEmbedColor, #panel-connection #inputPauseSongTemplate, #panel-connection #toggleResumeSongEnabled, #panel-connection #inputDiscordResumeSongEmbedColor, #panel-connection #inputResumeSongTemplate').forEach(el=>{
+document.querySelectorAll('#panel-settings #toggleDiscordEnabled, #panel-settings #inputDiscordWebhookUrl, #panel-settings #inputDiscordTemplate, #panel-settings #toggleDiscordArt, #panel-settings #toggleDiscordLink, #panel-settings #toggleDiscordDuration, #panel-settings #inputDiscordBotUsername, #panel-settings #inputDiscordBotAvatar, #panel-settings #inputDiscordEmbedColor, #panel-settings #inputDiscordMention, #panel-settings #inputDiscordMinPlaySeconds, #panel-settings #toggleNextSongEnabled, #panel-settings #inputNextSongMinutes, #panel-settings #inputNextSongTemplate, #panel-settings #inputDiscordNextSongEmbedColor, #panel-settings #togglePauseSongEnabled, #panel-settings #inputDiscordPauseSongEmbedColor, #panel-settings #inputPauseSongTemplate, #panel-settings #toggleResumeSongEnabled, #panel-settings #inputDiscordResumeSongEmbedColor, #panel-settings #inputResumeSongTemplate').forEach(el=>{
   el.addEventListener('input', ()=>{ readDiscordForm(); saveDiscordConfigToStorage(); });
   el.addEventListener('change', ()=>{ readDiscordForm(); saveDiscordConfigToStorage(); });
 });
@@ -4853,7 +4939,7 @@ document.getElementById('btnDisconnect').addEventListener('click', async ()=>{
 async function playbackAction(method, path){const token = await getValidAccessToken();if(!token){ showToast('Not connected to Spotify.'); return; }try{const devSuffix = selectedDeviceId ? (path.includes('?') ? `&device_id=${selectedDeviceId}` : `?device_id=${selectedDeviceId}`) : '';const res = await fetch(`https://api.spotify.com/v1/me/player/${path}${devSuffix}`, { method, headers:{ 'Authorization': `Bearer ${token}` } });if(res.status === 404){ showToast('No active Spotify device found. Open Spotify somewhere first.'); }}catch(e){ showToast('Playback control failed.'); }}
 
 // ============================================
-// QUEUE TAB PLAYBACK BUTTONS (Prev / Play-Pause / Next)
+// SETTINGS TAB PLAYBACK BUTTONS (Prev / Play-Pause / Next)
 // ============================================
 async function updateQueuePlayPauseIcon(){
   const btn = document.getElementById('queueBtnPlayPause');
@@ -4886,8 +4972,331 @@ document.getElementById('queueBtnPlaybackNext').addEventListener('click', async 
   await playbackAction('POST', 'next');
   setTimeout(()=>{ fetchAndUpdateQueue(); updateQueuePlayPauseIcon(); }, 400);
 });
+
+// ============================================
+// NEW: CONFIG EXPORT / IMPORT (JSON backup & restore)
+// ============================================
+function gatherFullConfigBundle(){
+  readFormIntoConfig();
+  readDiscordForm();
+  return {
+    __fallenoneart_export__: true,
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    config,
+    dashTheme,
+    discordConfig,
+    hotkeysEnabled,
+    customKeybinds
+  };
+}
+
+function downloadConfigBundle(){
+  try{
+    const bundle = gatherFullConfigBundle();
+    const blob = new Blob([JSON.stringify(bundle, null, 2)], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+    a.href = url;
+    a.download = `fallenoneart-music-player-config-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('Config downloaded ✓');
+  }catch(e){
+    console.error('Config export failed:', e);
+    showToast('Could not export config — check the console for details.');
+  }
+}
+
+function isPlainObject(val){
+  return !!val && typeof val === 'object' && !Array.isArray(val);
+}
+
+function validateImportedBundle(data){
+  if(!isPlainObject(data)){
+    throw new Error('That file does not contain a valid config object.');
+  }
+  // Every top-level section is optional so partial/edited exports still import,
+  // but if present it must be the right shape.
+  if('config' in data && !isPlainObject(data.config)){
+    throw new Error('The "config" section in that file is not valid.');
+  }
+  if('dashTheme' in data && !isPlainObject(data.dashTheme)){
+    throw new Error('The "dashTheme" section in that file is not valid.');
+  }
+  if('discordConfig' in data && !isPlainObject(data.discordConfig)){
+    throw new Error('The "discordConfig" section in that file is not valid.');
+  }
+  if('customKeybinds' in data && !Array.isArray(data.customKeybinds)){
+    throw new Error('The "customKeybinds" section in that file is not valid.');
+  }
+  if(!('config' in data) && !('dashTheme' in data) && !('discordConfig' in data) && !('customKeybinds' in data)){
+    throw new Error('That file does not contain any recognizable FallenOneArt config data.');
+  }
+  return true;
+}
+
+function applyImportedBundle(data){
+  if(isPlainObject(data.config)) config = { ...DEFAULT_CONFIG, ...data.config };
+  if(isPlainObject(data.dashTheme)) dashTheme = { ...DEFAULT_DASH_THEME, ...data.dashTheme };
+  if(isPlainObject(data.discordConfig)) discordConfig = { ...DEFAULT_DISCORD_CONFIG, ...data.discordConfig };
+  if(typeof data.hotkeysEnabled === 'boolean') hotkeysEnabled = data.hotkeysEnabled;
+  if(Array.isArray(data.customKeybinds)){
+    customKeybinds = data.customKeybinds.filter(b => isPlainObject(b) && typeof b.combo === 'string' && typeof b.action === 'string');
+  }
+
+  localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(config));
+  saveDashTheme();
+  saveDiscordConfigToStorage();
+  saveHotkeysEnabled();
+  saveCustomKeybinds();
+
+  populateForm();
+  syncCustomSelects();
+  populateDashThemeForm();
+  applyDashTheme();
+  populateDiscordForm();
+  document.getElementById('toggleHotkeysEnabled').checked = hotkeysEnabled;
+  renderKeybindTable();
+  pushLivePreview();
+  if(bc) bc.postMessage({ type:'config-update', config });
+}
+
+function handleImportConfigFile(file){
+  if(!file){ return; }
+  if(file.type && file.type !== 'application/json' && !file.name.toLowerCase().endsWith('.json')){
+    showToast('Please choose a .json config file.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (evt)=>{
+    let parsed;
+    try{
+      parsed = JSON.parse(evt.target.result);
+    }catch(err){
+      showToast('That file is not valid JSON — import cancelled.');
+      return;
+    }
+    try{
+      validateImportedBundle(parsed);
+      applyImportedBundle(parsed);
+      showToast('Config imported ✓');
+    }catch(err){
+      console.error('Config import validation failed:', err);
+      showToast(err.message || 'That config file looks corrupted — import cancelled.');
+    }
+  };
+  reader.onerror = ()=>{
+    showToast('Could not read that file.');
+  };
+  reader.readAsText(file);
+}
+
+document.getElementById('btnExportConfig').addEventListener('click', downloadConfigBundle);
+document.getElementById('btnImportConfigTrigger').addEventListener('click', ()=>{
+  document.getElementById('inputImportConfig').click();
+});
+document.getElementById('inputImportConfig').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  handleImportConfigFile(file);
+  e.target.value = '';
+});
+
+// ============================================
+// NEW: HOTKEYS & KEYWORD BINDS
+// ============================================
+function loadHotkeysEnabled(){
+  try{
+    const raw = localStorage.getItem(LS_HOTKEYS_ENABLED_KEY);
+    hotkeysEnabled = raw === null ? true : raw === 'true';
+  }catch(e){ hotkeysEnabled = true; }
+}
+function saveHotkeysEnabled(){
+  try{ localStorage.setItem(LS_HOTKEYS_ENABLED_KEY, hotkeysEnabled ? 'true' : 'false'); }catch(e){}
+}
+
+function loadCustomKeybinds(){
+  try{
+    const raw = localStorage.getItem(LS_KEYBINDS_KEY);
+    customKeybinds = raw ? JSON.parse(raw) : [ ...DEFAULT_KEYBINDS ];
+  }catch(e){ customKeybinds = [ ...DEFAULT_KEYBINDS ]; }
+}
+function saveCustomKeybinds(){
+  try{ localStorage.setItem(LS_KEYBINDS_KEY, JSON.stringify(customKeybinds)); }catch(e){}
+}
+
+const KEYBIND_ACTIONS = [
+  { value:'playpause', label:'Toggle Play/Pause' },
+  { value:'next', label:'Skip to Next' },
+  { value:'previous', label:'Skip to Previous' },
+  { value:'shuffle', label:'Toggle Shuffle' },
+  { value:'repeat', label:'Cycle Repeat Mode' },
+  { value:'volumeup', label:'Volume Up (+5%)' },
+  { value:'volumedown', label:'Volume Down (-5%)' },
+  { value:'like', label:'Save Current Track to Liked Songs' }
+];
+
+function runKeybindAction(action){
+  switch(action){
+    case 'playpause': document.getElementById('queueBtnPlayPause').click(); break;
+    case 'next': document.getElementById('queueBtnPlaybackNext').click(); break;
+    case 'previous': document.getElementById('queueBtnPrev').click(); break;
+    case 'shuffle': document.getElementById('queueBtnShuffle').click(); break;
+    case 'repeat': document.getElementById('queueBtnRepeat').click(); break;
+    case 'volumeup': {
+      const vol = Math.min(100, parseInt(document.getElementById('inputVolume').value || '50') + 5);
+      document.getElementById('inputVolume').value = vol;
+      document.getElementById('inputVolume').dispatchEvent(new Event('input'));
+      break;
+    }
+    case 'volumedown': {
+      const vol = Math.max(0, parseInt(document.getElementById('inputVolume').value || '50') - 5);
+      document.getElementById('inputVolume').value = vol;
+      document.getElementById('inputVolume').dispatchEvent(new Event('input'));
+      break;
+    }
+    case 'like': {
+      const likeBtn = document.getElementById('btnLikeTrack');
+      if(likeBtn) likeBtn.click(); else showToast('Nothing is currently playing.');
+      break;
+    }
+  }
+}
+
+function normalizeComboFromEvent(e){
+  const parts = [];
+  if(e.ctrlKey) parts.push('Ctrl');
+  if(e.altKey) parts.push('Alt');
+  if(e.shiftKey) parts.push('Shift');
+  if(e.metaKey) parts.push('Meta');
+  let key = e.key;
+  if(key === ' ') key = 'Space';
+  if(!['Control','Alt','Shift','Meta'].includes(key)){
+    key = key.length === 1 ? key.toUpperCase() : key;
+    parts.push(key);
+  }
+  return parts.join('+');
+}
+
+function isTypingContext(){
+  const el = document.activeElement;
+  if(!el) return false;
+  const tag = el.tagName;
+  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable;
+}
+
+function renderKeybindTable(){
+  const table = document.getElementById('keybindTable');
+  table.innerHTML = '';
+  if(!customKeybinds.length){
+    const empty = document.createElement('div');
+    empty.className = 'hint';
+    empty.textContent = 'No custom keybinds yet — click "+ Add Keybind" to create one.';
+    table.appendChild(empty);
+    return;
+  }
+  customKeybinds.forEach((bind, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'keybind-row';
+
+    const comboBtn = document.createElement('button');
+    comboBtn.type = 'button';
+    comboBtn.className = 'ghost-btn';
+    comboBtn.textContent = bind.combo ? bind.combo : 'Click to set...';
+    comboBtn.addEventListener('click', ()=>{
+      comboBtn.textContent = 'Press a key combo...';
+      const listener = (e)=>{
+        e.preventDefault();
+        const combo = normalizeComboFromEvent(e);
+        bind.combo = combo;
+        comboBtn.textContent = combo;
+        saveCustomKeybinds();
+        document.removeEventListener('keydown', listener, true);
+      };
+      document.addEventListener('keydown', listener, true);
+    });
+
+    const select = document.createElement('select');
+    KEYBIND_ACTIONS.forEach(opt=>{
+      const optionEl = document.createElement('option');
+      optionEl.value = opt.value;
+      optionEl.textContent = opt.label;
+      if(bind.action === opt.value) optionEl.selected = true;
+      select.appendChild(optionEl);
+    });
+    if(!bind.action) bind.action = KEYBIND_ACTIONS[0].value;
+    select.addEventListener('change', ()=>{
+      bind.action = select.value;
+      saveCustomKeybinds();
+    });
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'icon-btn';
+    removeBtn.title = 'Remove keybind';
+    removeBtn.textContent = '✕';
+    removeBtn.addEventListener('click', ()=>{
+      customKeybinds.splice(idx, 1);
+      saveCustomKeybinds();
+      renderKeybindTable();
+      showToast('Keybind removed');
+    });
+
+    row.appendChild(comboBtn);
+    row.appendChild(select);
+    row.appendChild(removeBtn);
+    table.appendChild(row);
+  });
+}
+
+document.getElementById('btnAddKeybind').addEventListener('click', ()=>{
+  customKeybinds.push({ combo:'', action:KEYBIND_ACTIONS[0].value });
+  saveCustomKeybinds();
+  renderKeybindTable();
+});
+
+document.getElementById('toggleHotkeysEnabled').addEventListener('change', (e)=>{
+  hotkeysEnabled = e.target.checked;
+  saveHotkeysEnabled();
+  showToast(hotkeysEnabled ? 'Hotkeys enabled ✓' : 'Hotkeys disabled');
+});
+
+// Global hotkey listener — default shortcuts + custom keyword binds.
+// Only fires while this dashboard document/tab is focused, and never
+// while the person is typing into a text field, select, or textarea.
+document.addEventListener('keydown', (e)=>{
+  if(!hotkeysEnabled) return;
+  if(!document.hasFocus()) return;
+  if(isTypingContext()) return;
+
+  // Check custom binds first so users can override defaults if they want.
+  const combo = normalizeComboFromEvent(e);
+  const customMatch = customKeybinds.find(b => b.combo && b.combo === combo);
+  if(customMatch){
+    e.preventDefault();
+    runKeybindAction(customMatch.action);
+    return;
+  }
+
+  // Default shortcuts (only for plain, unmodified key presses)
+  if(e.ctrlKey || e.altKey || e.metaKey) return;
+  if(e.code === 'Space'){
+    e.preventDefault();
+    runKeybindAction('playpause');
+  } else if(e.key === 'ArrowRight'){
+    e.preventDefault();
+    runKeybindAction('next');
+  } else if(e.key === 'ArrowLeft'){
+    e.preventDefault();
+    runKeybindAction('previous');
+  }
+});
+
 async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
-(async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();loadWallpaperHistory();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();loadSelectedDeviceId();loadDiscordConfig();loadAvatarUrlHistory();loadAvatarUploadHistory();populateDiscordForm();
+(async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();loadWallpaperHistory();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();loadSelectedDeviceId();loadDiscordConfig();loadAvatarUrlHistory();loadAvatarUploadHistory();populateDiscordForm();loadHotkeysEnabled();loadCustomKeybinds();document.getElementById('toggleHotkeysEnabled').checked = hotkeysEnabled;renderKeybindTable();
   setInterval(fetchAndUpdateQueue, 2000);
   setInterval(updateQueuePlayPauseIcon, 3000);
   setInterval(fetchDevices, 15000);
