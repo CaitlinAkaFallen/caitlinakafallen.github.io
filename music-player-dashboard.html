@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FallenOneArt — Music Player Control Dashboard</title>
+    <title>FallenOneArt — Music Player Control Dashboard v2.6.2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
@@ -1750,6 +1750,8 @@
 
     <!-- CONNECTION -->
     <section class="panel active" id="panel-connection">
+      
+      <!-- SPOTIFY SECTION -->
       <h2>Spotify Connection</h2>
       <p class="sub">Connect your Spotify account using PKCE (Proof Key for Code Exchange) — no backend server needed.</p>
 
@@ -1805,12 +1807,65 @@
         <div class="hint">Copy the URL and paste it into OBS Studio's Browser source to display your music player.</div>
       </div>
 
-   
       <div class="action-bar">
         <button type="button" class="primary-btn" id="btnConnect">Connect Spotify</button>
         <button type="button" class="primary-btn hidden" id="btnDisconnect">Disconnect Spotify</button>
-         <span class="apphint" id="hintCreateApp">Follow Instructions to create your app on the Spotify Developer Portal</span>
+        <span class="apphint" id="hintCreateApp">Follow Instructions to create your app on the Spotify Developer Portal</span>
       </div>
+
+      <!-- DIVIDER -->
+      <style>
+        .divider-line {
+          margin: 30px 0;
+          border: 0;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+      </style>
+      <hr class="divider-line">
+
+      <!-- TWITCH BOT SECTION -->
+      <h2>Twitch Chat Integration</h2>
+      <p class="sub">Connect your Twitch Bot to automatically post "Now Playing" messages to your stream's chat.</p>
+      
+      <div class="status-card">
+        <span class="status-led" id="twitchStatusLed"></span>
+        <div class="status-text" id="twitchStatusText">Bot is offline.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputTwitchChannel">Stream Account Name</label>
+        <div class="input-group">
+          <input type="text" id="inputTwitchChannel" placeholder="e.g., your_main_channel">
+        </div>
+        <div class="hint">The main channel where the bot will post messages (must be lowercase).</div>
+      </div>
+
+      <div class="field">
+        <label for="inputBotUsername">Bot Account Name</label>
+        <div class="input-group">
+          <input type="text" id="inputBotUsername" placeholder="e.g., my_cool_music_bot">
+        </div>
+        <div class="hint">The Twitch username of your bot account.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputBotToken">Bot OAuth Token</label>
+        <div class="input-group">
+          <input type="password" id="inputBotToken" placeholder="oauth:xxxxxxxxxxxxxxxxx">
+          <button type="button" class="icon-btn" id="btnToggleBotToken" title="Show/Hide Bot Token">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="hint">Must include the <code>oauth:</code> prefix. Never share this token publicly.</div>
+      </div>
+
+      <div class="action-bar">
+        <button type="button" class="primary-btn" id="btnConnectTwitch">Connect Bot</button>
+        <button type="button" class="primary-btn hidden" id="btnDisconnectTwitch">Disconnect Bot</button>
+      </div>
+
     </section>
 
    
@@ -2496,7 +2551,7 @@
     <!-- SETTINGS (NEW) -->
     <section class="panel" id="panel-settings">
       <h2>Settings</h2>
-      <p class="sub">Discord notifications, playback controls, documentation, config backup, and keyboard hotkeys all live here.</p>
+      <p class="sub">Discord notifications, Twitch chat notifications, song requests, playback controls, documentation, config backup, and keyboard hotkeys all live here.</p>
 
       <div class="section-divider">
         <h3>Documentation</h3>
@@ -2701,8 +2756,242 @@
       </div>
 
       <div class="section-divider">
+        <h3>Twitch Chat Notification</h3>
+        <div class="sub">Auto-post messages directly to your Twitch chat when the track changes, pauses, or resumes. Requires the Twitch Bot connection above (Connection tab).</div>
+      </div>
+
+      <div class="field">
+        <label>Auto-Post Now Playing</label>
+        <div class="toggle-row"><span>Post to chat automatically when the track changes</span><label class="switch"><input type="checkbox" id="toggleTwitchAutoPost"><span class="track"></span></label></div>
+        <div class="hint">Uses the same Skip-Guard Delay as Discord (above) so quick skips don't spam chat.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputTwitchTemplate">Now Playing Message Template</label>
+        <input type="text" id="inputTwitchTemplate" placeholder="🎵 Now Playing: {title} by {artist} {url}">
+        <div class="hint">Placeholders: {title}, {artist}, {album}, {url}, {remaining}.</div>
+      </div>
+
+      <div class="field">
+        <label>Next Song Alert</label>
+        <div class="toggle-row"><label id="lblToggleTwitchNextSongEnabled">Post when trigger time is reached</label><label class="switch"><input type="checkbox" id="toggleTwitchNextSongEnabled" aria-labelledby="lblToggleTwitchNextSongEnabled"><span class="track"></span></label></div>
+        <div class="hint">Fires once per track, based on the current track's remaining play time — not a fixed timer. Needs a track waiting in your Spotify queue.</div>
+      </div>
+
+      <div class="field">
+        <label>Minutes Remaining Trigger</label>
+        <div class="range-row"><input type="range" id="inputTwitchNextSongMinutes" min="1" max="10" step="1"><span class="val" id="valTwitchNextSongMinutes"></span></div>
+        <div class="hint">Posts once remaining time on the current track drops to or below this many minutes.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputTwitchNextSongTemplate">Next Song Message Template</label>
+        <input type="text" id="inputTwitchNextSongTemplate" placeholder="⏭️ Coming up next: {title} by {artist} {url}">
+        <div class="hint">Placeholders: {title}, {artist}, {album}, {url}, {remaining} (e.g. "4:12 left").</div>
+      </div>
+
+      <div class="field">
+        <label>Pause Alert</label>
+        <div class="toggle-row"><label id="lblToggleTwitchPauseEnabled">Post to chat when the track is paused</label><label class="switch"><input type="checkbox" id="toggleTwitchPauseEnabled" aria-labelledby="lblToggleTwitchPauseEnabled"><span class="track"></span></label></div>
+        <div class="hint">Fires once per track, when the current track is paused.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputTwitchPauseTemplate">Pause Message Template</label>
+        <input type="text" id="inputTwitchPauseTemplate" placeholder="⏸️ Paused: {title} by {artist} ({remaining} left)">
+        <div class="hint">Placeholders: {title}, {artist}, {album}, {url}, {remaining}.</div>
+      </div>
+
+      <div class="field">
+        <label>Resume Alert</label>
+        <div class="toggle-row"><label id="lblToggleTwitchResumeEnabled">Post to chat when playback resumes</label><label class="switch"><input type="checkbox" id="toggleTwitchResumeEnabled" aria-labelledby="lblToggleTwitchResumeEnabled"><span class="track"></span></label></div>
+        <div class="hint">Fires once each time playback goes from paused to playing.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputTwitchResumeTemplate">Resume Message Template</label>
+        <input type="text" id="inputTwitchResumeTemplate" placeholder="▶️ Resumed: {title} by {artist} ({remaining} left)">
+        <div class="hint">Placeholders: {title}, {artist}, {album}, {url}, {remaining}.</div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Song Requests (!sr)</h3>
+        <div class="sub">Let chat request songs by typing your command followed by a song name and/or artist — e.g. "!sr Take On Me a-ha". Requires the Twitch Bot connection above (Connection tab) and an active Spotify device.</div>
+      </div>
+
+      <div class="field">
+        <label>Enable Song Requests</label>
+        <div class="toggle-row"><label id="lblToggleSongRequestEnabled">Listen for the request command in chat</label><label class="switch"><input type="checkbox" id="toggleSongRequestEnabled" aria-labelledby="lblToggleSongRequestEnabled"><span class="track"></span></label></div>
+        <div class="hint">When ON, a matching chat message is searched on Spotify and the best match is added straight to the queue.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputSongRequestCommand">Command</label>
+        <input type="text" id="inputSongRequestCommand" placeholder="!sr">
+        <div class="hint">Not case-sensitive. Viewers type this followed by a space and the song/artist they want.</div>
+      </div>
+
+      <div class="field">
+        <label>Who Can Request</label>
+        <select id="inputSongRequestPermission">
+          <option value="everyone">Everyone</option>
+          <option value="subscriber">Subscribers &amp; up</option>
+          <option value="moderator">Moderators &amp; up</option>
+          <option value="broadcaster">Broadcaster only</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Cooldown Per User (seconds)</label>
+        <div class="range-row"><input type="range" id="inputSongRequestCooldown" min="0" max="300" step="5"><span class="val" id="valSongRequestCooldown"></span></div>
+        <div class="toggle-row"><span>Moderators &amp; broadcaster bypass the cooldown</span><label class="switch"><input type="checkbox" id="toggleSongRequestModsBypass"><span class="track"></span></label></div>
+      </div>
+
+      <div class="field">
+        <label>Max Requests This Session</label>
+        <div class="range-row"><input type="range" id="inputSongRequestMaxPerStream" min="0" max="200" step="5"><span class="val" id="valSongRequestMaxPerStream"></span></div>
+        <div class="hint">0 = unlimited. The counter tracks requests since this dashboard tab was last loaded.</div>
+        <button type="button" class="ghost-btn mt-10" id="btnResetSongRequestCount">Reset counter now</button>
+      </div>
+
+      <div class="field">
+        <label for="inputSongRequestSuccessTemplate">Success Message</label>
+        <input type="text" id="inputSongRequestSuccessTemplate" placeholder="✅ @{user} added &quot;{title}&quot; by {artist} to the queue!">
+        <div class="hint">Placeholders: {user}, {title}, {artist}, {query}.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputSongRequestNotFoundTemplate">Not Found Message</label>
+        <input type="text" id="inputSongRequestNotFoundTemplate" placeholder="❌ @{user} couldn&#39;t find a song matching &quot;{query}&quot;.">
+        <div class="hint">Placeholders: {user}, {query}.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputSongRequestCooldownTemplate">Cooldown Message</label>
+        <input type="text" id="inputSongRequestCooldownTemplate" placeholder="@{user} please wait {seconds}s before requesting again.">
+        <div class="hint">Placeholders: {user}, {seconds}, {query}.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputSongRequestNoDeviceTemplate">No Active Device Message</label>
+        <input type="text" id="inputSongRequestNoDeviceTemplate" placeholder="❌ @{user} no active Spotify device found — open Spotify first.">
+        <div class="hint">Placeholders: {user}, {query}.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputSongRequestLimitTemplate">Limit Reached Message</label>
+        <input type="text" id="inputSongRequestLimitTemplate" placeholder="❌ @{user} the song request limit has been reached for this stream.">
+        <div class="hint">Placeholders: {user}, {query}.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputSongRequestPermissionDeniedTemplate">Permission Denied Message</label>
+        <input type="text" id="inputSongRequestPermissionDeniedTemplate" placeholder="@{user} you don&#39;t have permission to request songs.">
+        <div class="hint">Placeholders: {user}, {query}.</div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Chat Playback Commands</h3>
+        <div class="sub">Let chat control playback directly with their own commands — play/resume, pause, and skip to next. Requires the Twitch Bot connection above (Connection tab) and an active Spotify device.</div>
+      </div>
+
+      <div class="field">
+        <label>Play / Resume Command</label>
+        <div class="toggle-row"><label id="lblToggleChatPlayEnabled">Enable this command</label><label class="switch"><input type="checkbox" id="toggleChatPlayEnabled" aria-labelledby="lblToggleChatPlayEnabled"><span class="track"></span></label></div>
+        <input type="text" id="inputChatPlayCommand" placeholder="!play" class="mt-10">
+        <div class="hint">Not case-sensitive. Chat types this exact word to resume/start playback.</div>
+      </div>
+
+      <div class="field">
+        <label>Play Command Permission</label>
+        <select id="inputChatPlayPermission">
+          <option value="everyone">Everyone</option>
+          <option value="subscriber">Subscribers &amp; up</option>
+          <option value="moderator">Moderators &amp; up</option>
+          <option value="broadcaster">Broadcaster only</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="inputChatPlaySuccessTemplate">Play Success Message</label>
+        <input type="text" id="inputChatPlaySuccessTemplate" placeholder="▶️ @{user} resumed playback.">
+        <div class="hint">Placeholders: {user}.</div>
+      </div>
+
+      <div class="field">
+        <label>Pause Command</label>
+        <div class="toggle-row"><label id="lblToggleChatPauseEnabled">Enable this command</label><label class="switch"><input type="checkbox" id="toggleChatPauseEnabled" aria-labelledby="lblToggleChatPauseEnabled"><span class="track"></span></label></div>
+        <input type="text" id="inputChatPauseCommand" placeholder="!pause" class="mt-10">
+        <div class="hint">Not case-sensitive. Chat types this exact word to pause playback.</div>
+      </div>
+
+      <div class="field">
+        <label>Pause Command Permission</label>
+        <select id="inputChatPausePermission">
+          <option value="everyone">Everyone</option>
+          <option value="subscriber">Subscribers &amp; up</option>
+          <option value="moderator">Moderators &amp; up</option>
+          <option value="broadcaster">Broadcaster only</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="inputChatPauseSuccessTemplate">Pause Success Message</label>
+        <input type="text" id="inputChatPauseSuccessTemplate" placeholder="⏸️ @{user} paused playback.">
+        <div class="hint">Placeholders: {user}.</div>
+      </div>
+
+      <div class="field">
+        <label>Next / Skip Command</label>
+        <div class="toggle-row"><label id="lblToggleChatNextEnabled">Enable this command</label><label class="switch"><input type="checkbox" id="toggleChatNextEnabled" aria-labelledby="lblToggleChatNextEnabled"><span class="track"></span></label></div>
+        <input type="text" id="inputChatNextCommand" placeholder="!next" class="mt-10">
+        <div class="hint">Not case-sensitive. Chat types this exact word to skip to the next track.</div>
+      </div>
+
+      <div class="field">
+        <label>Next Command Permission</label>
+        <select id="inputChatNextPermission">
+          <option value="everyone">Everyone</option>
+          <option value="subscriber">Subscribers &amp; up</option>
+          <option value="moderator">Moderators &amp; up</option>
+          <option value="broadcaster">Broadcaster only</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="inputChatNextSuccessTemplate">Next Success Message</label>
+        <input type="text" id="inputChatNextSuccessTemplate" placeholder="⏭️ @{user} skipped to the next track.">
+        <div class="hint">Placeholders: {user}.</div>
+      </div>
+
+      <div class="field">
+        <label>Cooldown Per User (seconds)</label>
+        <div class="range-row"><input type="range" id="inputChatCommandsCooldown" min="0" max="120" step="5"><span class="val" id="valChatCommandsCooldown"></span></div>
+        <div class="toggle-row"><span>Moderators &amp; broadcaster bypass the cooldown</span><label class="switch"><input type="checkbox" id="toggleChatCommandsModsBypass"><span class="track"></span></label></div>
+        <div class="hint">Shared cooldown setting across !play, !pause, and !next — tracked separately per command per user.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputChatCommandsNoDeviceTemplate">No Active Device Message</label>
+        <input type="text" id="inputChatCommandsNoDeviceTemplate" placeholder="❌ @{user} no active Spotify device found — open Spotify first.">
+        <div class="hint">Placeholders: {user}.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputChatCommandsCooldownTemplate">Cooldown Message</label>
+        <input type="text" id="inputChatCommandsCooldownTemplate" placeholder="@{user} please wait {seconds}s before using that command again.">
+        <div class="hint">Placeholders: {user}, {seconds}.</div>
+      </div>
+
+      <div class="field">
+        <label for="inputChatCommandsPermissionDeniedTemplate">Permission Denied Message</label>
+        <input type="text" id="inputChatCommandsPermissionDeniedTemplate" placeholder="@{user} you don&#39;t have permission to use that command.">
+        <div class="hint">Placeholders: {user}.</div>
+      </div>
+
+      <div class="section-divider">
         <h3>Config Backup &amp; Restore</h3>
-        <div class="sub">Export everything (player config, dashboard theme, Discord settings, hotkeys) to a JSON file, or restore from a previously exported file.</div>
+        <div class="sub">Export everything (player config, dashboard theme, Discord settings, Twitch settings, song requests, hotkeys) to a JSON file, or restore from a previously exported file.</div>
       </div>
 
       <div class="field">
@@ -2785,6 +3074,8 @@ const LS_DISCORD_AVATAR_UPLOAD_HISTORY_KEY = 'fallenoneart_discord_avatar_upload
 const MAX_AVATAR_HISTORY = 8;
 const LS_HOTKEYS_ENABLED_KEY = 'fallenoneart_hotkeys_enabled';
 const LS_KEYBINDS_KEY = 'fallenoneart_custom_keybinds';
+const LS_SONGREQUEST_KEY = 'fallenoneart_songrequest_config';
+const LS_CHATCOMMANDS_KEY = 'fallenoneart_chat_playback_commands_config';
 const IMGUR_CLIENT_ID = '546c25a59c58ad7';
 const BROADCAST_NAME = 'fallenoneart-music-player-sync';
 const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
@@ -2817,6 +3108,47 @@ const DEFAULT_DISCORD_CONFIG = {
 
 const DEFAULT_KEYBINDS = [];
 
+// ============================================
+// NEW: SONG REQUEST (!sr) CONFIG
+// ============================================
+const DEFAULT_SONGREQUEST_CONFIG = {
+  enabled: false,
+  command: '!sr',
+  permission: 'everyone', // everyone | subscriber | moderator | broadcaster
+  cooldownSeconds: 30,
+  modsBypassCooldown: true,
+  maxRequestsPerStream: 0, // 0 = unlimited
+  successTemplate: '✅ @{user} added "{title}" by {artist} to the queue!',
+  notFoundTemplate: '❌ @{user} couldn\'t find a song matching "{query}".',
+  cooldownTemplate: '@{user} please wait {seconds}s before requesting again.',
+  noDeviceTemplate: '❌ @{user} no active Spotify device found — open Spotify first.',
+  limitReachedTemplate: '❌ @{user} the song request limit has been reached for this stream.',
+  permissionDeniedTemplate: '@{user} you don\'t have permission to request songs.'
+};
+
+// ============================================
+// NEW: CHAT PLAYBACK COMMANDS (!play, !pause, !next) CONFIG
+// ============================================
+const DEFAULT_CHATCOMMANDS_CONFIG = {
+  playEnabled: false,
+  playCommand: '!play',
+  playPermission: 'everyone',
+  playSuccessTemplate: '▶️ @{user} resumed playback.',
+  pauseEnabled: false,
+  pauseCommand: '!pause',
+  pausePermission: 'everyone',
+  pauseSuccessTemplate: '⏸️ @{user} paused playback.',
+  nextEnabled: false,
+  nextCommand: '!next',
+  nextPermission: 'moderator',
+  nextSuccessTemplate: '⏭️ @{user} skipped to the next track.',
+  cooldownSeconds: 10,
+  modsBypassCooldown: true,
+  noDeviceTemplate: '❌ @{user} no active Spotify device found — open Spotify first.',
+  cooldownTemplate: '@{user} please wait {seconds}s before using that command again.',
+  permissionDeniedTemplate: '@{user} you don\'t have permission to use that command.'
+};
+
 let config = { ...DEFAULT_CONFIG };
 let dashTheme = { ...DEFAULT_DASH_THEME };
 let discordConfig = { ...DEFAULT_DISCORD_CONFIG };
@@ -2826,6 +3158,11 @@ let avatarUrlHistory = [];
 let avatarUploadHistory = [];
 let hotkeysEnabled = true;
 let customKeybinds = [];
+let songRequestConfig = { ...DEFAULT_SONGREQUEST_CONFIG };
+let srUserCooldowns = {}; // userId -> last request timestamp (ms)
+let srRequestCountThisStream = 0;
+let chatCommandsConfig = { ...DEFAULT_CHATCOMMANDS_CONFIG };
+let ccUserCooldowns = {}; // "userId:action" -> last used timestamp (ms)
 let bc = null;
 try{ bc = new BroadcastChannel(BROADCAST_NAME); }catch(e){}
 
@@ -2851,6 +3188,14 @@ let pauseSongAnnouncedForTrackId = null;
 
 // runtime-only state for the "resume play" webhook alert
 let wasPlayingLastForResume = null; // null = unknown yet, true/false = last observed is_playing state
+
+// runtime-only state for Twitch pause/resume chat alerts
+let twitchPauseAnnouncedForTrackId = null;
+let twitchWasPlayingLastForResume = null;
+
+// runtime-only state for the Twitch "next song" chat alert
+let twitchNextSongCheckTrackId = null;
+let twitchNextSongAnnouncedForTrackId = null;
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -2905,7 +3250,42 @@ document.getElementById('btnCopyOBSURL').addEventListener('click', ()=>{
     });
   }
 });
+// ==========================================
+// SPOTIFY CURRENT TRACK FETCHER
+// ==========================================
+async function getSpotifyCurrentTrack() {
+    // Use the dashboard's real auth helper (fallenoneart_spotify_auth), which also
+    // auto-refreshes an expired token — the old localStorage key lookup here never matched.
+    const accessToken = await getValidAccessToken();
 
+    if (!accessToken) {
+        console.warn('No valid Spotify access token available (not connected or refresh failed).');
+        return null;
+    }
+
+    try {
+        const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        // 204 No Content means Spotify is connected, but nothing is currently playing
+        if (response.status === 204 || response.status === 205) {
+            return { is_playing: false };
+        }
+
+        if (!response.ok) {
+            throw new Error(`Spotify API error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching Spotify track:', error);
+        return null;
+    }
+}
 // ============================================
 // NEW: DISCORD WEBHOOK NOTIFICATIONS
 // ============================================
@@ -3559,15 +3939,19 @@ let lastTrackData = null;
 
 function maybeAnnounceTrack(track){
   lastTrackData = track; // keep the latest track available for reference
-  if(!discordConfig.enabled || !discordConfig.webhookUrl) return;
   if(!track || !track.id) return;
   if(track.id === lastAnnouncedTrackId) return;
   if(pendingAnnounceTrackId === track.id) return; // already waiting on this track's skip-guard timer
 
-  const delayMs = (discordConfig.minPlaySeconds || 0) * 1000;
+  const discordActive = discordConfig.enabled && discordConfig.webhookUrl;
+  const twitchActive = twitchConfig.autoPostEnabled && twitchWs && twitchWs.readyState === WebSocket.OPEN;
+  if(!discordActive && !twitchActive) return;
+
+  const delayMs = (discordConfig.minPlaySeconds || 0) * 1000; // shared skip-guard delay
   if(delayMs <= 0){
     lastAnnouncedTrackId = track.id;
-    postToDiscord(track);
+    if(discordActive) postToDiscord(track);
+    if(twitchActive) postNowPlayingToTwitchChat(track);
     return;
   }
 
@@ -3576,7 +3960,8 @@ function maybeAnnounceTrack(track){
   pendingAnnounceTimer = setTimeout(()=>{
     if(currentTrackId === track.id){
       lastAnnouncedTrackId = track.id;
-      postToDiscord(track);
+      if(discordActive) postToDiscord(track);
+      if(twitchActive) postNowPlayingToTwitchChat(track);
     }
     pendingAnnounceTrackId = null;
   }, delayMs);
@@ -4009,7 +4394,845 @@ uploadZone.addEventListener('drop', (e)=>{
 });
 
 uploadClear.addEventListener('click', clearUploadPreview);
+// ==========================================
+// TWITCH CHAT BOT INTEGRATION
+// ==========================================
 
+// --- LOAD SAVED CREDENTIALS ON PAGE LOAD ---
+const inputTwitchChannel = document.getElementById('inputTwitchChannel');
+const inputBotUsername = document.getElementById('inputBotUsername');
+const inputBotToken = document.getElementById('inputBotToken');
+
+if (inputTwitchChannel) inputTwitchChannel.value = localStorage.getItem('twitchChannelName') || '';
+if (inputBotUsername) inputBotUsername.value = localStorage.getItem('twitchBotUsername') || '';
+if (inputBotToken) inputBotToken.value = localStorage.getItem('twitchBotToken') || '';
+
+
+// 1. Show/Hide Twitch Bot Token
+const botTokenInput = document.getElementById('inputBotToken');
+const btnToggleBotToken = document.getElementById('btnToggleBotToken');
+
+if (btnToggleBotToken && botTokenInput) {
+    btnToggleBotToken.addEventListener('click', () => {
+        if (botTokenInput.type === 'password') {
+            botTokenInput.type = 'text';
+            btnToggleBotToken.style.opacity = '1'; 
+        } else {
+            botTokenInput.type = 'password';
+            btnToggleBotToken.style.opacity = '0.7';
+        }
+    });
+}
+
+// ============================================
+// NEW: TWITCH AUTO-POST (fires on track change, mirrors Discord)
+// ============================================
+const LS_TWITCH_CONFIG_KEY = 'fallenoneart_twitch_autopost_config';
+const DEFAULT_TWITCH_CONFIG = {
+  autoPostEnabled: false,
+  template: '🎵 Now Playing: {title} by {artist} {url}',
+  nextSongEnabled: false,
+  nextSongMinutes: 5,
+  nextSongTemplate: '⏭️ Coming up next: {title} by {artist} {url}',
+  pauseEnabled: false,
+  pauseTemplate: '⏸️ Paused: {title} by {artist}',
+  resumeEnabled: false,
+  resumeTemplate: '▶️ Resumed: {title} by {artist}'
+};
+let twitchConfig = { ...DEFAULT_TWITCH_CONFIG };
+let twitchChannelNameConnected = null;
+
+function loadTwitchConfig(){
+  try{
+    const raw = localStorage.getItem(LS_TWITCH_CONFIG_KEY);
+    if(raw) twitchConfig = { ...DEFAULT_TWITCH_CONFIG, ...JSON.parse(raw) };
+  }catch(e){}
+}
+function saveTwitchConfigToStorage(){ localStorage.setItem(LS_TWITCH_CONFIG_KEY, JSON.stringify(twitchConfig)); }
+
+function populateTwitchForm(){
+  const toggleEl = document.getElementById('toggleTwitchAutoPost');
+  const templateEl = document.getElementById('inputTwitchTemplate');
+  if(toggleEl) toggleEl.checked = twitchConfig.autoPostEnabled;
+  if(templateEl) templateEl.value = twitchConfig.template;
+
+  const nextSongToggleEl = document.getElementById('toggleTwitchNextSongEnabled');
+  const nextSongMinutesEl = document.getElementById('inputTwitchNextSongMinutes');
+  const nextSongTemplateEl = document.getElementById('inputTwitchNextSongTemplate');
+  if(nextSongToggleEl) nextSongToggleEl.checked = twitchConfig.nextSongEnabled;
+  if(nextSongMinutesEl) nextSongMinutesEl.value = twitchConfig.nextSongMinutes;
+  const nextSongMinutesValEl = document.getElementById('valTwitchNextSongMinutes');
+  if(nextSongMinutesValEl) nextSongMinutesValEl.textContent = twitchConfig.nextSongMinutes + ' min';
+  if(nextSongTemplateEl) nextSongTemplateEl.value = twitchConfig.nextSongTemplate;
+
+  const pauseToggleEl = document.getElementById('toggleTwitchPauseEnabled');
+  const pauseTemplateEl = document.getElementById('inputTwitchPauseTemplate');
+  if(pauseToggleEl) pauseToggleEl.checked = twitchConfig.pauseEnabled;
+  if(pauseTemplateEl) pauseTemplateEl.value = twitchConfig.pauseTemplate;
+
+  const resumeToggleEl = document.getElementById('toggleTwitchResumeEnabled');
+  const resumeTemplateEl = document.getElementById('inputTwitchResumeTemplate');
+  if(resumeToggleEl) resumeToggleEl.checked = twitchConfig.resumeEnabled;
+  if(resumeTemplateEl) resumeTemplateEl.value = twitchConfig.resumeTemplate;
+}
+
+function readTwitchForm(){
+  const toggleEl = document.getElementById('toggleTwitchAutoPost');
+  const templateEl = document.getElementById('inputTwitchTemplate');
+  if(toggleEl) twitchConfig.autoPostEnabled = toggleEl.checked;
+  if(templateEl) twitchConfig.template = templateEl.value.trim() || DEFAULT_TWITCH_CONFIG.template;
+
+  const nextSongToggleEl = document.getElementById('toggleTwitchNextSongEnabled');
+  const nextSongMinutesEl = document.getElementById('inputTwitchNextSongMinutes');
+  const nextSongTemplateEl = document.getElementById('inputTwitchNextSongTemplate');
+  if(nextSongToggleEl) twitchConfig.nextSongEnabled = nextSongToggleEl.checked;
+  if(nextSongMinutesEl){
+    twitchConfig.nextSongMinutes = parseInt(nextSongMinutesEl.value) || 5;
+    const nextSongMinutesValEl = document.getElementById('valTwitchNextSongMinutes');
+    if(nextSongMinutesValEl) nextSongMinutesValEl.textContent = twitchConfig.nextSongMinutes + ' min';
+  }
+  if(nextSongTemplateEl) twitchConfig.nextSongTemplate = nextSongTemplateEl.value.trim() || DEFAULT_TWITCH_CONFIG.nextSongTemplate;
+
+  const pauseToggleEl = document.getElementById('toggleTwitchPauseEnabled');
+  const pauseTemplateEl = document.getElementById('inputTwitchPauseTemplate');
+  if(pauseToggleEl) twitchConfig.pauseEnabled = pauseToggleEl.checked;
+  if(pauseTemplateEl) twitchConfig.pauseTemplate = pauseTemplateEl.value.trim() || DEFAULT_TWITCH_CONFIG.pauseTemplate;
+
+  const resumeToggleEl = document.getElementById('toggleTwitchResumeEnabled');
+  const resumeTemplateEl = document.getElementById('inputTwitchResumeTemplate');
+  if(resumeToggleEl) twitchConfig.resumeEnabled = resumeToggleEl.checked;
+  if(resumeTemplateEl) twitchConfig.resumeTemplate = resumeTemplateEl.value.trim() || DEFAULT_TWITCH_CONFIG.resumeTemplate;
+}
+
+// Wire up listeners only if the fields exist in the HTML (added per the setup instructions)
+if(document.getElementById('toggleTwitchAutoPost')){
+  document.getElementById('toggleTwitchAutoPost').addEventListener('change', ()=>{ readTwitchForm(); saveTwitchConfigToStorage(); });
+}
+if(document.getElementById('inputTwitchTemplate')){
+  document.getElementById('inputTwitchTemplate').addEventListener('input', ()=>{ readTwitchForm(); saveTwitchConfigToStorage(); });
+}
+if(document.getElementById('toggleTwitchNextSongEnabled')){
+  document.getElementById('toggleTwitchNextSongEnabled').addEventListener('change', ()=>{ readTwitchForm(); saveTwitchConfigToStorage(); });
+}
+if(document.getElementById('inputTwitchNextSongMinutes')){
+  document.getElementById('inputTwitchNextSongMinutes').addEventListener('input', ()=>{ readTwitchForm(); saveTwitchConfigToStorage(); });
+}
+if(document.getElementById('inputTwitchNextSongTemplate')){
+  document.getElementById('inputTwitchNextSongTemplate').addEventListener('input', ()=>{ readTwitchForm(); saveTwitchConfigToStorage(); });
+}
+if(document.getElementById('toggleTwitchPauseEnabled')){
+  document.getElementById('toggleTwitchPauseEnabled').addEventListener('change', ()=>{ readTwitchForm(); saveTwitchConfigToStorage(); });
+}
+if(document.getElementById('inputTwitchPauseTemplate')){
+  document.getElementById('inputTwitchPauseTemplate').addEventListener('input', ()=>{ readTwitchForm(); saveTwitchConfigToStorage(); });
+}
+if(document.getElementById('toggleTwitchResumeEnabled')){
+  document.getElementById('toggleTwitchResumeEnabled').addEventListener('change', ()=>{ readTwitchForm(); saveTwitchConfigToStorage(); });
+}
+if(document.getElementById('inputTwitchResumeTemplate')){
+  document.getElementById('inputTwitchResumeTemplate').addEventListener('input', ()=>{ readTwitchForm(); saveTwitchConfigToStorage(); });
+}
+
+// ============================================
+// NEW: SONG REQUEST (!sr) CONFIG — load/save/populate/read
+// ============================================
+function loadSongRequestConfig(){
+  try{
+    const raw = localStorage.getItem(LS_SONGREQUEST_KEY);
+    if(raw) songRequestConfig = { ...DEFAULT_SONGREQUEST_CONFIG, ...JSON.parse(raw) };
+  }catch(e){}
+}
+function saveSongRequestConfigToStorage(){ localStorage.setItem(LS_SONGREQUEST_KEY, JSON.stringify(songRequestConfig)); }
+
+function populateSongRequestForm(){
+  const enabledEl = document.getElementById('toggleSongRequestEnabled');
+  const commandEl = document.getElementById('inputSongRequestCommand');
+  const permissionEl = document.getElementById('inputSongRequestPermission');
+  const cooldownEl = document.getElementById('inputSongRequestCooldown');
+  const modsBypassEl = document.getElementById('toggleSongRequestModsBypass');
+  const maxPerStreamEl = document.getElementById('inputSongRequestMaxPerStream');
+  const successEl = document.getElementById('inputSongRequestSuccessTemplate');
+  const notFoundEl = document.getElementById('inputSongRequestNotFoundTemplate');
+  const cooldownTemplateEl = document.getElementById('inputSongRequestCooldownTemplate');
+  const noDeviceEl = document.getElementById('inputSongRequestNoDeviceTemplate');
+  const limitEl = document.getElementById('inputSongRequestLimitTemplate');
+  const permDeniedEl = document.getElementById('inputSongRequestPermissionDeniedTemplate');
+
+  if(enabledEl) enabledEl.checked = songRequestConfig.enabled;
+  if(commandEl) commandEl.value = songRequestConfig.command;
+  if(permissionEl) permissionEl.value = songRequestConfig.permission;
+  if(cooldownEl) cooldownEl.value = songRequestConfig.cooldownSeconds;
+  if(modsBypassEl) modsBypassEl.checked = songRequestConfig.modsBypassCooldown;
+  if(maxPerStreamEl) maxPerStreamEl.value = songRequestConfig.maxRequestsPerStream;
+  if(successEl) successEl.value = songRequestConfig.successTemplate;
+  if(notFoundEl) notFoundEl.value = songRequestConfig.notFoundTemplate;
+  if(cooldownTemplateEl) cooldownTemplateEl.value = songRequestConfig.cooldownTemplate;
+  if(noDeviceEl) noDeviceEl.value = songRequestConfig.noDeviceTemplate;
+  if(limitEl) limitEl.value = songRequestConfig.limitReachedTemplate;
+  if(permDeniedEl) permDeniedEl.value = songRequestConfig.permissionDeniedTemplate;
+
+  updateSongRequestRangeLabels();
+}
+
+function updateSongRequestRangeLabels(){
+  const valCooldownEl = document.getElementById('valSongRequestCooldown');
+  const valMaxEl = document.getElementById('valSongRequestMaxPerStream');
+  if(valCooldownEl) valCooldownEl.textContent = songRequestConfig.cooldownSeconds + 's';
+  if(valMaxEl) valMaxEl.textContent = songRequestConfig.maxRequestsPerStream > 0 ? songRequestConfig.maxRequestsPerStream.toString() : 'Unlimited';
+}
+
+function readSongRequestForm(){
+  const enabledEl = document.getElementById('toggleSongRequestEnabled');
+  const commandEl = document.getElementById('inputSongRequestCommand');
+  const permissionEl = document.getElementById('inputSongRequestPermission');
+  const cooldownEl = document.getElementById('inputSongRequestCooldown');
+  const modsBypassEl = document.getElementById('toggleSongRequestModsBypass');
+  const maxPerStreamEl = document.getElementById('inputSongRequestMaxPerStream');
+  const successEl = document.getElementById('inputSongRequestSuccessTemplate');
+  const notFoundEl = document.getElementById('inputSongRequestNotFoundTemplate');
+  const cooldownTemplateEl = document.getElementById('inputSongRequestCooldownTemplate');
+  const noDeviceEl = document.getElementById('inputSongRequestNoDeviceTemplate');
+  const limitEl = document.getElementById('inputSongRequestLimitTemplate');
+  const permDeniedEl = document.getElementById('inputSongRequestPermissionDeniedTemplate');
+
+  if(enabledEl) songRequestConfig.enabled = enabledEl.checked;
+  if(commandEl) songRequestConfig.command = (commandEl.value.trim() || DEFAULT_SONGREQUEST_CONFIG.command);
+  if(permissionEl) songRequestConfig.permission = permissionEl.value;
+  if(cooldownEl) songRequestConfig.cooldownSeconds = parseInt(cooldownEl.value) || 0;
+  if(modsBypassEl) songRequestConfig.modsBypassCooldown = modsBypassEl.checked;
+  if(maxPerStreamEl) songRequestConfig.maxRequestsPerStream = parseInt(maxPerStreamEl.value) || 0;
+  if(successEl) songRequestConfig.successTemplate = successEl.value.trim() || DEFAULT_SONGREQUEST_CONFIG.successTemplate;
+  if(notFoundEl) songRequestConfig.notFoundTemplate = notFoundEl.value.trim() || DEFAULT_SONGREQUEST_CONFIG.notFoundTemplate;
+  if(cooldownTemplateEl) songRequestConfig.cooldownTemplate = cooldownTemplateEl.value.trim() || DEFAULT_SONGREQUEST_CONFIG.cooldownTemplate;
+  if(noDeviceEl) songRequestConfig.noDeviceTemplate = noDeviceEl.value.trim() || DEFAULT_SONGREQUEST_CONFIG.noDeviceTemplate;
+  if(limitEl) songRequestConfig.limitReachedTemplate = limitEl.value.trim() || DEFAULT_SONGREQUEST_CONFIG.limitReachedTemplate;
+  if(permDeniedEl) songRequestConfig.permissionDeniedTemplate = permDeniedEl.value.trim() || DEFAULT_SONGREQUEST_CONFIG.permissionDeniedTemplate;
+
+  updateSongRequestRangeLabels();
+}
+
+document.querySelectorAll('#panel-settings #toggleSongRequestEnabled, #panel-settings #inputSongRequestCommand, #panel-settings #inputSongRequestPermission, #panel-settings #inputSongRequestCooldown, #panel-settings #toggleSongRequestModsBypass, #panel-settings #inputSongRequestMaxPerStream, #panel-settings #inputSongRequestSuccessTemplate, #panel-settings #inputSongRequestNotFoundTemplate, #panel-settings #inputSongRequestCooldownTemplate, #panel-settings #inputSongRequestNoDeviceTemplate, #panel-settings #inputSongRequestLimitTemplate, #panel-settings #inputSongRequestPermissionDeniedTemplate').forEach(el=>{
+  el.addEventListener('input', ()=>{ readSongRequestForm(); saveSongRequestConfigToStorage(); });
+  el.addEventListener('change', ()=>{ readSongRequestForm(); saveSongRequestConfigToStorage(); });
+});
+
+const btnResetSongRequestCountEl = document.getElementById('btnResetSongRequestCount');
+if(btnResetSongRequestCountEl){
+  btnResetSongRequestCountEl.addEventListener('click', ()=>{
+    srRequestCountThisStream = 0;
+    showToast('Song request counter reset ✓');
+  });
+}
+
+// ============================================
+// NEW: SONG REQUEST (!sr) — permission parsing helpers
+// ============================================
+function parseTwitchMessage(raw){
+  let tags = {};
+  let rest = raw;
+  if(raw.startsWith('@')){
+    const spaceIdx = raw.indexOf(' ');
+    if(spaceIdx === -1) return null;
+    const tagStr = raw.slice(1, spaceIdx);
+    rest = raw.slice(spaceIdx + 1);
+    tagStr.split(';').forEach(pair=>{
+      const eqIdx = pair.indexOf('=');
+      if(eqIdx === -1) return;
+      tags[pair.slice(0, eqIdx)] = pair.slice(eqIdx + 1);
+    });
+  }
+  const match = rest.match(/^:([^!]+)![^\s]+\s+PRIVMSG\s+#(\S+)\s+:(.*)$/);
+  if(!match) return null;
+  return { tags, nick: match[1], channel: match[2], message: match[3] };
+}
+
+function getUserPermissionLevel(tags){
+  const badges = (tags.badges || '').split(',').map(b=>b.split('/')[0]).filter(Boolean);
+  if(badges.includes('broadcaster')) return 'broadcaster';
+  if(tags.mod === '1' || badges.includes('moderator')) return 'moderator';
+  if(badges.includes('subscriber') || badges.includes('founder') || tags.subscriber === '1') return 'subscriber';
+  return 'everyone';
+}
+
+function permissionAtLeast(level, required){
+  const order = ['everyone','subscriber','moderator','broadcaster'];
+  const levelIdx = order.indexOf(level);
+  const requiredIdx = order.indexOf(required);
+  if(levelIdx === -1 || requiredIdx === -1) return true; // fail open on unrecognized values
+  return levelIdx >= requiredIdx;
+}
+
+function fillSongRequestTemplate(template, vars){
+  let out = template || '';
+  Object.keys(vars).forEach(key=>{
+    out = out.split(`{${key}}`).join(vars[key]);
+  });
+  return out;
+}
+
+function sendTwitchChatMessage(channel, message){
+  if(!twitchWs || twitchWs.readyState !== WebSocket.OPEN || !channel) return;
+  try{
+    twitchWs.send(`PRIVMSG #${channel} :${message}`);
+  }catch(e){
+    console.error('Failed to send Twitch chat message:', e);
+  }
+}
+
+async function handleSongRequestCommand(parsed, query){
+  if(!query){ return; }
+
+  const displayName = parsed.tags['display-name'] || parsed.nick;
+  const userId = parsed.tags['user-id'] || parsed.nick;
+  const channel = parsed.channel;
+  const userLevel = getUserPermissionLevel(parsed.tags);
+  const isModOrHigher = permissionAtLeast(userLevel, 'moderator');
+
+  if(!permissionAtLeast(userLevel, songRequestConfig.permission)){
+    sendTwitchChatMessage(channel, fillSongRequestTemplate(songRequestConfig.permissionDeniedTemplate, { user: displayName, query }));
+    return;
+  }
+
+  const bypassCooldown = songRequestConfig.modsBypassCooldown && isModOrHigher;
+  if(!bypassCooldown && songRequestConfig.cooldownSeconds > 0){
+    const last = srUserCooldowns[userId] || 0;
+    const elapsed = (Date.now() - last) / 1000;
+    if(elapsed < songRequestConfig.cooldownSeconds){
+      const remaining = Math.ceil(songRequestConfig.cooldownSeconds - elapsed);
+      sendTwitchChatMessage(channel, fillSongRequestTemplate(songRequestConfig.cooldownTemplate, { user: displayName, seconds: remaining, query }));
+      return;
+    }
+  }
+
+  if(songRequestConfig.maxRequestsPerStream > 0 && srRequestCountThisStream >= songRequestConfig.maxRequestsPerStream){
+    sendTwitchChatMessage(channel, fillSongRequestTemplate(songRequestConfig.limitReachedTemplate, { user: displayName, query }));
+    return;
+  }
+
+  const token = await getValidAccessToken();
+  if(!token){
+    sendTwitchChatMessage(channel, `@${displayName} song requests aren't connected to Spotify right now.`);
+    return;
+  }
+
+  let track = null;
+  try{
+    const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=1`, {
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    if(res.ok){
+      const data = await res.json();
+      track = data.tracks?.items?.[0] || null;
+    }
+  }catch(e){
+    console.error('Song request search failed:', e);
+  }
+
+  if(!track){
+    sendTwitchChatMessage(channel, fillSongRequestTemplate(songRequestConfig.notFoundTemplate, { user: displayName, query }));
+    return;
+  }
+
+  try{
+    const deviceParam = selectedDeviceId ? `&device_id=${selectedDeviceId}` : '';
+    const queueRes = await fetch(`https://api.spotify.com/v1/me/player/queue?uri=${encodeURIComponent(track.uri)}${deviceParam}`, {
+      method:'POST',
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    if(queueRes.ok || queueRes.status === 204){
+      srUserCooldowns[userId] = Date.now();
+      srRequestCountThisStream++;
+      const artistNames = track.artists?.map(a=>a.name).join(', ') || 'Unknown Artist';
+      sendTwitchChatMessage(channel, fillSongRequestTemplate(songRequestConfig.successTemplate, { user: displayName, title: track.name, artist: artistNames, query }));
+      setTimeout(fetchAndUpdateQueue, 500);
+    } else if(queueRes.status === 404){
+      sendTwitchChatMessage(channel, fillSongRequestTemplate(songRequestConfig.noDeviceTemplate, { user: displayName, query }));
+    } else {
+      sendTwitchChatMessage(channel, `@${displayName} something went wrong adding that to the queue.`);
+    }
+  }catch(e){
+    console.error('Song request queue add failed:', e);
+    sendTwitchChatMessage(channel, `@${displayName} something went wrong adding that to the queue.`);
+  }
+}
+
+// ============================================
+// NEW: CHAT PLAYBACK COMMANDS (!play, !pause, !next) — load/save/populate/read
+// ============================================
+function loadChatCommandsConfig(){
+  try{
+    const raw = localStorage.getItem(LS_CHATCOMMANDS_KEY);
+    if(raw) chatCommandsConfig = { ...DEFAULT_CHATCOMMANDS_CONFIG, ...JSON.parse(raw) };
+  }catch(e){}
+}
+function saveChatCommandsConfigToStorage(){ localStorage.setItem(LS_CHATCOMMANDS_KEY, JSON.stringify(chatCommandsConfig)); }
+
+function populateChatCommandsForm(){
+  const el = (id)=> document.getElementById(id);
+
+  if(el('toggleChatPlayEnabled')) el('toggleChatPlayEnabled').checked = chatCommandsConfig.playEnabled;
+  if(el('inputChatPlayCommand')) el('inputChatPlayCommand').value = chatCommandsConfig.playCommand;
+  if(el('inputChatPlayPermission')) el('inputChatPlayPermission').value = chatCommandsConfig.playPermission;
+  if(el('inputChatPlaySuccessTemplate')) el('inputChatPlaySuccessTemplate').value = chatCommandsConfig.playSuccessTemplate;
+
+  if(el('toggleChatPauseEnabled')) el('toggleChatPauseEnabled').checked = chatCommandsConfig.pauseEnabled;
+  if(el('inputChatPauseCommand')) el('inputChatPauseCommand').value = chatCommandsConfig.pauseCommand;
+  if(el('inputChatPausePermission')) el('inputChatPausePermission').value = chatCommandsConfig.pausePermission;
+  if(el('inputChatPauseSuccessTemplate')) el('inputChatPauseSuccessTemplate').value = chatCommandsConfig.pauseSuccessTemplate;
+
+  if(el('toggleChatNextEnabled')) el('toggleChatNextEnabled').checked = chatCommandsConfig.nextEnabled;
+  if(el('inputChatNextCommand')) el('inputChatNextCommand').value = chatCommandsConfig.nextCommand;
+  if(el('inputChatNextPermission')) el('inputChatNextPermission').value = chatCommandsConfig.nextPermission;
+  if(el('inputChatNextSuccessTemplate')) el('inputChatNextSuccessTemplate').value = chatCommandsConfig.nextSuccessTemplate;
+
+  if(el('inputChatCommandsCooldown')) el('inputChatCommandsCooldown').value = chatCommandsConfig.cooldownSeconds;
+  if(el('toggleChatCommandsModsBypass')) el('toggleChatCommandsModsBypass').checked = chatCommandsConfig.modsBypassCooldown;
+  if(el('inputChatCommandsNoDeviceTemplate')) el('inputChatCommandsNoDeviceTemplate').value = chatCommandsConfig.noDeviceTemplate;
+  if(el('inputChatCommandsCooldownTemplate')) el('inputChatCommandsCooldownTemplate').value = chatCommandsConfig.cooldownTemplate;
+  if(el('inputChatCommandsPermissionDeniedTemplate')) el('inputChatCommandsPermissionDeniedTemplate').value = chatCommandsConfig.permissionDeniedTemplate;
+
+  updateChatCommandsRangeLabels();
+}
+
+function updateChatCommandsRangeLabels(){
+  const valEl = document.getElementById('valChatCommandsCooldown');
+  if(valEl) valEl.textContent = chatCommandsConfig.cooldownSeconds + 's';
+}
+
+function readChatCommandsForm(){
+  const el = (id)=> document.getElementById(id);
+
+  if(el('toggleChatPlayEnabled')) chatCommandsConfig.playEnabled = el('toggleChatPlayEnabled').checked;
+  if(el('inputChatPlayCommand')) chatCommandsConfig.playCommand = el('inputChatPlayCommand').value.trim() || DEFAULT_CHATCOMMANDS_CONFIG.playCommand;
+  if(el('inputChatPlayPermission')) chatCommandsConfig.playPermission = el('inputChatPlayPermission').value;
+  if(el('inputChatPlaySuccessTemplate')) chatCommandsConfig.playSuccessTemplate = el('inputChatPlaySuccessTemplate').value.trim() || DEFAULT_CHATCOMMANDS_CONFIG.playSuccessTemplate;
+
+  if(el('toggleChatPauseEnabled')) chatCommandsConfig.pauseEnabled = el('toggleChatPauseEnabled').checked;
+  if(el('inputChatPauseCommand')) chatCommandsConfig.pauseCommand = el('inputChatPauseCommand').value.trim() || DEFAULT_CHATCOMMANDS_CONFIG.pauseCommand;
+  if(el('inputChatPausePermission')) chatCommandsConfig.pausePermission = el('inputChatPausePermission').value;
+  if(el('inputChatPauseSuccessTemplate')) chatCommandsConfig.pauseSuccessTemplate = el('inputChatPauseSuccessTemplate').value.trim() || DEFAULT_CHATCOMMANDS_CONFIG.pauseSuccessTemplate;
+
+  if(el('toggleChatNextEnabled')) chatCommandsConfig.nextEnabled = el('toggleChatNextEnabled').checked;
+  if(el('inputChatNextCommand')) chatCommandsConfig.nextCommand = el('inputChatNextCommand').value.trim() || DEFAULT_CHATCOMMANDS_CONFIG.nextCommand;
+  if(el('inputChatNextPermission')) chatCommandsConfig.nextPermission = el('inputChatNextPermission').value;
+  if(el('inputChatNextSuccessTemplate')) chatCommandsConfig.nextSuccessTemplate = el('inputChatNextSuccessTemplate').value.trim() || DEFAULT_CHATCOMMANDS_CONFIG.nextSuccessTemplate;
+
+  if(el('inputChatCommandsCooldown')) chatCommandsConfig.cooldownSeconds = parseInt(el('inputChatCommandsCooldown').value) || 0;
+  if(el('toggleChatCommandsModsBypass')) chatCommandsConfig.modsBypassCooldown = el('toggleChatCommandsModsBypass').checked;
+  if(el('inputChatCommandsNoDeviceTemplate')) chatCommandsConfig.noDeviceTemplate = el('inputChatCommandsNoDeviceTemplate').value.trim() || DEFAULT_CHATCOMMANDS_CONFIG.noDeviceTemplate;
+  if(el('inputChatCommandsCooldownTemplate')) chatCommandsConfig.cooldownTemplate = el('inputChatCommandsCooldownTemplate').value.trim() || DEFAULT_CHATCOMMANDS_CONFIG.cooldownTemplate;
+  if(el('inputChatCommandsPermissionDeniedTemplate')) chatCommandsConfig.permissionDeniedTemplate = el('inputChatCommandsPermissionDeniedTemplate').value.trim() || DEFAULT_CHATCOMMANDS_CONFIG.permissionDeniedTemplate;
+
+  updateChatCommandsRangeLabels();
+}
+
+document.querySelectorAll('#panel-settings #toggleChatPlayEnabled, #panel-settings #inputChatPlayCommand, #panel-settings #inputChatPlayPermission, #panel-settings #inputChatPlaySuccessTemplate, #panel-settings #toggleChatPauseEnabled, #panel-settings #inputChatPauseCommand, #panel-settings #inputChatPausePermission, #panel-settings #inputChatPauseSuccessTemplate, #panel-settings #toggleChatNextEnabled, #panel-settings #inputChatNextCommand, #panel-settings #inputChatNextPermission, #panel-settings #inputChatNextSuccessTemplate, #panel-settings #inputChatCommandsCooldown, #panel-settings #toggleChatCommandsModsBypass, #panel-settings #inputChatCommandsNoDeviceTemplate, #panel-settings #inputChatCommandsCooldownTemplate, #panel-settings #inputChatCommandsPermissionDeniedTemplate').forEach(el=>{
+  el.addEventListener('input', ()=>{ readChatCommandsForm(); saveChatCommandsConfigToStorage(); });
+  el.addEventListener('change', ()=>{ readChatCommandsForm(); saveChatCommandsConfigToStorage(); });
+});
+
+// ============================================
+// NEW: CHAT PLAYBACK COMMANDS — handler
+// Fires when chat types the configured !play, !pause,
+// or !next command. Checks permission and a shared
+// per-user/per-command cooldown, then calls the same
+// Spotify playback endpoints used by the dashboard's
+// own Play/Pause/Next buttons, and replies in chat.
+// ============================================
+async function handleChatPlaybackCommand(parsed, action){
+  const displayName = parsed.tags['display-name'] || parsed.nick;
+  const userId = parsed.tags['user-id'] || parsed.nick;
+  const channel = parsed.channel;
+  const userLevel = getUserPermissionLevel(parsed.tags);
+  const isModOrHigher = permissionAtLeast(userLevel, 'moderator');
+
+  const requiredPermission = action === 'play' ? chatCommandsConfig.playPermission
+    : action === 'pause' ? chatCommandsConfig.pausePermission
+    : chatCommandsConfig.nextPermission;
+
+  if(!permissionAtLeast(userLevel, requiredPermission)){
+    sendTwitchChatMessage(channel, fillSongRequestTemplate(chatCommandsConfig.permissionDeniedTemplate, { user: displayName }));
+    return;
+  }
+
+  const bypassCooldown = chatCommandsConfig.modsBypassCooldown && isModOrHigher;
+  const cooldownKey = `${userId}:${action}`;
+  if(!bypassCooldown && chatCommandsConfig.cooldownSeconds > 0){
+    const last = ccUserCooldowns[cooldownKey] || 0;
+    const elapsed = (Date.now() - last) / 1000;
+    if(elapsed < chatCommandsConfig.cooldownSeconds){
+      const remaining = Math.ceil(chatCommandsConfig.cooldownSeconds - elapsed);
+      sendTwitchChatMessage(channel, fillSongRequestTemplate(chatCommandsConfig.cooldownTemplate, { user: displayName, seconds: remaining }));
+      return;
+    }
+  }
+
+  const token = await getValidAccessToken();
+  if(!token){
+    sendTwitchChatMessage(channel, `@${displayName} playback isn't connected to Spotify right now.`);
+    return;
+  }
+
+  const methodMap = { play:'PUT', pause:'PUT', next:'POST' };
+  const pathMap = { play:'play', pause:'pause', next:'next' };
+  const successTemplateMap = { play: chatCommandsConfig.playSuccessTemplate, pause: chatCommandsConfig.pauseSuccessTemplate, next: chatCommandsConfig.nextSuccessTemplate };
+
+  try{
+    const deviceParam = selectedDeviceId ? `?device_id=${selectedDeviceId}` : '';
+    const res = await fetch(`https://api.spotify.com/v1/me/player/${pathMap[action]}${deviceParam}`, {
+      method: methodMap[action],
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    if(res.ok || res.status === 204){
+      ccUserCooldowns[cooldownKey] = Date.now();
+      sendTwitchChatMessage(channel, fillSongRequestTemplate(successTemplateMap[action], { user: displayName }));
+      setTimeout(()=>{ fetchAndUpdateQueue(); updateQueuePlayPauseIcon(); }, 400);
+    } else if(res.status === 404){
+      sendTwitchChatMessage(channel, fillSongRequestTemplate(chatCommandsConfig.noDeviceTemplate, { user: displayName }));
+    } else {
+      sendTwitchChatMessage(channel, `@${displayName} something went wrong with that command.`);
+    }
+  }catch(e){
+    console.error('Chat playback command failed:', e);
+    sendTwitchChatMessage(channel, `@${displayName} something went wrong with that command.`);
+  }
+}
+
+// Shared helper: formats remaining track time as m:ss, given duration/progress in ms.
+function formatRemainingTime(durationMs, progressMs){
+  const remainingMs = Math.max(0, (durationMs || 0) - (progressMs || 0));
+  const mins = Math.floor(remainingMs / 60000);
+  const secs = Math.floor((remainingMs % 60000) / 1000).toString().padStart(2,'0');
+  return `${mins}:${secs}`;
+}
+
+function buildTwitchMessage(template, track, remainingText){
+  const title = track.name || 'Unknown Track';
+  const artist = track.artists?.map(a=>a.name).join(', ') || 'Unknown Artist';
+  const album = track.album?.name || '';
+  const url = track.external_urls?.spotify || '';
+  return template
+    .replace(/\{title\}/g, title)
+    .replace(/\{artist\}/g, artist)
+    .replace(/\{album\}/g, album)
+    .replace(/\{url\}/g, url)
+    .replace(/\{remaining\}/g, remainingText || '');
+}
+
+function postNowPlayingToTwitchChat(track){
+  if(!twitchWs || twitchWs.readyState !== WebSocket.OPEN || !twitchChannelNameConnected) return;
+  try{
+    // Track just started, so remaining ≈ full duration (no progress data available at this call site).
+    const remainingText = formatRemainingTime(track.duration_ms, 0);
+    const message = buildTwitchMessage(twitchConfig.template, track, remainingText);
+    twitchWs.send(`PRIVMSG #${twitchChannelNameConnected} :${message}`);
+    console.log('Auto-posted to Twitch chat:', message);
+  }catch(e){
+    console.error('Twitch auto-post failed:', e);
+  }
+}
+
+// ============================================
+// NEW: TWITCH "NEXT SONG" CHAT ALERT
+// Mirrors the Discord Next Song Alert: fires once
+// per track once remaining play time on the CURRENT
+// track drops to the configured minutes, announcing
+// the NEXT track waiting in the Spotify queue.
+// ============================================
+function postTwitchNextSongMessage(nextTrack, remainingText){
+  if(!twitchWs || twitchWs.readyState !== WebSocket.OPEN || !twitchChannelNameConnected) return;
+  try{
+    const message = buildTwitchMessage(twitchConfig.nextSongTemplate, nextTrack, remainingText);
+    twitchWs.send(`PRIVMSG #${twitchChannelNameConnected} :${message}`);
+    console.log('Posted Twitch next-song alert:', message);
+  }catch(e){
+    console.error('Twitch next-song post failed:', e);
+  }
+}
+
+function checkTwitchNextSongAlert(state){
+  if(!twitchConfig.nextSongEnabled || !twitchWs || twitchWs.readyState !== WebSocket.OPEN || !twitchChannelNameConnected) return;
+  if(!state || !state.item || typeof state.progress_ms !== 'number') return;
+
+  const current = state.item;
+  const nextTrack = lastQueueTracks[0];
+
+  // Reset the guard whenever the currently-playing track itself changes
+  if(current.id !== twitchNextSongCheckTrackId){
+    twitchNextSongCheckTrackId = current.id;
+    twitchNextSongAnnouncedForTrackId = null;
+  }
+  if(!nextTrack || twitchNextSongAnnouncedForTrackId === current.id) return;
+
+  const remainingMs = (current.duration_ms || 0) - state.progress_ms;
+  const thresholdMs = (twitchConfig.nextSongMinutes || 5) * 60000;
+  if(remainingMs > 0 && remainingMs <= thresholdMs){
+    twitchNextSongAnnouncedForTrackId = current.id;
+    const remainingText = formatRemainingTime(current.duration_ms, state.progress_ms);
+    postTwitchNextSongMessage(nextTrack, remainingText);
+  }
+}
+
+// ============================================
+// NEW: TWITCH PAUSE / RESUME CHAT ALERTS
+// Mirrors the Discord Pause Song / Resume Play
+// alerts, but posts plain text directly to chat.
+// ============================================
+function postTwitchPauseMessage(track, remainingText){
+  if(!twitchWs || twitchWs.readyState !== WebSocket.OPEN || !twitchChannelNameConnected) return;
+  try{
+    const message = buildTwitchMessage(twitchConfig.pauseTemplate, track, remainingText);
+    twitchWs.send(`PRIVMSG #${twitchChannelNameConnected} :${message}`);
+    console.log('Posted Twitch pause alert:', message);
+  }catch(e){
+    console.error('Twitch pause post failed:', e);
+  }
+}
+
+function postTwitchResumeMessage(track, remainingText){
+  if(!twitchWs || twitchWs.readyState !== WebSocket.OPEN || !twitchChannelNameConnected) return;
+  try{
+    const message = buildTwitchMessage(twitchConfig.resumeTemplate, track, remainingText);
+    twitchWs.send(`PRIVMSG #${twitchChannelNameConnected} :${message}`);
+    console.log('Posted Twitch resume alert:', message);
+  }catch(e){
+    console.error('Twitch resume post failed:', e);
+  }
+}
+
+function checkTwitchPauseAlert(state){
+  if(!twitchConfig.pauseEnabled || !twitchWs || twitchWs.readyState !== WebSocket.OPEN || !twitchChannelNameConnected) return;
+  if(!state || !state.item) return;
+
+  const track = state.item;
+  if(state.is_playing){
+    // Track is playing again; allow a future pause on this same track to re-fire.
+    if(twitchPauseAnnouncedForTrackId === track.id) twitchPauseAnnouncedForTrackId = null;
+    return;
+  }
+  if(twitchPauseAnnouncedForTrackId === track.id) return;
+
+  twitchPauseAnnouncedForTrackId = track.id;
+  const remainingText = formatRemainingTime(track.duration_ms, state.progress_ms);
+  postTwitchPauseMessage(track, remainingText);
+}
+
+function checkTwitchResumeAlert(state){
+  if(!twitchConfig.resumeEnabled || !twitchWs || twitchWs.readyState !== WebSocket.OPEN || !twitchChannelNameConnected) return;
+  if(!state || !state.item){
+    // Mirrors the Discord fix: Spotify can return an empty state during a long pause.
+    // Keep the last known playing state instead of wiping it out.
+    return;
+  }
+
+  const track = state.item;
+  const isPlaying = !!state.is_playing;
+
+  if(twitchWasPlayingLastForResume === false && isPlaying){
+    const remainingText = formatRemainingTime(track.duration_ms, state.progress_ms);
+    postTwitchResumeMessage(track, remainingText);
+  }
+
+  twitchWasPlayingLastForResume = isPlaying;
+}
+
+// 2. Twitch WebSocket Connection Logic
+let twitchWs; // Keep this global so we can access it to send messages later
+let twitchManualDisconnect = false; // true only when the person clicks "Disconnect Bot"
+let twitchReconnectTimer = null;
+
+const btnConnectTwitch = document.getElementById('btnConnectTwitch');
+const btnDisconnectTwitch = document.getElementById('btnDisconnectTwitch');
+
+function connectTwitchBot(channelName, botUsername, rawToken){
+    channelName = (channelName || '').trim().toLowerCase();
+    botUsername = (botUsername || '').trim().toLowerCase();
+    rawToken = (rawToken || '').trim();
+
+    if (!channelName || !botUsername || !rawToken) {
+        console.error('Missing Twitch connection credentials!');
+        return;
+    }
+
+    // --- BULLETPROOF TOKEN FORMATTING ---
+    // Automatically strips accidental double prefixes and ensures 'oauth:' is present
+    rawToken = rawToken.replace(/^oauth:/i, '').trim();
+    const oauthToken = `oauth:${rawToken}`;
+
+    // --- SAVE CREDENTIALS TO LOCAL STORAGE (so a page refresh can auto-reconnect) ---
+    localStorage.setItem('twitchChannelName', channelName);
+    localStorage.setItem('twitchBotUsername', botUsername);
+    localStorage.setItem('twitchBotToken', rawToken);
+
+    twitchManualDisconnect = false;
+    clearTimeout(twitchReconnectTimer);
+
+    // Open the WebSocket
+    twitchWs = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+
+    // Handle successful connection
+    twitchWs.onopen = () => {
+        console.log('Connected to Twitch IRC, authenticating...');
+
+        // Request tags (badges, display-name, user-id, mod/subscriber flags) so
+        // song-request permission checks and cooldowns can identify who's talking.
+        twitchWs.send('CAP REQ :twitch.tv/tags twitch.tv/commands');
+
+        // Authenticate using the properly formatted values
+        twitchWs.send(`PASS ${oauthToken}`);
+        twitchWs.send(`NICK ${botUsername}`);
+        twitchWs.send(`JOIN #${channelName}`);
+
+        // Update UI Status LED to Green
+        const statusText = document.getElementById('twitchStatusText');
+        const statusLed = document.getElementById('twitchStatusLed');
+        if (statusText) statusText.textContent = `Connected to #${channelName} as ${botUsername}`;
+        if (statusLed) statusLed.style.backgroundColor = '#1ed760';
+        twitchChannelNameConnected = channelName;
+
+        // Swap Connect/Disconnect buttons
+        if (btnConnectTwitch) btnConnectTwitch.classList.add('hidden');
+        if (btnDisconnectTwitch) btnDisconnectTwitch.classList.remove('hidden');
+    };
+
+    // Handle incoming messages
+    twitchWs.onmessage = (event) => {
+        // Twitch can batch multiple IRC lines into a single WebSocket message.
+        const lines = event.data.split('\r\n').filter(Boolean);
+
+        lines.forEach(line => {
+            console.log('IRC In:', line);
+
+            // Handle PING/PONG to keep connection alive
+            if (line.startsWith('PING')) {
+                twitchWs.send('PONG :tmi.twitch.tv');
+                return;
+            }
+
+            if (!line.includes('PRIVMSG')) return;
+
+            const parsed = parseTwitchMessage(line);
+            if (!parsed) return;
+
+            const lowerMsg = parsed.message.toLowerCase();
+
+            // Listen for "!song" command (made case-insensitive so !SONG works too)
+            if (lowerMsg.includes('!song')) {
+                console.log('!song command detected in chat!');
+                postNowPlayingToChat(parsed.channel);
+            }
+
+            // Listen for the configured song-request command (default "!sr")
+            if (songRequestConfig.enabled) {
+                const cmd = (songRequestConfig.command || '!sr').toLowerCase();
+                if (lowerMsg === cmd || lowerMsg.startsWith(cmd + ' ')) {
+                    const query = parsed.message.slice(songRequestConfig.command.length).trim();
+                    handleSongRequestCommand(parsed, query);
+                }
+            }
+
+            // Listen for the configured chat playback commands (!play, !pause, !next)
+            if (chatCommandsConfig.playEnabled) {
+                const cmd = (chatCommandsConfig.playCommand || '!play').toLowerCase();
+                if (lowerMsg === cmd) handleChatPlaybackCommand(parsed, 'play');
+            }
+            if (chatCommandsConfig.pauseEnabled) {
+                const cmd = (chatCommandsConfig.pauseCommand || '!pause').toLowerCase();
+                if (lowerMsg === cmd) handleChatPlaybackCommand(parsed, 'pause');
+            }
+            if (chatCommandsConfig.nextEnabled) {
+                const cmd = (chatCommandsConfig.nextCommand || '!next').toLowerCase();
+                if (lowerMsg === cmd) handleChatPlaybackCommand(parsed, 'next');
+            }
+        });
+    };
+
+    // Handle Disconnection
+    twitchWs.onclose = () => {
+        console.log('Disconnected from Twitch IRC');
+
+        // Update UI Status LED to Red
+        const statusText = document.getElementById('twitchStatusText');
+        const statusLed = document.getElementById('twitchStatusLed');
+        if (statusText) statusText.textContent = twitchManualDisconnect ? 'Bot is offline.' : 'Bot is offline. Reconnecting...';
+        if (statusLed) statusLed.style.backgroundColor = '#ff4444';
+        twitchChannelNameConnected = null;
+
+        // Revert Connect/Disconnect buttons
+        if (btnConnectTwitch) btnConnectTwitch.classList.remove('hidden');
+        if (btnDisconnectTwitch) btnDisconnectTwitch.classList.add('hidden');
+
+        // Auto-reconnect on unexpected drops (e.g. Twitch IRC idle timeout, network blip)
+        // — but never after the person explicitly clicked "Disconnect Bot".
+        if (!twitchManualDisconnect) {
+            clearTimeout(twitchReconnectTimer);
+            twitchReconnectTimer = setTimeout(() => {
+                connectTwitchBot(channelName, botUsername, rawToken);
+            }, 5000);
+        }
+    };
+}
+
+if (btnConnectTwitch) {
+    btnConnectTwitch.addEventListener('click', () => {
+        const channelName = inputTwitchChannel.value.trim();
+        const botUsername = inputBotUsername.value.trim();
+        const rawToken = inputBotToken.value.trim();
+
+        if (!channelName || !botUsername || !rawToken) {
+            alert('Please fill out all fields in the Twitch Chat Integration section.');
+            return;
+        }
+        connectTwitchBot(channelName, botUsername, rawToken);
+    });
+}
+
+if (btnDisconnectTwitch) {
+    btnDisconnectTwitch.addEventListener('click', () => {
+        twitchManualDisconnect = true;
+        clearTimeout(twitchReconnectTimer);
+        if (twitchWs) twitchWs.close();
+    });
+}
+
+// Auto-reconnect on page load if credentials were saved from a previous session,
+// so refreshing the browser doesn't drop the bot connection.
+function autoConnectTwitchBotIfSaved(){
+    const savedChannel = localStorage.getItem('twitchChannelName');
+    const savedUsername = localStorage.getItem('twitchBotUsername');
+    const savedToken = localStorage.getItem('twitchBotToken');
+    if (savedChannel && savedUsername && savedToken) {
+        connectTwitchBot(savedChannel, savedUsername, savedToken);
+    }
+}
+
+// 3. Post "Now Playing" to Chat
+async function postNowPlayingToChat(channelName) {
+    if (!twitchWs || twitchWs.readyState !== WebSocket.OPEN) {
+        console.warn('Cannot post to chat: Twitch WebSocket is not connected.');
+        return;
+    }
+
+    try {
+        const currentTrack = await getSpotifyCurrentTrack(); 
+        console.log('Spotify Track Data:', currentTrack);
+        
+        if (currentTrack && currentTrack.is_playing) {
+            const songName = currentTrack.item.name;
+            const artistName = currentTrack.item.artists[0].name;
+            const spotifyUrl = currentTrack.item.external_urls?.spotify;
+            
+            const chatMessage = `🎵 Now Playing: ${songName} by ${artistName} ${spotifyUrl ? '- ' + spotifyUrl : ''}`;
+            
+            twitchWs.send(`PRIVMSG #${channelName} :${chatMessage}`);
+            console.log('Posted to chat:', chatMessage);
+        } else {
+            console.log('Spotify is connected, but nothing is currently playing/is_playing is false.');
+        }
+    } catch (error) {
+        console.error('Failed to post to chat:', error);
+    }
+}
 // ============================================
 // AUTO-SAVE FOR DASHBOARD THEME
 // ============================================
@@ -4849,6 +6072,7 @@ async function fetchAndUpdateQueue() {
       if(currentTrackId !== activeTrack.id){
         currentTrackId = activeTrack.id;
         pauseSongAnnouncedForTrackId = null;
+        twitchPauseAnnouncedForTrackId = null;
         checkSavedStatus(currentTrackId).then(setLikeButtonState);
         maybeAnnounceTrack(activeTrack);
       }
@@ -4954,6 +6178,9 @@ async function updateQueuePlayPauseIcon(){
   checkNextSongAlert(state);
   checkPauseSongAlert(state);
   checkResumeSongAlert(state);
+  checkTwitchNextSongAlert(state);
+  checkTwitchPauseAlert(state);
+  checkTwitchResumeAlert(state);
 }
 
 document.getElementById('queueBtnPrev').addEventListener('click', async ()=>{
@@ -4979,6 +6206,9 @@ document.getElementById('queueBtnPlaybackNext').addEventListener('click', async 
 function gatherFullConfigBundle(){
   readFormIntoConfig();
   readDiscordForm();
+  readTwitchForm();
+  readSongRequestForm();
+  readChatCommandsForm();
   return {
     __fallenoneart_export__: true,
     version: 1,
@@ -4986,6 +6216,9 @@ function gatherFullConfigBundle(){
     config,
     dashTheme,
     discordConfig,
+    twitchConfig,
+    songRequestConfig,
+    chatCommandsConfig,
     hotkeysEnabled,
     customKeybinds
   };
@@ -5030,10 +6263,19 @@ function validateImportedBundle(data){
   if('discordConfig' in data && !isPlainObject(data.discordConfig)){
     throw new Error('The "discordConfig" section in that file is not valid.');
   }
+  if('twitchConfig' in data && !isPlainObject(data.twitchConfig)){
+    throw new Error('The "twitchConfig" section in that file is not valid.');
+  }
+  if('songRequestConfig' in data && !isPlainObject(data.songRequestConfig)){
+    throw new Error('The "songRequestConfig" section in that file is not valid.');
+  }
+  if('chatCommandsConfig' in data && !isPlainObject(data.chatCommandsConfig)){
+    throw new Error('The "chatCommandsConfig" section in that file is not valid.');
+  }
   if('customKeybinds' in data && !Array.isArray(data.customKeybinds)){
     throw new Error('The "customKeybinds" section in that file is not valid.');
   }
-  if(!('config' in data) && !('dashTheme' in data) && !('discordConfig' in data) && !('customKeybinds' in data)){
+  if(!('config' in data) && !('dashTheme' in data) && !('discordConfig' in data) && !('twitchConfig' in data) && !('songRequestConfig' in data) && !('chatCommandsConfig' in data) && !('customKeybinds' in data)){
     throw new Error('That file does not contain any recognizable FallenOneArt config data.');
   }
   return true;
@@ -5043,6 +6285,9 @@ function applyImportedBundle(data){
   if(isPlainObject(data.config)) config = { ...DEFAULT_CONFIG, ...data.config };
   if(isPlainObject(data.dashTheme)) dashTheme = { ...DEFAULT_DASH_THEME, ...data.dashTheme };
   if(isPlainObject(data.discordConfig)) discordConfig = { ...DEFAULT_DISCORD_CONFIG, ...data.discordConfig };
+  if(isPlainObject(data.twitchConfig)) twitchConfig = { ...DEFAULT_TWITCH_CONFIG, ...data.twitchConfig };
+  if(isPlainObject(data.songRequestConfig)) songRequestConfig = { ...DEFAULT_SONGREQUEST_CONFIG, ...data.songRequestConfig };
+  if(isPlainObject(data.chatCommandsConfig)) chatCommandsConfig = { ...DEFAULT_CHATCOMMANDS_CONFIG, ...data.chatCommandsConfig };
   if(typeof data.hotkeysEnabled === 'boolean') hotkeysEnabled = data.hotkeysEnabled;
   if(Array.isArray(data.customKeybinds)){
     customKeybinds = data.customKeybinds.filter(b => isPlainObject(b) && typeof b.combo === 'string' && typeof b.action === 'string');
@@ -5051,6 +6296,9 @@ function applyImportedBundle(data){
   localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(config));
   saveDashTheme();
   saveDiscordConfigToStorage();
+  saveTwitchConfigToStorage();
+  saveSongRequestConfigToStorage();
+  saveChatCommandsConfigToStorage();
   saveHotkeysEnabled();
   saveCustomKeybinds();
 
@@ -5059,6 +6307,9 @@ function applyImportedBundle(data){
   populateDashThemeForm();
   applyDashTheme();
   populateDiscordForm();
+  populateTwitchForm();
+  populateSongRequestForm();
+  populateChatCommandsForm();
   document.getElementById('toggleHotkeysEnabled').checked = hotkeysEnabled;
   renderKeybindTable();
   pushLivePreview();
@@ -5296,7 +6547,7 @@ document.addEventListener('keydown', (e)=>{
 });
 
 async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
-(async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();loadWallpaperHistory();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();loadSelectedDeviceId();loadDiscordConfig();loadAvatarUrlHistory();loadAvatarUploadHistory();populateDiscordForm();loadHotkeysEnabled();loadCustomKeybinds();document.getElementById('toggleHotkeysEnabled').checked = hotkeysEnabled;renderKeybindTable();
+(async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();loadWallpaperHistory();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();loadSelectedDeviceId();loadDiscordConfig();loadAvatarUrlHistory();loadAvatarUploadHistory();populateDiscordForm();loadHotkeysEnabled();loadCustomKeybinds();document.getElementById('toggleHotkeysEnabled').checked = hotkeysEnabled;renderKeybindTable();loadTwitchConfig();populateTwitchForm();loadSongRequestConfig();populateSongRequestForm();loadChatCommandsConfig();populateChatCommandsForm();autoConnectTwitchBotIfSaved();
   setInterval(fetchAndUpdateQueue, 2000);
   setInterval(updateQueuePlayPauseIcon, 3000);
   setInterval(fetchDevices, 15000);
