@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FallenOneArt — Music Player Control Dashboard v2.6.2</title>
+    <title>FallenOneArt — Music Player Control Dashboard v2.6.4</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
@@ -2991,7 +2991,7 @@
 
       <div class="section-divider">
         <h3>Config Backup &amp; Restore</h3>
-        <div class="sub">Export everything (player config, dashboard theme, Discord settings, Twitch settings, song requests, hotkeys) to a JSON file, or restore from a previously exported file.</div>
+        <div class="sub">Export everything (player config, dashboard theme,Connections Settings, Discord settings, Twitch settings, song requests, hotkeys) to a JSON file, or restore from a previously exported file.</div>
       </div>
 
       <div class="field">
@@ -6209,6 +6209,24 @@ function gatherFullConfigBundle(){
   readTwitchForm();
   readSongRequestForm();
   readChatCommandsForm();
+
+  // --- NEW ADDITION: Read Twitch credentials directly from DOM inputs ---
+  const twitchStreamAccount = document.getElementById('inputTwitchChannel')?.value || (typeof twitchConfig !== 'undefined' ? twitchConfig.streamAccount : '') || '';
+  const twitchBotAccount = document.getElementById('inputBotUsername')?.value || (typeof twitchConfig !== 'undefined' ? twitchConfig.botAccount : '') || '';
+  const twitchBotToken = document.getElementById('inputBotToken')?.value || (typeof twitchConfig !== 'undefined' ? twitchConfig.botToken : '') || '';
+
+  // --- NEW ADDITION: Gather wallpaper history array ---
+  let currentWallpaperHistory = [];
+  try {
+    if (typeof wallpaperHistory !== 'undefined' && Array.isArray(wallpaperHistory)) {
+      currentWallpaperHistory = wallpaperHistory;
+    } else {
+      currentWallpaperHistory = JSON.parse(localStorage.getItem('wallpaperHistory') || '[]');
+    }
+  } catch(e) {
+    console.warn('Could not parse wallpaper history:', e);
+  }
+
   return {
     __fallenoneart_export__: true,
     version: 1,
@@ -6216,11 +6234,21 @@ function gatherFullConfigBundle(){
     config,
     dashTheme,
     discordConfig,
-    twitchConfig,
+    twitchConfig: {
+      ...(twitchConfig || {}),
+      streamAccount: twitchStreamAccount,
+      botAccount: twitchBotAccount,
+      botToken: twitchBotToken
+    },
     songRequestConfig,
     chatCommandsConfig,
     hotkeysEnabled,
-    customKeybinds
+    customKeybinds,
+    // --- NEW ADDITIONS IN EXPORT BUNDLE ---
+    twitchStreamAccount,
+    twitchBotAccount,
+    twitchBotToken,
+    wallpaperHistory: currentWallpaperHistory
   };
 }
 
@@ -6275,7 +6303,12 @@ function validateImportedBundle(data){
   if('customKeybinds' in data && !Array.isArray(data.customKeybinds)){
     throw new Error('The "customKeybinds" section in that file is not valid.');
   }
-  if(!('config' in data) && !('dashTheme' in data) && !('discordConfig' in data) && !('twitchConfig' in data) && !('songRequestConfig' in data) && !('chatCommandsConfig' in data) && !('customKeybinds' in data)){
+  // --- NEW ADDITION: Validate wallpaperHistory if present ---
+  if('wallpaperHistory' in data && !Array.isArray(data.wallpaperHistory)){
+    throw new Error('The "wallpaperHistory" section in that file is not valid.');
+  }
+
+  if(!('config' in data) && !('dashTheme' in data) && !('discordConfig' in data) && !('twitchConfig' in data) && !('songRequestConfig' in data) && !('chatCommandsConfig' in data) && !('customKeybinds' in data) && !('wallpaperHistory' in data)){
     throw new Error('That file does not contain any recognizable FallenOneArt config data.');
   }
   return true;
@@ -6291,6 +6324,38 @@ function applyImportedBundle(data){
   if(typeof data.hotkeysEnabled === 'boolean') hotkeysEnabled = data.hotkeysEnabled;
   if(Array.isArray(data.customKeybinds)){
     customKeybinds = data.customKeybinds.filter(b => isPlainObject(b) && typeof b.combo === 'string' && typeof b.action === 'string');
+  }
+
+  // --- NEW ADDITION: Restore Twitch Credentials to fields and object ---
+  const streamAcc = data.twitchStreamAccount || data.twitchConfig?.streamAccount;
+  const botAcc = data.twitchBotAccount || data.twitchConfig?.botAccount;
+  const botTok = data.twitchBotToken || data.twitchConfig?.botToken;
+
+  if (streamAcc !== undefined) {
+    const el = document.getElementById('inputTwitchChannel');
+    if (el) el.value = streamAcc;
+    if (twitchConfig) twitchConfig.streamAccount = streamAcc;
+  }
+  if (botAcc !== undefined) {
+    const el = document.getElementById('inputBotUsername');
+    if (el) el.value = botAcc;
+    if (twitchConfig) twitchConfig.botAccount = botAcc;
+  }
+  if (botTok !== undefined) {
+    const el = document.getElementById('inputBotToken');
+    if (el) el.value = botTok;
+    if (twitchConfig) twitchConfig.botToken = botTok;
+  }
+
+  // --- NEW ADDITION: Restore Wallpaper History ---
+  if (Array.isArray(data.wallpaperHistory)) {
+    if (typeof wallpaperHistory !== 'undefined') {
+      wallpaperHistory = data.wallpaperHistory;
+    }
+    localStorage.setItem('wallpaperHistory', JSON.stringify(data.wallpaperHistory));
+    if (typeof renderWallpaperHistory === 'function') {
+      renderWallpaperHistory();
+    }
   }
 
   localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(config));
