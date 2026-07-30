@@ -717,8 +717,28 @@ function connectWS() {
       if (!data) return;
 
       const targetUser = data.user.toLowerCase();
-      localStorage.setItem(LS_INV(targetUser), JSON.stringify(data.inventory));
-      console.log(`[Manual Wallet Sync] Received fresh state data for: ${targetUser}`);
+
+      // Merge the incoming inventory (may be a single new prize) into
+      // whatever the user already has, rather than overwriting the whole
+      // wallet. Overwriting here would erase every prize won before this
+      // update.
+      let existing = {};
+      try { existing = JSON.parse(localStorage.getItem(LS_INV(targetUser)) || '{}'); } catch(e) {}
+
+      Object.entries(data.inventory).forEach(([key, incoming]) => {
+        const incomingCount = typeof incoming === 'object' ? (incoming.count || 0) : (incoming || 0);
+        const current = existing[key];
+        const currentCount = current
+          ? (typeof current === 'object' ? (current.count || 0) : (current || 0))
+          : 0;
+
+        existing[key] = typeof incoming === 'object'
+          ? { ...incoming, count: currentCount + incomingCount }
+          : currentCount + incomingCount;
+      });
+
+      localStorage.setItem(LS_INV(targetUser), JSON.stringify(existing));
+      console.log(`[Wallet Sync] Merged update for: ${targetUser}`, existing);
 
       // Automatically live-refresh the UI if the current logged-in user matches the payload target
       const currentUser = localStorage.getItem('tw_dashboard_user');
