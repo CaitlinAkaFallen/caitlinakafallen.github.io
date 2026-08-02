@@ -32,7 +32,8 @@
   .settings-toggle{ font-size:11px; color:#cfc9ec; cursor:pointer; letter-spacing:.5px; font-family:'Share Tech Mono', monospace; outline:none; list-style-position:outside; }
   .settings-toggle::marker{ color:var(--teal); }
   #twitchSettingsPanel{ padding:12px 18px; }
-  #twitchSettingsPanel .field{ display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
+  #twitchSettingsPanel .field{ display:flex; flex-direction:column; gap:5px; margin:12px 0 10px; }
+  #twitchSettingsPanel .hint{ margin-bottom:10px; }
   #twitchSettingsPanel label{ font-size:10.5px; color:#b9b4d6; letter-spacing:.5px; text-transform:uppercase; }
   code{ background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:5px; word-break:break-all; }
 
@@ -41,7 +42,7 @@
   .reveal-btn{ font-family:'Share Tech Mono', monospace; font-size:10.5px; letter-spacing:0; font-weight:400; padding:0 12px; background:rgba(255,255,255,0.08); color:#cfc9ec; border:1px solid var(--glass-border); border-radius:9px; white-space:nowrap; }
 
   .panel{ background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; padding:18px 20px;
-    backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
     box-shadow:0 8px 30px rgba(0,0,0,0.35); margin-bottom:16px; }
 
   .profile-head{ display:flex; align-items:center; gap:14px; margin-bottom:6px; }
@@ -64,6 +65,8 @@
   .reward-item .title{ font-family:'Orbitron',sans-serif; font-size:10.5px; color:var(--gold); margin-top:4px; }
   .reward-item .lvl{ font-size:10px; color:#a9a3cb; }
   .reward-item.locked{ opacity:.35; }
+  .reward-item.ready{ border-color:rgba(125,232,200,.5); box-shadow:0 0 14px rgba(125,232,200,.15); }
+  .claim-btn{ margin-top:8px; padding:5px 14px; font-size:9.5px; }
 
   .history-item{ display:flex; justify-content:space-between; font-size:12px; padding:6px 2px; border-bottom:1px solid rgba(255,255,255,0.06); }
   .history-item .lvl{ color:var(--teal); font-family:'Orbitron',sans-serif; }
@@ -82,14 +85,14 @@
 
   <details class="panel" id="twitchSettingsPanel">
     <summary class="settings-toggle">⚙ Twitch app settings</summary>
-    <div class="field" style="margin-top:12px;">
+    <div class="field">
       <label>Client ID</label>
       <div class="input-with-toggle">
         <input type="password" id="twitchClientId" placeholder="Your Twitch application's Client ID">
         <button type="button" class="reveal-btn" id="toggleClientIdVisibility">Show</button>
       </div>
     </div>
-    <div class="hint" style="margin-bottom:10px;">
+    <div class="hint">
       Register a free app at <code>dev.twitch.tv/console/apps</code> and set its OAuth Redirect URL to exactly:<br>
       <code id="redirectUriHint"></code><br>
       Category: "Website Integration". No client secret is needed — this uses Twitch's browser-only Implicit Grant flow, so the token never leaves this page.
@@ -231,10 +234,15 @@ function render(){
 
   const rewardCards = rewards.map(r => {
     const unlocked = (rec.unlockedLevels||[]).includes(r.level);
-    return `<div class="reward-item ${unlocked ? "" : "locked"}">
+    const claimed = (rec.claimedLevels||[]).includes(r.level);
+    let stateClass = "locked", stateLabel = `Lv ${r.level} · locked`, actionHtml = "";
+    if (unlocked && claimed){ stateClass = ""; stateLabel = `Lv ${r.level} · claimed`; }
+    else if (unlocked && !claimed){ stateClass = "ready"; stateLabel = `Lv ${r.level} · ready to claim!`; actionHtml = `<button class="claim-btn" data-claim-level="${r.level}">Claim</button>`; }
+    return `<div class="reward-item ${stateClass}">
       <div class="badge">${escapeHtml(r.badge || "★")}</div>
       <div class="title">${escapeHtml(r.title)}</div>
-      <div class="lvl">Lv ${r.level}${unlocked ? "" : " · locked"}</div>
+      <div class="lvl">${stateLabel}</div>
+      ${actionHtml}
     </div>`;
   }).join("");
 
@@ -289,11 +297,28 @@ function render(){
     b.classList.toggle("active", b.dataset.val === stylePref);
     b.onclick = () => setPref("stylePref", b.dataset.val);
   });
+  document.querySelectorAll(".claim-btn").forEach(b => {
+    b.onclick = () => claimReward(Number(b.dataset.claimLevel));
+  });
 
   if (!rec.avatar && !avatarFetchAttempted.has(currentUser)){
     avatarFetchAttempted.add(currentUser);
     fetchAvatar(currentUser);
   }
+}
+
+/* Claiming from this dashboard is the same action as typing $redeem/$claim
+   in chat (see the admin dashboard's Twitch Chat Integration panel) — it
+   just marks the oldest unlocked-but-unclaimed reward as claimed locally. */
+function claimReward(level){
+  const users = load(LS_USERS, {});
+  const rec = users[currentUser] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], history:[] };
+  rec.claimedLevels = rec.claimedLevels || [];
+  if (!rec.claimedLevels.includes(level)) rec.claimedLevels.push(level);
+  users[currentUser] = rec;
+  save(LS_USERS, users);
+  bc && bc.postMessage({ type:"user_update", user: currentUser, data: rec });
+  render();
 }
 
 /* Twitch doesn't expose profile images without an authenticated API call,
