@@ -29,13 +29,19 @@
   .auth-bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
   .auth-chip{ display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:20px; padding:5px 12px 5px 5px; font-size:12px; }
   .auth-chip img{ width:26px; height:26px; border-radius:50%; object-fit:cover; }
-  .settings-toggle{ font-size:10.5px; color:#8f89b3; background:none; border:none; cursor:pointer; text-decoration:underline; padding:0; letter-spacing:0; font-family:'Share Tech Mono', monospace; }
+  .settings-toggle{ font-size:11px; color:#cfc9ec; cursor:pointer; letter-spacing:.5px; font-family:'Share Tech Mono', monospace; outline:none; list-style-position:outside; }
+  .settings-toggle::marker{ color:var(--teal); }
+  #twitchSettingsPanel{ padding:12px 18px; }
   #twitchSettingsPanel .field{ display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
   #twitchSettingsPanel label{ font-size:10.5px; color:#b9b4d6; letter-spacing:.5px; text-transform:uppercase; }
   code{ background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:5px; word-break:break-all; }
 
+  .input-with-toggle{ display:flex; gap:6px; }
+  .input-with-toggle input{ flex:1; }
+  .reveal-btn{ font-family:'Share Tech Mono', monospace; font-size:10.5px; letter-spacing:0; font-weight:400; padding:0 12px; background:rgba(255,255,255,0.08); color:#cfc9ec; border:1px solid var(--glass-border); border-radius:9px; white-space:nowrap; }
+
   .panel{ background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; padding:18px 20px;
-    -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
+    backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%);
     box-shadow:0 8px 30px rgba(0,0,0,0.35); margin-bottom:16px; }
 
   .profile-head{ display:flex; align-items:center; gap:14px; margin-bottom:6px; }
@@ -46,10 +52,7 @@
 
   .xp-row{ display:flex; justify-content:space-between; font-size:11.5px; color:#c9c6dd; margin-top:14px; margin-bottom:5px; }
   .xp-track{ height:12px; border-radius:6px; overflow:hidden; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); }
-  .xp-fill{ width: var(--xp-width, 0%); height:100%; border-radius:6px; background: linear-gradient(90deg, var(--teal), var(--purple)); box-shadow:0 0 10px var(--teal); transition:width .8s ease; }
-
-  .hint{ margin-bottom:10px; }
-  .hidden{ display:none; }
+  .xp-fill{ height:100%; border-radius:6px; background: linear-gradient(90deg, var(--teal), var(--purple)); box-shadow:0 0 10px var(--teal); transition:width .8s ease; }
 
   .toggle-group{ display:flex; gap:8px; }
   .toggle-btn{ flex:1; padding:9px; border-radius:9px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:#cfc9ec; text-align:center; font-family:'Orbitron',sans-serif; font-size:11px; cursor:pointer; }
@@ -75,14 +78,16 @@
 
   <div class="auth-bar">
     <div id="twitchAuthBar"></div>
-    <button class="settings-toggle" id="toggleTwitchSettings">⚙ Twitch app settings</button>
   </div>
 
-  <div class="panel" id="twitchSettingsPanel" style="display:none;">
-    <h2>Twitch App Settings</h2>
-    <div class="field">
+  <details class="panel" id="twitchSettingsPanel">
+    <summary class="settings-toggle">⚙ Twitch app settings</summary>
+    <div class="field" style="margin-top:12px;">
       <label>Client ID</label>
-      <input type="text" id="twitchClientId" placeholder="Your Twitch application's Client ID">
+      <div class="input-with-toggle">
+        <input type="password" id="twitchClientId" placeholder="Your Twitch application's Client ID">
+        <button type="button" class="reveal-btn" id="toggleClientIdVisibility">Show</button>
+      </div>
     </div>
     <div class="hint" style="margin-bottom:10px;">
       Register a free app at <code>dev.twitch.tv/console/apps</code> and set its OAuth Redirect URL to exactly:<br>
@@ -90,7 +95,7 @@
       Category: "Website Integration". No client secret is needed — this uses Twitch's browser-only Implicit Grant flow, so the token never leaves this page.
     </div>
     <button id="saveTwitchCfgBtn">Save</button>
-  </div>
+  </details>
 
   <div id="content"></div>
 </div>
@@ -103,7 +108,8 @@ const LS_CURVE   = "fallenoneart_levelup_curve";
 const LS_TWITCH_CFG   = "fallenoneart_levelup_twitch_cfg";   // { clientId }
 const LS_TWITCH_TOKEN = "fallenoneart_levelup_twitch_token"; // { accessToken, login, displayName, avatar }
 const CHANNEL    = "fallenoneart_levelup_channel";
-const bc = ("BroadcastChannel" in window) ? new BroadcastChannel(CHANNEL) : null;
+let bc = null;
+try{ if ("BroadcastChannel" in window) bc = new BroadcastChannel(CHANNEL); }catch(e){ bc = null; }
 
 function load(key, fallback){ try{ const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }catch(e){ return fallback; } }
 function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
@@ -111,7 +117,7 @@ function escapeHtml(str){ const d = document.createElement("div"); d.textContent
 
 const params = new URLSearchParams(window.location.search);
 const storedTwitchToken = load(LS_TWITCH_TOKEN, null);
-let currentUser = params.get("user") || (storedTwitchToken && storedTwitchToken.login) || "";
+let currentUser = (params.get("user") || (storedTwitchToken && storedTwitchToken.login) || "").trim().toLowerCase();
 
 /* ============================================================
    TWITCH LOGIN (Implicit Grant — no backend, token stays in this page)
@@ -119,22 +125,31 @@ let currentUser = params.get("user") || (storedTwitchToken && storedTwitchToken.
 function twitchCfg(){ return load(LS_TWITCH_CFG, { clientId:"" }); }
 function redirectUri(){ return window.location.origin + window.location.pathname; }
 document.getElementById("redirectUriHint").textContent = redirectUri();
-
-document.getElementById("toggleTwitchSettings").onclick = () => {
-  const panel = document.getElementById("twitchSettingsPanel");
-  panel.style.display = panel.style.display === "none" ? "" : "none";
-  document.getElementById("twitchClientId").value = twitchCfg().clientId;
+document.getElementById("twitchClientId").value = twitchCfg().clientId;
+document.getElementById("toggleClientIdVisibility").onclick = () => {
+  const input = document.getElementById("twitchClientId");
+  const btn = document.getElementById("toggleClientIdVisibility");
+  const showing = input.type === "text";
+  input.type = showing ? "password" : "text";
+  btn.textContent = showing ? "Show" : "Hide";
 };
+document.getElementById("twitchSettingsPanel").addEventListener("toggle", (e) => {
+  document.getElementById("twitchClientId").value = twitchCfg().clientId;
+  if (e.target.open){
+    document.getElementById("twitchClientId").type = "password";
+    document.getElementById("toggleClientIdVisibility").textContent = "Show";
+  }
+});
 document.getElementById("saveTwitchCfgBtn").onclick = () => {
   save(LS_TWITCH_CFG, { clientId: document.getElementById("twitchClientId").value.trim() });
-  document.getElementById("twitchSettingsPanel").style.display = "none";
+  document.getElementById("twitchSettingsPanel").removeAttribute("open");
 };
 
 function startTwitchLogin(){
   const cfg = twitchCfg();
   if (!cfg.clientId){
     alert("Add your Twitch app's Client ID under \"Twitch app settings\" first.");
-    document.getElementById("twitchSettingsPanel").style.display = "";
+    document.getElementById("twitchSettingsPanel").setAttribute("open", "");
     return;
   }
   const p = new URLSearchParams({ client_id: cfg.clientId, redirect_uri: redirectUri(), response_type:"token", scope:"", force_verify:"true" });
