@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FallenOneArt - Level Up Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-navy:#0a0915; --teal:#7de8c8; --purple:#c8a2ff; --gold:#ffd27d; --pink:#ff8fd0;
+    --glass-bg: rgba(20,18,36,0.55); --glass-border: rgba(255,255,255,0.14);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; min-height:100%; font-family:'Share Tech Mono', monospace; color:#eae7fb;
+    background: radial-gradient(circle at 15% 10%, rgba(125,232,200,0.08), transparent 45%),
+                radial-gradient(circle at 85% 90%, rgba(200,162,255,0.08), transparent 45%), var(--bg-navy); }
+  h1,h2,h3{ font-family:'Orbitron', sans-serif; margin:0 0 4px; }
+  h1{ font-size:20px; letter-spacing:2px; color:#f4f2ff; text-shadow:0 0 14px rgba(125,232,200,.35); }
+  h2{ font-size:13px; letter-spacing:1.5px; color:var(--teal); text-transform:uppercase; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:24px 20px 60px; }
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:10px; }
+  .status{ font-size:11px; padding:5px 10px; border-radius:20px; border:1px solid var(--glass-border); background:var(--glass-bg); }
+  .status.on{ color:var(--teal); border-color:rgba(125,232,200,.4); }
+  .status.off{ color:var(--pink); border-color:rgba(255,143,208,.4); }
+
+  .grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:18px; align-items:start; }
+  @media (max-width: 880px){ .grid{ grid-template-columns:1fr; } }
+
+  .panel{ background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; padding:16px 18px;
+    -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
+    box-shadow:0 8px 30px rgba(0,0,0,0.35); margin-bottom:16px; }
+
+  table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  th{ text-align:left; color:var(--purple); font-weight:400; padding:6px 8px; border-bottom:1px solid var(--glass-border); font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
+  td{ padding:6px 8px; border-bottom:1px solid rgba(255,255,255,0.06); vertical-align:middle; }
+  input, select{ font-family:inherit; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); color:#eae7fb; border-radius:8px; padding:6px 8px; font-size:12.5px; width:100%; }
+  input[type=number]{ width:70px; }
+  button{ font-family:'Orbitron', sans-serif; font-size:11px; letter-spacing:.5px; cursor:pointer; border:none; border-radius:9px; padding:8px 14px; color:#0a0915; font-weight:700;
+    background:linear-gradient(135deg, var(--teal), var(--purple)); transition:transform .15s ease, filter .15s ease; }
+  button:hover{ filter:brightness(1.1); transform:translateY(-1px); }
+  button.secondary{ background:rgba(255,255,255,0.08); color:#eae7fb; border:1px solid var(--glass-border); }
+  button.danger{ background:linear-gradient(135deg, var(--pink), #ff5c8a); }
+  .row-actions{ display:flex; gap:6px; }
+  .icon-btn{ padding:4px 8px; font-size:10px; }
+
+  .field-row{ display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  .field{ display:flex; flex-direction:column; gap:4px; flex:1; min-width:90px; }
+  .reward-row{ margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+  .reward-row input.small{ width:60px; }
+  .reward-row input.medium{ width:110px; }
+  .reward-row input.expanded{ flex:1; min-width:120px; width:auto; }
+  .reward-row input.expanded-large{ flex:2; min-width:160px; width:auto; }
+  label{ font-size:10.5px; color:#b9b4d6; letter-spacing:.5px; text-transform:uppercase; }
+  
+  .col-width-110{ width:110px; }
+  .col-width-120{ width:120px; }
+  .col-width-50{ width:50px; }
+  .col-width-70{ width:70px; }
+
+  .reward-input-row{ margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+  .reward-input-row input.small-input{ width:60px; }
+  .reward-input-row input.medium-input{ width:110px; }
+  .reward-input-row input.flex-small{ flex:1; min-width:120px; }
+  .reward-input-row input.flex-large{ flex:2; min-width:160px; }
+  
+  .manual-test-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .hidden{ display:none; }
+  .rate-checkbox-cell{ text-align:center; }
+  .rate-checkbox{ width:auto; }
+  .rate-note{ color:#b9b4d6; font-size:11.5px; }
+  .reward-note{ color:#b9b4d6; }
+
+  .toggle-group{ display:flex; gap:8px; }
+  .toggle-btn{ flex:1; padding:9px; border-radius:9px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:#cfc9ec; text-align:center; font-family:'Orbitron',sans-serif; font-size:11px; cursor:pointer; }
+  .toggle-btn.active{ background:linear-gradient(135deg, var(--teal), var(--purple)); color:#0a0915; font-weight:700; border-color:transparent; }
+
+  .user-card{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; background:rgba(255,255,255,0.03); margin-bottom:6px; }
+  .user-card .avatar{ width:32px; height:32px; border-radius:50%; flex:0 0 auto; background:linear-gradient(135deg, var(--teal), var(--purple)); display:flex; align-items:center; justify-content:center; font-family:'Orbitron',sans-serif; font-weight:900; color:#0a0915; font-size:13px; overflow:hidden; }
+  .user-card .avatar img{ width:100%; height:100%; object-fit:cover; object-position:center; }
+  .user-card .lvl{ font-family:'Orbitron',sans-serif; font-weight:900; font-size:14px; color:var(--gold); width:34px; text-align:center; }
+  .user-card .name{ flex:1; font-size:12.5px; }
+  .user-card .xp{ font-size:10.5px; color:#a9a3cb; }
+
+  .hint{ font-size:10.5px; color:#8f89b3; line-height:1.5; margin-top:6px; }
+  code{ background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:5px; }
+  .empty{ color:#8f89b3; font-size:12px; padding:8px 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1>LEVEL UP // ADMIN CONSOLE</h1>
+      <div class="hint">fallenoneart — rewards, levels &amp; card control</div>
+    </div>
+    <div id="wsStatus" class="status off">SB: connecting…</div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT COLUMN -->
+    <div>
+      <div class="panel">
+        <h2>Level Curve</h2>
+        <div class="field-row">
+          <div class="field"><label for="curveBase">Base XP (lvl 1→2)</label><input type="number" id="curveBase" value="100" min="1"></div>
+          <div class="field"><label for="curveGrowth">Growth / level</label><input type="number" id="curveGrowth" value="1.15" step="0.01" min="1"></div>
+          <button type="button" class="secondary" id="saveCurveBtn">Save Curve</button>
+        </div>
+        <div class="hint">XP required for next level = Base × Growth<sup>(level-1)</sup>. This only affects new leveling logic you wire into Streamer.bot — the card renders whatever level/XP values an event sends it.</div>
+      </div>
+
+      <div class="panel">
+        <h2>XP Rates</h2>
+        <table>
+          <thead><tr><th>Event</th><th class="col-width-110">XP Amount</th><th class="col-width-120">× Quantity</th><th>Notes</th></tr></thead>
+          <tbody id="xpRatesBody"></tbody>
+        </table>
+        <div class="hint">"× Quantity" multiplies the XP amount by bits cheered, subs gifted, raid party size, or donation total — whichever applies to that event. Leave unchecked for a flat amount per event (typical for Subs, ReSubs, and Channel Point Redeems).</div>
+      </div>
+
+      <div class="panel">
+        <h2>Rewards &amp; Milestones</h2>
+        <table>
+          <thead><tr><th class="col-width-50">Level</th><th>Badge</th><th>Title</th><th>Message</th><th class="col-width-70"></th></tr></thead>
+          <tbody id="rewardsBody"></tbody>
+        </table>
+        <div class="reward-input-row">
+          <input type="number" id="newLevel" placeholder="Lvl" class="small-input">
+          <input type="text" id="newBadge" placeholder="Badge (emoji)" class="medium-input">
+          <input type="text" id="newTitle" placeholder="Reward title" class="flex-small">
+          <input type="text" id="newMessage" placeholder="Message (optional)" class="flex-large">
+          <button id="addRewardBtn" class="secondary">Add Reward</button>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Layout</label>
+            <div class="toggle-group" id="layoutToggle">
+              <div class="toggle-btn" data-val="horizontal">Horizontal</div>
+              <div class="toggle-btn" data-val="vertical">Vertical</div>
+            </div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Style Theme</label>
+            <div class="toggle-group" id="styleToggle">
+              <div class="toggle-btn" data-val="glass">Neon Glass</div>
+              <div class="toggle-btn" data-val="minimal">Minimal Flat</div>
+              <div class="toggle-btn" data-val="crt">CRT Scanline</div>
+            </div>
+          </div>
+        </div>
+        <div class="hint">Changes push instantly to <code>levelup-card.html</code> via BroadcastChannel — no refresh needed on the same machine.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <div class="panel">
+        <h2>Manual XP &amp; Testing</h2>
+        <div class="field-row">
+          <div class="field"><label for="grantUser">Username</label><input type="text" id="grantUser" placeholder="viewer name"></div>
+          <div class="field">
+            <label for="grantEvent">Event Type</label>
+            <select id="grantEvent">
+              <option value="Sub">New Sub</option>
+              <option value="ReSub">Resub</option>
+              <option value="GiftSub">Gift Subs</option>
+              <option value="Cheer">Cheer (Bits)</option>
+              <option value="Donation">Donation (Streamlabs)</option>
+              <option value="Raid">Raid</option>
+              <option value="ChannelPointRedeem">Channel Point Redeem</option>
+              <option value="Manual">Manual (flat amount)</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field" id="qtyField"><label for="grantQty">Quantity (bits / gifts / raiders / $)</label><input type="number" id="grantQty" value="1" min="1"></div>
+          <div class="field hidden" id="flatField"><label for="grantAmount">Flat XP Amount</label><input type="number" id="grantAmount" value="100"></div>
+          <div class="field"><label for="computedXp">Computed XP</label><input type="text" id="computedXp" value="0" disabled></div>
+        </div>
+        <div class="manual-test-row">
+          <button id="testBtn" class="secondary">Test on Card (visual only)</button>
+          <button id="grantBtn">Grant XP for Real</button>
+        </div>
+        <div class="hint">
+          <b>Test</b> fires the event straight to the card using its current XP rates and this viewer's real progress — nothing new is saved.<br>
+          <b>Grant</b> applies the same calculation and persists it to this viewer's local record. For it to also affect future real stream events, wire it to a Streamer.bot action (see below).
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Tracked Viewers</h2>
+        <div id="usersList"><div class="empty">No viewer records yet — they populate as level-up events fire.</div></div>
+      </div>
+
+      <div class="panel">
+        <h2>Streamer.bot Wiring</h2>
+        <div class="hint">
+          The card now computes XP itself from the rates above, so your Streamer.bot actions only need to broadcast the <b>raw</b> event via <code>CPH.WebsocketBroadcastJson()</code> under a <code>Custom</code> event:
+          <code>{eventName, user, avatar, quantity}</code> — where <code>eventName</code> is one of <code>Sub / ReSub / GiftSub / Cheer / Donation / Raid / ChannelPointRedeem</code>, and <code>quantity</code> is bits cheered, subs gifted, raiders, or dollars (omit/1 for flat events like Sub or Channel Point Redeem).<br><br>
+          If an action ever broadcasts a fully pre-computed payload instead (<code>xpGained</code>/<code>totalXp</code>/etc. already set, like your old system), the card detects that and uses it as-is — so nothing breaks if you haven't updated your actions yet.<br><br>
+          For real grants to persist across Streamer.bot restarts too, add a small action <code>LVL_GrantXP</code> that reads <code>user</code>/<code>eventName</code>/<code>quantity</code> via <code>CPH.TryGetArg</code>, stores running totals in a global var like <code>lvl_xp_{user}</code> (guard first read with a <code>GetGlobalVar</code> null-check), then re-broadcasts the raw event. This mirrors your <code>sw_inv_</code> / <code>wheel_inv_</code> pattern.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const LS_DISPLAY = "fallenoneart_levelup_display";
+const LS_REWARDS = "fallenoneart_levelup_rewards";
+const LS_USERS   = "fallenoneart_levelup_users";
+const LS_CURVE   = "fallenoneart_levelup_curve";
+const LS_XPRATES = "fallenoneart_levelup_xprates";
+const CHANNEL    = "fallenoneart_levelup_channel";
+
+const EVENT_META = {
+  Sub:                { label:"New Sub",             unit:"per sub" },
+  ReSub:              { label:"Resub",                unit:"per resub" },
+  GiftSub:            { label:"Gift Subs",            unit:"per sub gifted" },
+  Cheer:              { label:"Cheer (Bits)",         unit:"per bit" },
+  Donation:           { label:"Donation (Streamlabs)",unit:"per $1" },
+  Raid:               { label:"Raid",                 unit:"per raider" },
+  ChannelPointRedeem: { label:"Channel Point Redeem",  unit:"per redeem" }
+};
+function defaultXpRates(){
+  return {
+    Sub:                { amount:100, perUnit:false },
+    ReSub:              { amount:80,  perUnit:false },
+    GiftSub:            { amount:50,  perUnit:true  },
+    Cheer:              { amount:1,   perUnit:true  },
+    Donation:           { amount:10,  perUnit:true  },
+    Raid:               { amount:2,   perUnit:true  },
+    ChannelPointRedeem: { amount:25,  perUnit:false }
+  };
+}
+
+const bc = ("BroadcastChannel" in window) ? new BroadcastChannel(CHANNEL) : null;
+
+/* ---------- storage helpers ---------- */
+function load(key, fallback){ try{ const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }catch(e){ return fallback; } }
+function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function normUser(u){ return (u || "viewer").trim().toLowerCase(); }
+
+/* ---------- Level curve ---------- */
+function refreshCurveInputs(){
+  const c = load(LS_CURVE, { base:100, growth:1.15 });
+  document.getElementById("curveBase").value = c.base;
+  document.getElementById("curveGrowth").value = c.growth;
+}
+document.getElementById("saveCurveBtn").onclick = () => {
+  const base = Number(document.getElementById("curveBase").value) || 100;
+  const growth = Number(document.getElementById("curveGrowth").value) || 1.15;
+  save(LS_CURVE, { base, growth });
+  bc && bc.postMessage({ type:"curve_update", base, growth });
+};
+refreshCurveInputs();
+
+/* ---------- XP Rates ---------- */
+function loadXpRates(){ return { ...defaultXpRates(), ...load(LS_XPRATES, {}) }; }
+function renderXpRates(){
+  const rates = loadXpRates();
+  const body = document.getElementById("xpRatesBody");
+  body.innerHTML = "";
+  Object.keys(EVENT_META).forEach(key => {
+    const meta = EVENT_META[key];
+    const r = rates[key] || { amount:0, perUnit:false };
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${meta.label}</td>
+      <td><input type="number" min="0" step="1" data-rate="${key}" data-field="amount" value="${r.amount}" title="XP amount for ${meta.label}"></td>
+      <td class="rate-checkbox-cell"><input type="checkbox" class="rate-checkbox" data-rate="${key}" data-field="perUnit" ${r.perUnit ? "checked" : ""} title="Multiply XP amount by quantity for ${meta.label}"></td>
+      <td class="rate-note">${meta.unit}</td>
+    `;
+    body.appendChild(tr);
+  });
+  body.querySelectorAll("[data-rate]").forEach(el => {
+    el.onchange = () => {
+      const rates = loadXpRates();
+      const key = el.getAttribute("data-rate");
+      const field = el.getAttribute("data-field");
+      rates[key] = rates[key] || { amount:0, perUnit:false };
+      rates[key][field] = field === "perUnit" ? el.checked : (Number(el.value) || 0);
+      save(LS_XPRATES, rates);
+      bc && bc.postMessage({ type:"xprates_update", rates });
+    };
+  });
+}
+renderXpRates();
+
+/* ---------- Rewards CRUD ---------- */
+function renderRewards(){
+  const rewards = load(LS_REWARDS, []).sort((a,b) => a.level - b.level);
+  const body = document.getElementById("rewardsBody");
+  body.innerHTML = rewards.length ? "" : `<tr><td colspan="5" class="empty">No milestones yet — add one below.</td></tr>`;
+  rewards.forEach((r, idx) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><b>${r.level}</b></td>
+      <td>${escapeHtml(r.badge||"")}</td>
+      <td>${escapeHtml(r.title||"")}</td>
+      <td class="reward-note">${escapeHtml(r.message||"")}</td>
+      <td class="row-actions"><button class="secondary icon-btn" data-del="${r.level}">Del</button></td>
+    `;
+    body.appendChild(tr);
+  });
+  body.querySelectorAll("[data-del]").forEach(btn => {
+    btn.onclick = () => {
+      const lvl = Number(btn.getAttribute("data-del"));
+      const rewards = load(LS_REWARDS, []).filter(r => r.level !== lvl);
+      save(LS_REWARDS, rewards);
+      bc && bc.postMessage({ type:"rewards_update", rewards });
+      renderRewards();
+    };
+  });
+}
+document.getElementById("addRewardBtn").onclick = () => {
+  const level = Number(document.getElementById("newLevel").value);
+  const badge = document.getElementById("newBadge").value.trim() || "★";
+  const title = document.getElementById("newTitle").value.trim();
+  const message = document.getElementById("newMessage").value.trim();
+  if (!level || !title){ alert("Level and title are required."); return; }
+  const rewards = load(LS_REWARDS, []).filter(r => r.level !== level);
+  rewards.push({ level, badge, title, message });
+  save(LS_REWARDS, rewards);
+  bc && bc.postMessage({ type:"rewards_update", rewards });
+  document.getElementById("newLevel").value = "";
+  document.getElementById("newBadge").value = "";
+  document.getElementById("newTitle").value = "";
+  document.getElementById("newMessage").value = "";
+  renderRewards();
+};
+renderRewards();
+
+/* ---------- Display controls (layout / style) ---------- */
+function refreshDisplayToggles(){
+  const d = load(LS_DISPLAY, { layout:"horizontal", style:"glass" });
+  document.querySelectorAll("#layoutToggle .toggle-btn").forEach(b => b.classList.toggle("active", b.dataset.val === d.layout));
+  document.querySelectorAll("#styleToggle .toggle-btn").forEach(b => b.classList.toggle("active", b.dataset.val === d.style));
+}
+document.querySelectorAll("#layoutToggle .toggle-btn").forEach(btn => {
+  btn.onclick = () => {
+    const d = load(LS_DISPLAY, { layout:"horizontal", style:"glass" });
+    d.layout = btn.dataset.val;
+    save(LS_DISPLAY, d);
+    bc && bc.postMessage({ type:"display_update", layout:d.layout, style:d.style });
+    refreshDisplayToggles();
+  };
+});
+document.querySelectorAll("#styleToggle .toggle-btn").forEach(btn => {
+  btn.onclick = () => {
+    const d = load(LS_DISPLAY, { layout:"horizontal", style:"glass" });
+    d.style = btn.dataset.val;
+    save(LS_DISPLAY, d);
+    bc && bc.postMessage({ type:"display_update", layout:d.layout, style:d.style });
+    refreshDisplayToggles();
+  };
+});
+refreshDisplayToggles();
+
+/* ---------- Tracked viewers ---------- */
+function renderUsers(){
+  const users = load(LS_USERS, {});
+  const list = document.getElementById("usersList");
+  const keys = Object.keys(users);
+  if (!keys.length){ list.innerHTML = `<div class="empty">No viewer records yet — they populate as level-up events fire.</div>`; return; }
+  list.innerHTML = "";
+  keys.sort((a,b) => (users[b].level||0) - (users[a].level||0)).forEach(name => {
+    const u = users[name];
+    const div = document.createElement("div");
+    div.className = "user-card";
+    const avatarInner = u.avatar ? `<img src="${escapeHtml(u.avatar)}" alt="" onerror="this.parentElement.textContent='${escapeHtml((name[0]||"?").toUpperCase())}'">` : escapeHtml((name[0]||"?").toUpperCase());
+    div.innerHTML = `<div class="avatar">${avatarInner}</div><div class="lvl">${u.level ?? 1}</div><div class="name">${escapeHtml(name)}<div class="xp">${u.xp ?? 0} total XP · ${(u.unlockedLevels||[]).length} reward(s)</div></div>`;
+    list.appendChild(div);
+  });
+}
+renderUsers();
+
+/* ---------- Manual test / grant (mirrors the card's resolveEventData logic) ---------- */
+function xpForNextFromCurve(level, curve){ return Math.round(curve.base * Math.pow(curve.growth, Math.max(0, level-1))); }
+function levelFromXp(totalXp, curve){
+  let level = 1, remaining = Math.max(0, totalXp), threshold = xpForNextFromCurve(1, curve);
+  while (remaining >= threshold){ remaining -= threshold; level++; threshold = xpForNextFromCurve(level, curve); }
+  return { level, xpIntoLevel: remaining, xpForNextLevel: threshold };
+}
+function computeGainedXp(eventName, qty, flatAmount){
+  if (eventName === "Manual") return flatAmount || 0;
+  const rates = loadXpRates();
+  const r = rates[eventName] || { amount:0, perUnit:false };
+  return Math.round(r.amount * (r.perUnit ? (Number(qty)||1) : 1));
+}
+function updateTestFieldsVisibility(){
+  const isManual = document.getElementById("grantEvent").value === "Manual";
+  document.getElementById("qtyField").style.display = isManual ? "none" : "";
+  document.getElementById("flatField").style.display = isManual ? "" : "none";
+  refreshComputedXpPreview();
+}
+function refreshComputedXpPreview(){
+  const eventName = document.getElementById("grantEvent").value;
+  const qty = document.getElementById("grantQty").value;
+  const flat = document.getElementById("grantAmount").value;
+  document.getElementById("computedXp").value = computeGainedXp(eventName, qty, Number(flat));
+}
+document.getElementById("grantEvent").onchange = updateTestFieldsVisibility;
+document.getElementById("grantQty").oninput = refreshComputedXpPreview;
+document.getElementById("grantAmount").oninput = refreshComputedXpPreview;
+updateTestFieldsVisibility();
+
+function buildEventPayload(user){
+  const eventName = document.getElementById("grantEvent").value;
+  const qty = document.getElementById("grantQty").value;
+  const flat = Number(document.getElementById("grantAmount").value);
+  const xpGained = computeGainedXp(eventName, qty, flat);
+  const users = load(LS_USERS, {});
+  const prev = users[normUser(user)] || { xp:0, level:1, unlockedLevels:[], history:[] };
+  const totalXp = (prev.xp||0) + xpGained;
+  const curve = load(LS_CURVE, { base:100, growth:1.15 });
+  const { level, xpIntoLevel, xpForNextLevel } = levelFromXp(totalXp, curve);
+  const leveledUp = level > (prev.level||1);
+  return { eventName, user, avatar:"", quantity: Number(qty)||1, xpGained, totalXp, level, xpIntoLevel, xpForNextLevel, leveledUp };
+}
+
+document.getElementById("testBtn").onclick = () => {
+  const user = document.getElementById("grantUser").value.trim() || "TestViewer";
+  const data = buildEventPayload(user);
+  bc && bc.postMessage({ type:"test_event", data });
+};
+document.getElementById("grantBtn").onclick = () => {
+  const user = document.getElementById("grantUser").value.trim();
+  if (!user){ alert("Enter a username."); return; }
+  const data = buildEventPayload(user);
+  if (!data.xpGained){ alert("That event/quantity computes to 0 XP — check your XP Rates config."); return; }
+  const key = normUser(user);
+  const users = load(LS_USERS, {});
+  const rec = users[key] || { xp:0, level:1, unlockedLevels:[], history:[] };
+  rec.xp = data.totalXp;
+  rec.level = data.level;
+  if (data.leveledUp) rec.history.push({ level:data.level, ts:Date.now() });
+  users[key] = rec;
+  save(LS_USERS, users);
+  bc && bc.postMessage({ type:"user_update", user: key, data: rec });
+  bc && bc.postMessage({ type:"live_event", data });
+  renderUsers();
+};
+
+/* keep panels in sync if edited from another tab */
+bc && (bc.onmessage = (e) => { const m = e.data||{}; if (m.type === "user_update") renderUsers(); });
+window.addEventListener("storage", (e) => {
+  if ([LS_USERS, LS_REWARDS, LS_DISPLAY, LS_XPRATES, LS_CURVE].includes(e.key)){
+    renderUsers(); renderRewards(); refreshDisplayToggles(); renderXpRates(); refreshCurveInputs(); refreshComputedXpPreview();
+  }
+});
+
+function escapeHtml(str){ const d = document.createElement("div"); d.textContent = str ?? ""; return d.innerHTML; }
+
+/* ---------- optional: connection status against Streamer.bot ---------- */
+const wsStatus = document.getElementById("wsStatus");
+try{
+  const ws = new WebSocket("ws://127.0.0.1:8080/");
+  ws.onopen = () => { wsStatus.textContent = "SB: connected"; wsStatus.className = "status on"; };
+  ws.onclose = () => { wsStatus.textContent = "SB: disconnected"; wsStatus.className = "status off"; };
+  ws.onerror = () => { wsStatus.textContent = "SB: unreachable"; wsStatus.className = "status off"; };
+}catch(e){ wsStatus.textContent = "SB: unreachable"; wsStatus.className = "status off"; }
+</script>
+</body>
+</html>

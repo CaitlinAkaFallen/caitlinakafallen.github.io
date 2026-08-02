@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FallenOneArt - My Level</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-navy:#0a0915; --teal:#7de8c8; --purple:#c8a2ff; --gold:#ffd27d; --pink:#ff8fd0;
+    --glass-bg: rgba(20,18,36,0.55); --glass-border: rgba(255,255,255,0.14);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; min-height:100%; font-family:'Share Tech Mono', monospace; color:#eae7fb;
+    background: radial-gradient(circle at 15% 10%, rgba(125,232,200,0.08), transparent 45%),
+                radial-gradient(circle at 85% 90%, rgba(200,162,255,0.08), transparent 45%), var(--bg-navy); }
+  h1,h2{ font-family:'Orbitron', sans-serif; margin:0 0 4px; }
+  h1{ font-size:19px; letter-spacing:2px; color:#f4f2ff; text-shadow:0 0 14px rgba(125,232,200,.35); }
+  h2{ font-size:12px; letter-spacing:1.5px; color:var(--teal); text-transform:uppercase; }
+  .wrap{ max-width:640px; margin:0 auto; padding:26px 18px 60px; }
+
+  input{ font-family:inherit; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); color:#eae7fb; border-radius:9px; padding:9px 12px; font-size:13px; flex:1; }
+  button{ font-family:'Orbitron', sans-serif; font-size:11px; letter-spacing:.5px; cursor:pointer; border:none; border-radius:9px; padding:9px 16px; color:#0a0915; font-weight:700;
+    background:linear-gradient(135deg, var(--teal), var(--purple)); }
+  button.secondary{ background:rgba(255,255,255,0.08); color:#eae7fb; border:1px solid var(--glass-border); }
+  button.small{ padding:6px 11px; font-size:10px; }
+
+  .auth-bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .auth-chip{ display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:20px; padding:5px 12px 5px 5px; font-size:12px; }
+  .auth-chip img{ width:26px; height:26px; border-radius:50%; object-fit:cover; }
+  .settings-toggle{ font-size:10.5px; color:#8f89b3; background:none; border:none; cursor:pointer; text-decoration:underline; padding:0; letter-spacing:0; font-family:'Share Tech Mono', monospace; }
+  #twitchSettingsPanel .field{ display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
+  #twitchSettingsPanel label{ font-size:10.5px; color:#b9b4d6; letter-spacing:.5px; text-transform:uppercase; }
+  .hint{ color:#8f89b3; font-size:12.5px; line-height:1.5; margin-bottom:10px; }
+  code{ background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:5px; word-break:break-all; }
+
+  .panel{ background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; padding:18px 20px;
+    -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
+    box-shadow:0 8px 30px rgba(0,0,0,0.35); margin-bottom:16px; }
+  #twitchSettingsPanel{ display:none; }
+
+  .profile-head{ display:flex; align-items:center; gap:14px; margin-bottom:6px; }
+  .avatar-lg{ width:56px; height:56px; border-radius:50%; background: linear-gradient(135deg, var(--teal), var(--purple)); display:flex; align-items:center; justify-content:center; font-family:'Orbitron',sans-serif; font-weight:900; color:#0a0915; font-size:20px; flex:0 0 auto; overflow:hidden; }
+  .avatar-lg img{ width:100%; height:100%; object-fit:cover; object-position:center; border-radius:50%; }
+  .profile-name{ font-family:'Orbitron', sans-serif; font-weight:700; font-size:18px; }
+  .profile-sub{ font-size:11px; color:#a9a3cb; }
+
+  .xp-row{ display:flex; justify-content:space-between; font-size:11.5px; color:#c9c6dd; margin-top:14px; margin-bottom:5px; }
+  .xp-track{ height:12px; border-radius:6px; overflow:hidden; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); }
+  .xp-fill{ height:100%; border-radius:6px; background: linear-gradient(90deg, var(--teal), var(--purple)); box-shadow:0 0 10px var(--teal); transition:width .8s ease; }
+
+  .toggle-group{ display:flex; gap:8px; }
+  .toggle-btn{ flex:1; padding:9px; border-radius:9px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:#cfc9ec; text-align:center; font-family:'Orbitron',sans-serif; font-size:11px; cursor:pointer; }
+  .toggle-btn.active{ background:linear-gradient(135deg, var(--teal), var(--purple)); color:#0a0915; font-weight:700; border-color:transparent; }
+
+  .reward-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:10px; margin-top:6px; }
+  .reward-item{ background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:12px; padding:12px 10px; text-align:center; }
+  .reward-item .badge{ font-size:24px; filter:drop-shadow(0 0 6px var(--purple)); }
+  .reward-item .title{ font-family:'Orbitron',sans-serif; font-size:10.5px; color:var(--gold); margin-top:4px; }
+  .reward-item .lvl{ font-size:10px; color:#a9a3cb; }
+  .reward-item.locked{ opacity:.35; }
+
+  .history-item{ display:flex; justify-content:space-between; font-size:12px; padding:6px 2px; border-bottom:1px solid rgba(255,255,255,0.06); }
+  .history-item .lvl{ color:var(--teal); font-family:'Orbitron',sans-serif; }
+  .history-item .date{ color:#8f89b3; font-size:10.5px; }
+
+  .empty{ color:#8f89b3; font-size:12.5px; padding:6px 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>MY LEVEL // FALLENONEART</h1>
+
+  <div class="auth-bar">
+    <div id="twitchAuthBar"></div>
+    <button class="settings-toggle" id="toggleTwitchSettings">⚙ Twitch app settings</button>
+  </div>
+
+  <div class="panel" id="twitchSettingsPanel">
+    <h2>Twitch App Settings</h2>
+    <div class="field">
+      <label>Client ID</label>
+      <input type="text" id="twitchClientId" placeholder="Your Twitch application's Client ID">
+    </div>
+    <div class="hint">
+      Register a free app at <code>dev.twitch.tv/console/apps</code> and set its OAuth Redirect URL to exactly:<br>
+      <code id="redirectUriHint"></code><br>
+      Category: "Website Integration". No client secret is needed — this uses Twitch's browser-only Implicit Grant flow, so the token never leaves this page.
+    </div>
+    <button id="saveTwitchCfgBtn">Save</button>
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<script>
+const LS_DISPLAY = "fallenoneart_levelup_display";
+const LS_REWARDS = "fallenoneart_levelup_rewards";
+const LS_USERS   = "fallenoneart_levelup_users";
+const LS_CURVE   = "fallenoneart_levelup_curve";
+const LS_TWITCH_CFG   = "fallenoneart_levelup_twitch_cfg";   // { clientId }
+const LS_TWITCH_TOKEN = "fallenoneart_levelup_twitch_token"; // { accessToken, login, displayName, avatar }
+const CHANNEL    = "fallenoneart_levelup_channel";
+const bc = ("BroadcastChannel" in window) ? new BroadcastChannel(CHANNEL) : null;
+
+function load(key, fallback){ try{ const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }catch(e){ return fallback; } }
+function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function escapeHtml(str){ const d = document.createElement("div"); d.textContent = str ?? ""; return d.innerHTML; }
+
+const params = new URLSearchParams(window.location.search);
+const storedTwitchToken = load(LS_TWITCH_TOKEN, null);
+let currentUser = (params.get("user") || (storedTwitchToken && storedTwitchToken.login) || "").trim().toLowerCase();
+
+/* ============================================================
+   TWITCH LOGIN (Implicit Grant — no backend, token stays in this page)
+   ============================================================ */
+function twitchCfg(){ return load(LS_TWITCH_CFG, { clientId:"" }); }
+function redirectUri(){ return window.location.origin + window.location.pathname; }
+document.getElementById("redirectUriHint").textContent = redirectUri();
+
+document.getElementById("toggleTwitchSettings").onclick = () => {
+  const panel = document.getElementById("twitchSettingsPanel");
+  panel.style.display = panel.style.display === "none" ? "" : "none";
+  document.getElementById("twitchClientId").value = twitchCfg().clientId;
+};
+document.getElementById("saveTwitchCfgBtn").onclick = () => {
+  save(LS_TWITCH_CFG, { clientId: document.getElementById("twitchClientId").value.trim() });
+  document.getElementById("twitchSettingsPanel").style.display = "none";
+};
+
+function startTwitchLogin(){
+  const cfg = twitchCfg();
+  if (!cfg.clientId){
+    alert("Add your Twitch app's Client ID under \"Twitch app settings\" first.");
+    document.getElementById("twitchSettingsPanel").style.display = "";
+    return;
+  }
+  const p = new URLSearchParams({ client_id: cfg.clientId, redirect_uri: redirectUri(), response_type:"token", scope:"", force_verify:"true" });
+  window.location.href = `https://id.twitch.tv/oauth2/authorize?${p.toString()}`;
+}
+function logoutTwitch(){
+  localStorage.removeItem(LS_TWITCH_TOKEN);
+  renderAuthBar();
+}
+
+async function handleTwitchRedirect(){
+  if (!window.location.hash.includes("access_token")) return;
+  const hash = new URLSearchParams(window.location.hash.slice(1));
+  const accessToken = hash.get("access_token");
+  history.replaceState(null, "", window.location.pathname + window.location.search);
+  if (accessToken) await fetchTwitchIdentity(accessToken);
+}
+
+async function fetchTwitchIdentity(accessToken){
+  const cfg = twitchCfg();
+  try{
+    const res = await fetch("https://api.twitch.tv/helix/users", {
+      headers: { "Authorization": `Bearer ${accessToken}`, "Client-Id": cfg.clientId }
+    });
+    if (!res.ok) throw new Error("identity check failed");
+    const json = await res.json();
+    const u = json.data && json.data[0];
+    if (!u) throw new Error("no user in response");
+    save(LS_TWITCH_TOKEN, { accessToken, login: u.login, displayName: u.display_name, avatar: u.profile_image_url });
+
+    const users = load(LS_USERS, {});
+    const rec = users[u.login] || { xp:0, level:1, unlockedLevels:[], history:[] };
+    rec.avatar = u.profile_image_url;
+    users[u.login] = rec;
+    save(LS_USERS, users);
+    bc && bc.postMessage({ type:"user_update", user: u.login, data: rec });
+
+    currentUser = u.login;
+  }catch(e){
+    console.warn("Twitch login failed:", e);
+    localStorage.removeItem(LS_TWITCH_TOKEN);
+  }
+  renderAuthBar();
+  render();
+}
+
+function renderAuthBar(){
+  const bar = document.getElementById("twitchAuthBar");
+  const t = load(LS_TWITCH_TOKEN, null);
+  if (t){
+    bar.innerHTML = `<div class="auth-chip"><img src="${escapeHtml(t.avatar)}" alt=""><span>Logged in as <b>${escapeHtml(t.displayName)}</b></span><button class="secondary small" id="twitchLogoutBtn">Log out</button></div>`;
+    document.getElementById("twitchLogoutBtn").onclick = logoutTwitch;
+  } else {
+    bar.innerHTML = `<button id="twitchLoginBtn">Login with Twitch</button>`;
+    document.getElementById("twitchLoginBtn").onclick = startTwitchLogin;
+  }
+}
+renderAuthBar();
+
+function computeXpForNext(level){
+  const c = load(LS_CURVE, { base:100, growth:1.15 });
+  return Math.round(c.base * Math.pow(c.growth, Math.max(0, level-1)));
+}
+
+function render(){
+  const content = document.getElementById("content");
+  if (!currentUser){
+    content.innerHTML = `<div class="panel"><div class="empty">Login with Twitch above to see your level, XP, and unlocked rewards live as you earn them.</div></div>`;
+    return;
+  }
+  const users = load(LS_USERS, {});
+  const rec = users[currentUser] || { xp:0, level:1, unlockedLevels:[], history:[] };
+  const rewards = load(LS_REWARDS, []).sort((a,b) => a.level - b.level);
+  const xpForNext = computeXpForNext(rec.level);
+  const pct = Math.max(0, Math.min(100, (rec.xp % xpForNext) / xpForNext * 100));
+  const display = load(LS_DISPLAY, { layout:"horizontal", style:"glass" });
+  const layoutPref = rec.layoutPref || display.layout;
+  const stylePref = rec.stylePref || display.style;
+
+  const rewardCards = rewards.map(r => {
+    const unlocked = (rec.unlockedLevels||[]).includes(r.level);
+    return `<div class="reward-item ${unlocked ? "" : "locked"}">
+      <div class="badge">${escapeHtml(r.badge || "★")}</div>
+      <div class="title">${escapeHtml(r.title)}</div>
+      <div class="lvl">Lv ${r.level}${unlocked ? "" : " · locked"}</div>
+    </div>`;
+  }).join("");
+
+  const historyItems = (rec.history || []).slice().reverse().map(h => `
+    <div class="history-item"><span class="lvl">Reached Level ${h.level}</span><span class="date">${new Date(h.ts).toLocaleDateString()}</span></div>
+  `).join("") || `<div class="empty">No milestones reached yet — keep engaging in stream!</div>`;
+
+  content.innerHTML = `
+    <div class="panel">
+      <div class="profile-head">
+        <div class="avatar-lg">${rec.avatar ? `<img src="${escapeHtml(rec.avatar)}" alt="" onerror="this.remove()">` : escapeHtml(currentUser[0]?.toUpperCase() || "?")}</div>
+        <div>
+          <div class="profile-name">${escapeHtml(currentUser)}</div>
+          <div class="profile-sub">Level ${rec.level} &middot; ${rec.xp} total XP</div>
+        </div>
+      </div>
+      <div class="xp-row"><span>Progress to Lv ${rec.level+1}</span><span>${Math.round(rec.xp % xpForNext)} / ${xpForNext} XP</span></div>
+      <div class="xp-track"><div class="xp-fill" style="width:${pct}%"></div></div>
+    </div>
+
+    <div class="panel">
+      <h2>My Card Preference</h2>
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+        <div class="toggle-group" id="layoutToggle">
+          <div class="toggle-btn" data-val="horizontal">Horizontal</div>
+          <div class="toggle-btn" data-val="vertical">Vertical</div>
+        </div>
+        <div class="toggle-group" id="styleToggle">
+          <div class="toggle-btn" data-val="glass">Neon Glass</div>
+          <div class="toggle-btn" data-val="minimal">Minimal Flat</div>
+          <div class="toggle-btn" data-val="crt">CRT Scanline</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Rewards Inventory</h2>
+      <div class="reward-grid">${rewardCards || `<div class="empty">No milestones configured yet.</div>`}</div>
+    </div>
+
+    <div class="panel">
+      <h2>Milestone History</h2>
+      ${historyItems}
+    </div>
+  `;
+
+  document.querySelectorAll("#layoutToggle .toggle-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.val === layoutPref);
+    b.onclick = () => setPref("layoutPref", b.dataset.val);
+  });
+  document.querySelectorAll("#styleToggle .toggle-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.val === stylePref);
+    b.onclick = () => setPref("stylePref", b.dataset.val);
+  });
+
+  if (!rec.avatar && !avatarFetchAttempted.has(currentUser)){
+    avatarFetchAttempted.add(currentUser);
+    fetchAvatar(currentUser);
+  }
+}
+
+/* Twitch doesn't expose profile images without an authenticated API call,
+   so — same as the Tally Board scoreboard — fall back to decapi.me, which
+   returns the avatar URL as plain text. Cached onto the user record once
+   fetched so this only runs once per viewer. */
+const avatarFetchAttempted = new Set();
+async function fetchAvatar(username){
+  try{
+    const res = await fetch(`https://decapi.me/twitch/avatar/${encodeURIComponent(username)}`);
+    if (!res.ok) return;
+    const url = (await res.text()).trim();
+    if (!url || !url.startsWith("http")) return; // decapi returns an error string for unknown users
+    const users = load(LS_USERS, {});
+    const r = users[username] || { xp:0, level:1, unlockedLevels:[], history:[] };
+    r.avatar = url;
+    users[username] = r;
+    save(LS_USERS, users);
+    bc && bc.postMessage({ type:"user_update", user: username, data: r });
+    if (username === currentUser) render();
+  }catch(e){ /* offline or blocked — keep the letter avatar */ }
+}
+
+function setPref(key, val){
+  const users = load(LS_USERS, {});
+  const rec = users[currentUser] || { xp:0, level:1, unlockedLevels:[], history:[] };
+  rec[key] = val;
+  users[currentUser] = rec;
+  save(LS_USERS, users);
+  bc && bc.postMessage({ type:"user_update", user: currentUser, data: rec });
+  render();
+}
+
+bc && (bc.onmessage = (e) => { const m = e.data||{}; if (m.type === "user_update" && m.user === currentUser) render(); });
+window.addEventListener("storage", (e) => { if ([LS_USERS, LS_REWARDS, LS_DISPLAY, LS_CURVE].includes(e.key)) render(); });
+
+render();
+handleTwitchRedirect();
+</script>
+</body>
+</html>
