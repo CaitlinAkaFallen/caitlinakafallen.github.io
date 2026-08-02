@@ -32,13 +32,11 @@
   .settings-toggle{ font-size:10.5px; color:#8f89b3; background:none; border:none; cursor:pointer; text-decoration:underline; padding:0; letter-spacing:0; font-family:'Share Tech Mono', monospace; }
   #twitchSettingsPanel .field{ display:flex; flex-direction:column; gap:5px; margin-bottom:10px; }
   #twitchSettingsPanel label{ font-size:10.5px; color:#b9b4d6; letter-spacing:.5px; text-transform:uppercase; }
-  .hint{ color:#8f89b3; font-size:12.5px; line-height:1.5; margin-bottom:10px; }
   code{ background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:5px; word-break:break-all; }
 
   .panel{ background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; padding:18px 20px;
     -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
     box-shadow:0 8px 30px rgba(0,0,0,0.35); margin-bottom:16px; }
-  #twitchSettingsPanel{ display:none; }
 
   .profile-head{ display:flex; align-items:center; gap:14px; margin-bottom:6px; }
   .avatar-lg{ width:56px; height:56px; border-radius:50%; background: linear-gradient(135deg, var(--teal), var(--purple)); display:flex; align-items:center; justify-content:center; font-family:'Orbitron',sans-serif; font-weight:900; color:#0a0915; font-size:20px; flex:0 0 auto; overflow:hidden; }
@@ -48,7 +46,10 @@
 
   .xp-row{ display:flex; justify-content:space-between; font-size:11.5px; color:#c9c6dd; margin-top:14px; margin-bottom:5px; }
   .xp-track{ height:12px; border-radius:6px; overflow:hidden; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); }
-  .xp-fill{ height:100%; border-radius:6px; background: linear-gradient(90deg, var(--teal), var(--purple)); box-shadow:0 0 10px var(--teal); transition:width .8s ease; }
+  .xp-fill{ width: var(--xp-width, 0%); height:100%; border-radius:6px; background: linear-gradient(90deg, var(--teal), var(--purple)); box-shadow:0 0 10px var(--teal); transition:width .8s ease; }
+
+  .hint{ margin-bottom:10px; }
+  .hidden{ display:none; }
 
   .toggle-group{ display:flex; gap:8px; }
   .toggle-btn{ flex:1; padding:9px; border-radius:9px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:#cfc9ec; text-align:center; font-family:'Orbitron',sans-serif; font-size:11px; cursor:pointer; }
@@ -77,13 +78,13 @@
     <button class="settings-toggle" id="toggleTwitchSettings">⚙ Twitch app settings</button>
   </div>
 
-  <div class="panel" id="twitchSettingsPanel">
+  <div class="panel" id="twitchSettingsPanel" style="display:none;">
     <h2>Twitch App Settings</h2>
     <div class="field">
       <label>Client ID</label>
       <input type="text" id="twitchClientId" placeholder="Your Twitch application's Client ID">
     </div>
-    <div class="hint">
+    <div class="hint" style="margin-bottom:10px;">
       Register a free app at <code>dev.twitch.tv/console/apps</code> and set its OAuth Redirect URL to exactly:<br>
       <code id="redirectUriHint"></code><br>
       Category: "Website Integration". No client secret is needed — this uses Twitch's browser-only Implicit Grant flow, so the token never leaves this page.
@@ -110,7 +111,7 @@ function escapeHtml(str){ const d = document.createElement("div"); d.textContent
 
 const params = new URLSearchParams(window.location.search);
 const storedTwitchToken = load(LS_TWITCH_TOKEN, null);
-let currentUser = (params.get("user") || (storedTwitchToken && storedTwitchToken.login) || "").trim().toLowerCase();
+let currentUser = params.get("user") || (storedTwitchToken && storedTwitchToken.login) || "";
 
 /* ============================================================
    TWITCH LOGIN (Implicit Grant — no backend, token stays in this page)
