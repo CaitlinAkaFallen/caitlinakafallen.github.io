@@ -131,6 +131,38 @@
   .twitch-login-btn:hover::after{ right:0; }
   .twitch-login-btn:active{ transform:none; }
 
+  /* ---- Save button — Text + Underline Sweep style ---- */
+  .save-btn{
+    background:transparent;
+    color:var(--accent-primary);
+    border:none;
+    box-shadow:none;
+    padding:8px 2px;
+    position:relative;
+    font-family:var(--font-display);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    transition:color .25s ease;
+  }
+  .save-btn::after{
+    content:'';
+    position:absolute;
+    left:0; right:100%; bottom:2px;
+    height:2px;
+    background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    box-shadow:0 0 8px rgba(125,232,200,0.6);
+    transition:right .35s cubic-bezier(.4,0,.2,1);
+  }
+  .save-btn:hover{
+    color:var(--text-primary);
+    transform:none;
+    box-shadow:none;
+  }
+  .save-btn:hover::after{ right:0; }
+  .save-btn:active{ transform:none; }
+
   .auth-bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
   .auth-chip{
     display:flex; align-items:center; gap:9px;
@@ -204,19 +236,6 @@
   .xp-track{ height:12px; border-radius:6px; overflow:hidden; background:rgba(255,255,255,0.08); border:1px solid var(--border-soft); }
   .xp-fill{ height:100%; border-radius:6px; background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); box-shadow:0 0 10px var(--accent-primary); transition:width .8s ease; }
 
-  .toggle-group{ display:flex; gap:8px; }
-  .toggle-btn{
-    flex:1; padding:10px; border-radius:var(--corner-radius); border:1.5px solid var(--border-medium);
-    background:linear-gradient(135deg, rgba(30,25,50,0.5), rgba(25,22,40,0.6));
-    color:var(--text-secondary); text-align:center; font-family:var(--font-display);
-    font-size:11px; letter-spacing:.5px; cursor:pointer; transition:all .25s ease;
-  }
-  .toggle-btn:hover{ border-color:rgba(125,232,200,0.4); transform:translateY(-1px); }
-  .toggle-btn.active{
-    background:linear-gradient(135deg, rgba(125,232,200,0.18), rgba(200,162,255,0.1));
-    color:var(--text-primary); font-weight:700; border-color:var(--accent-primary); box-shadow:var(--glow-primary);
-  }
-
   .reward-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:10px; margin-top:6px; }
   .reward-item{
     position:relative;
@@ -264,7 +283,7 @@
       <code id="redirectUriHint"></code><br>
       Category: "Website Integration". No client secret is needed — this uses Twitch's browser-only Implicit Grant flow, so the token never leaves this page.
     </div>
-    <button id="saveTwitchCfgBtn">Save</button>
+    <button id="saveTwitchCfgBtn" class="save-btn">Save</button>
   </details>
 
   <div id="content"></div>
@@ -398,10 +417,6 @@ function render(){
   const rewards = load(LS_REWARDS, []).sort((a,b) => a.level - b.level);
   const xpForNext = computeXpForNext(rec.level);
   const pct = Math.max(0, Math.min(100, (rec.xp % xpForNext) / xpForNext * 100));
-  const display = load(LS_DISPLAY, { layout:"horizontal", style:"glass" });
-  const layoutPref = rec.layoutPref || display.layout;
-  const stylePref = rec.stylePref || display.style;
-
   const rewardCards = rewards.map(r => {
     const unlocked = (rec.unlockedLevels||[]).includes(r.level);
     const claimed = (rec.claimedLevels||[]).includes(r.level);
@@ -434,21 +449,6 @@ function render(){
     </div>
 
     <div class="panel">
-      <h2>My Card Preference</h2>
-      <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
-        <div class="toggle-group" id="layoutToggle">
-          <div class="toggle-btn" data-val="horizontal">Horizontal</div>
-          <div class="toggle-btn" data-val="vertical">Vertical</div>
-        </div>
-        <div class="toggle-group" id="styleToggle">
-          <div class="toggle-btn" data-val="glass">Neon Glass</div>
-          <div class="toggle-btn" data-val="minimal">Minimal Flat</div>
-          <div class="toggle-btn" data-val="crt">CRT Scanline</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
       <h2>Rewards Inventory</h2>
       <div class="reward-grid">${rewardCards || `<div class="empty">No milestones configured yet.</div>`}</div>
     </div>
@@ -459,14 +459,6 @@ function render(){
     </div>
   `;
 
-  document.querySelectorAll("#layoutToggle .toggle-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.val === layoutPref);
-    b.onclick = () => setPref("layoutPref", b.dataset.val);
-  });
-  document.querySelectorAll("#styleToggle .toggle-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.val === stylePref);
-    b.onclick = () => setPref("stylePref", b.dataset.val);
-  });
   document.querySelectorAll(".claim-btn").forEach(b => {
     b.onclick = () => claimReward(Number(b.dataset.claimLevel));
   });
@@ -510,16 +502,6 @@ async function fetchAvatar(username){
     bc && bc.postMessage({ type:"user_update", user: username, data: r });
     if (username === currentUser) render();
   }catch(e){ /* offline or blocked — keep the letter avatar */ }
-}
-
-function setPref(key, val){
-  const users = load(LS_USERS, {});
-  const rec = users[currentUser] || { xp:0, level:1, unlockedLevels:[], history:[] };
-  rec[key] = val;
-  users[currentUser] = rec;
-  save(LS_USERS, users);
-  bc && bc.postMessage({ type:"user_update", user: currentUser, data: rec });
-  render();
 }
 
 bc && (bc.onmessage = (e) => { const m = e.data||{}; if (m.type === "user_update" && m.user === currentUser) render(); });
