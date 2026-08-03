@@ -315,10 +315,17 @@ window.addEventListener("storage", (e) => {
 const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
 let connectedForReal = false;
 ws.onopen = () => { ws.send(JSON.stringify({ request:"Subscribe", events:{ general:["Custom"] }, id:"LevelUp" })); };
+// FIX: Streamer.bot's WebSocketBroadcastJson is global — every action that
+// calls it (LevelUp, iPhoneCallTrigger, anything else) lands on this same
+// socket. Without a check here, any unrelated broadcast got rendered as a
+// fake "level up" card with +0 XP and stale/garbage numbers. Only enqueue
+// payloads explicitly tagged source:"levelup" by the C# LevelUp action.
 ws.onmessage = (event) => {
-  connectedForReal = true; stopDemo();
   const response = JSON.parse(event.data);
-  if (response && response.data) enqueue(response.data);
+  if (response && response.data && response.data.source === "levelup") {
+    connectedForReal = true; stopDemo();
+    enqueue(response.data);
+  }
 };
 ws.onerror = () => {}; ws.onclose = () => {};
 // Demo/sample cards only run when explicitly requested via ?demo=1 in the
