@@ -48,6 +48,17 @@
   .card[data-layout="vertical"] .event-tag{ text-align:center; }
   .card[data-layout="vertical"] .xp-row{ width:100%; }
 
+  /* ================= LAYOUT: COMPACT ================= */
+  .card[data-layout="compact"]{ width: 236px; height: 58px; }
+  .card[data-layout="compact"] .front{ flex-direction:row; align-items:center; gap:6px; padding:6px 9px; }
+  .card[data-layout="compact"] .info{ flex:1; min-width:0; gap:2px; }
+  .card[data-layout="compact"] .avatar-wrap{ width:36px; height:36px; }
+  .card[data-layout="compact"] .username{ font-size:13px; }
+  .card[data-layout="compact"] .event-tag{ font-size:9px; }
+  .card[data-layout="compact"] .xp-row{ font-size:9px; }
+  .card[data-layout="compact"] .xp-bar-track{ height:6px; }
+  .card[data-layout="compact"] .level-badge{ min-width:14px; height:14px; font-size:7px; }
+
   .card{
     position:relative; transform-style: preserve-3d; opacity: 0;
     transform: rotateY(90deg) scale(0.92);
@@ -58,14 +69,14 @@
   .card.is-out{ opacity:0; transform: rotateY(-100deg) scale(0.9); transition: transform 0.6s cubic-bezier(.5,0,.75,0), opacity 0.45s ease 0.15s; }
 
   .face{
-    position:absolute; inset:0; border-radius:18px; backface-visibility:hidden;
+    position:absolute; inset:0; border-radius: var(--card-radius, 18px); backface-visibility:hidden;
     background: var(--glass-bg); border:1px solid var(--glass-border);
     -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%);
     box-shadow: 0 8px 40px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.03);
     overflow:hidden; display:flex;
   }
   .face::before{
-    content:""; position:absolute; inset:-2px; border-radius:20px; padding:2px;
+    content:""; position:absolute; inset:-2px; border-radius: var(--card-radius-outer, 20px); padding:2px;
     background: linear-gradient(135deg, var(--accent, var(--teal)), var(--accent2, var(--purple)));
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -93,20 +104,24 @@
   .avatar-ring{ position:absolute; inset:-3px; border-radius:50%; background: conic-gradient(from 0deg, var(--accent, var(--teal)), var(--accent2, var(--purple)), var(--accent, var(--teal))); filter: blur(0.3px); animation: spin 6s linear infinite; }
   @keyframes spin{ to{ transform: rotate(360deg); } }
   .avatar-img{ position:absolute; top:2px; left:2px; width:calc(100% - 4px); height:calc(100% - 4px); border-radius:50%; object-fit:cover; object-position:center; background:#1a1830; border:1.5px solid var(--bg-navy); box-sizing:border-box; }
-  .level-badge{ position:absolute; bottom:-3px; right:-3px; z-index:3; min-width:18px; height:18px; padding:0 2px; border-radius:50%; background: linear-gradient(135deg, var(--accent, var(--teal)), var(--accent2, var(--purple))); display:flex; align-items:center; justify-content:center; font-family:'Orbitron', sans-serif; font-weight:900; font-size:9px; color:#0a0915; box-shadow: 0 0 12px rgba(0,0,0,0.5), 0 0 10px var(--accent, var(--teal)); border: 1.5px solid var(--bg-navy); }
+  .level-badge{ position:absolute; bottom:-3px; right:-3px; z-index:3; min-width:18px; height:18px; padding:0 2px; border-radius:50%; background: linear-gradient(135deg, var(--accent, var(--teal)), var(--accent2, var(--purple))); display:flex; align-items:center; justify-content:center; font-family:'Orbitron', sans-serif; font-weight:900; font-size:9px; color:#0a0915; box-shadow: 0 0 12px rgba(0,0,0,0.5), 0 0 calc(10px * var(--glow-scale, 1)) var(--accent, var(--teal)); border: 1.5px solid var(--bg-navy); }
 
   .info{ display:flex; flex-direction:column; gap:4px; min-width:0; }
-  .username{ font-family:'Orbitron', sans-serif; font-weight:700; color:#f4f2ff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow: 0 0 12px rgba(125,232,200,0.35); }
+  .username{ font-family:'Orbitron', sans-serif; font-weight:700; color:#f4f2ff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow: 0 0 calc(12px * var(--glow-scale, 1)) rgba(125,232,200,0.35); }
   .event-tag{ font-size:11px; letter-spacing:1px; text-transform:uppercase; color: var(--accent, var(--teal)); opacity:0.9; }
   .xp-row{ display:flex; justify-content:space-between; font-size:11px; color:#c9c6dd; }
+  .xp-row .xp-numbers.is-hidden{ display:none; }
+  .avatar-wrap.is-hidden{ display:none; }
+  .level-badge.is-hidden{ display:none; }
+  .xp-bar-track.is-hidden{ display:none; }
   .xp-bar-track{ height:9px; border-radius:5px; overflow:hidden; background: rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); }
-  .xp-bar-fill{ height:100%; width:0%; border-radius:5px; background: linear-gradient(90deg, var(--accent, var(--teal)), var(--accent2, var(--purple))); box-shadow: 0 0 10px var(--accent, var(--teal)); transition: width 1.1s cubic-bezier(.3,.9,.3,1); }
+  .xp-bar-fill{ height:100%; width:0%; border-radius:5px; background: linear-gradient(90deg, var(--accent, var(--teal)), var(--accent2, var(--purple))); box-shadow: 0 0 calc(10px * var(--glow-scale, 1)) var(--accent, var(--teal)); transition: width 1.1s cubic-bezier(.3,.9,.3,1); }
 
   .back{ transform: rotateY(180deg); flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:10px; }
   .back .burst{ position:absolute; inset:0; background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 60%); animation: burstPulse 1.4s ease-out infinite; }
   @keyframes burstPulse{ 0%{ opacity:.9; transform:scale(0.4);} 100%{ opacity:0; transform:scale(1.6);} }
-  .back .lvl-up-label{ font-family:'Orbitron', sans-serif; font-weight:700; font-size:8px; letter-spacing:3px; color: var(--accent2, var(--purple)); text-shadow: 0 0 14px var(--accent2, var(--purple)); z-index:2; }
-  .back .lvl-up-number{ font-family:'Orbitron', sans-serif; font-weight:900; font-size:30px; background: linear-gradient(135deg, var(--accent, var(--teal)), var(--accent2, var(--purple))); -webkit-background-clip:text; background-clip:text; color:transparent; filter: drop-shadow(0 0 18px rgba(200,162,255,0.55)); z-index:2; line-height:1; }
+  .back .lvl-up-label{ font-family:'Orbitron', sans-serif; font-weight:700; font-size:8px; letter-spacing:3px; color: var(--accent2, var(--purple)); text-shadow: 0 0 calc(14px * var(--glow-scale, 1)) var(--accent2, var(--purple)); z-index:2; }
+  .back .lvl-up-number{ font-family:'Orbitron', sans-serif; font-weight:900; font-size:30px; background: linear-gradient(135deg, var(--accent, var(--teal)), var(--accent2, var(--purple))); -webkit-background-clip:text; background-clip:text; color:transparent; filter: drop-shadow(0 0 calc(18px * var(--glow-scale, 1)) var(--accent2, var(--purple))); z-index:2; line-height:1; }
   .back .lvl-up-user{ font-family:'Share Tech Mono', monospace; font-size:9px; color:#e9e6ff; opacity:.85; z-index:2; }
   .back .reward-badge{ z-index:2; font-size:22px; margin-top:2px; filter: drop-shadow(0 0 8px var(--accent2, var(--purple))); }
   .back .reward-title{ z-index:2; font-family:'Orbitron', sans-serif; font-weight:700; font-size:10px; color:var(--gold); letter-spacing:1px; text-align:center; }
@@ -134,7 +149,7 @@
 const params = new URLSearchParams(window.location.search);
 if (params.get("preview") === "1") document.body.classList.add("showcase-bg");
 
-const LS_DISPLAY = "fallenoneart_levelup_display";   // { layout, style }
+const LS_DISPLAY = "fallenoneart_levelup_display";   // { layout, style, accentPrimary, accentSecondary, glowIntensity, cornerRadius, showAvatar, showBadge, showXp, showProgress }
 const LS_REWARDS = "fallenoneart_levelup_rewards";   // [{level, title, badge, message}]
 const LS_USERS   = "fallenoneart_levelup_users";     // { [user]: {xp, level, unlockedLevels:[], history:[{level, ts}]} }
 const LS_CURVE   = "fallenoneart_levelup_curve";     // { base, growth }
@@ -210,12 +225,34 @@ function resolveEventData(raw){
 }
 
 /* ---------- config load/apply ---------- */
+/* Matches the admin dashboard's defaultDisplayCfg() field-for-field so
+   settings saved there (Layout, Style, Colors & Glow, Elements) all
+   carry straight through to this overlay with no extra wiring needed. */
+function defaultDisplayCfg(){
+  return {
+    layout:"horizontal",
+    style:"glass",
+    accentPrimary:"",
+    accentSecondary:"",
+    glowIntensity:60,
+    cornerRadius:16,
+    showAvatar:true,
+    showBadge:true,
+    showXp:true,
+    showProgress:true
+  };
+}
 function loadDisplay(){
   try{
     const raw = localStorage.getItem(LS_DISPLAY);
     const d = raw ? JSON.parse(raw) : {};
-    return { layout: d.layout || params.get("layout") || "horizontal", style: d.style || params.get("style") || "glass" };
-  }catch(e){ return { layout:"horizontal", style:"glass" }; }
+    return {
+      ...defaultDisplayCfg(),
+      ...d,
+      layout: d.layout || params.get("layout") || "horizontal",
+      style: d.style || params.get("style") || "glass"
+    };
+  }catch(e){ return defaultDisplayCfg(); }
 }
 let currentDisplay = loadDisplay();
 function applyDisplay(d){ currentDisplay = d; }
@@ -256,7 +293,10 @@ if (bc){
   bc.onmessage = (e) => {
     const msg = e.data || {};
     if (msg.type === "display_update"){
-      applyDisplay({ layout: msg.layout || loadDisplay().layout, style: msg.style || loadDisplay().style });
+      // admin always saves to localStorage before broadcasting, so a full
+      // reload here picks up every field (layout/style/colors/glow/elements)
+      // in one shot rather than trying to merge partial broadcast payloads.
+      applyDisplay(loadDisplay());
     } else if (msg.type === "rewards_update"){
       // nothing to render immediately, rewards are looked up at level-up time
     } else if (msg.type === "test_event" || msg.type === "live_event"){
@@ -295,7 +335,11 @@ function nextFrame(){ return new Promise(r => requestAnimationFrame(() => reques
 function escapeHtml(str){ const d = document.createElement("div"); d.textContent = str; return d.innerHTML; }
 
 async function showCard(data){
-  const [accent, accent2] = tierColors(data.level || 1);
+  const tier = tierColors(data.level || 1);
+  // custom accent colors from the admin's Colors & Glow section win over the
+  // level-tier auto colors; leave either field blank there to fall back to tiers.
+  const accent = currentDisplay.accentPrimary || tier[0];
+  const accent2 = currentDisplay.accentSecondary || tier[1];
   const users = loadUsers();
   const userPref = users[normUser(data.user)] || {};
   const card = document.createElement("div");
@@ -304,25 +348,33 @@ async function showCard(data){
   card.dataset.style = userPref.stylePref || currentDisplay.style;
   card.style.setProperty("--accent", accent);
   card.style.setProperty("--accent2", accent2);
+  card.style.setProperty("--card-radius", (currentDisplay.cornerRadius ?? 16) + "px");
+  card.style.setProperty("--card-radius-outer", ((currentDisplay.cornerRadius ?? 16) + 2) + "px");
+  card.style.setProperty("--glow-scale", String((currentDisplay.glowIntensity ?? 60) / 60));
 
   const startPct = Math.max(0, Math.min(100, ((data.xpIntoLevel - data.xpGained) / (data.xpForNextLevel || 1)) * 100));
   const endPct   = Math.max(0, Math.min(100, (data.xpIntoLevel / (data.xpForNextLevel || 1)) * 100));
   const reward = data.leveledUp ? rewardForLevel(data.level) : null;
 
+  const showAvatar = currentDisplay.showAvatar !== false;
+  const showBadge = currentDisplay.showBadge !== false;
+  const showXp = currentDisplay.showXp !== false;
+  const showProgress = currentDisplay.showProgress !== false;
+
   card.innerHTML = `
     <div class="face front">
-      <div class="avatar-wrap">
+      <div class="avatar-wrap${showAvatar ? "" : " is-hidden"}">
         <div class="avatar-clip">
           <div class="avatar-ring"></div>
           <img class="avatar-img" src="${data.avatar || DEFAULT_AVATAR}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
         </div>
-        <div class="level-badge">${data.level ?? 1}</div>
+        <div class="level-badge${showBadge ? "" : " is-hidden"}">${data.level ?? 1}</div>
       </div>
       <div class="info">
         <div class="username">${escapeHtml(data.user || "viewer")}</div>
         <div class="event-tag">+${data.xpGained ?? 0} XP &middot; ${EVENT_LABELS[data.eventName] || data.eventName || "XP Gained"}</div>
-        <div class="xp-row"><span>Lv ${data.level ?? 1}</span><span>${data.xpIntoLevel ?? 0} / ${data.xpForNextLevel ?? 100} XP</span></div>
-        <div class="xp-bar-track"><div class="xp-bar-fill" style="width:${startPct}%"></div></div>
+        <div class="xp-row"><span>Lv ${data.level ?? 1}</span><span class="xp-numbers${showXp ? "" : " is-hidden"}">${data.xpIntoLevel ?? 0} / ${data.xpForNextLevel ?? 100} XP</span></div>
+        <div class="xp-bar-track${showProgress ? "" : " is-hidden"}"><div class="xp-bar-fill" style="width:${startPct}%"></div></div>
       </div>
     </div>
     <div class="face back">
