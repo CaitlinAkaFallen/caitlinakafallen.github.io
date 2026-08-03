@@ -8,83 +8,250 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-navy:#0a0915; --teal:#7de8c8; --purple:#c8a2ff; --gold:#ffd27d; --pink:#ff8fd0;
-    --glass-bg: rgba(20,18,36,0.55); --glass-border: rgba(255,255,255,0.14);
+    --accent-primary:#7de8c8;
+    --accent-secondary:#c8a2ff;
+    --accent-tertiary:#ff6b9d;
+    --gold:#ffd27d;
+    --bg-deep:#0a0915;
+    --bg-panel:rgba(22,20,34,0.55);
+    --bg-panel-elevated:rgba(30,25,50,0.7);
+    --border-soft:rgba(255,255,255,0.1);
+    --border-medium:rgba(255,255,255,0.15);
+    --text-primary:#f3f1f8;
+    --text-secondary:#9a97ab;
+    --text-tertiary:#6f6c80;
+    --font-display:'Orbitron', sans-serif;
+    --font-mono:'Share Tech Mono', monospace;
+    --shadow-md:0 8px 24px rgba(0,0,0,0.4);
+    --glow-primary:0 0 20px rgba(125,232,200,0.3);
+    --glow-secondary:0 0 20px rgba(200,162,255,0.3);
+    --corner-radius:14px;
   }
   *{ box-sizing:border-box; }
-  html,body{ margin:0; min-height:100%; font-family:'Share Tech Mono', monospace; color:#eae7fb;
-    background: radial-gradient(circle at 15% 10%, rgba(125,232,200,0.08), transparent 45%),
-                radial-gradient(circle at 85% 90%, rgba(200,162,255,0.08), transparent 45%), var(--bg-navy); }
-  h1,h2{ font-family:'Orbitron', sans-serif; margin:0 0 4px; }
-  h1{ font-size:19px; letter-spacing:2px; color:#f4f2ff; text-shadow:0 0 14px rgba(125,232,200,.35); }
-  h2{ font-size:12px; letter-spacing:1.5px; color:var(--teal); text-transform:uppercase; }
-  .wrap{ max-width:640px; margin:0 auto; padding:26px 18px 60px; }
+  html,body{
+    margin:0; min-height:100%;
+    font-family:var(--font-mono);
+    color:var(--text-primary);
+    letter-spacing:0.3px;
+    background:
+      radial-gradient(ellipse at 15% -10%, rgba(125,232,200,0.14), transparent 50%),
+      radial-gradient(ellipse at 110% 20%, rgba(200,162,255,0.12), transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(255,107,157,0.05), transparent 60%),
+      var(--bg-deep);
+  }
+  a{ color:var(--accent-primary); }
+  h2{ font-family:var(--font-display); font-size:12px; letter-spacing:1.8px; color:var(--accent-primary); text-transform:uppercase; margin:0 0 4px; font-weight:700; }
+  .wrap{ max-width:640px; margin:0 auto; padding:22px 18px 60px; }
 
-  input{ font-family:inherit; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); color:#eae7fb; border-radius:9px; padding:9px 12px; font-size:13px; flex:1; }
-  button{ font-family:'Orbitron', sans-serif; font-size:11px; letter-spacing:.5px; cursor:pointer; border:none; border-radius:9px; padding:9px 16px; color:#0a0915; font-weight:700;
-    background:linear-gradient(135deg, var(--teal), var(--purple)); }
-  button.secondary{ background:rgba(255,255,255,0.08); color:#eae7fb; border:1px solid var(--glass-border); }
-  button.small{ padding:6px 11px; font-size:10px; }
+  /* ---- Brand header ---- */
+  .brand-bar{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    background:linear-gradient(135deg, rgba(125,232,200,0.06), rgba(200,162,255,0.04));
+    border:1px solid var(--border-medium);
+    border-radius:var(--corner-radius);
+    padding:14px 18px;
+    margin-bottom:18px;
+  }
+  .brand{
+    font-family:var(--font-display); font-weight:900; font-size:14px; letter-spacing:2px;
+    color:var(--text-primary); display:flex; align-items:center; gap:12px;
+  }
+  .brand .dot{
+    width:10px; height:10px; border-radius:50%;
+    background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    box-shadow:var(--glow-primary), inset 0 0 8px rgba(125,232,200,0.4);
+    animation:pulse-dot 2s ease-in-out infinite;
+    flex:0 0 auto;
+  }
+  @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:0.65;}}
+  .brand small{
+    display:block; font-family:var(--font-mono); font-size:9px; color:var(--text-tertiary);
+    letter-spacing:2px; font-weight:500; margin-top:3px;
+  }
+
+  input{
+    font-family:inherit; background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.6));
+    border:1px solid var(--border-medium); color:var(--text-primary); border-radius:10px;
+    padding:10px 12px; font-size:13px; flex:1; transition:all .25s ease;
+  }
+  input:focus{ outline:none; border-color:var(--accent-primary); box-shadow:0 0 0 2px rgba(125,232,200,0.2), var(--glow-primary); }
+
+  button{
+    font-family:var(--font-display); font-size:11px; letter-spacing:1px; text-transform:uppercase;
+    cursor:pointer; border:none; border-radius:10px; padding:10px 18px; color:#0a0915; font-weight:700;
+    background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    transition:all .25s ease; box-shadow:0 4px 14px rgba(125,232,200,0.15);
+  }
+  button:hover{ transform:translateY(-1px); box-shadow:var(--glow-primary), 0 4px 14px rgba(125,232,200,0.2); }
+  button:active{ transform:translateY(0) scale(0.98); }
+  button.secondary{
+    background:transparent; color:var(--text-secondary); border:1.5px solid var(--border-medium); box-shadow:none;
+  }
+  button.secondary:hover{ color:var(--text-primary); border-color:var(--accent-primary); background:rgba(125,232,200,0.08); box-shadow:0 0 14px rgba(125,232,200,0.2); }
+  button.small{ padding:7px 12px; font-size:9.5px; }
+
+  /* ---- Login with Twitch — Text + Underline Sweep style ---- */
+  .twitch-login-btn{
+    background:transparent;
+    color:var(--accent-primary);
+    border:none;
+    box-shadow:none;
+    padding:8px 2px;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    position:relative;
+    font-family:var(--font-display);
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    transition:color .25s ease;
+  }
+  .twitch-login-btn svg{
+    width:20px; height:20px; flex:0 0 auto;
+    filter:drop-shadow(0 0 6px rgba(125,232,200,0.35));
+    transition:filter .25s ease;
+  }
+  .twitch-login-btn::after{
+    content:'';
+    position:absolute;
+    left:0; right:100%; bottom:2px;
+    height:2px;
+    background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    box-shadow:0 0 8px rgba(125,232,200,0.6);
+    transition:right .35s cubic-bezier(.4,0,.2,1);
+  }
+  .twitch-login-btn:hover{
+    color:var(--text-primary);
+    transform:none;
+    box-shadow:none;
+  }
+  .twitch-login-btn:hover svg{ filter:drop-shadow(0 0 10px rgba(125,232,200,0.6)); }
+  .twitch-login-btn:hover::after{ right:0; }
+  .twitch-login-btn:active{ transform:none; }
 
   .auth-bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
-  .auth-chip{ display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:20px; padding:5px 12px 5px 5px; font-size:12px; }
-  .auth-chip img{ width:26px; height:26px; border-radius:50%; object-fit:cover; }
-  .settings-toggle{ font-size:11px; color:#cfc9ec; cursor:pointer; letter-spacing:.5px; font-family:'Share Tech Mono', monospace; outline:none; list-style-position:outside; }
-  .settings-toggle::marker{ color:var(--teal); }
-  #twitchSettingsPanel{ padding:12px 18px; }
-  #twitchSettingsPanel .field{ display:flex; flex-direction:column; gap:5px; margin:12px 0 10px; }
-  #twitchSettingsPanel .hint{ margin-bottom:10px; }
-  #twitchSettingsPanel label{ font-size:10.5px; color:#b9b4d6; letter-spacing:.5px; text-transform:uppercase; }
-  code{ background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:5px; word-break:break-all; }
+  .auth-chip{
+    display:flex; align-items:center; gap:9px;
+    background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.6));
+    border:1px solid var(--border-medium); border-radius:22px; padding:5px 14px 5px 5px; font-size:12px;
+  }
+  .auth-chip img{ width:28px; height:28px; border-radius:50%; object-fit:cover; border:1.5px solid rgba(125,232,200,0.4); }
 
-  .input-with-toggle{ display:flex; gap:6px; }
+  /* ---- Settings details/summary ---- */
+  #twitchSettingsPanel{ padding:0; overflow:hidden; }
+  #twitchSettingsPanel summary{
+    list-style:none; cursor:pointer; padding:14px 18px;
+    font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary);
+    letter-spacing:.5px; display:flex; align-items:center; gap:8px;
+    transition:background .2s ease, color .2s ease;
+  }
+  #twitchSettingsPanel summary::-webkit-details-marker{ display:none; }
+  #twitchSettingsPanel summary::before{ content:'⚙'; color:var(--accent-primary); font-size:13px; }
+  #twitchSettingsPanel summary:hover{ background:rgba(125,232,200,0.06); color:var(--text-primary); }
+  #twitchSettingsPanel[open] summary{ border-bottom:1px solid var(--border-soft); }
+  #twitchSettingsPanel > .field,
+  #twitchSettingsPanel > .hint,
+  #twitchSettingsPanel > button{ margin-left:18px; margin-right:18px; }
+  #twitchSettingsPanel .field{ display:flex; flex-direction:column; gap:6px; margin-top:16px; margin-bottom:10px; }
+  #twitchSettingsPanel .hint{ margin-bottom:14px; font-size:11px; color:var(--text-tertiary); line-height:1.6; }
+  #twitchSettingsPanel label{ font-size:10.5px; color:var(--text-secondary); letter-spacing:1px; text-transform:uppercase; font-weight:600; }
+  #twitchSettingsPanel button{ margin-bottom:16px; }
+  code{ background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:6px; word-break:break-all; color:var(--accent-primary); font-family:var(--font-mono); }
+
+  .input-with-toggle{ display:flex; gap:8px; }
   .input-with-toggle input{ flex:1; }
-  .reveal-btn{ font-family:'Share Tech Mono', monospace; font-size:10.5px; letter-spacing:0; font-weight:400; padding:0 12px; background:rgba(255,255,255,0.08); color:#cfc9ec; border:1px solid var(--glass-border); border-radius:9px; white-space:nowrap; }
+  .reveal-btn{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:0; font-weight:400; padding:0 14px;
+    background:rgba(255,255,255,0.06); color:var(--text-secondary); border:1px solid var(--border-medium);
+    border-radius:9px; white-space:nowrap; box-shadow:none; text-transform:none;
+  }
+  .reveal-btn:hover{ color:var(--text-primary); border-color:var(--accent-primary); box-shadow:none; }
 
-  .panel{ background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; padding:18px 20px;
-    -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
-    box-shadow:0 8px 30px rgba(0,0,0,0.35); margin-bottom:16px; }
+  /* ---- HUD glass panel with corner brackets ---- */
+  .panel{
+    position:relative;
+    background:linear-gradient(135deg, rgba(30,25,50,0.55), rgba(20,17,32,0.6));
+    border:1px solid var(--border-medium);
+    border-radius:var(--corner-radius);
+    padding:20px 22px;
+    -webkit-backdrop-filter:blur(12px) saturate(140%);
+    backdrop-filter:blur(12px) saturate(140%);
+    box-shadow:var(--shadow-md);
+    margin-bottom:16px;
+  }
+  .panel::before, .panel::after{
+    content:''; position:absolute; width:14px; height:14px; pointer-events:none;
+    border-color:var(--accent-primary); opacity:.55;
+  }
+  .panel::before{ top:-1px; left:-1px; border-top:2px solid; border-left:2px solid; border-top-left-radius:4px; }
+  .panel::after{ bottom:-1px; right:-1px; border-bottom:2px solid; border-right:2px solid; border-bottom-right-radius:4px; }
 
   .profile-head{ display:flex; align-items:center; gap:14px; margin-bottom:6px; }
-  .avatar-lg{ width:56px; height:56px; border-radius:50%; background: linear-gradient(135deg, var(--teal), var(--purple)); display:flex; align-items:center; justify-content:center; font-family:'Orbitron',sans-serif; font-weight:900; color:#0a0915; font-size:20px; flex:0 0 auto; overflow:hidden; }
+  .avatar-lg{
+    width:56px; height:56px; border-radius:50%;
+    background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:900; color:#0a0915; font-size:20px;
+    flex:0 0 auto; overflow:hidden; box-shadow:var(--glow-primary);
+  }
   .avatar-lg img{ width:100%; height:100%; object-fit:cover; object-position:center; border-radius:50%; }
-  .profile-name{ font-family:'Orbitron', sans-serif; font-weight:700; font-size:18px; }
-  .profile-sub{ font-size:11px; color:#a9a3cb; }
+  .profile-name{ font-family:var(--font-display); font-weight:700; font-size:18px; letter-spacing:1px; }
+  .profile-sub{ font-size:11px; color:var(--text-secondary); margin-top:2px; }
 
-  .xp-row{ display:flex; justify-content:space-between; font-size:11.5px; color:#c9c6dd; margin-top:14px; margin-bottom:5px; }
-  .xp-track{ height:12px; border-radius:6px; overflow:hidden; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); }
-  .xp-fill{ height:100%; border-radius:6px; background: linear-gradient(90deg, var(--teal), var(--purple)); box-shadow:0 0 10px var(--teal); transition:width .8s ease; }
+  .xp-row{ display:flex; justify-content:space-between; font-size:11.5px; color:var(--text-secondary); margin-top:16px; margin-bottom:6px; letter-spacing:.5px; }
+  .xp-track{ height:12px; border-radius:6px; overflow:hidden; background:rgba(255,255,255,0.08); border:1px solid var(--border-soft); }
+  .xp-fill{ height:100%; border-radius:6px; background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); box-shadow:0 0 10px var(--accent-primary); transition:width .8s ease; }
 
   .toggle-group{ display:flex; gap:8px; }
-  .toggle-btn{ flex:1; padding:9px; border-radius:9px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:#cfc9ec; text-align:center; font-family:'Orbitron',sans-serif; font-size:11px; cursor:pointer; }
-  .toggle-btn.active{ background:linear-gradient(135deg, var(--teal), var(--purple)); color:#0a0915; font-weight:700; border-color:transparent; }
+  .toggle-btn{
+    flex:1; padding:10px; border-radius:var(--corner-radius); border:1.5px solid var(--border-medium);
+    background:linear-gradient(135deg, rgba(30,25,50,0.5), rgba(25,22,40,0.6));
+    color:var(--text-secondary); text-align:center; font-family:var(--font-display);
+    font-size:11px; letter-spacing:.5px; cursor:pointer; transition:all .25s ease;
+  }
+  .toggle-btn:hover{ border-color:rgba(125,232,200,0.4); transform:translateY(-1px); }
+  .toggle-btn.active{
+    background:linear-gradient(135deg, rgba(125,232,200,0.18), rgba(200,162,255,0.1));
+    color:var(--text-primary); font-weight:700; border-color:var(--accent-primary); box-shadow:var(--glow-primary);
+  }
 
   .reward-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:10px; margin-top:6px; }
-  .reward-item{ background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); border-radius:12px; padding:12px 10px; text-align:center; }
-  .reward-item .badge{ font-size:24px; filter:drop-shadow(0 0 6px var(--purple)); }
-  .reward-item .title{ font-family:'Orbitron',sans-serif; font-size:10.5px; color:var(--gold); margin-top:4px; }
-  .reward-item .lvl{ font-size:10px; color:#a9a3cb; }
+  .reward-item{
+    position:relative;
+    background:linear-gradient(135deg, rgba(30,25,50,0.5), rgba(25,22,40,0.6));
+    border:1.5px solid var(--border-medium); border-radius:12px; padding:14px 10px; text-align:center;
+    transition:all .25s ease;
+  }
+  .reward-item .badge{ font-size:24px; filter:drop-shadow(0 0 6px var(--accent-secondary)); }
+  .reward-item .title{ font-family:var(--font-display); font-size:10.5px; color:var(--gold); margin-top:6px; letter-spacing:.5px; }
+  .reward-item .lvl{ font-size:10px; color:var(--text-tertiary); margin-top:2px; }
   .reward-item.locked{ opacity:.35; }
-  .reward-item.ready{ border-color:rgba(125,232,200,.5); box-shadow:0 0 14px rgba(125,232,200,.15); }
-  .claim-btn{ margin-top:8px; padding:5px 14px; font-size:9.5px; }
+  .reward-item.ready{ border-color:rgba(125,232,200,.55); box-shadow:0 0 16px rgba(125,232,200,.18); }
+  .claim-btn{ margin-top:9px; padding:6px 14px; font-size:9.5px; }
 
-  .history-item{ display:flex; justify-content:space-between; font-size:12px; padding:6px 2px; border-bottom:1px solid rgba(255,255,255,0.06); }
-  .history-item .lvl{ color:var(--teal); font-family:'Orbitron',sans-serif; }
-  .history-item .date{ color:#8f89b3; font-size:10.5px; }
+  .history-item{ display:flex; justify-content:space-between; font-size:12px; padding:7px 2px; border-bottom:1px solid var(--border-soft); }
+  .history-item:last-child{ border-bottom:none; }
+  .history-item .lvl{ color:var(--accent-primary); font-family:var(--font-display); font-size:11px; }
+  .history-item .date{ color:var(--text-tertiary); font-size:10.5px; }
 
-  .empty{ color:#8f89b3; font-size:12.5px; padding:6px 2px; }
+  .empty{ color:var(--text-tertiary); font-size:12.5px; padding:6px 2px; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>MY LEVEL // FALLENONEART</h1>
+
+  <div class="brand-bar">
+    <div class="brand"><span class="dot"></span>FALLENONEART<small>MY LEVEL</small></div>
+  </div>
 
   <div class="auth-bar">
     <div id="twitchAuthBar"></div>
   </div>
 
   <details class="panel" id="twitchSettingsPanel">
-    <summary class="settings-toggle">⚙ Twitch app settings</summary>
+    <summary class="settings-toggle">Twitch app settings</summary>
     <div class="field">
       <label>Client ID</label>
       <div class="input-with-toggle">
@@ -117,6 +284,9 @@ try{ if ("BroadcastChannel" in window) bc = new BroadcastChannel(CHANNEL); }catc
 function load(key, fallback){ try{ const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }catch(e){ return fallback; } }
 function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
 function escapeHtml(str){ const d = document.createElement("div"); d.textContent = str ?? ""; return d.innerHTML; }
+
+/* Simple chat-bubble glyph for the Login with Twitch button */
+const TWITCH_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h16v10.2a1.8 1.8 0 0 1-1.8 1.8H10l-3.6 3.6v-3.6H5.8A1.8 1.8 0 0 1 4 14.7V4.5z"/><line x1="9" y1="8.5" x2="9" y2="12"/><line x1="14.5" y1="8.5" x2="14.5" y2="12"/></svg>`;
 
 const params = new URLSearchParams(window.location.search);
 const storedTwitchToken = load(LS_TWITCH_TOKEN, null);
@@ -206,7 +376,7 @@ function renderAuthBar(){
     bar.innerHTML = `<div class="auth-chip"><img src="${escapeHtml(t.avatar)}" alt=""><span>Logged in as <b>${escapeHtml(t.displayName)}</b></span><button class="secondary small" id="twitchLogoutBtn">Log out</button></div>`;
     document.getElementById("twitchLogoutBtn").onclick = logoutTwitch;
   } else {
-    bar.innerHTML = `<button id="twitchLoginBtn">Login with Twitch</button>`;
+    bar.innerHTML = `<button id="twitchLoginBtn" class="twitch-login-btn">${TWITCH_ICON_SVG}<span>Login with Twitch</span></button>`;
     document.getElementById("twitchLoginBtn").onclick = startTwitchLogin;
   }
 }
