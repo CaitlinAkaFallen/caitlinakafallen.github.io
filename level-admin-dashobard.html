@@ -1215,8 +1215,8 @@
       <div class="section-divider"><h3>Streamer.bot Wiring (XP events)</h3></div>
       <div class="field full-row hint">
         The card computes XP itself from the rates on the Levels &amp; Rewards tab, so your Streamer.bot actions only need to broadcast the <b>raw</b> event via <code>CPH.WebsocketBroadcastJson()</code> under a <code>Custom</code> event:
-        <code>{eventName, user, avatar, quantity}</code> — where <code>eventName</code> is one of <code>Sub / ReSub / GiftSub / Cheer / Donation / Raid / ChannelPointRedeem</code>, and <code>quantity</code> is bits cheered, subs gifted, raiders, or dollars (omit/1 for flat events like Sub or Channel Point Redeem).<br><br>
-        If an action ever broadcasts a fully pre-computed payload instead (<code>xpGained</code>/<code>totalXp</code>/etc. already set), the card detects that and uses it as-is.<br><br>
+        <code>{source:"levelup", eventName, user, avatar, quantity}</code> — where <code>eventName</code> is one of <code>Sub / ReSub / GiftSub / Cheer / Donation / Raid / ChannelPointRedeem</code>, and <code>quantity</code> is bits cheered, subs gifted, raiders, or dollars (omit/1 for flat events like Sub or Channel Point Redeem). The <code>source:"levelup"</code> field is required — both this dashboard and the card overlay only listen for that tag, so unrelated Streamer.bot broadcasts (like other custom actions) are never mistaken for a level event.<br><br>
+        If an action ever broadcasts a fully pre-computed payload instead (<code>xpGained</code>/<code>totalXp</code>/etc. already set), the card detects that and uses it as-is — just keep the <code>source:"levelup"</code> tag on it too.<br><br>
         For real grants to persist across Streamer.bot restarts too, add a small action <code>LVL_GrantXP</code> that reads <code>user</code>/<code>eventName</code>/<code>quantity</code> via <code>CPH.TryGetArg</code>, stores running totals in a global var like <code>lvl_xp_{user}</code> (guard first read with a <code>GetGlobalVar</code> null-check), then re-broadcasts the raw event. This mirrors your <code>sw_inv_</code> / <code>wheel_inv_</code> pattern.
       </div>
 
@@ -1903,11 +1903,17 @@ try{
   };
   sbWs.onclose = () => { sbStatusUpdate("disconnected", false); };
   sbWs.onerror = () => { sbStatusUpdate("unreachable", false); };
+  // FIX: this dashboard has its own separate Streamer.bot connection from
+  // the card overlay, and had the same bug — it applied ANY broadcast that
+  // merely had an eventName field (e.g. iPhoneCallTrigger), writing it into
+  // LS_USERS and the Activity feed as if it were a real level event. Only
+  // apply payloads explicitly tagged source:"levelup" by the C# LevelUp
+  // action, matching the fix on the card overlay.
   sbWs.onmessage = (event) => {
     try{
       const response = JSON.parse(event.data);
       if (!response) return;
-      if (response.data && response.data.eventName !== undefined) applyLiveEvent(response.data);
+      if (response.data && response.data.source === "levelup") applyLiveEvent(response.data);
     }catch(e){ /* ignore malformed/unrelated messages */ }
   };
 }catch(e){ sbStatusUpdate("unreachable", false); }
