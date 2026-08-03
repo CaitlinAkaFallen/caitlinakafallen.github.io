@@ -163,7 +163,7 @@
   .save-btn:hover::after{ right:0; }
   .save-btn:active{ transform:none; }
 
-  .auth-bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .auth-bar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
   .auth-chip{
     display:flex; align-items:center; gap:9px;
     background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.6));
@@ -171,10 +171,22 @@
   }
   .auth-chip img{ width:28px; height:28px; border-radius:50%; object-fit:cover; border:1.5px solid rgba(125,232,200,0.4); }
 
-  /* ---- Settings details/summary ---- */
-  #twitchSettingsPanel{ padding:0; overflow:hidden; }
+  /* ---- Settings — a quieter footer-style panel, de-emphasized vs. content ---- */
+  .settings-block{ margin-top:22px; }
+  .settings-block .divider-label{
+    display:flex; align-items:center; gap:10px; margin:0 0 10px; font-size:9.5px;
+    letter-spacing:2px; text-transform:uppercase; color:var(--text-tertiary); font-family:var(--font-display);
+  }
+  .settings-block .divider-label::before, .settings-block .divider-label::after{
+    content:''; flex:1; height:1px; background:var(--border-soft);
+  }
+  #twitchSettingsPanel{
+    padding:0; overflow:hidden; border-radius:var(--corner-radius);
+    background:rgba(20,17,32,0.4); border:1px solid var(--border-soft); box-shadow:none;
+  }
+  #twitchSettingsPanel::before, #twitchSettingsPanel::after{ content:none; }
   #twitchSettingsPanel summary{
-    list-style:none; cursor:pointer; padding:14px 18px;
+    list-style:none; cursor:pointer; padding:13px 18px;
     font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary);
     letter-spacing:.5px; display:flex; align-items:center; gap:8px;
     transition:background .2s ease, color .2s ease;
@@ -269,24 +281,30 @@
     <div id="twitchAuthBar"></div>
   </div>
 
-  <details class="panel" id="twitchSettingsPanel">
-    <summary class="settings-toggle">Twitch app settings</summary>
-    <div class="field">
-      <label>Client ID</label>
-      <div class="input-with-toggle">
-        <input type="password" id="twitchClientId" placeholder="Your Twitch application's Client ID">
-        <button type="button" class="reveal-btn" id="toggleClientIdVisibility">Show</button>
-      </div>
-    </div>
-    <div class="hint">
-      Register a free app at <code>dev.twitch.tv/console/apps</code> and set its OAuth Redirect URL to exactly:<br>
-      <code id="redirectUriHint"></code><br>
-      Category: "Website Integration". No client secret is needed — this uses Twitch's browser-only Implicit Grant flow, so the token never leaves this page.
-    </div>
-    <button id="saveTwitchCfgBtn" class="save-btn">Save</button>
-  </details>
-
+  <!-- Main content now leads: profile / XP / rewards / history -->
   <div id="content"></div>
+
+  <!-- Settings tucked below the content it configures, visually quieter -->
+  <div class="settings-block">
+    <div class="divider-label">Setup</div>
+    <details id="twitchSettingsPanel">
+      <summary class="settings-toggle">Twitch app settings</summary>
+      <div class="field">
+        <label>Client ID</label>
+        <div class="input-with-toggle">
+          <input type="password" id="twitchClientId" placeholder="Your Twitch application's Client ID">
+          <button type="button" class="reveal-btn" id="toggleClientIdVisibility">Show</button>
+        </div>
+      </div>
+      <div class="hint">
+        Register a free app at <code>dev.twitch.tv/console/apps</code> and set its OAuth Redirect URL to exactly:<br>
+        <code id="redirectUriHint"></code><br>
+        Category: "Website Integration". No client secret is needed — this uses Twitch's browser-only Implicit Grant flow, so the token never leaves this page.
+      </div>
+      <button id="saveTwitchCfgBtn" class="save-btn">Save</button>
+    </details>
+  </div>
+
 </div>
 
 <script>
