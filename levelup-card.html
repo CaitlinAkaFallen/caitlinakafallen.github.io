@@ -321,7 +321,12 @@ ws.onmessage = (event) => {
   if (response && response.data) enqueue(response.data);
 };
 ws.onerror = () => {}; ws.onclose = () => {};
-setTimeout(() => { if (!connectedForReal) startDemo(); }, 2500);
+// Demo/sample cards only run when explicitly requested via ?demo=1 in the
+// browser source URL. They no longer auto-start just because the
+// Streamer.bot WebSocket hasn't connected yet within 2.5s.
+if (params.get("demo") === "1") {
+  setTimeout(() => { if (!connectedForReal) startDemo(); }, 2500);
+}
 
 /* ============================================================
    QUEUE + RENDER
@@ -433,7 +438,7 @@ function spawnSparks(card){
   }
 }
 
-/* ---------- demo loop when no SB connection found ---------- */
+/* ---------- demo loop (opt-in only via ?demo=1) ---------- */
 let demoTimer = null;
 function startDemo(){
   if (demoTimer) return;
