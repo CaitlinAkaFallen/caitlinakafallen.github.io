@@ -312,22 +312,34 @@ window.addEventListener("storage", (e) => {
 /* ============================================================
    STREAMER.BOT WEBSOCKET (live Twitch events)
    ============================================================ */
-const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+let ws = null;
 let connectedForReal = false;
-ws.onopen = () => { ws.send(JSON.stringify({ request:"Subscribe", events:{ general:["Custom"] }, id:"LevelUp" })); };
-// FIX: Streamer.bot's WebSocketBroadcastJson is global — every action that
-// calls it (LevelUp, iPhoneCallTrigger, anything else) lands on this same
-// socket. Without a check here, any unrelated broadcast got rendered as a
-// fake "level up" card with +0 XP and stale/garbage numbers. Only enqueue
-// payloads explicitly tagged source:"levelup" by the C# LevelUp action.
-ws.onmessage = (event) => {
-  const response = JSON.parse(event.data);
-  if (response && response.data && response.data.source === "levelup") {
-    connectedForReal = true; stopDemo();
-    enqueue(response.data);
-  }
-};
-ws.onerror = () => {}; ws.onclose = () => {};
+// FIX: OBS browser sources never auto-refresh, so if the WebSocket to
+// Streamer.bot ever drops or fails on first load (Streamer.bot not up yet,
+// a restart, the PC waking from sleep, etc.), the card used to die silently
+// forever — no error handling, no retry. This wraps the connection in a
+// function that reconnects with a short delay any time it closes or errors,
+// so a dropped connection recovers on its own instead of needing a manual
+// "Refresh" in OBS.
+function connectStreamerBot(){
+  ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+  ws.onopen = () => { ws.send(JSON.stringify({ request:"Subscribe", events:{ general:["Custom"] }, id:"LevelUp" })); };
+  // Streamer.bot's WebSocketBroadcastJson is global — every action that
+  // calls it (LevelUp, iPhoneCallTrigger, anything else) lands on this same
+  // socket. Without a check here, any unrelated broadcast got rendered as a
+  // fake "level up" card with +0 XP and stale/garbage numbers. Only enqueue
+  // payloads explicitly tagged source:"levelup" by the C# LevelUp action.
+  ws.onmessage = (event) => {
+    const response = JSON.parse(event.data);
+    if (response && response.data && response.data.source === "levelup") {
+      connectedForReal = true; stopDemo();
+      enqueue(response.data);
+    }
+  };
+  ws.onerror = () => {};
+  ws.onclose = () => { setTimeout(connectStreamerBot, 3000); };
+}
+connectStreamerBot();
 // Demo/sample cards only run when explicitly requested via ?demo=1 in the
 // browser source URL. They no longer auto-start just because the
 // Streamer.bot WebSocket hasn't connected yet within 2.5s.
