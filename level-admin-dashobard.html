@@ -571,6 +571,7 @@
       .activity-levelup{ color:#ffd27d; font-family:var(--font-display); font-size:10px; letter-spacing:.5px; margin-left:6px; }
       .activity-redeem{ color:var(--accent-secondary); font-weight:600; }
       .activity-redeem-cost{ color:var(--text-tertiary); font-size:10px; }
+      .activity-refund{ color:#ffd27d; font-weight:600; }
 
       .user-card{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; background:var(--bg-panel); margin-bottom:6px; }
       .user-card .avatar{ width:32px; height:32px; border-radius:50%; flex:0 0 auto; background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:900; color:#0a0915; font-size:13px; overflow:hidden; }
@@ -940,21 +941,29 @@
           <label class="switch"><input type="checkbox" id="chatEnabledSwitch"><span class="track"></span></label>
         </div>
         <div class="toggle-row">
-          <div class="row-labels"><div class="title">$redeem</div><div class="desc">Claims the oldest unlocked reward.</div></div>
+          <div class="row-labels"><div class="title">$redeem</div><div class="desc">Uses the oldest unlocked reward and announces it in chat.</div></div>
           <label class="switch"><input type="checkbox" id="redeemCmdSwitch"><span class="track"></span></label>
         </div>
         <div class="toggle-row">
           <div class="row-labels"><div class="title">$claim</div><div class="desc">Alias for $redeem — enable either or both.</div></div>
           <label class="switch"><input type="checkbox" id="claimCmdSwitch"><span class="track"></span></label>
         </div>
+        <div class="toggle-row">
+          <div class="row-labels"><div class="title">$refund {username}</div><div class="desc">Mod/broadcaster-only. Restocks that viewer's most recently claimed reward so they can $redeem it again later.</div></div>
+          <label class="switch"><input type="checkbox" id="refundCmdSwitch"><span class="track"></span></label>
+        </div>
       </div>
 
       <div class="section-divider"><h3>Reply Messages</h3><div class="sub">Placeholders: {user} {level} {reward} {badge}</div></div>
-      <div class="field"><label for="msgSuccess">Claim Success Message</label><input type="text" id="msgSuccess"></div>
-      <div class="field"><label for="msgAlready">Nothing New To Claim Message</label><input type="text" id="msgAlready"></div>
+      <div class="field"><label for="msgSuccess">Redeem Success Message</label><input type="text" id="msgSuccess"></div>
+      <div class="field"><label for="msgAlready">Nothing New To Redeem Message</label><input type="text" id="msgAlready"></div>
       <div class="field"><label for="msgNone">No Rewards Yet Message</label><input type="text" id="msgNone"></div>
+      <div class="field"><label for="msgRefundSuccess">$refund Success Message</label><input type="text" id="msgRefundSuccess"></div>
+      <div class="field"><label for="msgRefundNone">$refund Nothing To Refund Message</label><input type="text" id="msgRefundNone"></div>
+      <div class="field"><label for="msgRefundDenied">$refund Not Allowed Message</label><input type="text" id="msgRefundDenied"></div>
       <div class="action-bar"><button class="primary-btn" id="saveChatCfgBtn">Save Chat Settings</button></div>
-      <div class="hint full-row">When a viewer types <code>$redeem</code> or <code>$claim</code>, this dashboard checks their unlocked-but-unclaimed rewards, marks the oldest one claimed, and replies in chat via the bot connected on the Connection tab. Viewers can also claim from a button on their Level Up dashboard.</div>
+      <div class="hint full-row">When a viewer types <code>$redeem</code> or <code>$claim</code>, this dashboard checks their unlocked-but-unclaimed rewards, marks the oldest one claimed, and replies in chat via the bot connected on the Connection tab. Viewers can also claim from a button on their Level Up dashboard.<br><br>
+      <code>$refund {username}</code> (mods/broadcaster only) undoes that viewer's most recent claim — the reward goes back to unclaimed so they can save it and <code>$redeem</code> it again another time. Example: <code>$refund fallenoneart</code>.</div>
     </div>
 
     <div class="panel" id="panel-testing">
@@ -1223,9 +1232,10 @@
         For real grants to persist across Streamer.bot restarts too, add a small action <code>LVL_GrantXP</code> that reads <code>user</code>/<code>eventName</code>/<code>quantity</code> via <code>CPH.TryGetArg</code>, stores running totals in a global var like <code>lvl_xp_{user}</code> (guard first read with a <code>GetGlobalVar</code> null-check), then re-broadcasts the raw event. This mirrors your <code>sw_inv_</code> / <code>wheel_inv_</code> pattern.
       </div>
 
-      <div class="section-divider"><h3>Chat Commands ($redeem / $claim)</h3></div>
+      <div class="section-divider"><h3>Chat Commands ($redeem / $claim / $refund)</h3></div>
       <div class="field full-row hint">
-        These no longer go through Streamer.bot. Connect your bot account's Twitch IRC credentials on the <b>Connection</b> tab, and this dashboard listens for <code>$redeem</code>/<code>$claim</code> and posts the reply itself. Keep this tab open on your streaming PC so it stays connected during stream.
+        These no longer go through Streamer.bot. Connect your bot account's Twitch IRC credentials on the <b>Connection</b> tab, and this dashboard listens for <code>$redeem</code>/<code>$claim</code>/<code>$refund</code> and posts the reply itself. Keep this tab open on your streaming PC so it stays connected during stream.<br><br>
+        <code>$refund {username}</code> is restricted to the broadcaster and moderators — the bot reads the sender's IRC <code>badges</code> tag (requires the <code>twitch.tv/tags</code> capability, already requested on connect) to check for <code>broadcaster</code> or <code>moderator</code> before allowing it.
       </div>
     </div>
 
@@ -1257,7 +1267,8 @@ const EVENT_META = {
   Raid:               { label:"Raid",                 unit:"per raider" },
   ChannelPointRedeem: { label:"Channel Point Redeem",  unit:"per redeem" },
   Claim:              { label:"$claim used" },
-  Redeem:             { label:"$redeem used" }
+  Redeem:             { label:"$redeem used" },
+  Refund:             { label:"$refund used" }
 };
 function defaultXpRates(){
   return {
@@ -1320,7 +1331,7 @@ function renderXpRates(){
   const body = document.getElementById("xpRatesBody");
   body.innerHTML = "";
   Object.keys(EVENT_META).forEach(key => {
-    if (key === "Claim" || key === "Redeem") return;
+    if (key === "Claim" || key === "Redeem" || key === "Refund") return;
     const meta = EVENT_META[key];
     const r = rates[key] || { amount:0, perUnit:false };
     const tr = document.createElement("tr");
@@ -1573,10 +1584,14 @@ function defaultChatCfg(){
     enabled: true,
     redeemEnabled: true,
     claimEnabled: true,
+    refundEnabled: true,
     messages: {
-      success: "🎉 {user} claimed the {reward} reward for reaching Level {level}! {badge}",
-      already: "{user}, nothing new to claim right now — keep leveling up!",
-      none: "{user}, you haven't unlocked any rewards yet — keep leveling up!"
+      success: "🎉 {user} used the {reward} reward for reaching Level {level}! {badge}",
+      already: "{user}, nothing new to redeem right now — keep leveling up!",
+      none: "{user}, you haven't unlocked any rewards yet — keep leveling up!",
+      refundSuccess: "↩️ Refunded {user}'s {reward} reward (Level {level}) — it's unclaimed again and ready to $redeem later.",
+      refundNone: "{user} has nothing claimed to refund.",
+      refundDenied: "Only the broadcaster or mods can use $refund."
     }
   };
 }
@@ -1589,16 +1604,21 @@ function refreshChatCfgInputs(){
   document.getElementById("chatEnabledSwitch").checked = !!cfg.enabled;
   document.getElementById("redeemCmdSwitch").checked = !!cfg.redeemEnabled;
   document.getElementById("claimCmdSwitch").checked = !!cfg.claimEnabled;
+  document.getElementById("refundCmdSwitch").checked = !!cfg.refundEnabled;
   document.getElementById("msgSuccess").value = cfg.messages.success;
   document.getElementById("msgAlready").value = cfg.messages.already;
   document.getElementById("msgNone").value = cfg.messages.none;
+  document.getElementById("msgRefundSuccess").value = cfg.messages.refundSuccess;
+  document.getElementById("msgRefundNone").value = cfg.messages.refundNone;
+  document.getElementById("msgRefundDenied").value = cfg.messages.refundDenied;
 }
-["chatEnabledSwitch","redeemCmdSwitch","claimCmdSwitch"].forEach(id => {
+["chatEnabledSwitch","redeemCmdSwitch","claimCmdSwitch","refundCmdSwitch"].forEach(id => {
   document.getElementById(id).onchange = () => {
     const cfg = loadChatCfg();
     cfg.enabled = document.getElementById("chatEnabledSwitch").checked;
     cfg.redeemEnabled = document.getElementById("redeemCmdSwitch").checked;
     cfg.claimEnabled = document.getElementById("claimCmdSwitch").checked;
+    cfg.refundEnabled = document.getElementById("refundCmdSwitch").checked;
     save(LS_CHAT_CFG, cfg);
   };
 });
@@ -1607,6 +1627,9 @@ document.getElementById("saveChatCfgBtn").onclick = () => {
   cfg.messages.success = document.getElementById("msgSuccess").value || defaultChatCfg().messages.success;
   cfg.messages.already = document.getElementById("msgAlready").value || defaultChatCfg().messages.already;
   cfg.messages.none = document.getElementById("msgNone").value || defaultChatCfg().messages.none;
+  cfg.messages.refundSuccess = document.getElementById("msgRefundSuccess").value || defaultChatCfg().messages.refundSuccess;
+  cfg.messages.refundNone = document.getElementById("msgRefundNone").value || defaultChatCfg().messages.refundNone;
+  cfg.messages.refundDenied = document.getElementById("msgRefundDenied").value || defaultChatCfg().messages.refundDenied;
   save(LS_CHAT_CFG, cfg);
   showToast("Chat settings saved");
 };
@@ -1642,6 +1665,37 @@ function processClaim(username){
   return { responseText, claimed };
 }
 
+/**
+ * $refund {username} — mod/broadcaster only. Undoes the most recently
+ * claimed reward for the target user: pops the last entry off their
+ * claimedLevels array so the reward is "unclaimed" again (it stays in
+ * unlockedLevels, so the viewer can $redeem it again another time).
+ * Nothing is removed from unlockedLevels — this only restocks the claim,
+ * it never revokes XP or the level itself.
+ */
+function processRefund(targetUsername){
+  const chatCfg = loadChatCfg();
+  const key = normUser(targetUsername);
+  const users = load(LS_USERS, {});
+  const rec = users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], history:[] };
+  rec.unlockedLevels = rec.unlockedLevels || [];
+  rec.claimedLevels = rec.claimedLevels || [];
+  let responseText, refunded = false;
+  if (rec.claimedLevels.length > 0){
+    const refundedLevel = rec.claimedLevels.pop();
+    users[key] = rec;
+    save(LS_USERS, users);
+    bc && bc.postMessage({ type:"user_update", user:key, data:rec });
+    const reward = load(LS_REWARDS, []).find(r => Number(r.level) === Number(refundedLevel)) || {};
+    responseText = fillTemplate(chatCfg.messages.refundSuccess, { user:targetUsername, level:refundedLevel, reward:reward.title||"", badge:reward.badge||"" });
+    refunded = true;
+  } else {
+    responseText = fillTemplate(chatCfg.messages.refundNone, { user:targetUsername, level:rec.level, reward:"", badge:"" });
+  }
+  renderUsers();
+  return { responseText, refunded };
+}
+
 function loadBotCfg(){ return load(LS_BOT_CFG, { streamAccount:"", botAccount:"", botToken:"" }); }
 function refreshBotCfgInputs(){
   const cfg = loadBotCfg();
@@ -1675,6 +1729,30 @@ function ircStatusUpdate(text, ok){
   if (led) led.className = "status-led " + (ok ? "on" : "off");
   if (bigText) bigText.innerHTML = ok ? ("Connected — <strong>" + escapeHtml(text) + "</strong>") : escapeHtml(text);
 }
+
+/**
+ * Parses IRC tags (the `@key=value;key=value ...` prefix enabled by the
+ * `twitch.tv/tags` CAP request). Returns {} if the line has no tag prefix.
+ */
+function parseIrcTags(line){
+  if (!line.startsWith("@")) return {};
+  const spaceIdx = line.indexOf(" ");
+  const tagBlob = spaceIdx === -1 ? line.slice(1) : line.slice(1, spaceIdx);
+  const tags = {};
+  tagBlob.split(";").forEach(pair => {
+    const eq = pair.indexOf("=");
+    if (eq === -1) return;
+    tags[pair.slice(0, eq)] = pair.slice(eq + 1);
+  });
+  return tags;
+}
+
+/** True if the IRC tags on a message show broadcaster or moderator badges. */
+function isModOrBroadcaster(tags){
+  const badges = (tags && tags.badges) || "";
+  return /(^|,)broadcaster\//.test(badges) || /(^|,)moderator\//.test(badges);
+}
+
 function connectIrcBot(){
   const cfg = loadBotCfg();
   if (!cfg.streamAccount || !cfg.botAccount || !cfg.botToken){
@@ -1698,7 +1776,8 @@ function connectIrcBot(){
     ircWs.onmessage = (evt) => {
       const lines = String(evt.data).split("\r\n").filter(Boolean);
       lines.forEach(line => {
-        if (line.startsWith("PING")){ ircWs.send(line.replace("PING", "PONG")); return; }
+        const pingSrc = line.startsWith("@") ? line.slice(line.indexOf(" ") + 1) : line;
+        if (pingSrc.startsWith("PING")){ ircWs.send(pingSrc.replace("PING", "PONG")); return; }
         if (/ 001 /.test(line) || /Welcome, GLHF/i.test(line)){
           ircConnected = true;
           ircStatusUpdate("connected as " + cfg.botAccount, true);
@@ -1707,8 +1786,9 @@ function connectIrcBot(){
           ircStatusUpdate("auth failed — check bot token", false);
         }
         if (line.includes("PRIVMSG")){
+          const tags = parseIrcTags(line);
           const match = line.match(/:([^!]+)![^ ]+ PRIVMSG #[^ ]+ :(.*)$/);
-          if (match){ handleIrcChatMessage(match[1], match[2].trim()); }
+          if (match){ handleIrcChatMessage(match[1], match[2].trim(), tags); }
         }
       });
     };
@@ -1724,17 +1804,37 @@ function disconnectIrcBot(){
 document.getElementById("connectBotBtn").onclick = connectIrcBot;
 document.getElementById("disconnectBotBtn").onclick = disconnectIrcBot;
 
-function handleIrcChatMessage(user, text){
+function handleIrcChatMessage(user, text, tags){
   const chatCfg = loadChatCfg();
   if (!chatCfg.enabled) return;
-  const lower = text.toLowerCase();
+  const trimmed = text.trim();
+  const lower = trimmed.toLowerCase();
+
   const isRedeem = chatCfg.redeemEnabled && lower === "$redeem";
   const isClaim = chatCfg.claimEnabled && lower === "$claim";
-  if (!isRedeem && !isClaim) return;
-  const { responseText } = processClaim(user);
-  sendIrcMessage(responseText);
-  logActivity({ eventName: isClaim ? "Claim" : "Redeem", user, xpGained:0, leveledUp:false, level:(load(LS_USERS,{})[normUser(user)]||{}).level||1 });
-  pulseLiveDot();
+  if (isRedeem || isClaim){
+    const { responseText } = processClaim(user);
+    sendIrcMessage(responseText);
+    logActivity({ eventName: isClaim ? "Claim" : "Redeem", user, xpGained:0, leveledUp:false, level:(load(LS_USERS,{})[normUser(user)]||{}).level||1 });
+    pulseLiveDot();
+    return;
+  }
+
+  if (chatCfg.refundEnabled && lower.startsWith("$refund")){
+    const parts = trimmed.split(/\s+/);
+    const targetUser = (parts[1] || "").replace(/^@/, "");
+    if (!targetUser){ return; } // needs $refund {username}
+    if (!isModOrBroadcaster(tags)){
+      sendIrcMessage(fillTemplate(chatCfg.messages.refundDenied, { user, level:"", reward:"", badge:"" }));
+      logActivity({ eventName:"Refund", user:targetUser, xpGained:0, leveledUp:false, level:(load(LS_USERS,{})[normUser(targetUser)]||{}).level||1, rewardName:"denied — requested by " + user });
+      pulseLiveDot();
+      return;
+    }
+    const { responseText } = processRefund(targetUser);
+    sendIrcMessage(responseText);
+    logActivity({ eventName:"Refund", user:targetUser, xpGained:0, leveledUp:false, level:(load(LS_USERS,{})[normUser(targetUser)]||{}).level||1 });
+    pulseLiveDot();
+  }
 }
 function sendIrcMessage(text){
   if (!ircWs || ircWs.readyState !== WebSocket.OPEN || !ircConnected) return;
@@ -1890,12 +1990,16 @@ function logActivity(data){
   const redeemPart = (data.eventName === "ChannelPointRedeem" && data.rewardName)
     ? ` — <span class="activity-redeem">${escapeHtml(data.rewardName)}</span>${data.rewardCost ? `<span class="activity-redeem-cost"> (${data.rewardCost} pts)</span>` : ""}`
     : "";
+  // Refund events reuse rewardName as a free-text note (e.g. "denied — requested by X").
+  const refundPart = (data.eventName === "Refund" && data.rewardName)
+    ? ` — <span class="activity-refund">${escapeHtml(data.rewardName)}</span>`
+    : "";
   const avatarHtml = data.avatar
     ? `<img class="activity-avatar" src="${escapeHtml(data.avatar)}" alt="" onerror="this.remove()">`
     : "";
   const entry = document.createElement("div");
   entry.className = "activity-item";
-  entry.innerHTML = `${avatarHtml}<span class="activity-time">${new Date().toLocaleTimeString()}</span><b>${escapeHtml(data.user || "viewer")}</b> — ${escapeHtml(meta.label)}${redeemPart}${xpPart}${data.leveledUp ? `<span class="activity-levelup">LEVEL UP → ${data.level}</span>` : ""}`;
+  entry.innerHTML = `${avatarHtml}<span class="activity-time">${new Date().toLocaleTimeString()}</span><b>${escapeHtml(data.user || "viewer")}</b> — ${escapeHtml(meta.label)}${redeemPart}${refundPart}${xpPart}${data.leveledUp ? `<span class="activity-levelup">LEVEL UP → ${data.level}</span>` : ""}`;
   list.prepend(entry);
   while (list.children.length > 20) list.removeChild(list.lastChild);
 }
