@@ -941,7 +941,7 @@
           <label class="switch"><input type="checkbox" id="chatEnabledSwitch"><span class="track"></span></label>
         </div>
         <div class="toggle-row">
-          <div class="row-labels"><div class="title">$redeem</div><div class="desc">Uses the oldest unlocked reward (or a matching reward name) and announces it in chat.</div></div>
+          <div class="row-labels"><div class="title">$redeem</div><div class="desc">Uses the oldest unlocked reward and announces it in chat.</div></div>
           <label class="switch"><input type="checkbox" id="redeemCmdSwitch"><span class="track"></span></label>
         </div>
         <div class="toggle-row">
@@ -962,7 +962,7 @@
       <div class="field"><label for="msgRefundNone">$refund Nothing To Refund Message</label><input type="text" id="msgRefundNone"></div>
       <div class="field"><label for="msgRefundDenied">$refund Not Allowed Message</label><input type="text" id="msgRefundDenied"></div>
       <div class="action-bar"><button class="primary-btn" id="saveChatCfgBtn">Save Chat Settings</button></div>
-      <div class="hint full-row">When a viewer types <code>$redeem</code> or <code>$claim</code> (optionally followed by a reward name, e.g. <code>$redeem No Swearing</code>), this dashboard checks their unlocked-but-unclaimed rewards, marks the matching one (or the oldest one if no name is given / no match found) as claimed, and replies in chat via the bot connected on the Connection tab. Viewers can also claim from a button on their Level Up dashboard.<br><br>
+      <div class="hint full-row">When a viewer types <code>$redeem</code> or <code>$claim</code>, this dashboard checks their unlocked-but-unclaimed rewards, marks the oldest one claimed, and replies in chat via the bot connected on the Connection tab. Viewers can also claim from a button on their Level Up dashboard.<br><br>
       <code>$refund {username}</code> (mods/broadcaster only) undoes that viewer's most recent claim — the reward goes back to unclaimed so they can save it and <code>$redeem</code> it again another time. Example: <code>$refund fallenoneart</code>.</div>
     </div>
 
@@ -1639,46 +1639,22 @@ function fillTemplate(tpl, vars){
   return (tpl || "").replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined && vars[k] !== null ? vars[k] : ""));
 }
 
-/**
- * FIX: previously this required a bare "$redeem"/"$claim" with no arguments —
- * "$redeem No Swearing" fell through silently because the caller only ever
- * matched the exact string "$redeem". Now handleIrcChatMessage parses an
- * optional reward-name argument and passes it here. If a name is given and
- * it matches (case-insensitive substring) an unlocked-but-unclaimed reward's
- * title, that one is claimed; otherwise falls back to the oldest pending one,
- * same as before.
- */
-function processClaim(username, rewardQuery){
+function processClaim(username){
   const chatCfg = loadChatCfg();
   const key = normUser(username);
   const users = load(LS_USERS, {});
   const rec = users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], history:[] };
   rec.unlockedLevels = rec.unlockedLevels || [];
   rec.claimedLevels = rec.claimedLevels || [];
-
-  const pendingLevels = rec.unlockedLevels.filter(l => !rec.claimedLevels.includes(l)).sort((a,b) => a-b);
-  const allRewards = load(LS_REWARDS, []);
-
-  let targetLevel;
-  if (rewardQuery){
-    const q = rewardQuery.trim().toLowerCase();
-    if (q){
-      targetLevel = pendingLevels.find(l => {
-        const r = allRewards.find(rw => Number(rw.level) === Number(l));
-        return r && r.title && r.title.toLowerCase().includes(q);
-      });
-    }
-  }
-  if (targetLevel === undefined) targetLevel = pendingLevels[0];
-
+  const pending = rec.unlockedLevels.filter(l => !rec.claimedLevels.includes(l)).sort((a,b) => a-b)[0];
   let responseText, claimed = false;
-  if (targetLevel !== undefined){
-    rec.claimedLevels.push(targetLevel);
+  if (pending !== undefined){
+    rec.claimedLevels.push(pending);
     users[key] = rec;
     save(LS_USERS, users);
     bc && bc.postMessage({ type:"user_update", user:key, data:rec });
-    const reward = allRewards.find(r => Number(r.level) === Number(targetLevel)) || {};
-    responseText = fillTemplate(chatCfg.messages.success, { user:username, level:targetLevel, reward:reward.title||"", badge:reward.badge||"" });
+    const reward = load(LS_REWARDS, []).find(r => Number(r.level) === Number(pending)) || {};
+    responseText = fillTemplate(chatCfg.messages.success, { user:username, level:pending, reward:reward.title||"", badge:reward.badge||"" });
     claimed = true;
   } else if (rec.unlockedLevels.length > 0){
     responseText = fillTemplate(chatCfg.messages.already, { user:username, level:rec.level, reward:"", badge:"" });
@@ -1828,34 +1804,22 @@ function disconnectIrcBot(){
 document.getElementById("connectBotBtn").onclick = connectIrcBot;
 document.getElementById("disconnectBotBtn").onclick = disconnectIrcBot;
 
-/**
- * FIX (see processClaim comment above): $redeem/$claim used to require an
- * EXACT match ("$redeem" with nothing after it), so "$redeem No Swearing"
- * was silently ignored — no reply, no activity log entry. Now matches the
- * command word only (case-insensitive, word-boundary) and passes anything
- * typed after it through as an optional reward-name filter.
- */
 function handleIrcChatMessage(user, text, tags){
   const chatCfg = loadChatCfg();
   if (!chatCfg.enabled) return;
   const trimmed = text.trim();
+  const lower = trimmed.toLowerCase();
 
-  const cmdMatch = trimmed.match(/^\$(redeem|claim)\b\s*(.*)$/i);
-  if (cmdMatch){
-    const cmdWord = cmdMatch[1].toLowerCase();
-    const rewardQuery = cmdMatch[2].trim();
-    const isRedeem = cmdWord === "redeem" && chatCfg.redeemEnabled;
-    const isClaim = cmdWord === "claim" && chatCfg.claimEnabled;
-    if (isRedeem || isClaim){
-      const { responseText } = processClaim(user, rewardQuery);
-      sendIrcMessage(responseText);
-      logActivity({ eventName: isClaim ? "Claim" : "Redeem", user, xpGained:0, leveledUp:false, level:(load(LS_USERS,{})[normUser(user)]||{}).level||1 });
-      pulseLiveDot();
-    }
+  const isRedeem = chatCfg.redeemEnabled && lower === "$redeem";
+  const isClaim = chatCfg.claimEnabled && lower === "$claim";
+  if (isRedeem || isClaim){
+    const { responseText } = processClaim(user);
+    sendIrcMessage(responseText);
+    logActivity({ eventName: isClaim ? "Claim" : "Redeem", user, xpGained:0, leveledUp:false, level:(load(LS_USERS,{})[normUser(user)]||{}).level||1 });
+    pulseLiveDot();
     return;
   }
 
-  const lower = trimmed.toLowerCase();
   if (chatCfg.refundEnabled && lower.startsWith("$refund")){
     const parts = trimmed.split(/\s+/);
     const targetUser = (parts[1] || "").replace(/^@/, "");
