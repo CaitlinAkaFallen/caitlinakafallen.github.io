@@ -762,11 +762,6 @@
 
       .emote-group{ margin-bottom:18px; }
       .emote-group-label{ font-size:10.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--accent-secondary); margin-bottom:8px; font-weight:600; }
-
-      .emote-fetch-status{ font-size:11px; margin-top:8px; line-height:1.6; display:none; }
-      .emote-fetch-status.show{ display:block; }
-      .emote-fetch-status.error{ color:var(--accent-tertiary); }
-      .emote-fetch-status.ok{ color:var(--accent-primary); }
 </style>
 </head>
 <body>
@@ -844,34 +839,18 @@
         <div class="hint">Generate at <code>twitchtokengenerator.com</code>, scopes <code>chat:read chat:edit</code>. The <code>oauth:</code> prefix is added automatically if left off. Never share this token publicly.</div>
       </div>
 
+      <div class="field">
+        <label for="twitchClientId">Twitch Client ID</label>
+        <input type="text" id="twitchClientId" placeholder="from dev.twitch.tv/console/apps">
+        <div class="hint">Needed to pull live emote images for the milestone badge picker on the Levels &amp; Rewards tab — both your emotes and any guest streamer's. Register a free app at <code>dev.twitch.tv/console/apps</code> (any name; redirect URL can be <code>https://twitchtokengenerator.com</code> if that's where your Bot OAuth Token above came from) and paste its Client ID here. It reuses the Bot OAuth Token above to authenticate — the token and Client ID need to come from the same app or the emote fetch will fail.</div>
+      </div>
+
       <div class="action-bar">
         <button class="ghost-btn" id="saveBotCfgBtn">Save</button>
         <button class="primary-btn" id="connectBotBtn">Connect Bot</button>
         <button class="ghost-btn danger" id="disconnectBotBtn">Disconnect</button>
       </div>
       <div class="hint full-row">Keep this tab open (or on your streaming PC) for the bot to stay connected. Streamer.bot is still used separately for detecting subs/cheers/raids — see the Setup tab.</div>
-
-      <div class="section-divider">
-        <h3>Twitch API (Emote Picker)</h3>
-        <div class="sub">Powers the live emote picker on the Levels &amp; Rewards tab — separate from the chat bot above, its own app registration.</div>
-      </div>
-
-      <div class="status-card" id="twitchApiBanner">
-        <span class="status-led off" id="twitchApiLed"></span>
-        <span class="status-text" id="twitchApiStatusText">Not set up yet.</span>
-      </div>
-
-      <div class="field">
-        <label for="twitchClientId">Twitch Client ID</label>
-        <input type="text" id="twitchClientId" placeholder="from dev.twitch.tv/console/apps">
-        <div class="hint">Register a free app at <code>dev.twitch.tv/console/apps</code> (any name; OAuth Redirect URL can be <code>https://twitchtokengenerator.com</code> if that's where your Bot OAuth Token came from) and paste its Client ID here.</div>
-      </div>
-
-      <div class="action-bar">
-        <button class="ghost-btn" id="saveTwitchApiCfgBtn">Save Client ID</button>
-        <button class="ghost-btn" id="testTwitchApiBtn">Test Connection</button>
-      </div>
-      <div class="hint full-row">This reuses the <b>Bot OAuth Token</b> saved above to authenticate with Twitch's Helix API — the Client ID here and the app that issued the Bot OAuth Token need to be the same app, or emote fetches will fail with an auth error. Save both this Client ID and the Bot OAuth Token above before trying "Fetch Emotes" on the Levels &amp; Rewards tab.</div>
     </div>
 
     <div class="panel" id="panel-levels">
@@ -918,8 +897,7 @@
                 <input type="text" id="emoteChannelInput" placeholder="twitch username">
                 <button type="button" class="ghost-btn" id="addEmoteChannelBtn">Fetch Emotes</button>
               </div>
-              <div class="hint">Each streamer types their own channel name here and pulls their own emote set live from Twitch — nothing is shared until they add themselves. Needs a Twitch Client ID and saved Bot OAuth Token — set both on the <b>Connection</b> tab first.</div>
-              <div class="emote-fetch-status" id="emoteFetchStatus"></div>
+              <div class="hint">Each streamer types their own channel name here and pulls their own emote set live from Twitch — nothing is shared until they add themselves. Needs a Twitch Client ID (Connection tab) and the Bot OAuth Token saved first.</div>
             </div>
           </div>
 
@@ -1486,93 +1464,44 @@ const COMMON_TWITCH_EMOTES = [
   "Kappa","PogChamp","LUL","VoHiYo","KEKW","EZ","monkaS","PepeHands",
   "4Head","CoolStoryBob","BibleThump","Kreygasm","ResidentSleeper","TriHard","cheer100"
 ];
-
 /* ============================================================
    TWITCH API (Helix) — live emote picker.
    Pulls real emote images for the milestone badge picker: a
    "Global Twitch emotes" group (fetched once, cached ~12h) plus
    one group per channel a streamer adds themselves. Reuses the
    Bot OAuth Token from the Connection tab for auth, alongside a
-   Twitch Client ID saved separately in its own "Twitch API"
-   section (both required by Helix). Nothing here touches chat —
-   it's picker convenience only.
+   Twitch Client ID saved separately (both required by Helix).
+   Nothing here touches chat — it's picker convenience only.
    ============================================================ */
 function loadTwitchApiCfg(){ return load(LS_TWITCH_API_CFG, { clientId:"" }); }
 function refreshTwitchApiCfgInputs(){
   document.getElementById("twitchClientId").value = loadTwitchApiCfg().clientId || "";
-  refreshTwitchApiStatusBanner();
 }
-function saveTwitchApiCfgFromInputs(){
+document.getElementById("twitchClientId").addEventListener("change", () => {
   save(LS_TWITCH_API_CFG, { clientId: document.getElementById("twitchClientId").value.trim() });
-  refreshTwitchApiStatusBanner();
-}
-function refreshTwitchApiStatusBanner(){
-  const led = document.getElementById("twitchApiLed");
-  const text = document.getElementById("twitchApiStatusText");
-  if (!led || !text) return;
-  const clientId = (loadTwitchApiCfg().clientId || "").trim();
-  const token = (loadBotCfg().botToken || "").trim();
-  if (clientId && token){
-    led.className = "status-led on";
-    text.innerHTML = "Ready — <strong>Client ID</strong> and <strong>Bot OAuth Token</strong> are both saved.";
-  } else {
-    led.className = "status-led off";
-    const missing = [];
-    if (!clientId) missing.push("Twitch Client ID");
-    if (!token) missing.push("Bot OAuth Token (Connection tab, above)");
-    text.textContent = "Missing: " + missing.join(" and ") + ".";
-  }
-}
-document.getElementById("saveTwitchApiCfgBtn").onclick = () => {
-  saveTwitchApiCfgFromInputs();
-  showToast("Twitch Client ID saved");
-};
-document.getElementById("testTwitchApiBtn").onclick = async () => {
-  const btn = document.getElementById("testTwitchApiBtn");
-  const orig = btn.textContent;
-  btn.disabled = true; btn.textContent = "Testing…";
-  try{
-    await fetchGlobalEmotesLive();
-    refreshTwitchApiStatusBanner();
-    const text = document.getElementById("twitchApiStatusText");
-    if (text) text.innerHTML = "✓ Connected — Twitch accepted this Client ID / token combo.";
-    document.getElementById("twitchApiLed").className = "status-led on";
-    showToast("Twitch API connection OK");
-  }catch(err){
-    document.getElementById("twitchApiLed").className = "status-led off";
-    document.getElementById("twitchApiStatusText").textContent = err.message || "Connection test failed.";
-    showToast(err.message || "Connection test failed.");
-  }finally{
-    btn.disabled = false; btn.textContent = orig;
-  }
-};
+});
 refreshTwitchApiCfgInputs();
 
 function bearerToken(raw){
   return (raw || "").trim().replace(/^oauth:/i, "");
 }
 function twitchApiCreds(){
-  const clientId = (loadTwitchApiCfg().clientId || "").trim();
+  const urlParams = new URLSearchParams(window.location.search);
+  const clientId = urlParams.get('clientId') || (loadTwitchApiCfg().clientId || "").trim();
   const token = bearerToken(loadBotCfg().botToken || "");
   return { clientId, token };
 }
 async function helixFetch(url){
   const { clientId, token } = twitchApiCreds();
   if (!clientId || !token){
-    throw new Error("Set a Twitch Client ID and save a Bot OAuth Token first (Connection tab → Twitch API section).");
+    throw new Error("Set a Twitch Client ID (Connection tab) and save a Bot OAuth Token first.");
   }
-  let res;
-  try{
-    res = await fetch(url, {
-      headers: { "Client-Id": clientId, "Authorization": "Bearer " + token }
-    });
-  }catch(networkErr){
-    throw new Error("Couldn't reach Twitch's API — check your internet connection and try again.");
-  }
+  const res = await fetch(url, {
+    headers: { "Client-Id": clientId, "Authorization": "Bearer " + token }
+  });
   if (!res.ok){
-    if (res.status === 401) throw new Error("Twitch rejected that Client ID / token combo — make sure both come from the same app (Connection tab).");
+    if (res.status === 401) throw new Error("Twitch rejected that Client ID / token combo — make sure both come from the same app.");
     if (res.status === 404) throw new Error("No such Twitch channel.");
-    if (res.status === 429) throw new Error("Twitch rate-limited this request — wait a moment and try again.");
     throw new Error(`Twitch API error (${res.status}).`);
   }
   return res.json();
@@ -1673,22 +1602,12 @@ function renderEmoteChannelChips(){
     };
   });
 }
-function setEmoteFetchStatus(msg, isError){
-  const el = document.getElementById("emoteFetchStatus");
-  if (!el) return;
-  if (!msg){ el.classList.remove("show", "error", "ok"); el.textContent = ""; return; }
-  el.textContent = msg;
-  el.classList.add("show");
-  el.classList.toggle("error", !!isError);
-  el.classList.toggle("ok", !isError);
-}
 async function addOrRefreshEmoteChannel(loginRaw, isRefresh){
   const login = (loginRaw || "").trim().toLowerCase().replace(/^@/, "");
-  if (!login){ setEmoteFetchStatus("Type a channel name first.", true); return; }
+  if (!login){ showToast("Type a channel name first."); return; }
   const btn = document.getElementById("addEmoteChannelBtn");
   const originalLabel = btn ? btn.textContent : "";
   if (btn){ btn.disabled = true; btn.textContent = "Fetching…"; }
-  setEmoteFetchStatus(`Fetching ${login}'s emotes…`, false);
   try{
     const emotes = await fetchChannelEmotesFor(login);
     const channels = loadEmoteChannels().filter(c => c.login !== login);
@@ -1696,14 +1615,10 @@ async function addOrRefreshEmoteChannel(loginRaw, isRefresh){
     saveEmoteChannels(channels);
     renderEmoteChannelChips();
     renderEmoteGroups();
-    const msg = isRefresh ? `Refreshed ${login}'s emotes (${emotes.length})` : `Added ${login} — ${emotes.length} emotes`;
-    setEmoteFetchStatus(msg, false);
-    showToast(msg);
+    showToast(isRefresh ? `Refreshed ${login}'s emotes (${emotes.length})` : `Added ${login} — ${emotes.length} emotes`);
     if (!isRefresh) document.getElementById("emoteChannelInput").value = "";
   }catch(err){
-    const msg = err.message || "Couldn't fetch that channel's emotes.";
-    setEmoteFetchStatus(msg, true);
-    showToast(msg);
+    showToast(err.message || "Couldn't fetch that channel's emotes.");
   }finally{
     if (btn){ btn.disabled = false; btn.textContent = originalLabel; }
   }
@@ -2103,7 +2018,6 @@ document.getElementById("saveBotCfgBtn").onclick = () => {
     botToken: document.getElementById("botOauthToken").value.trim()
   });
   showToast("Bot settings saved");
-  refreshTwitchApiStatusBanner();
 };
 
 let ircWs = null;
