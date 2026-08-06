@@ -726,6 +726,19 @@
       .field-row{ display:flex; gap:14px; flex-wrap:wrap; }
       .field-row .field{ flex:1; min-width:110px; background:transparent; border:none; padding:0; box-shadow:none; margin-bottom:0; }
       .empty{ color:var(--text-tertiary); font-size:12px; padding:8px 4px; }
+
+      .emote-picker-wrap{ margin-top:14px; }
+      .emote-picker-label{ font-size:11px; color:var(--text-tertiary); margin-bottom:8px; letter-spacing:.3px; }
+      .emote-picker{ display:flex; gap:8px; flex-wrap:wrap; }
+      .emote-chip{
+        font-family:var(--font-mono); font-size:12px; letter-spacing:.3px;
+        background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.7));
+        border:1.5px solid var(--border-medium); color:var(--text-primary);
+        border-radius:20px; padding:6px 14px; cursor:pointer; transition:all .2s ease;
+      }
+      .emote-chip:hover{ border-color:var(--accent-primary); background:rgba(125,232,200,0.1); box-shadow:0 0 10px rgba(125,232,200,0.25); transform:translateY(-1px); }
+      .emote-chip:active{ transform:translateY(0) scale(0.97); }
+      .emote-chip.selected{ border-color:var(--accent-primary); background:linear-gradient(135deg, rgba(125,232,200,0.18), rgba(200,162,255,0.1)); box-shadow:var(--glow-primary); }
 </style>
 </head>
 <body>
@@ -840,10 +853,15 @@
       <div class="field full-row">
         <div class="rewards-grid">
           <input type="number" id="newLevel" placeholder="Lvl" class="reward-input-xxs">
-          <input type="text" id="newBadge" placeholder="Badge (emoji)" class="reward-input-xs">
+          <input type="text" id="newBadge" placeholder="Badge (emote or emoji)" class="reward-input-xs">
           <input type="text" id="newTitle" placeholder="Reward title" class="reward-input-title">
           <input type="text" id="newMessage" placeholder="Message (optional)" class="reward-input-message">
           <button class="primary-btn" id="addRewardBtn">+ Add Milestone</button>
+        </div>
+        <div class="emote-picker-wrap">
+          <div class="emote-picker-label">Tap a Twitch emote to use as the badge — no emoji keyboard needed:</div>
+          <div class="emote-picker" id="emotePicker"></div>
+          <div class="hint">These are typed exactly as shown, the same way you'd type them in Twitch chat — when the bot posts a message containing one, Twitch renders it as the emote image for viewers automatically. Works with any emote code your channel has access to (global, sub, BTTV, 7TV, etc.) — just type its name instead of tapping a chip if it's not listed here.</div>
         </div>
       </div>
     </div>
@@ -941,7 +959,7 @@
           <label class="switch"><input type="checkbox" id="chatEnabledSwitch"><span class="track"></span></label>
         </div>
         <div class="toggle-row">
-          <div class="row-labels"><div class="title">$redeem</div><div class="desc">Uses the oldest unlocked reward and announces it in chat.</div></div>
+          <div class="row-labels"><div class="title">$redeem</div><div class="desc">Uses a named unlocked reward (or the oldest one if no name is given) and announces it in chat.</div></div>
           <label class="switch"><input type="checkbox" id="redeemCmdSwitch"><span class="track"></span></label>
         </div>
         <div class="toggle-row">
@@ -956,14 +974,18 @@
 
       <div class="section-divider"><h3>Reply Messages</h3><div class="sub">Placeholders: {user} {level} {reward} {badge}</div></div>
       <div class="field"><label for="msgSuccess">Redeem Success Message</label><input type="text" id="msgSuccess"></div>
-      <div class="field"><label for="msgAlready">Nothing New To Redeem Message</label><input type="text" id="msgAlready"></div>
-      <div class="field"><label for="msgNone">No Rewards Yet Message</label><input type="text" id="msgNone"></div>
+      <div class="field"><label for="msgAlready">Nothing New / Already Used Message</label><input type="text" id="msgAlready"></div>
+      <div class="field"><label for="msgNone">No Rewards Unlocked Yet Message</label><input type="text" id="msgNone"></div>
+      <div class="field"><label for="msgNotFound">No Such Reward Message</label><input type="text" id="msgNotFound"></div>
+      <div class="field"><label for="msgLocked">Reward Not Unlocked Yet Message</label><input type="text" id="msgLocked"></div>
       <div class="field"><label for="msgRefundSuccess">$refund Success Message</label><input type="text" id="msgRefundSuccess"></div>
       <div class="field"><label for="msgRefundNone">$refund Nothing To Refund Message</label><input type="text" id="msgRefundNone"></div>
       <div class="field"><label for="msgRefundDenied">$refund Not Allowed Message</label><input type="text" id="msgRefundDenied"></div>
       <div class="action-bar"><button class="primary-btn" id="saveChatCfgBtn">Save Chat Settings</button></div>
-      <div class="hint full-row">When a viewer types <code>$redeem</code> or <code>$claim</code>, this dashboard checks their unlocked-but-unclaimed rewards, marks the oldest one claimed, and replies in chat via the bot connected on the Connection tab. Viewers can also claim from a button on their Level Up dashboard.<br><br>
-      <code>$refund {username}</code> (mods/broadcaster only) undoes that viewer's most recent claim — the reward goes back to unclaimed so they can save it and <code>$redeem</code> it again another time. Example: <code>$refund fallenoneart</code>.</div>
+      <div class="hint full-row">
+        <code>$redeem &lt;reward name&gt;</code> uses that specific unlocked reward and announces it in chat — e.g. <code>$redeem No Swearing</code>. Reward names match your <b>Title</b> column on the Levels &amp; Rewards tab (case-insensitive). Leave the name off and <code>$redeem</code>/<code>$claim</code> alone uses the oldest unlocked-but-unused reward instead — both commands work identically; <code>$claim</code> is just an alias.<br><br>
+        <code>$refund {username}</code> (mods/broadcaster only) undoes that viewer's most recently used reward — it goes back to unused so they can save it and <code>$redeem</code> it again another time. Example: <code>$refund fallenoneart</code>.
+      </div>
     </div>
 
     <div class="panel" id="panel-testing">
@@ -1382,6 +1404,33 @@ function renderRewards(){
     };
   });
 }
+/* A short list of well-known Twitch global emote codes — typed exactly like
+   this in chat, Twitch renders them as the actual emote image for viewers.
+   No emoji keyboard, no unicode, no lookup needed — just plain text codes. */
+const COMMON_TWITCH_EMOTES = [
+  "Kappa","PogChamp","LUL","VoHiYo","KEKW","EZ","monkaS","PepeHands",
+  "4Head","CoolStoryBob","BibleThump","Kreygasm","ResidentSleeper","TriHard","cheer100"
+];
+function renderEmotePicker(){
+  const wrap = document.getElementById("emotePicker");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+  const badgeInput = document.getElementById("newBadge");
+  COMMON_TWITCH_EMOTES.forEach(code => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "emote-chip";
+    chip.textContent = code;
+    chip.onclick = () => {
+      badgeInput.value = code;
+      wrap.querySelectorAll(".emote-chip").forEach(c => c.classList.toggle("selected", c === chip));
+      badgeInput.focus();
+    };
+    wrap.appendChild(chip);
+  });
+}
+renderEmotePicker();
+
 document.getElementById("addRewardBtn").onclick = () => {
   const level = Number(document.getElementById("newLevel").value);
   const badge = document.getElementById("newBadge").value.trim() || "★";
@@ -1394,6 +1443,7 @@ document.getElementById("addRewardBtn").onclick = () => {
   bc && bc.postMessage({ type:"rewards_update", rewards });
   document.getElementById("newLevel").value = "";
   document.getElementById("newBadge").value = "";
+  document.querySelectorAll("#emotePicker .emote-chip").forEach(c => c.classList.remove("selected"));
   document.getElementById("newTitle").value = "";
   document.getElementById("newMessage").value = "";
   renderRewards();
@@ -1589,6 +1639,8 @@ function defaultChatCfg(){
       success: "🎉 {user} used the {reward} reward for reaching Level {level}! {badge}",
       already: "{user}, nothing new to redeem right now — keep leveling up!",
       none: "{user}, you haven't unlocked any rewards yet — keep leveling up!",
+      notFound: "{user}, there's no reward called \"{reward}\" — check the reward list!",
+      locked: "{user}, you haven't unlocked {reward} yet — reach Level {level} first!",
       refundSuccess: "↩️ Refunded {user}'s {reward} reward (Level {level}) — it's unclaimed again and ready to $redeem later.",
       refundNone: "{user} has nothing claimed to refund.",
       refundDenied: "Only the broadcaster or mods can use $refund."
@@ -1608,6 +1660,8 @@ function refreshChatCfgInputs(){
   document.getElementById("msgSuccess").value = cfg.messages.success;
   document.getElementById("msgAlready").value = cfg.messages.already;
   document.getElementById("msgNone").value = cfg.messages.none;
+  document.getElementById("msgNotFound").value = cfg.messages.notFound;
+  document.getElementById("msgLocked").value = cfg.messages.locked;
   document.getElementById("msgRefundSuccess").value = cfg.messages.refundSuccess;
   document.getElementById("msgRefundNone").value = cfg.messages.refundNone;
   document.getElementById("msgRefundDenied").value = cfg.messages.refundDenied;
@@ -1627,6 +1681,8 @@ document.getElementById("saveChatCfgBtn").onclick = () => {
   cfg.messages.success = document.getElementById("msgSuccess").value || defaultChatCfg().messages.success;
   cfg.messages.already = document.getElementById("msgAlready").value || defaultChatCfg().messages.already;
   cfg.messages.none = document.getElementById("msgNone").value || defaultChatCfg().messages.none;
+  cfg.messages.notFound = document.getElementById("msgNotFound").value || defaultChatCfg().messages.notFound;
+  cfg.messages.locked = document.getElementById("msgLocked").value || defaultChatCfg().messages.locked;
   cfg.messages.refundSuccess = document.getElementById("msgRefundSuccess").value || defaultChatCfg().messages.refundSuccess;
   cfg.messages.refundNone = document.getElementById("msgRefundNone").value || defaultChatCfg().messages.refundNone;
   cfg.messages.refundDenied = document.getElementById("msgRefundDenied").value || defaultChatCfg().messages.refundDenied;
@@ -1639,30 +1695,65 @@ function fillTemplate(tpl, vars){
   return (tpl || "").replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined && vars[k] !== null ? vars[k] : ""));
 }
 
-function processClaim(username){
+/**
+ * $redeem / $claim — with an optional reward-name argument.
+ *   processClaim(username)                -> claims the oldest unlocked-but-unused reward (old behavior)
+ *   processClaim(username, "No Swearing") -> claims that SPECIFIC reward by title (case-insensitive),
+ *                                             telling the viewer if it doesn't exist, isn't unlocked yet,
+ *                                             or was already used.
+ */
+function processClaim(username, requestedName){
   const chatCfg = loadChatCfg();
   const key = normUser(username);
   const users = load(LS_USERS, {});
   const rec = users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], history:[] };
   rec.unlockedLevels = rec.unlockedLevels || [];
   rec.claimedLevels = rec.claimedLevels || [];
-  const pending = rec.unlockedLevels.filter(l => !rec.claimedLevels.includes(l)).sort((a,b) => a-b)[0];
-  let responseText, claimed = false;
-  if (pending !== undefined){
-    rec.claimedLevels.push(pending);
+  const rewards = load(LS_REWARDS, []);
+  const pendingLevels = rec.unlockedLevels.filter(l => !rec.claimedLevels.includes(l)).sort((a,b) => a-b);
+
+  const finishClaim = (level) => {
+    rec.claimedLevels.push(level);
     users[key] = rec;
     save(LS_USERS, users);
     bc && bc.postMessage({ type:"user_update", user:key, data:rec });
-    const reward = load(LS_REWARDS, []).find(r => Number(r.level) === Number(pending)) || {};
-    responseText = fillTemplate(chatCfg.messages.success, { user:username, level:pending, reward:reward.title||"", badge:reward.badge||"" });
-    claimed = true;
-  } else if (rec.unlockedLevels.length > 0){
-    responseText = fillTemplate(chatCfg.messages.already, { user:username, level:rec.level, reward:"", badge:"" });
-  } else {
-    responseText = fillTemplate(chatCfg.messages.none, { user:username, level:rec.level, reward:"", badge:"" });
+    const reward = rewards.find(r => Number(r.level) === Number(level)) || {};
+    const responseText = fillTemplate(chatCfg.messages.success, { user:username, level, reward:reward.title||"", badge:reward.badge||"" });
+    renderUsers();
+    return { responseText, claimed:true, rewardName: reward.title || "" };
+  };
+
+  const query = (requestedName || "").trim();
+  if (query){
+    const q = query.toLowerCase();
+    const matched = rewards.find(r => (r.title || "").trim().toLowerCase() === q);
+    if (!matched){
+      const responseText = fillTemplate(chatCfg.messages.notFound, { user:username, level:rec.level, reward:query, badge:"" });
+      renderUsers();
+      return { responseText, claimed:false, rewardName: query };
+    }
+    if (rec.claimedLevels.includes(matched.level)){
+      const responseText = fillTemplate(chatCfg.messages.already, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      renderUsers();
+      return { responseText, claimed:false, rewardName: matched.title };
+    }
+    if (!rec.unlockedLevels.includes(matched.level)){
+      const responseText = fillTemplate(chatCfg.messages.locked, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      renderUsers();
+      return { responseText, claimed:false, rewardName: matched.title };
+    }
+    return finishClaim(matched.level);
   }
+
+  if (pendingLevels.length > 0) return finishClaim(pendingLevels[0]);
+  if (rec.unlockedLevels.length > 0){
+    const responseText = fillTemplate(chatCfg.messages.already, { user:username, level:rec.level, reward:"", badge:"" });
+    renderUsers();
+    return { responseText, claimed:false, rewardName: "" };
+  }
+  const responseText = fillTemplate(chatCfg.messages.none, { user:username, level:rec.level, reward:"", badge:"" });
   renderUsers();
-  return { responseText, claimed };
+  return { responseText, claimed:false, rewardName: "" };
 }
 
 /**
@@ -1808,20 +1899,28 @@ function handleIrcChatMessage(user, text, tags){
   const chatCfg = loadChatCfg();
   if (!chatCfg.enabled) return;
   const trimmed = text.trim();
-  const lower = trimmed.toLowerCase();
+  const parts = trimmed.split(/\s+/);
+  const cmd = (parts[0] || "").toLowerCase();
+  const rewardNameArg = parts.slice(1).join(" ").trim();
 
-  const isRedeem = chatCfg.redeemEnabled && lower === "$redeem";
-  const isClaim = chatCfg.claimEnabled && lower === "$claim";
+  const isRedeem = chatCfg.redeemEnabled && cmd === "$redeem";
+  const isClaim = chatCfg.claimEnabled && cmd === "$claim";
   if (isRedeem || isClaim){
-    const { responseText } = processClaim(user);
+    const { responseText, rewardName } = processClaim(user, rewardNameArg || null);
     sendIrcMessage(responseText);
-    logActivity({ eventName: isClaim ? "Claim" : "Redeem", user, xpGained:0, leveledUp:false, level:(load(LS_USERS,{})[normUser(user)]||{}).level||1 });
+    logActivity({
+      eventName: isClaim ? "Claim" : "Redeem",
+      user,
+      xpGained:0,
+      leveledUp:false,
+      level:(load(LS_USERS,{})[normUser(user)]||{}).level||1,
+      rewardName: rewardName || undefined
+    });
     pulseLiveDot();
     return;
   }
 
-  if (chatCfg.refundEnabled && lower.startsWith("$refund")){
-    const parts = trimmed.split(/\s+/);
+  if (chatCfg.refundEnabled && cmd === "$refund"){
     const targetUser = (parts[1] || "").replace(/^@/, "");
     if (!targetUser){ return; } // needs $refund {username}
     if (!isModOrBroadcaster(tags)){
@@ -1984,10 +2083,10 @@ function logActivity(data){
   if (list.querySelector(".empty")) list.innerHTML = "";
   const meta = EVENT_META[data.eventName] || { label: data.eventName || "Event" };
   const xpPart = data.xpGained ? ` → <span class="activity-xp">+${data.xpGained} XP</span>` : "";
-  // Reward name/cost only exist on ChannelPointRedeem payloads — the C#
-  // action fetches them via CPH.TryGetArg("rewardName"/"rewardCost") and
-  // includes them in the broadcast alongside the source:"levelup" tag.
-  const redeemPart = (data.eventName === "ChannelPointRedeem" && data.rewardName)
+  // Reward name only exists on ChannelPointRedeem payloads (from the C#
+  // action's CPH.TryGetArg("rewardName"/"rewardCost")) or on Redeem/Claim
+  // chat-command events where the viewer named a specific reward.
+  const redeemPart = (["ChannelPointRedeem","Redeem","Claim"].includes(data.eventName) && data.rewardName)
     ? ` — <span class="activity-redeem">${escapeHtml(data.rewardName)}</span>${data.rewardCost ? `<span class="activity-redeem-cost"> (${data.rewardCost} pts)</span>` : ""}`
     : "";
   // Refund events reuse rewardName as a free-text note (e.g. "denied — requested by X").
