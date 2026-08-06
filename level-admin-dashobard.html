@@ -41,6 +41,8 @@
 
       *{box-sizing:border-box;}
       .mt-10{ margin-top:10px; }
+      .mb-14{ margin-bottom:14px; }
+      .flex-2-minw{ flex:2; min-width:220px; }
       html,body{
         margin:0;
         padding:0;
@@ -739,6 +741,27 @@
       .emote-chip:hover{ border-color:var(--accent-primary); background:rgba(125,232,200,0.1); box-shadow:0 0 10px rgba(125,232,200,0.25); transform:translateY(-1px); }
       .emote-chip:active{ transform:translateY(0) scale(0.97); }
       .emote-chip.selected{ border-color:var(--accent-primary); background:linear-gradient(135deg, rgba(125,232,200,0.18), rgba(200,162,255,0.1)); box-shadow:var(--glow-primary); }
+
+      .emote-chip-img{ display:inline-flex; align-items:center; gap:7px; padding:5px 14px 5px 8px; }
+      .emote-chip-img img{ width:24px; height:24px; object-fit:contain; display:block; flex:0 0 auto; }
+
+      .emote-channel-chips{ margin-bottom:16px; display:flex; flex-wrap:wrap; }
+      .channel-tag{
+        display:inline-flex; align-items:center; gap:7px;
+        background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.7));
+        border:1.5px solid var(--border-medium); border-radius:20px;
+        padding:6px 6px 6px 14px; font-size:11.5px; color:var(--text-primary); margin:0 8px 8px 0;
+      }
+      .channel-tag-count{ color:var(--text-tertiary); font-size:10.5px; }
+      .channel-tag-btn{
+        background:transparent; border:none; color:var(--text-secondary); cursor:pointer;
+        width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px;
+        transition:all .2s ease; padding:0; flex:0 0 auto;
+      }
+      .channel-tag-btn:hover{ background:rgba(125,232,200,0.15); color:var(--accent-primary); }
+
+      .emote-group{ margin-bottom:18px; }
+      .emote-group-label{ font-size:10.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--accent-secondary); margin-bottom:8px; font-weight:600; }
 </style>
 </head>
 <body>
@@ -816,6 +839,12 @@
         <div class="hint">Generate at <code>twitchtokengenerator.com</code>, scopes <code>chat:read chat:edit</code>. The <code>oauth:</code> prefix is added automatically if left off. Never share this token publicly.</div>
       </div>
 
+      <div class="field">
+        <label for="twitchClientId">Twitch Client ID</label>
+        <input type="text" id="twitchClientId" placeholder="from dev.twitch.tv/console/apps">
+        <div class="hint">Needed to pull live emote images for the milestone badge picker on the Levels &amp; Rewards tab — both your emotes and any guest streamer's. Register a free app at <code>dev.twitch.tv/console/apps</code> (any name; redirect URL can be <code>https://twitchtokengenerator.com</code> if that's where your Bot OAuth Token above came from) and paste its Client ID here. It reuses the Bot OAuth Token above to authenticate — the token and Client ID need to come from the same app or the emote fetch will fail.</div>
+      </div>
+
       <div class="action-bar">
         <button class="ghost-btn" id="saveBotCfgBtn">Save</button>
         <button class="primary-btn" id="connectBotBtn">Connect Bot</button>
@@ -860,8 +889,25 @@
         </div>
         <div class="emote-picker-wrap">
           <div class="emote-picker-label">Tap a Twitch emote to use as the badge — no emoji keyboard needed:</div>
-          <div class="emote-picker" id="emotePicker"></div>
-          <div class="hint">These are typed exactly as shown, the same way you'd type them in Twitch chat — when the bot posts a message containing one, Twitch renders it as the emote image for viewers automatically. Works with any emote code your channel has access to (global, sub, BTTV, 7TV, etc.) — just type its name instead of tapping a chip if it's not listed here.</div>
+
+          <div class="field-row mb-14">
+            <div class="field flex-2-minw">
+              <label for="emoteChannelInput">Add a channel (yours or a guest streamer's)</label>
+              <div class="input-group">
+                <input type="text" id="emoteChannelInput" placeholder="twitch username">
+                <button type="button" class="ghost-btn" id="addEmoteChannelBtn">Fetch Emotes</button>
+              </div>
+              <div class="hint">Each streamer types their own channel name here and pulls their own emote set live from Twitch — nothing is shared until they add themselves. Needs a Twitch Client ID (Connection tab) and the Bot OAuth Token saved first.</div>
+            </div>
+          </div>
+
+          <div id="emoteChannelChips" class="emote-channel-chips"></div>
+          <div id="emoteGroups"></div>
+
+          <div class="hint">
+            These are typed exactly as shown, the same way you'd type them in Twitch chat — when the bot posts a message containing one, Twitch renders it as the emote image for viewers automatically.<br><br>
+            <b>Heads up:</b> a channel's sub/bit emotes only render as images inside <i>that channel's own chat</i> — if the bot posts a guest streamer's emote code in your channel, viewers will just see plain text there. Global emotes (top group) render everywhere. Works with any emote code your channel has access to (BTTV, 7TV, etc.) too — just type its name instead of tapping a chip if it's not listed here.
+          </div>
         </div>
       </div>
     </div>
@@ -1280,6 +1326,11 @@ const LS_DASH_THEME_KEY = "fallenoneart_levelup_dashboard_theme";
 const LS_WALLPAPER_HISTORY_KEY = "fallenoneart_levelup_wallpaper_history";
 const MAX_WALLPAPER_HISTORY = 8;
 
+const LS_TWITCH_API_CFG = "fallenoneart_levelup_twitch_api_cfg";
+const LS_EMOTE_CHANNELS = "fallenoneart_levelup_emote_channels";
+const LS_GLOBAL_EMOTES  = "fallenoneart_levelup_global_emotes";
+const EMOTE_CACHE_MS = 12 * 60 * 60 * 1000;
+
 const EVENT_META = {
   Sub:                { label:"New Sub",             unit:"per sub" },
   ReSub:              { label:"Resub",                unit:"per resub" },
@@ -1404,32 +1455,193 @@ function renderRewards(){
     };
   });
 }
-/* A short list of well-known Twitch global emote codes — typed exactly like
-   this in chat, Twitch renders them as the actual emote image for viewers.
-   No emoji keyboard, no unicode, no lookup needed — just plain text codes. */
+
+/* A short fallback list of well-known Twitch global emote codes, used only
+   until the live "Global Twitch emotes" fetch (via Helix) completes or if
+   that fetch fails — typed exactly like this in chat, Twitch renders them
+   as the actual emote image for viewers. No emoji keyboard needed. */
 const COMMON_TWITCH_EMOTES = [
   "Kappa","PogChamp","LUL","VoHiYo","KEKW","EZ","monkaS","PepeHands",
   "4Head","CoolStoryBob","BibleThump","Kreygasm","ResidentSleeper","TriHard","cheer100"
 ];
-function renderEmotePicker(){
-  const wrap = document.getElementById("emotePicker");
-  if (!wrap) return;
-  wrap.innerHTML = "";
+
+/* ============================================================
+   TWITCH API (Helix) — live emote picker.
+   Pulls real emote images for the milestone badge picker: a
+   "Global Twitch emotes" group (fetched once, cached ~12h) plus
+   one group per channel a streamer adds themselves. Reuses the
+   Bot OAuth Token from the Connection tab for auth, alongside a
+   Twitch Client ID saved separately (both required by Helix).
+   Nothing here touches chat — it's picker convenience only.
+   ============================================================ */
+function loadTwitchApiCfg(){ return load(LS_TWITCH_API_CFG, { clientId:"" }); }
+function refreshTwitchApiCfgInputs(){
+  document.getElementById("twitchClientId").value = loadTwitchApiCfg().clientId || "";
+}
+document.getElementById("twitchClientId").addEventListener("change", () => {
+  save(LS_TWITCH_API_CFG, { clientId: document.getElementById("twitchClientId").value.trim() });
+});
+refreshTwitchApiCfgInputs();
+
+function bearerToken(raw){
+  return (raw || "").trim().replace(/^oauth:/i, "");
+}
+function twitchApiCreds(){
+  const clientId = (loadTwitchApiCfg().clientId || "").trim();
+  const token = bearerToken(loadBotCfg().botToken || "");
+  return { clientId, token };
+}
+async function helixFetch(url){
+  const { clientId, token } = twitchApiCreds();
+  if (!clientId || !token){
+    throw new Error("Set a Twitch Client ID (Connection tab) and save a Bot OAuth Token first.");
+  }
+  const res = await fetch(url, {
+    headers: { "Client-Id": clientId, "Authorization": "Bearer " + token }
+  });
+  if (!res.ok){
+    if (res.status === 401) throw new Error("Twitch rejected that Client ID / token combo — make sure both come from the same app.");
+    if (res.status === 404) throw new Error("No such Twitch channel.");
+    throw new Error(`Twitch API error (${res.status}).`);
+  }
+  return res.json();
+}
+function mapHelixEmotes(list){
+  return (list || []).map(e => ({
+    name: e.name,
+    url: (e.images && (e.images.url_2x || e.images.url_1x || e.images.url_4x)) || ""
+  }));
+}
+async function resolveTwitchUserId(login){
+  const data = await helixFetch(`https://api.twitch.tv/helix/users?login=${encodeURIComponent(login.toLowerCase())}`);
+  const user = (data.data || [])[0];
+  if (!user) throw new Error(`No Twitch user found named "${login}".`);
+  return user.id;
+}
+async function fetchChannelEmotesFor(login){
+  const id = await resolveTwitchUserId(login);
+  const data = await helixFetch(`https://api.twitch.tv/helix/chat/emotes?broadcaster_id=${id}`);
+  return mapHelixEmotes(data.data);
+}
+async function fetchGlobalEmotesLive(){
+  const data = await helixFetch(`https://api.twitch.tv/helix/chat/emotes/global`);
+  return mapHelixEmotes(data.data);
+}
+
+function loadEmoteChannels(){ return load(LS_EMOTE_CHANNELS, []); }
+function saveEmoteChannels(list){ save(LS_EMOTE_CHANNELS, list); }
+function loadGlobalEmotesCache(){ return load(LS_GLOBAL_EMOTES, null); }
+function saveGlobalEmotesCache(entry){ save(LS_GLOBAL_EMOTES, entry); }
+
+function emoteChipHtml(e){
+  return `<button type="button" class="emote-chip emote-chip-img" data-code="${escapeHtml(e.name)}" title="${escapeHtml(e.name)}">${e.url ? `<img src="${escapeHtml(e.url)}" alt="" loading="lazy">` : ""}<span>${escapeHtml(e.name)}</span></button>`;
+}
+function wireEmoteChips(container){
   const badgeInput = document.getElementById("newBadge");
-  COMMON_TWITCH_EMOTES.forEach(code => {
-    const chip = document.createElement("button");
-    chip.type = "button";
-    chip.className = "emote-chip";
-    chip.textContent = code;
+  container.querySelectorAll(".emote-chip").forEach(chip => {
     chip.onclick = () => {
-      badgeInput.value = code;
-      wrap.querySelectorAll(".emote-chip").forEach(c => c.classList.toggle("selected", c === chip));
+      badgeInput.value = chip.getAttribute("data-code");
+      document.querySelectorAll("#emoteGroups .emote-chip").forEach(c => c.classList.toggle("selected", c === chip));
       badgeInput.focus();
     };
-    wrap.appendChild(chip);
   });
 }
-renderEmotePicker();
+function renderEmoteGroups(){
+  const wrap = document.getElementById("emoteGroups");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+
+  const globalCache = loadGlobalEmotesCache();
+  const globalEmotes = (globalCache && globalCache.emotes && globalCache.emotes.length)
+    ? globalCache.emotes
+    : COMMON_TWITCH_EMOTES.map(name => ({ name, url:"" }));
+  const globalGroup = document.createElement("div");
+  globalGroup.className = "emote-group";
+  globalGroup.innerHTML = `<div class="emote-group-label">Global Twitch emotes</div><div class="emote-picker">${globalEmotes.map(emoteChipHtml).join("")}</div>`;
+  wrap.appendChild(globalGroup);
+
+  loadEmoteChannels().forEach(ch => {
+    const group = document.createElement("div");
+    group.className = "emote-group";
+    group.innerHTML = `<div class="emote-group-label">${escapeHtml(ch.login)}'s emotes</div><div class="emote-picker">${ch.emotes.map(emoteChipHtml).join("")}</div>`;
+    wrap.appendChild(group);
+  });
+
+  wireEmoteChips(wrap);
+}
+function renderEmoteChannelChips(){
+  const wrap = document.getElementById("emoteChannelChips");
+  if (!wrap) return;
+  const channels = loadEmoteChannels();
+  wrap.innerHTML = "";
+  if (!channels.length){
+    wrap.innerHTML = `<div class="hint" style="margin-bottom:12px;">No channels added yet — type a username above and hit Fetch Emotes.</div>`;
+    return;
+  }
+  channels.forEach(ch => {
+    const tag = document.createElement("div");
+    tag.className = "channel-tag";
+    tag.innerHTML = `
+      <span class="channel-tag-name">${escapeHtml(ch.login)}</span>
+      <span class="channel-tag-count">${ch.emotes.length} emotes</span>
+      <button type="button" class="channel-tag-btn" data-refresh="${escapeHtml(ch.login)}" title="Refresh">⟳</button>
+      <button type="button" class="channel-tag-btn" data-remove="${escapeHtml(ch.login)}" title="Remove">✕</button>
+    `;
+    wrap.appendChild(tag);
+  });
+  wrap.querySelectorAll("[data-refresh]").forEach(btn => {
+    btn.onclick = () => addOrRefreshEmoteChannel(btn.getAttribute("data-refresh"), true);
+  });
+  wrap.querySelectorAll("[data-remove]").forEach(btn => {
+    btn.onclick = () => {
+      const login = btn.getAttribute("data-remove");
+      saveEmoteChannels(loadEmoteChannels().filter(c => c.login !== login));
+      renderEmoteChannelChips();
+      renderEmoteGroups();
+      showToast(`Removed ${login}'s emotes`);
+    };
+  });
+}
+async function addOrRefreshEmoteChannel(loginRaw, isRefresh){
+  const login = (loginRaw || "").trim().toLowerCase().replace(/^@/, "");
+  if (!login){ showToast("Type a channel name first."); return; }
+  const btn = document.getElementById("addEmoteChannelBtn");
+  const originalLabel = btn ? btn.textContent : "";
+  if (btn){ btn.disabled = true; btn.textContent = "Fetching…"; }
+  try{
+    const emotes = await fetchChannelEmotesFor(login);
+    const channels = loadEmoteChannels().filter(c => c.login !== login);
+    channels.unshift({ login, emotes, fetchedAt: Date.now() });
+    saveEmoteChannels(channels);
+    renderEmoteChannelChips();
+    renderEmoteGroups();
+    showToast(isRefresh ? `Refreshed ${login}'s emotes (${emotes.length})` : `Added ${login} — ${emotes.length} emotes`);
+    if (!isRefresh) document.getElementById("emoteChannelInput").value = "";
+  }catch(err){
+    showToast(err.message || "Couldn't fetch that channel's emotes.");
+  }finally{
+    if (btn){ btn.disabled = false; btn.textContent = originalLabel; }
+  }
+}
+async function ensureGlobalEmotesLoaded(){
+  const cache = loadGlobalEmotesCache();
+  if (cache && cache.emotes && cache.emotes.length && (Date.now() - (cache.fetchedAt || 0) < EMOTE_CACHE_MS)) return;
+  try{
+    const emotes = await fetchGlobalEmotesLive();
+    saveGlobalEmotesCache({ emotes, fetchedAt: Date.now() });
+    renderEmoteGroups();
+  }catch(err){
+    /* silent — falls back to the static COMMON_TWITCH_EMOTES list already rendered */
+  }
+}
+document.getElementById("addEmoteChannelBtn").onclick = () => addOrRefreshEmoteChannel(document.getElementById("emoteChannelInput").value, false);
+document.getElementById("emoteChannelInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter"){ e.preventDefault(); addOrRefreshEmoteChannel(document.getElementById("emoteChannelInput").value, false); }
+});
+
+renderEmoteChannelChips();
+renderEmoteGroups();
+ensureGlobalEmotesLoaded();
 
 document.getElementById("addRewardBtn").onclick = () => {
   const level = Number(document.getElementById("newLevel").value);
@@ -1443,7 +1655,7 @@ document.getElementById("addRewardBtn").onclick = () => {
   bc && bc.postMessage({ type:"rewards_update", rewards });
   document.getElementById("newLevel").value = "";
   document.getElementById("newBadge").value = "";
-  document.querySelectorAll("#emotePicker .emote-chip").forEach(c => c.classList.remove("selected"));
+  document.querySelectorAll("#emoteGroups .emote-chip").forEach(c => c.classList.remove("selected"));
   document.getElementById("newTitle").value = "";
   document.getElementById("newMessage").value = "";
   renderRewards();
