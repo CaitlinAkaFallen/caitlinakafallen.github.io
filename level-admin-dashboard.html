@@ -1350,7 +1350,7 @@
       <div class="field full-row hint">
         The card computes XP itself from the rates on the Levels &amp; Rewards tab, so your Streamer.bot actions only need to broadcast the <b>raw</b> event via <code>CPH.WebsocketBroadcastJson()</code> under a <code>Custom</code> event:
         <code>{source:"levelup", eventName, user, avatar, quantity}</code> — where <code>eventName</code> is one of <code>Sub / ReSub / GiftSub / Cheer / Donation / Raid / ChannelPointRedeem</code>, and <code>quantity</code> is bits cheered, subs gifted, raiders, or dollars (omit/1 for flat events like Sub or Channel Point Redeem). The <code>source:"levelup"</code> field is required — both this dashboard and the card overlay only listen for that tag, so unrelated Streamer.bot broadcasts (like other custom actions) are never mistaken for a level event.<br><br>
-        If an action ever broadcasts a fully pre-computed payload instead (<code>xpGained</code>/<code>totalXp</code>/etc. already set), the card detects that and uses it as-is — just keep the <code>source:"levelup"</code> tag on it too.<br><br>
+        If an action ever broadcasts a fully pre-computed payload instead (<code>xpGained</code>/<code>totalXp</code>/etc. already set), the card detects that and uses it as-is — just keep the <code>source:"levelup"</code> tag on it too. <b>Important:</b> the C# action's hardcoded curve (<code>CurveBase</code>/<code>CurveGrowth</code>) must match the Base XP / Growth values on this tab, or the <code>leveledUp</code> flag it computes can desync from what this dashboard would compute — this dashboard now re-derives unlocked milestones from the viewer's current level on every event regardless, so a desync only delays an unlock by one event instead of losing it.<br><br>
         For real grants to persist across Streamer.bot restarts too, add a small action <code>LVL_GrantXP</code> that reads <code>user</code>/<code>eventName</code>/<code>quantity</code> via <code>CPH.TryGetArg</code>, stores running totals in a global var like <code>lvl_xp_{user}</code> (guard first read with a <code>GetGlobalVar</code> null-check), then re-broadcasts the raw event. This mirrors your <code>sw_inv_</code> / <code>wheel_inv_</code> pattern.
       </div>
 
@@ -1552,6 +1552,33 @@ function handleRewardFieldEdit(input){
   bc && bc.postMessage({ type:"rewards_update", rewards });
   renderRewards();
   showToast("Milestone updated");
+
+  // A level/title edit can change which rewards are eligible to unlock for
+  // a viewer already at or above that level, so re-sync every tracked
+  // viewer's unlockedLevels against the current reward list right away —
+  // otherwise a newly-added or renumbered milestone stays invisible to
+  // $redeem until that viewer's next XP event.
+  resyncAllViewersUnlocks();
+}
+
+/* Re-derives unlockedLevels for every tracked viewer from their current
+   level against the current reward list. Safe to call anytime — it only
+   adds missing entries, never removes existing unlocks or claims. Used
+   after rewards are added/edited/deleted so newly-added or renumbered
+   milestones apply immediately instead of waiting for that viewer's next
+   XP event. */
+function resyncAllViewersUnlocks(){
+  const users = load(LS_USERS, {});
+  let changed = false;
+  Object.keys(users).forEach(key => {
+    if (unlockRewardsUpToLevel(users[key], users[key].level || 1)) changed = true;
+  });
+  if (changed){
+    save(LS_USERS, users);
+    bc && bc.postMessage({ type:"users_bulk_update" });
+    renderUsers();
+    renderRewardStatus();
+  }
 }
 
 /* A short fallback list of well-known Twitch global emote codes, used only
@@ -1967,6 +1994,7 @@ document.getElementById("addRewardBtn").onclick = () => {
   document.getElementById("newTitle").value = "";
   document.getElementById("newMessage").value = "";
   renderRewards();
+  resyncAllViewersUnlocks();
 };
 renderRewards();
 
@@ -2275,6 +2303,12 @@ function fillTemplate(tpl, vars){
  *   processClaim(username, "No Swearing") -> claims that SPECIFIC reward by title (case-insensitive),
  *                                             telling the viewer if it doesn't exist, isn't unlocked yet,
  *                                             or was already used.
+ * NOTE: before doing anything else, this re-derives unlockedLevels from
+ * the viewer's current level (unlockRewardsUpToLevel) so a reward added,
+ * renamed, or renumbered on the Levels & Rewards tab — or an unlock that
+ * was missed because an earlier XP event arrived with a stale leveledUp
+ * flag — is picked up right here, at claim time, instead of requiring
+ * another XP event to "notice" it first.
  */
 function processClaim(username, requestedName){
   const chatCfg = loadChatCfg();
@@ -2283,6 +2317,11 @@ function processClaim(username, requestedName){
   const rec = users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], history:[] };
   rec.unlockedLevels = rec.unlockedLevels || [];
   rec.claimedLevels = rec.claimedLevels || [];
+  if (unlockRewardsUpToLevel(rec, rec.level || 1)){
+    users[key] = rec;
+    save(LS_USERS, users);
+    bc && bc.postMessage({ type:"user_update", user:key, data:rec });
+  }
   const rewards = load(LS_REWARDS, []);
   const pendingLevels = rec.unlockedLevels.filter(l => !rec.claimedLevels.includes(l)).sort((a,b) => a-b);
 
@@ -2635,7 +2674,14 @@ function buildEventPayload(user){
  * exactly matches the level just reached" because a single XP grant or
  * event can jump several levels at once (e.g. a big bit cheer, or a manual
  * test grant) — in that case every milestone in between should unlock too,
- * not just the one matching the final level landed on. Returns true if
+ * not just the one matching the final level landed on. Also called
+ * unconditionally (not just on a "level up" transition) from
+ * applyLiveEvent/grantBtn/processClaim/resyncAllViewersUnlocks, so it's
+ * self-healing: if a leveledUp flag from an external source (e.g. the
+ * Streamer.bot C# action, which computes its own copy of the curve) ever
+ * disagrees with rec.level, or a reward gets added/renumbered after a
+ * viewer already passed that level, the next touch of that viewer's record
+ * catches it up instead of leaving it permanently missed. Returns true if
  * anything new was unlocked.
  */
 function unlockRewardsUpToLevel(rec, level){
@@ -2669,18 +2715,21 @@ document.getElementById("grantBtn").onclick = () => {
   rec.level = data.level;
   if (data.leveledUp){
     rec.history.push({ level:data.level, ts:Date.now() });
-    unlockRewardsUpToLevel(rec, data.level);
   }
+  // Unconditional — see unlockRewardsUpToLevel's comment. Runs on every
+  // grant, not just ones flagged leveledUp, so it can't silently skip a
+  // milestone.
+  const unlockedAnything = unlockRewardsUpToLevel(rec, rec.level);
   users[key] = rec;
   save(LS_USERS, users);
   bc && bc.postMessage({ type:"user_update", user: key, data: rec });
   bc && bc.postMessage({ type:"live_event", data });
   renderUsers();
   renderRewardStatus();
-  showToast("XP granted" + (data.leveledUp ? " — milestones up to Level " + data.level + " unlocked" : ""));
+  showToast("XP granted" + (unlockedAnything ? " — milestones up to Level " + rec.level + " unlocked" : ""));
 };
 
-bc && (bc.onmessage = (e) => { const m = e.data||{}; if (m.type === "user_update"){ renderUsers(); renderRewardStatus(); } });
+bc && (bc.onmessage = (e) => { const m = e.data||{}; if (m.type === "user_update" || m.type === "users_bulk_update"){ renderUsers(); renderRewardStatus(); } });
 window.addEventListener("storage", (e) => {
   if ([LS_USERS, LS_REWARDS, LS_DISPLAY, LS_XPRATES, LS_CURVE].includes(e.key)){
     renderUsers(); renderRewards(); refreshDisplayToggles(); renderXpRates(); refreshCurveInputs(); refreshComputedXpPreview();
@@ -2701,6 +2750,22 @@ function resolveLiveEvent(raw){
   const leveledUp = level > (prev.level || 1);
   return { ...raw, xpGained, totalXp, level, xpIntoLevel, xpForNextLevel, leveledUp };
 }
+/**
+ * FIX (unlock desync): this used to only call unlockRewardsUpToLevel()
+ * inside the `if (data.leveledUp)` branch. data.leveledUp can come
+ * straight from the C# Streamer.bot action, which keeps its own hardcoded
+ * copy of the XP curve (CurveBase/CurveGrowth in LevelUp.cs) — if that
+ * ever drifts from the curve saved here (Levels & Rewards tab), C# could
+ * report leveledUp:false for an event that, by this dashboard's own
+ * curve/level math, actually crossed a milestone. rec.level itself was
+ * still being overwritten unconditionally either way, so the viewer's
+ * displayed level would silently outrun their unlockedLevels list and a
+ * reward like "No Swearing" would never unlock even though they were
+ * clearly past that level. unlockRewardsUpToLevel() now always runs
+ * against rec.level (the source of truth in localStorage), regardless of
+ * what leveledUp said — it's idempotent, so this is free on events where
+ * nothing new unlocks.
+ */
 function applyLiveEvent(raw){
   const data = resolveLiveEvent(raw);
   const key = normUser(data.user);
@@ -2711,8 +2776,8 @@ function applyLiveEvent(raw){
   if (data.avatar) rec.avatar = data.avatar;
   if (data.leveledUp){
     rec.history.push({ level: data.level, ts: Date.now() });
-    unlockRewardsUpToLevel(rec, data.level);
   }
+  unlockRewardsUpToLevel(rec, rec.level);
   users[key] = rec;
   save(LS_USERS, users);
   bc && bc.postMessage({ type:"user_update", user:key, data:rec });
