@@ -877,7 +877,7 @@
         <button class="ghost-btn" id="testTwitchApiBtn">Test Connection</button>
       </div>
       <div class="hint full-row">
-        <b>Get Token via Twitch Login</b> saves your Client ID, then sends you to Twitch to log in as your <b>bot account</b> and approve access. Twitch sends you back here with a token issued by <i>your</i> app — it's saved into the Bot OAuth Token field above automatically, so the Client ID and token are guaranteed to match. This is the fix for "Twitch rejected that Client ID / token combo" errors from Fetch Emotes.
+        <b>Get Token via Twitch Login</b> saves your Client ID, then sends you to Twitch to log in as your <b>bot account</b> and approve access. Twitch sends you back here with a token issued by <i>your</i> app — it's saved into the Bot OAuth Token field above automatically, so the Client ID and token are guaranteed to match. This is the fix for "Twitch rejected that Client ID / token combo" errors from Fetch Emotes. (For pulling in emotes from channels <i>you personally</i> subscribe to, see "My Subscribed Channels" on the Levels &amp; Rewards tab — that's a separate login, on purpose, since it needs your main streamer account rather than the bot.)
       </div>
     </div>
 
@@ -931,6 +931,19 @@
           </div>
 
           <div id="emoteChannelChips" class="emote-channel-chips"></div>
+
+          <div class="field-row mb-14">
+            <div class="field flex-2-minw">
+              <label>My Subscribed Channels</label>
+              <div class="hint">Pulls in emotes from every channel <i>you personally</i> subscribe to, follow-only emotes, and your Bits emotes — straight from Twitch. This needs its own login (your main streamer account, since that's the one with subs), separate from the Bot OAuth Token above.</div>
+              <div class="input-group" style="margin-top:8px;">
+                <button type="button" class="ghost-btn" id="connectMyEmotesBtn">Connect My Account</button>
+                <button type="button" class="ghost-btn" id="refreshMyEmotesBtn">Refresh</button>
+              </div>
+              <div class="emote-fetch-status" id="myEmotesStatus"></div>
+            </div>
+          </div>
+
           <div id="emoteGroups"></div>
 
           <div class="hint">
@@ -1359,6 +1372,8 @@ const LS_TWITCH_API_CFG = "fallenoneart_levelup_twitch_api_cfg";
 const LS_EMOTE_CHANNELS = "fallenoneart_levelup_emote_channels";
 const LS_GLOBAL_EMOTES  = "fallenoneart_levelup_global_emotes";
 const EMOTE_CACHE_MS = 12 * 60 * 60 * 1000;
+const LS_MY_EMOTES_CFG   = "fallenoneart_levelup_my_emotes_cfg";
+const LS_MY_EMOTES_CACHE = "fallenoneart_levelup_my_emotes_cache";
 
 const EVENT_META = {
   Sub:                { label:"New Sub",             unit:"per sub" },
@@ -1563,8 +1578,9 @@ function twitchApiCreds(){
   const token = bearerToken(loadBotCfg().botToken || "");
   return { clientId, token };
 }
-async function helixFetch(url){
-  const { clientId, token } = twitchApiCreds();
+async function helixFetch(url, tokenOverride){
+  const clientId = (loadTwitchApiCfg().clientId || "").trim();
+  const token = tokenOverride || bearerToken(loadBotCfg().botToken || "");
   if (!clientId || !token){
     throw new Error("Set a Twitch Client ID and save a Bot OAuth Token first (Connection tab → Twitch API section).");
   }
@@ -1611,6 +1627,115 @@ function saveEmoteChannels(list){ save(LS_EMOTE_CHANNELS, list); }
 function loadGlobalEmotesCache(){ return load(LS_GLOBAL_EMOTES, null); }
 function saveGlobalEmotesCache(entry){ save(LS_GLOBAL_EMOTES, entry); }
 
+/* ============================================================
+   MY SUBSCRIBED CHANNELS — pulls emotes from every channel the
+   logged-in viewer (usually the streamer's main account, not the
+   bot) actually subscribes to or follows, via Helix's
+   /chat/emotes/user endpoint. Requires its own OAuth token with
+   the user:read:emotes scope — kept fully separate from the Bot
+   OAuth Token so logging in here never disturbs the IRC bot login.
+   ============================================================ */
+function loadMyEmotesCfg(){ return load(LS_MY_EMOTES_CFG, { token:"" }); }
+function saveMyEmotesToken(rawToken){
+  save(LS_MY_EMOTES_CFG, { token: "oauth:" + bearerToken(rawToken) });
+}
+function myEmotesToken(){ return bearerToken(loadMyEmotesCfg().token || ""); }
+function loadMyEmotesCache(){ return load(LS_MY_EMOTES_CACHE, null); }
+function saveMyEmotesCache(entry){ save(LS_MY_EMOTES_CACHE, entry); }
+
+function setMyEmotesStatus(msg, isError){
+  const el = document.getElementById("myEmotesStatus");
+  if (!el) return;
+  if (!msg){ el.classList.remove("show", "error", "ok"); el.textContent = ""; return; }
+  el.textContent = msg;
+  el.classList.add("show");
+  el.classList.toggle("error", !!isError);
+  el.classList.toggle("ok", !isError);
+}
+function refreshMyEmotesButtons(){
+  const hasToken = !!myEmotesToken();
+  const connectBtn = document.getElementById("connectMyEmotesBtn");
+  const refreshBtn = document.getElementById("refreshMyEmotesBtn");
+  if (connectBtn) connectBtn.textContent = hasToken ? "Reconnect My Account" : "Connect My Account";
+  if (refreshBtn) refreshBtn.disabled = !hasToken;
+  const cache = loadMyEmotesCache();
+  if (hasToken && cache && cache.groups){
+    const total = cache.groups.reduce((sum, g) => sum + g.emotes.length, 0);
+    setMyEmotesStatus(`Loaded ${total} emotes from ${cache.groups.length} channel(s).`, false);
+  } else if (hasToken){
+    setMyEmotesStatus(`Connected — click Refresh to load your subscribed-channel emotes.`, false);
+  } else {
+    setMyEmotesStatus("");
+  }
+}
+/** Resolves the Twitch user ID belonging to whichever token is passed (the "self" user for that OAuth token). */
+async function resolveSelfUserId(token){
+  const data = await helixFetch(`https://api.twitch.tv/helix/users`, token);
+  const user = (data.data || [])[0];
+  if (!user) throw new Error("Couldn't resolve the logged-in Twitch account.");
+  return user.id;
+}
+/** Batch-resolves broadcaster display names for a list of user IDs (Helix allows up to 100 ids per call). */
+async function resolveUserNames(ids, token){
+  const names = {};
+  for (let i = 0; i < ids.length; i += 100){
+    const chunk = ids.slice(i, i + 100);
+    const query = chunk.map(id => `id=${encodeURIComponent(id)}`).join("&");
+    const data = await helixFetch(`https://api.twitch.tv/helix/users?${query}`, token);
+    (data.data || []).forEach(u => { names[u.id] = u.display_name || u.login; });
+  }
+  return names;
+}
+async function fetchMySubscribedEmotes(){
+  const token = myEmotesToken();
+  if (!token) throw new Error("Connect your account first with the button above.");
+  const userId = await resolveSelfUserId(token);
+  const data = await helixFetch(`https://api.twitch.tv/helix/chat/emotes/user?user_id=${userId}`, token);
+  const raw = data.data || [];
+  if (!raw.length) return [];
+  const ownerIds = [...new Set(raw.map(e => e.owner_id).filter(Boolean))];
+  const names = ownerIds.length ? await resolveUserNames(ownerIds, token) : {};
+  const byOwner = {};
+  raw.forEach(e => {
+    const ownerId = e.owner_id || "global";
+    if (!byOwner[ownerId]) byOwner[ownerId] = [];
+    byOwner[ownerId].push({
+      name: e.name,
+      url: (e.images && (e.images.url_2x || e.images.url_1x || e.images.url_4x)) || ""
+    });
+  });
+  return Object.keys(byOwner).map(ownerId => ({
+    label: names[ownerId] ? `${names[ownerId]}'s emotes (subscribed)` : "Emotes",
+    emotes: byOwner[ownerId]
+  }));
+}
+async function loadMySubscribedEmotes(){
+  const btn = document.getElementById("refreshMyEmotesBtn");
+  const orig = btn ? btn.textContent : "";
+  if (btn){ btn.disabled = true; btn.textContent = "Loading…"; }
+  setMyEmotesStatus("Fetching your subscribed-channel emotes…", false);
+  try{
+    const groups = await fetchMySubscribedEmotes();
+    saveMyEmotesCache({ groups, fetchedAt: Date.now() });
+    renderEmoteGroups();
+    const total = groups.reduce((sum, g) => sum + g.emotes.length, 0);
+    setMyEmotesStatus(total ? `Loaded ${total} emotes from ${groups.length} channel(s).` : "No subscribed-channel emotes found on this account.", false);
+    showToast("Subscribed-channel emotes loaded");
+  }catch(err){
+    setMyEmotesStatus(err.message || "Couldn't load your subscribed-channel emotes.", true);
+    showToast(err.message || "Couldn't load your subscribed-channel emotes.");
+  }finally{
+    if (btn){ btn.disabled = false; btn.textContent = orig; }
+  }
+}
+document.getElementById("connectMyEmotesBtn").onclick = () => {
+  saveTwitchApiCfgFromInputs();
+  const url = buildTwitchAuthorizeUrl({ scope: "user:read:emotes", state: "myemotes" });
+  if (url) window.location.href = url;
+};
+document.getElementById("refreshMyEmotesBtn").onclick = () => loadMySubscribedEmotes();
+refreshMyEmotesButtons();
+
 function emoteChipHtml(e){
   return `<button type="button" class="emote-chip emote-chip-img" data-code="${escapeHtml(e.name)}" title="${escapeHtml(e.name)}">${e.url ? `<img src="${escapeHtml(e.url)}" alt="" loading="lazy">` : ""}<span>${escapeHtml(e.name)}</span></button>`;
 }
@@ -1644,6 +1769,17 @@ function renderEmoteGroups(){
     group.innerHTML = `<div class="emote-group-label">${escapeHtml(ch.login)}'s emotes</div><div class="emote-picker">${ch.emotes.map(emoteChipHtml).join("")}</div>`;
     wrap.appendChild(group);
   });
+
+  const myEmotesCache = loadMyEmotesCache();
+  if (myEmotesCache && myEmotesCache.groups){
+    myEmotesCache.groups.forEach(g => {
+      if (!g.emotes || !g.emotes.length) return;
+      const group = document.createElement("div");
+      group.className = "emote-group";
+      group.innerHTML = `<div class="emote-group-label">${escapeHtml(g.label)}</div><div class="emote-picker">${g.emotes.map(emoteChipHtml).join("")}</div>`;
+      wrap.appendChild(group);
+    });
+  }
 
   wireEmoteChips(wrap);
 }
@@ -1920,7 +2056,7 @@ document.getElementById("adminUrlField").value = `${FALLENONE_DOMAIN}/${ADMIN_DA
    a Client Secret, and this page has no server to hold one), and
    this dashboard's own URL registered as an OAuth Redirect URL.
    ============================================================ */
-function buildTwitchAuthorizeUrl(){
+function buildTwitchAuthorizeUrl(opts){
   const clientId = document.getElementById("twitchClientId").value.trim();
   if (!clientId){
     showToast("Enter and save your Twitch Client ID first.");
@@ -1931,31 +2067,41 @@ function buildTwitchAuthorizeUrl(){
     client_id: clientId,
     redirect_uri: redirectUri,
     response_type: "token",
-    scope: "chat:read chat:edit",
+    scope: (opts && opts.scope) || "chat:read chat:edit",
+    state: (opts && opts.state) || "bot",
     force_verify: "true"
   });
   return "https://id.twitch.tv/oauth2/authorize?" + params.toString();
 }
 document.getElementById("getBotTokenBtn").onclick = () => {
   saveTwitchApiCfgFromInputs();
-  const url = buildTwitchAuthorizeUrl();
+  const url = buildTwitchAuthorizeUrl({ scope: "chat:read chat:edit", state: "bot" });
   if (url) window.location.href = url;
 };
 /* On return from Twitch, the access token arrives in the URL hash
-   (e.g. #access_token=xxxx&scope=...). Capture it, save it as the
-   Bot OAuth Token, and strip it out of the address bar. */
+   (e.g. #access_token=xxxx&scope=...&state=...). The "state" param
+   tells us which of the two separate logins this was — the bot
+   account login (IRC chat) or the "My Subscribed Channels" login
+   (a different account's emotes) — so each token lands in its own
+   storage rather than overwriting the other. */
 (function captureTwitchTokenFromHash(){
   if (!location.hash || location.hash.indexOf("access_token=") === -1) return;
   const params = new URLSearchParams(location.hash.slice(1));
   const token = params.get("access_token");
   const err = params.get("error_description");
+  const state = params.get("state") || "bot";
   history.replaceState(null, "", location.pathname + location.search);
   if (err){ showToast("Twitch login failed: " + err); return; }
   if (!token) return;
-  const cfg = loadBotCfg();
-  cfg.botToken = "oauth:" + token;
-  save(LS_BOT_CFG, cfg);
-  showToast("Twitch token received and saved ✓ — reconnecting bot…");
+  if (state === "myemotes"){
+    saveMyEmotesToken(token);
+    showToast("Account connected ✓ — click Refresh to load your emotes.");
+  } else {
+    const cfg = loadBotCfg();
+    cfg.botToken = "oauth:" + token;
+    save(LS_BOT_CFG, cfg);
+    showToast("Twitch token received and saved ✓ — reconnecting bot…");
+  }
 })();
 
 function copyFieldValue(inputId, btnId){
