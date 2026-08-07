@@ -768,21 +768,8 @@
       .emote-fetch-status.error{ color:var(--accent-tertiary); }
       .emote-fetch-status.ok{ color:var(--accent-primary); }
 
-      .badge-emote-icon{ width:28px; height:28px; object-fit:contain; vertical-align:middle; display:inline-block; flex:0 0 auto; border-radius:4px; background:rgba(0,0,0,0.15); }
-      .badge-cell{ display:flex; align-items:center; gap:8px; }
-      .badge-cell.has-emote .reward-edit-badge{
-        width:0; min-width:0; padding:4px 0; border:none; opacity:0; flex:0 0 0px; pointer-events:none;
-      }
-      .badge-cell.has-emote:hover .reward-edit-badge,
-      .badge-cell.has-emote .reward-edit-badge:focus{
-        width:90px; min-width:90px; padding:4px 6px; opacity:1; flex:1 1 90px; pointer-events:auto; border-color:var(--border-medium);
-      }
-      .badge-pick-btn{
-        background:transparent; border:1px dashed var(--border-medium); color:var(--text-tertiary);
-        border-radius:6px; width:28px; height:28px; font-size:12px; cursor:pointer; flex:0 0 auto;
-        display:flex; align-items:center; justify-content:center; transition:all .2s ease;
-      }
-      .badge-pick-btn:hover{ border-color:var(--accent-primary); color:var(--accent-primary); background:rgba(125,232,200,0.08); }
+      .badge-emote-icon{ width:22px; height:22px; object-fit:contain; vertical-align:middle; display:inline-block; flex:0 0 auto; }
+      .badge-cell{ display:flex; align-items:center; gap:6px; }
 
       .reward-edit-input{
         width:100%; background:transparent; border:1px solid transparent; border-radius:6px;
@@ -792,10 +779,7 @@
       .reward-edit-input:hover{ border-color:var(--border-medium); background:rgba(30,25,50,0.4); }
       .reward-edit-input:focus{ outline:none; border-color:var(--accent-primary); background:rgba(30,25,50,0.6); box-shadow:0 0 0 2px rgba(125,232,200,0.15); }
       .reward-edit-level{ width:56px; flex:0 0 auto; }
-      .reward-edit-badge{ flex:1; min-width:70px; transition:width .2s ease, opacity .2s ease, padding .2s ease; }
-
-      .badge-live-preview{ display:inline-flex; align-items:center; gap:6px; margin-top:8px; font-size:11px; color:var(--text-tertiary); }
-      .badge-live-preview img{ width:24px; height:24px; object-fit:contain; border-radius:4px; background:rgba(0,0,0,0.15); }
+      .reward-edit-badge{ flex:1; min-width:70px; }
 </style>
 </head>
 <body>
@@ -929,7 +913,7 @@
         </table>
       </div>
 
-      <div class="section-divider"><h3>Rewards &amp; Milestones</h3><div class="sub">What a viewer unlocks (and can claim) at each level. Every field below is editable in place — click a cell and change it. Badges that match a known Twitch emote render as the actual emote image; hover/click the image to edit the code, or tap ✎ to reopen the picker.</div></div>
+      <div class="section-divider"><h3>Rewards &amp; Milestones</h3><div class="sub">What a viewer unlocks (and can claim) at each level. Every field below is editable in place — click a cell and change it.</div></div>
       <div class="field full-row">
         <table>
           <thead><tr><th class="table-col-50">Level</th><th>Badge</th><th>Title</th><th>Message</th><th class="table-col-70"></th></tr></thead>
@@ -944,7 +928,6 @@
           <input type="text" id="newMessage" placeholder="Message (optional)" class="reward-input-message">
           <button class="primary-btn" id="addRewardBtn">+ Add Milestone</button>
         </div>
-        <div class="badge-live-preview" id="newBadgePreview"></div>
         <div class="emote-picker-wrap">
           <div class="emote-picker-label">Tap a Twitch emote to use as the badge — no emoji keyboard needed:</div>
 
@@ -955,7 +938,7 @@
                 <input type="text" id="emoteChannelInput" placeholder="twitch username">
                 <button type="button" class="ghost-btn" id="addEmoteChannelBtn">Fetch Emotes</button>
               </div>
-              <div class="hint">Each streamer types their own channel name here and pulls their own emote set live from Twitch — nothing is shared until they add themselves. Needs a Twitch Client ID and saved Bot OAuth Token — set both on the <b>Connection</b> tab first. Your own channel (Stream Account Name on the Connection tab) is fetched automatically once those are saved.</div>
+              <div class="hint">Each streamer types their own channel name here and pulls their own emote set live from Twitch — nothing is shared until they add themselves. Needs a Twitch Client ID and saved Bot OAuth Token — set both on the <b>Connection</b> tab first.</div>
               <div class="emote-fetch-status" id="emoteFetchStatus"></div>
             </div>
           </div>
@@ -1132,6 +1115,13 @@
         <b>Grant</b> applies the same calculation and persists it as a manual override.<br>
         Real subs/cheers/raids no longer need this panel — see <b>Activity &amp; Viewers</b>, which applies XP automatically.
       </div>
+
+      <div class="section-divider"><h3>Reward Status</h3><div class="sub">Exactly what this viewer has unlocked vs. actually claimed — use this to see why <code>$redeem</code> is or isn't working.</div></div>
+      <div class="field full-row" id="rewardStatusBox"></div>
+      <div class="action-bar">
+        <button class="ghost-btn danger" id="resetClaimsBtn">Reset This Viewer's Claims (testing)</button>
+      </div>
+      <div class="hint full-row">Clears only their <b>claimed</b> list so already-unlocked rewards can be <code>$redeem</code>'d again for testing — their XP, level, and unlocked list are untouched. This is a local shortcut; the real in-chat equivalent is <code>$refund</code>.</div>
     </div>
 
     <div class="panel" id="panel-activity">
@@ -1502,15 +1492,6 @@ renderXpRates();
    emote), and handleRewardFieldEdit() persists a change back
    into LS_REWARDS by the row's original level (used as the
    lookup key even while the level field itself is being edited).
-
-   Badge column behavior: when the badge text resolves to a known
-   Twitch emote (global / subscribed-channel / manually-added-channel),
-   the cell shows the actual emote IMAGE front-and-center and the
-   text input shrinks out of the way (still reachable on hover/focus
-   to retype it). A small "✎" button next to the image reopens the
-   emote picker further down the tab so it's obvious how to change it.
-   If nothing matches (a plain emoji like "★", or an emote that hasn't
-   been fetched yet), the cell just shows the editable text as before.
    ============================================================ */
 function renderRewards(){
   const rewards = load(LS_REWARDS, []).sort((a,b) => a.level - b.level);
@@ -1518,14 +1499,12 @@ function renderRewards(){
   body.innerHTML = rewards.length ? "" : `<tr><td colspan="5" class="empty">No milestones yet — add one below.</td></tr>`;
   rewards.forEach((r) => {
     const tr = document.createElement("tr");
-    const emoteUrl = findEmoteUrlByName(r.badge);
-    const badgeIconHtml = emoteUrl ? `<img class="badge-emote-icon" src="${escapeHtml(emoteUrl)}" alt="${escapeHtml(r.badge||"")}" title="${escapeHtml(r.badge||"")}">` : "";
+    const badgeIconHtml = renderBadgeIconHtml(r.badge);
     tr.innerHTML = `
       <td><input type="number" class="reward-edit-input reward-edit-level" data-orig-level="${r.level}" data-field="level" value="${r.level}" min="1"></td>
-      <td class="badge-cell${emoteUrl ? " has-emote" : ""}" data-orig-level="${r.level}">
+      <td class="badge-cell">
         ${badgeIconHtml}
         <input type="text" class="reward-edit-input reward-edit-badge" data-orig-level="${r.level}" data-field="badge" value="${escapeHtml(r.badge||"")}">
-        <button type="button" class="badge-pick-btn" data-pick-level="${r.level}" title="Pick emote">✎</button>
       </td>
       <td><input type="text" class="reward-edit-input" data-orig-level="${r.level}" data-field="title" value="${escapeHtml(r.title||"")}"></td>
       <td><input type="text" class="reward-edit-input" data-orig-level="${r.level}" data-field="message" value="${escapeHtml(r.message||"")}"></td>
@@ -1545,18 +1524,7 @@ function renderRewards(){
   body.querySelectorAll(".reward-edit-input").forEach(input => {
     input.addEventListener("change", () => handleRewardFieldEdit(input));
   });
-  body.querySelectorAll("[data-pick-level]").forEach(btn => {
-    btn.onclick = () => {
-      const lvl = Number(btn.getAttribute("data-pick-level"));
-      pickEmoteForExistingReward = lvl;
-      switchTabRef && switchTabRef("levels");
-      document.getElementById("emoteGroups").scrollIntoView({ behavior:"smooth", block:"start" });
-      showToast("Tap an emote below to set this milestone's badge");
-    };
-  });
 }
-let pickEmoteForExistingReward = null;
-let switchTabRef = null;
 function handleRewardFieldEdit(input){
   const origLevel = Number(input.getAttribute("data-orig-level"));
   const field = input.getAttribute("data-field");
@@ -1597,21 +1565,17 @@ const COMMON_TWITCH_EMOTES = [
 
 /* ============================================================
    TWITCH API (Helix) — live emote picker.
-   Sources feed the picker (and the reward table's badge icons),
-   each cached ~12h:
+   Three sources feed the picker (and the reward table's badge
+   icons), each cached ~12h:
      1. Global Twitch emotes (fetchGlobalEmotesLive) — no special
         scope needed.
      2. Your subscribed channels' emotes (fetchSubscribedEmoteGroups,
         via Get User Emotes) — needs user:read:emotes on the token,
         grouped by streamer automatically.
-     3. Your OWN channel (fetchOwnChannelEmotes, using the Stream
-        Account Name from the Connection tab) — fetched automatically
-        as soon as a Client ID + Bot OAuth Token are saved, so your
-        own sub/bit emotes always resolve without a manual step.
-     4. Manually-added channels (fetchChannelEmotesFor, via Get
+     3. Manually-added channels (fetchChannelEmotesFor, via Get
         Channel Emotes) — any streamer types their own name in to
         pull their full public emote set, sub-status or not.
-   All four feed buildEmoteIndex(), which the rewards table uses
+   All three feed buildEmoteIndex(), which the rewards table uses
    to show a real image next to any badge whose text matches a
    known emote code.
    ============================================================ */
@@ -1644,7 +1608,6 @@ function refreshTwitchApiStatusBanner(){
 document.getElementById("saveTwitchApiCfgBtn").onclick = () => {
   saveTwitchApiCfgFromInputs();
   showToast("Twitch Client ID saved");
-  ensureOwnChannelEmotesLoaded();
 };
 document.getElementById("testTwitchApiBtn").onclick = async () => {
   const btn = document.getElementById("testTwitchApiBtn");
@@ -1799,7 +1762,6 @@ async function loadSubscribedEmotesNow(isManual){
     saveSubscribedEmotesCache({ groups, fetchedAt: Date.now() });
     renderEmoteGroups();
     renderRewards();
-    updateNewBadgePreview();
     const msg = groups.length
       ? `Loaded emotes from ${groups.length} subscribed channel(s)`
       : "No subscribed-channel emotes found (only global emotes are available right now).";
@@ -1819,36 +1781,6 @@ async function ensureSubscribedEmotesLoaded(){
   await loadSubscribedEmotesNow(false);
 }
 document.getElementById("loadSubEmotesBtn").onclick = () => loadSubscribedEmotesNow(true);
-
-/* ---- Your own channel's emotes, fetched automatically ----
-   Uses the "Stream Account Name" from the Connection tab, so the
-   broadcaster's own sub/bit emotes (e.g. a custom raid emote) are
-   always available for badges without having to type the channel
-   name into the "Add a channel" box by hand. Stored in the same
-   LS_EMOTE_CHANNELS list as manually-added channels, just tagged
-   own:true so it's labeled "(your channel)" and re-synced whenever
-   the Stream Account Name changes. */
-async function ensureOwnChannelEmotesLoaded(){
-  const { clientId, token } = twitchApiCreds();
-  const streamAccount = (loadBotCfg().streamAccount || "").trim().toLowerCase();
-  if (!clientId || !token || !streamAccount) return;
-  const channels = loadEmoteChannels();
-  const existing = channels.find(c => c.login === streamAccount);
-  const fresh = existing && (Date.now() - (existing.fetchedAt || 0) < EMOTE_CACHE_MS);
-  if (existing && existing.own && fresh) return;
-  try{
-    const emotes = await fetchChannelEmotesFor(streamAccount);
-    const next = channels.filter(c => c.login !== streamAccount);
-    next.unshift({ login: streamAccount, emotes, fetchedAt: Date.now(), own: true });
-    saveEmoteChannels(next);
-    renderEmoteChannelChips();
-    renderEmoteGroups();
-    renderRewards();
-    updateNewBadgePreview();
-  }catch(err){
-    /* silent — badge just falls back to plain text until this succeeds */
-  }
-}
 
 function loadEmoteChannels(){ return load(LS_EMOTE_CHANNELS, []); }
 function saveEmoteChannels(list){ save(LS_EMOTE_CHANNELS, list); }
@@ -1882,15 +1814,6 @@ function renderBadgeIconHtml(badge){
   const safe = escapeHtml((badge || "").trim());
   return `<img class="badge-emote-icon" src="${escapeHtml(url)}" alt="${safe}" title="${safe}">`;
 }
-function updateNewBadgePreview(){
-  const wrap = document.getElementById("newBadgePreview");
-  if (!wrap) return;
-  const badge = document.getElementById("newBadge").value;
-  const url = findEmoteUrlByName(badge);
-  wrap.innerHTML = url
-    ? `<img src="${escapeHtml(url)}" alt="${escapeHtml(badge)}"><span>Matches a known emote — this image will show as the badge.</span>`
-    : (badge.trim() ? `<span>No emote match yet — will be used as plain text/emoji.</span>` : "");
-}
 
 function emoteChipHtml(e){
   return `<button type="button" class="emote-chip emote-chip-img" data-code="${escapeHtml(e.name)}" title="${escapeHtml(e.name)}">${e.url ? `<img src="${escapeHtml(e.url)}" alt="" loading="lazy">` : ""}<span>${escapeHtml(e.name)}</span></button>`;
@@ -1899,24 +1822,9 @@ function wireEmoteChips(container){
   const badgeInput = document.getElementById("newBadge");
   container.querySelectorAll(".emote-chip").forEach(chip => {
     chip.onclick = () => {
-      const code = chip.getAttribute("data-code");
-      if (pickEmoteForExistingReward !== null){
-        const rewards = load(LS_REWARDS, []);
-        const idx = rewards.findIndex(r => Number(r.level) === pickEmoteForExistingReward);
-        if (idx !== -1){
-          rewards[idx].badge = code;
-          save(LS_REWARDS, rewards);
-          bc && bc.postMessage({ type:"rewards_update", rewards });
-          renderRewards();
-          showToast(`Badge set to ${code} for Level ${pickEmoteForExistingReward}`);
-        }
-        pickEmoteForExistingReward = null;
-        return;
-      }
-      badgeInput.value = code;
+      badgeInput.value = chip.getAttribute("data-code");
       document.querySelectorAll("#emoteGroups .emote-chip").forEach(c => c.classList.toggle("selected", c === chip));
       badgeInput.focus();
-      updateNewBadgePreview();
     };
   });
 }
@@ -1945,8 +1853,7 @@ function renderEmoteGroups(){
   loadEmoteChannels().forEach(ch => {
     const group = document.createElement("div");
     group.className = "emote-group";
-    const label = ch.own ? `${escapeHtml(ch.login)} (your channel)` : `${escapeHtml(ch.login)}'s emotes`;
-    group.innerHTML = `<div class="emote-group-label">${label}</div><div class="emote-picker">${ch.emotes.map(emoteChipHtml).join("")}</div>`;
+    group.innerHTML = `<div class="emote-group-label">${escapeHtml(ch.login)}'s emotes</div><div class="emote-picker">${ch.emotes.map(emoteChipHtml).join("")}</div>`;
     wrap.appendChild(group);
   });
 
@@ -1965,7 +1872,7 @@ function renderEmoteChannelChips(){
     const tag = document.createElement("div");
     tag.className = "channel-tag";
     tag.innerHTML = `
-      <span class="channel-tag-name">${escapeHtml(ch.login)}${ch.own ? " (you)" : ""}</span>
+      <span class="channel-tag-name">${escapeHtml(ch.login)}</span>
       <span class="channel-tag-count">${ch.emotes.length} emotes</span>
       <button type="button" class="channel-tag-btn" data-refresh="${escapeHtml(ch.login)}" title="Refresh">⟳</button>
       <button type="button" class="channel-tag-btn" data-remove="${escapeHtml(ch.login)}" title="Remove">✕</button>
@@ -1982,7 +1889,6 @@ function renderEmoteChannelChips(){
       renderEmoteChannelChips();
       renderEmoteGroups();
       renderRewards();
-      updateNewBadgePreview();
       showToast(`Removed ${login}'s emotes`);
     };
   });
@@ -2005,14 +1911,12 @@ async function addOrRefreshEmoteChannel(loginRaw, isRefresh){
   setEmoteFetchStatus(`Fetching ${login}'s emotes…`, false);
   try{
     const emotes = await fetchChannelEmotesFor(login);
-    const existing = loadEmoteChannels().find(c => c.login === login);
     const channels = loadEmoteChannels().filter(c => c.login !== login);
-    channels.unshift({ login, emotes, fetchedAt: Date.now(), own: existing ? existing.own : false });
+    channels.unshift({ login, emotes, fetchedAt: Date.now() });
     saveEmoteChannels(channels);
     renderEmoteChannelChips();
     renderEmoteGroups();
     renderRewards();
-    updateNewBadgePreview();
     const msg = isRefresh ? `Refreshed ${login}'s emotes (${emotes.length})` : `Added ${login} — ${emotes.length} emotes`;
     setEmoteFetchStatus(msg, false);
     showToast(msg);
@@ -2033,7 +1937,6 @@ async function ensureGlobalEmotesLoaded(){
     saveGlobalEmotesCache({ emotes, fetchedAt: Date.now() });
     renderEmoteGroups();
     renderRewards();
-    updateNewBadgePreview();
   }catch(err){
     /* silent — falls back to the static COMMON_TWITCH_EMOTES list already rendered */
   }
@@ -2042,13 +1945,11 @@ document.getElementById("addEmoteChannelBtn").onclick = () => addOrRefreshEmoteC
 document.getElementById("emoteChannelInput").addEventListener("keydown", (e) => {
   if (e.key === "Enter"){ e.preventDefault(); addOrRefreshEmoteChannel(document.getElementById("emoteChannelInput").value, false); }
 });
-document.getElementById("newBadge").addEventListener("input", updateNewBadgePreview);
 
 renderEmoteChannelChips();
 renderEmoteGroups();
 ensureGlobalEmotesLoaded();
 ensureSubscribedEmotesLoaded();
-ensureOwnChannelEmotesLoaded();
 
 document.getElementById("addRewardBtn").onclick = () => {
   const level = Number(document.getElementById("newLevel").value);
@@ -2065,7 +1966,6 @@ document.getElementById("addRewardBtn").onclick = () => {
   document.querySelectorAll("#emoteGroups .emote-chip").forEach(c => c.classList.remove("selected"));
   document.getElementById("newTitle").value = "";
   document.getElementById("newMessage").value = "";
-  updateNewBadgePreview();
   renderRewards();
 };
 renderRewards();
@@ -2406,13 +2306,13 @@ function processClaim(username, requestedName){
       renderUsers();
       return { responseText, claimed:false, rewardName: query };
     }
-    if (rec.claimedLevels.includes(matched.level)){
-      const responseText = fillTemplate(chatCfg.messages.already, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+    if (!rec.unlockedLevels.includes(matched.level)){
+      const responseText = fillTemplate(chatCfg.messages.locked, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
       renderUsers();
       return { responseText, claimed:false, rewardName: matched.title };
     }
-    if (!rec.unlockedLevels.includes(matched.level)){
-      const responseText = fillTemplate(chatCfg.messages.locked, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+    if (rec.claimedLevels.includes(matched.level)){
+      const responseText = fillTemplate(chatCfg.messages.already, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
       renderUsers();
       return { responseText, claimed:false, rewardName: matched.title };
     }
@@ -2482,7 +2382,6 @@ document.getElementById("saveBotCfgBtn").onclick = () => {
   });
   showToast("Bot settings saved");
   refreshTwitchApiStatusBanner();
-  ensureOwnChannelEmotesLoaded();
 };
 
 let ircWs = null;
@@ -2622,7 +2521,11 @@ function renderUsers(){
   const users = load(LS_USERS, {});
   const list = document.getElementById("usersList");
   const keys = Object.keys(users);
-  if (!keys.length){ list.innerHTML = `<div class="empty">No viewer records yet — they populate as level-up events fire.</div>`; return; }
+  if (!keys.length){
+    list.innerHTML = `<div class="empty">No viewer records yet — they populate as level-up events fire.</div>`;
+    if (typeof renderRewardStatus === "function") renderRewardStatus();
+    return;
+  }
   list.innerHTML = "";
   keys.sort((a,b) => (users[b].level||0) - (users[a].level||0)).forEach(name => {
     const u = users[name];
@@ -2632,6 +2535,7 @@ function renderUsers(){
     div.innerHTML = `<div class="avatar">${avatarInner}</div><div class="lvl">${u.level ?? 1}</div><div class="name">${escapeHtml(name)}<div class="xp">${u.xp ?? 0} total XP · ${(u.unlockedLevels||[]).length} reward(s)</div></div>`;
     list.appendChild(div);
   });
+  if (typeof renderRewardStatus === "function") renderRewardStatus();
 }
 renderUsers();
 
@@ -2664,6 +2568,53 @@ document.getElementById("grantQty").oninput = refreshComputedXpPreview;
 document.getElementById("grantAmount").oninput = refreshComputedXpPreview;
 updateTestFieldsVisibility();
 
+/**
+ * Reward Status readout — shows exactly what's in unlockedLevels vs.
+ * claimedLevels for whatever username is typed in the Testing panel,
+ * so "why won't $redeem work for this reward" is answerable at a glance
+ * instead of guessing. Rewards are level-keyed, so this table doubles as
+ * a sanity check after editing/reordering milestone levels too.
+ */
+function renderRewardStatus(){
+  const box = document.getElementById("rewardStatusBox");
+  if (!box) return;
+  const username = document.getElementById("grantUser").value.trim();
+  if (!username){ box.innerHTML = `<div class="empty">Type a username above to see their reward status.</div>`; return; }
+  const key = normUser(username);
+  const users = load(LS_USERS, {});
+  const rec = users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[] };
+  const unlocked = rec.unlockedLevels || [];
+  const claimed = rec.claimedLevels || [];
+  const rewards = load(LS_REWARDS, []).sort((a,b) => a.level - b.level);
+  if (!rewards.length){ box.innerHTML = `<div class="empty">No milestones configured yet — add some on the Levels &amp; Rewards tab.</div>`; return; }
+  const rows = rewards.map(r => {
+    const isUnlocked = unlocked.includes(r.level);
+    const isClaimed = claimed.includes(r.level);
+    let state = "Not reached yet";
+    if (isUnlocked && isClaimed) state = "Unlocked &amp; claimed";
+    else if (isUnlocked && !isClaimed) state = "Unlocked — redeemable now";
+    return `<tr><td><b>${r.level}</b></td><td>${escapeHtml(r.title||"")}</td><td>Lv ${rec.level||1} ${isUnlocked ? "≥" : "<"} ${r.level} → ${isUnlocked ? "unlocked" : "locked"}</td><td>${state}</td></tr>`;
+  }).join("");
+  box.innerHTML = `<table><thead><tr><th class="table-col-50">Lv</th><th>Title</th><th>Unlock check</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+document.getElementById("grantUser").addEventListener("input", renderRewardStatus);
+document.getElementById("resetClaimsBtn").onclick = () => {
+  const username = document.getElementById("grantUser").value.trim();
+  if (!username){ showToast("Type a username first."); return; }
+  const key = normUser(username);
+  const users = load(LS_USERS, {});
+  const rec = users[key];
+  if (!rec){ showToast(`No record for ${username} yet.`); return; }
+  rec.claimedLevels = [];
+  users[key] = rec;
+  save(LS_USERS, users);
+  bc && bc.postMessage({ type:"user_update", user:key, data:rec });
+  renderRewardStatus();
+  renderUsers();
+  showToast(`Cleared ${username}'s claimed rewards — unlocked rewards stay unlocked.`);
+};
+renderRewardStatus();
+
 function buildEventPayload(user){
   const eventName = document.getElementById("grantEvent").value;
   const qty = document.getElementById("grantQty").value;
@@ -2676,6 +2627,28 @@ function buildEventPayload(user){
   const { level, xpIntoLevel, xpForNextLevel } = levelFromXp(totalXp, curve);
   const leveledUp = level > (prev.level||1);
   return { eventName, user, avatar:"", quantity: Number(qty)||1, xpGained, totalXp, level, xpIntoLevel, xpForNextLevel, leveledUp };
+}
+
+/**
+ * Unlocks every milestone at or below `level` that this viewer doesn't
+ * already have unlocked. Used instead of "unlock only the milestone that
+ * exactly matches the level just reached" because a single XP grant or
+ * event can jump several levels at once (e.g. a big bit cheer, or a manual
+ * test grant) — in that case every milestone in between should unlock too,
+ * not just the one matching the final level landed on. Returns true if
+ * anything new was unlocked.
+ */
+function unlockRewardsUpToLevel(rec, level){
+  rec.unlockedLevels = rec.unlockedLevels || [];
+  const rewards = load(LS_REWARDS, []);
+  let added = false;
+  rewards.forEach(r => {
+    if (Number(r.level) <= Number(level) && !rec.unlockedLevels.includes(r.level)){
+      rec.unlockedLevels.push(r.level);
+      added = true;
+    }
+  });
+  return added;
 }
 
 document.getElementById("testBtn").onclick = () => {
@@ -2691,19 +2664,23 @@ document.getElementById("grantBtn").onclick = () => {
   if (!data.xpGained){ alert("That event/quantity computes to 0 XP — check your XP Rates config."); return; }
   const key = normUser(user);
   const users = load(LS_USERS, {});
-  const rec = users[key] || { xp:0, level:1, unlockedLevels:[], history:[] };
+  const rec = users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], history:[] };
   rec.xp = data.totalXp;
   rec.level = data.level;
-  if (data.leveledUp) rec.history.push({ level:data.level, ts:Date.now() });
+  if (data.leveledUp){
+    rec.history.push({ level:data.level, ts:Date.now() });
+    unlockRewardsUpToLevel(rec, data.level);
+  }
   users[key] = rec;
   save(LS_USERS, users);
   bc && bc.postMessage({ type:"user_update", user: key, data: rec });
   bc && bc.postMessage({ type:"live_event", data });
   renderUsers();
-  showToast("XP granted");
+  renderRewardStatus();
+  showToast("XP granted" + (data.leveledUp ? " — milestones up to Level " + data.level + " unlocked" : ""));
 };
 
-bc && (bc.onmessage = (e) => { const m = e.data||{}; if (m.type === "user_update") renderUsers(); });
+bc && (bc.onmessage = (e) => { const m = e.data||{}; if (m.type === "user_update"){ renderUsers(); renderRewardStatus(); } });
 window.addEventListener("storage", (e) => {
   if ([LS_USERS, LS_REWARDS, LS_DISPLAY, LS_XPRATES, LS_CURVE].includes(e.key)){
     renderUsers(); renderRewards(); refreshDisplayToggles(); renderXpRates(); refreshCurveInputs(); refreshComputedXpPreview();
@@ -2734,11 +2711,7 @@ function applyLiveEvent(raw){
   if (data.avatar) rec.avatar = data.avatar;
   if (data.leveledUp){
     rec.history.push({ level: data.level, ts: Date.now() });
-    const reward = load(LS_REWARDS, []).find(r => Number(r.level) === Number(data.level));
-    if (reward && !(rec.unlockedLevels||[]).includes(data.level)){
-      rec.unlockedLevels = rec.unlockedLevels || [];
-      rec.unlockedLevels.push(data.level);
-    }
+    unlockRewardsUpToLevel(rec, data.level);
   }
   users[key] = rec;
   save(LS_USERS, users);
@@ -3216,14 +3189,6 @@ loadDashTheme();
 loadWallpaperHistory();
 populateDashThemeForm();
 applyDashTheme();
-
-/* Wire switchTabRef so the badge-picker button (renderRewards) can jump
-   to the Levels & Rewards tab from anywhere it's rendered. */
-switchTabRef = (id) => {
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
-  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + id));
-  try{ localStorage.setItem(LS_ADMIN_TAB, id); }catch(e){ /* ignore */ }
-};
 </script>
 </body>
 </html>
