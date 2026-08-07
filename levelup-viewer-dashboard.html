@@ -255,7 +255,12 @@
     border:1.5px solid var(--border-medium); border-radius:12px; padding:14px 10px; text-align:center;
     transition:all .25s ease;
   }
-  .reward-item .badge{ font-size:24px; filter:drop-shadow(0 0 6px var(--accent-secondary)); }
+  .reward-item .badge{
+    font-size:24px; filter:drop-shadow(0 0 6px var(--accent-secondary));
+    display:flex; align-items:center; justify-content:center; min-height:32px;
+  }
+  .reward-item .badge img{ width:32px; height:32px; object-fit:contain; display:block; }
+  .reward-item .badge.text-badge{ font-size:12.5px; line-height:1.3; word-break:break-word; filter:none; color:var(--text-primary); }
   .reward-item .title{ font-family:var(--font-display); font-size:10.5px; color:var(--gold); margin-top:6px; letter-spacing:.5px; }
   .reward-item .lvl{ font-size:10px; color:var(--text-tertiary); margin-top:2px; }
   .reward-item.locked{ opacity:.35; }
@@ -315,6 +320,19 @@ const LS_CURVE   = "fallenoneart_levelup_curve";
 const LS_TWITCH_CFG   = "fallenoneart_levelup_twitch_cfg";   // { clientId }
 const LS_TWITCH_TOKEN = "fallenoneart_levelup_twitch_token"; // { accessToken, login, displayName, avatar }
 const CHANNEL    = "fallenoneart_levelup_channel";
+
+/* Emote sources for the reward badges. The first three are the SAME
+   localStorage keys the admin dashboard writes to — on the streamer's own
+   browser (same origin) those caches are already there "for free". Random
+   viewers on their own devices won't have those, so once a viewer logs in
+   here we also fetch the (scope-free) global emote list ourselves and
+   cache it under our own key, so at least global emotes always render. */
+const LS_GLOBAL_EMOTES        = "fallenoneart_levelup_global_emotes";       // admin-shared
+const LS_EMOTE_CHANNELS       = "fallenoneart_levelup_emote_channels";      // admin-shared
+const LS_SUB_EMOTES           = "fallenoneart_levelup_subscribed_emotes";   // admin-shared
+const LS_VIEWER_GLOBAL_EMOTES = "fallenoneart_levelup_viewer_global_emotes";// this page's own cache
+const EMOTE_CACHE_MS = 12 * 60 * 60 * 1000;
+
 let bc = null;
 try{ if ("BroadcastChannel" in window) bc = new BroadcastChannel(CHANNEL); }catch(e){ bc = null; }
 
@@ -328,6 +346,68 @@ const TWITCH_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentCol
 const params = new URLSearchParams(window.location.search);
 const storedTwitchToken = load(LS_TWITCH_TOKEN, null);
 let currentUser = (params.get("user") || (storedTwitchToken && storedTwitchToken.login) || "").trim().toLowerCase();
+
+/* ============================================================
+   EMOTE ICONS — merges every emote source this page can see into
+   one lowercase-name → image-url lookup, so a reward badge like
+   "fallen420Derpy" renders as the real emote image instead of
+   raw overflowing text (which is what caused the garbled/overlapping
+   badge text before).
+   ============================================================ */
+function buildEmoteIndex(){
+  const idx = new Map();
+  const addAll = (list) => {
+    (list || []).forEach(e => {
+      if (e && e.name && e.url && !idx.has(e.name.toLowerCase())) idx.set(e.name.toLowerCase(), e.url);
+    });
+  };
+  addAll((load(LS_GLOBAL_EMOTES, null) || {}).emotes);
+  addAll((load(LS_VIEWER_GLOBAL_EMOTES, null) || {}).emotes);
+  const subCache = load(LS_SUB_EMOTES, null);
+  ((subCache && subCache.groups) || []).forEach(g => addAll(g.emotes));
+  (load(LS_EMOTE_CHANNELS, []) || []).forEach(ch => addAll(ch.emotes));
+  return idx;
+}
+function findEmoteUrlByName(name){
+  const b = (name || "").trim();
+  if (!b) return null;
+  return buildEmoteIndex().get(b.toLowerCase()) || null;
+}
+/** Renders a reward's badge: a real emote image when the badge text
+ *  matches a known emote code, otherwise the raw text/emoji — shrunk
+ *  and wrapped instead of overflowing when it looks like a long emote
+ *  code we just don't have an image for yet. */
+function badgeContentHtml(badge){
+  const b = (badge || "★").trim();
+  const url = findEmoteUrlByName(b);
+  if (url) return `<span class="badge"><img src="${escapeHtml(url)}" alt="${escapeHtml(b)}" title="${escapeHtml(b)}"></span>`;
+  const looksLikeEmoteCode = /^[A-Za-z0-9_]{3,}$/.test(b);
+  return `<span class="badge${looksLikeEmoteCode ? " text-badge" : ""}">${escapeHtml(b)}</span>`;
+}
+/** Fetches the (scope-free) Global Twitch emote list directly using this
+ *  viewer's own login token + the saved Client ID, so badge icons work
+ *  even for viewers who've never touched the admin dashboard. Cached
+ *  ~12h. Silently no-ops if not logged in yet or the app isn't set up. */
+async function ensureViewerGlobalEmotesLoaded(){
+  const cache = load(LS_VIEWER_GLOBAL_EMOTES, null);
+  if (cache && cache.emotes && cache.emotes.length && (Date.now() - (cache.fetchedAt || 0) < EMOTE_CACHE_MS)) return;
+  const t = load(LS_TWITCH_TOKEN, null);
+  const cfg = twitchCfg();
+  if (!t || !t.accessToken || !cfg.clientId) return;
+  try{
+    const res = await fetch("https://api.twitch.tv/helix/chat/emotes/global", {
+      headers: { "Authorization": `Bearer ${t.accessToken}`, "Client-Id": cfg.clientId }
+    });
+    if (!res.ok) return;
+    const json = await res.json();
+    const emotes = (json.data || []).map(e => ({
+      name: e.name,
+      url: (e.images && (e.images.url_2x || e.images.url_1x || e.images.url_4x)) || ""
+    }));
+    save(LS_VIEWER_GLOBAL_EMOTES, { emotes, fetchedAt: Date.now() });
+    render();
+  }catch(e){ /* offline or blocked — badges without a known image just fall back to text */ }
+}
 
 /* ============================================================
    TWITCH LOGIN (Implicit Grant — no backend, token stays in this page)
@@ -404,6 +484,7 @@ async function fetchTwitchIdentity(accessToken){
   }
   renderAuthBar();
   render();
+  ensureViewerGlobalEmotesLoaded();
 }
 
 function renderAuthBar(){
@@ -442,7 +523,7 @@ function render(){
     if (unlocked && claimed){ stateClass = ""; stateLabel = `Lv ${r.level} · claimed`; }
     else if (unlocked && !claimed){ stateClass = "ready"; stateLabel = `Lv ${r.level} · ready to claim!`; actionHtml = `<button class="claim-btn" data-claim-level="${r.level}">Claim</button>`; }
     return `<div class="reward-item ${stateClass}">
-      <div class="badge">${escapeHtml(r.badge || "★")}</div>
+      ${badgeContentHtml(r.badge)}
       <div class="title">${escapeHtml(r.title)}</div>
       <div class="lvl">${stateLabel}</div>
       ${actionHtml}
@@ -523,10 +604,13 @@ async function fetchAvatar(username){
 }
 
 bc && (bc.onmessage = (e) => { const m = e.data||{}; if (m.type === "user_update" && m.user === currentUser) render(); });
-window.addEventListener("storage", (e) => { if ([LS_USERS, LS_REWARDS, LS_DISPLAY, LS_CURVE].includes(e.key)) render(); });
+window.addEventListener("storage", (e) => {
+  if ([LS_USERS, LS_REWARDS, LS_DISPLAY, LS_CURVE, LS_GLOBAL_EMOTES, LS_EMOTE_CHANNELS, LS_SUB_EMOTES].includes(e.key)) render();
+});
 
 render();
 handleTwitchRedirect();
+ensureViewerGlobalEmotesLoaded();
 </script>
 </body>
 </html>
