@@ -767,6 +767,19 @@
       .emote-fetch-status.show{ display:block; }
       .emote-fetch-status.error{ color:var(--accent-tertiary); }
       .emote-fetch-status.ok{ color:var(--accent-primary); }
+
+      .badge-emote-icon{ width:22px; height:22px; object-fit:contain; vertical-align:middle; display:inline-block; flex:0 0 auto; }
+      .badge-cell{ display:flex; align-items:center; gap:6px; }
+
+      .reward-edit-input{
+        width:100%; background:transparent; border:1px solid transparent; border-radius:6px;
+        color:var(--text-primary); font-family:var(--font-mono); font-size:12.5px; padding:4px 6px;
+        transition:all .2s ease; letter-spacing:0.3px;
+      }
+      .reward-edit-input:hover{ border-color:var(--border-medium); background:rgba(30,25,50,0.4); }
+      .reward-edit-input:focus{ outline:none; border-color:var(--accent-primary); background:rgba(30,25,50,0.6); box-shadow:0 0 0 2px rgba(125,232,200,0.15); }
+      .reward-edit-level{ width:56px; flex:0 0 auto; }
+      .reward-edit-badge{ flex:1; min-width:70px; }
 </style>
 </head>
 <body>
@@ -877,7 +890,7 @@
         <button class="ghost-btn" id="testTwitchApiBtn">Test Connection</button>
       </div>
       <div class="hint full-row">
-        <b>Get Token via Twitch Login</b> saves your Client ID, then sends you to Twitch to log in as your <b>bot account</b> and approve access. Twitch sends you back here with a token issued by <i>your</i> app — it's saved into the Bot OAuth Token field above automatically, so the Client ID and token are guaranteed to match. This is the fix for "Twitch rejected that Client ID / token combo" errors from Fetch Emotes. (For pulling in emotes from channels <i>you personally</i> subscribe to, see "My Subscribed Channels" on the Levels &amp; Rewards tab — that's a separate login, on purpose, since it needs your main streamer account rather than the bot.)
+        <b>Get Token via Twitch Login</b> saves your Client ID, then sends you to Twitch to log in as your <b>bot account</b> and approve access. Twitch sends you back here with a token issued by <i>your</i> app — it's saved into the Bot OAuth Token field above automatically, so the Client ID and token are guaranteed to match. This is the fix for "Twitch rejected that Client ID / token combo" errors from Fetch Emotes. This login also grants <code>user:read:emotes</code>, which lets the Levels &amp; Rewards tab automatically pull in emotes from every channel your bot account is subscribed to.
       </div>
     </div>
 
@@ -900,7 +913,7 @@
         </table>
       </div>
 
-      <div class="section-divider"><h3>Rewards &amp; Milestones</h3><div class="sub">What a viewer unlocks (and can claim) at each level.</div></div>
+      <div class="section-divider"><h3>Rewards &amp; Milestones</h3><div class="sub">What a viewer unlocks (and can claim) at each level. Every field below is editable in place — click a cell and change it.</div></div>
       <div class="field full-row">
         <table>
           <thead><tr><th class="table-col-50">Level</th><th>Badge</th><th>Title</th><th>Message</th><th class="table-col-70"></th></tr></thead>
@@ -930,20 +943,12 @@
             </div>
           </div>
 
-          <div id="emoteChannelChips" class="emote-channel-chips"></div>
-
-          <div class="field-row mb-14">
-            <div class="field flex-2-minw">
-              <label>My Subscribed Channels</label>
-              <div class="hint">Pulls in emotes from every channel <i>you personally</i> subscribe to, follow-only emotes, and your Bits emotes — straight from Twitch. This needs its own login (your main streamer account, since that's the one with subs), separate from the Bot OAuth Token above.</div>
-              <div class="input-group" style="margin-top:8px;">
-                <button type="button" class="ghost-btn" id="connectMyEmotesBtn">Connect My Account</button>
-                <button type="button" class="ghost-btn" id="refreshMyEmotesBtn">Refresh</button>
-              </div>
-              <div class="emote-fetch-status" id="myEmotesStatus"></div>
-            </div>
+          <div class="action-bar mb-14">
+            <button type="button" class="ghost-btn" id="loadSubEmotesBtn">Load My Subscribed Channels' Emotes</button>
           </div>
+          <div class="hint mb-14">Pulls emotes from every channel your bot account is currently subscribed to, grouped by streamer, automatically — no need to add each one by hand. Needs the <code>user:read:emotes</code> permission, which the <b>Get Token via Twitch Login</b> button (Connection tab) already requests; if this comes back empty, just log in again there.</div>
 
+          <div id="emoteChannelChips" class="emote-channel-chips"></div>
           <div id="emoteGroups"></div>
 
           <div class="hint">
@@ -1371,9 +1376,8 @@ const MAX_WALLPAPER_HISTORY = 8;
 const LS_TWITCH_API_CFG = "fallenoneart_levelup_twitch_api_cfg";
 const LS_EMOTE_CHANNELS = "fallenoneart_levelup_emote_channels";
 const LS_GLOBAL_EMOTES  = "fallenoneart_levelup_global_emotes";
+const LS_SUB_EMOTES     = "fallenoneart_levelup_subscribed_emotes";
 const EMOTE_CACHE_MS = 12 * 60 * 60 * 1000;
-const LS_MY_EMOTES_CFG   = "fallenoneart_levelup_my_emotes_cfg";
-const LS_MY_EMOTES_CACHE = "fallenoneart_levelup_my_emotes_cache";
 
 const EVENT_META = {
   Sub:                { label:"New Sub",             unit:"per sub" },
@@ -1474,17 +1478,29 @@ function renderXpRates(){
 }
 renderXpRates();
 
+/* ============================================================
+   Rewards table: level/badge/title/message are all editable
+   in place. renderRewards() draws one <input> per cell (plus
+   a badge preview icon when the badge text matches a known
+   emote), and handleRewardFieldEdit() persists a change back
+   into LS_REWARDS by the row's original level (used as the
+   lookup key even while the level field itself is being edited).
+   ============================================================ */
 function renderRewards(){
   const rewards = load(LS_REWARDS, []).sort((a,b) => a.level - b.level);
   const body = document.getElementById("rewardsBody");
   body.innerHTML = rewards.length ? "" : `<tr><td colspan="5" class="empty">No milestones yet — add one below.</td></tr>`;
   rewards.forEach((r) => {
     const tr = document.createElement("tr");
+    const badgeIconHtml = renderBadgeIconHtml(r.badge);
     tr.innerHTML = `
-      <td><b>${r.level}</b></td>
-      <td>${escapeHtml(r.badge||"")}</td>
-      <td>${escapeHtml(r.title||"")}</td>
-      <td class="message-text">${escapeHtml(r.message||"")}</td>
+      <td><input type="number" class="reward-edit-input reward-edit-level" data-orig-level="${r.level}" data-field="level" value="${r.level}" min="1"></td>
+      <td class="badge-cell">
+        ${badgeIconHtml}
+        <input type="text" class="reward-edit-input reward-edit-badge" data-orig-level="${r.level}" data-field="badge" value="${escapeHtml(r.badge||"")}">
+      </td>
+      <td><input type="text" class="reward-edit-input" data-orig-level="${r.level}" data-field="title" value="${escapeHtml(r.title||"")}"></td>
+      <td><input type="text" class="reward-edit-input" data-orig-level="${r.level}" data-field="message" value="${escapeHtml(r.message||"")}"></td>
       <td><button class="icon-btn icon-sm" data-del="${r.level}" title="Delete">✕</button></td>
     `;
     body.appendChild(tr);
@@ -1498,6 +1514,37 @@ function renderRewards(){
       renderRewards();
     };
   });
+  body.querySelectorAll(".reward-edit-input").forEach(input => {
+    input.addEventListener("change", () => handleRewardFieldEdit(input));
+  });
+}
+function handleRewardFieldEdit(input){
+  const origLevel = Number(input.getAttribute("data-orig-level"));
+  const field = input.getAttribute("data-field");
+  const rewards = load(LS_REWARDS, []);
+  const idx = rewards.findIndex(r => Number(r.level) === origLevel);
+  if (idx === -1) return;
+
+  if (field === "level"){
+    const newLevel = Number(input.value);
+    if (!newLevel || newLevel === origLevel){ renderRewards(); return; }
+    if (rewards.some((r,i) => i !== idx && Number(r.level) === newLevel)){
+      showToast(`Level ${newLevel} already has a milestone — pick a different level.`);
+      renderRewards();
+      return;
+    }
+    rewards[idx].level = newLevel;
+  } else if (field === "badge"){
+    rewards[idx].badge = input.value.trim() || "★";
+  } else if (field === "title"){
+    rewards[idx].title = input.value.trim();
+  } else if (field === "message"){
+    rewards[idx].message = input.value.trim();
+  }
+  save(LS_REWARDS, rewards);
+  bc && bc.postMessage({ type:"rewards_update", rewards });
+  renderRewards();
+  showToast("Milestone updated");
 }
 
 /* A short fallback list of well-known Twitch global emote codes, used only
@@ -1511,13 +1558,19 @@ const COMMON_TWITCH_EMOTES = [
 
 /* ============================================================
    TWITCH API (Helix) — live emote picker.
-   Pulls real emote images for the milestone badge picker: a
-   "Global Twitch emotes" group (fetched once, cached ~12h) plus
-   one group per channel a streamer adds themselves. Reuses the
-   Bot OAuth Token from the Connection tab for auth, alongside a
-   Twitch Client ID saved separately in its own "Twitch API"
-   section (both required by Helix). Nothing here touches chat —
-   it's picker convenience only.
+   Three sources feed the picker (and the reward table's badge
+   icons), each cached ~12h:
+     1. Global Twitch emotes (fetchGlobalEmotesLive) — no special
+        scope needed.
+     2. Your subscribed channels' emotes (fetchSubscribedEmoteGroups,
+        via Get User Emotes) — needs user:read:emotes on the token,
+        grouped by streamer automatically.
+     3. Manually-added channels (fetchChannelEmotesFor, via Get
+        Channel Emotes) — any streamer types their own name in to
+        pull their full public emote set, sub-status or not.
+   All three feed buildEmoteIndex(), which the rewards table uses
+   to show a real image next to any badge whose text matches a
+   known emote code.
    ============================================================ */
 function loadTwitchApiCfg(){ return load(LS_TWITCH_API_CFG, { clientId:"" }); }
 function refreshTwitchApiCfgInputs(){
@@ -1578,9 +1631,8 @@ function twitchApiCreds(){
   const token = bearerToken(loadBotCfg().botToken || "");
   return { clientId, token };
 }
-async function helixFetch(url, tokenOverride){
-  const clientId = (loadTwitchApiCfg().clientId || "").trim();
-  const token = tokenOverride || bearerToken(loadBotCfg().botToken || "");
+async function helixFetch(url){
+  const { clientId, token } = twitchApiCreds();
   if (!clientId || !token){
     throw new Error("Set a Twitch Client ID and save a Bot OAuth Token first (Connection tab → Twitch API section).");
   }
@@ -1622,119 +1674,139 @@ async function fetchGlobalEmotesLive(){
   return mapHelixEmotes(data.data);
 }
 
+/* ---- Subscribed-channel emotes (Get User Emotes) ---- */
+function pickEmoteFormatValue(list, preferred){
+  if (!Array.isArray(list) || !list.length) return preferred;
+  return list.includes(preferred) ? preferred : list[0];
+}
+function buildEmoteUrlFromTemplate(template, emote){
+  if (!template) return "";
+  const format = pickEmoteFormatValue(emote.format, "static");
+  const theme = pickEmoteFormatValue(emote.theme_mode, "dark");
+  const scale = pickEmoteFormatValue(emote.scale, "2.0");
+  return template
+    .replace("{{id}}", emote.id)
+    .replace("{{format}}", format)
+    .replace("{{theme_mode}}", theme)
+    .replace("{{scale}}", scale);
+}
+async function fetchAuthenticatedUser(){
+  const data = await helixFetch(`https://api.twitch.tv/helix/users`);
+  const user = (data.data || [])[0];
+  if (!user) throw new Error("Couldn't resolve the logged-in Twitch account — log in again via Get Token via Twitch Login.");
+  return user;
+}
+async function fetchUserEmotesRaw(userId){
+  let all = [];
+  let template = "";
+  let cursor = "";
+  do{
+    const url = new URL("https://api.twitch.tv/helix/chat/emotes/user");
+    url.searchParams.set("user_id", userId);
+    if (cursor) url.searchParams.set("after", cursor);
+    const data = await helixFetch(url.toString());
+    all = all.concat(data.data || []);
+    template = data.template || template;
+    cursor = (data.pagination && data.pagination.cursor) || "";
+  } while(cursor);
+  return { emotes: all, template };
+}
+async function resolveUserNames(ids){
+  const uniqueIds = [...new Set(ids)].filter(Boolean);
+  const names = {};
+  for (let i = 0; i < uniqueIds.length; i += 100){
+    const batch = uniqueIds.slice(i, i + 100);
+    const url = new URL("https://api.twitch.tv/helix/users");
+    batch.forEach(id => url.searchParams.append("id", id));
+    const data = await helixFetch(url.toString());
+    (data.data || []).forEach(u => { names[u.id] = u.display_name || u.login; });
+  }
+  return names;
+}
+/**
+ * Get User Emotes returns EVERY emote the logged-in bot account can use
+ * right now: global emotes (owner_id "0"), plus one entry per channel
+ * it's subscribed to (or follows, for follower emotes). We drop the
+ * globals here since the separate "Global Twitch emotes" group already
+ * covers those, then group everything else by owner_id/streamer name.
+ */
+async function fetchSubscribedEmoteGroups(){
+  const user = await fetchAuthenticatedUser();
+  const { emotes, template } = await fetchUserEmotesRaw(user.id);
+  const nonGlobal = emotes.filter(e => e.owner_id && e.owner_id !== "0");
+  const names = await resolveUserNames(nonGlobal.map(e => e.owner_id));
+  const byOwner = new Map();
+  nonGlobal.forEach(e => {
+    const url = buildEmoteUrlFromTemplate(template, e);
+    if (!byOwner.has(e.owner_id)) byOwner.set(e.owner_id, { ownerId: e.owner_id, login: names[e.owner_id] || e.owner_id, emotes: [] });
+    byOwner.get(e.owner_id).emotes.push({ name: e.name, url });
+  });
+  return Array.from(byOwner.values());
+}
+function loadSubscribedEmotesCache(){ return load(LS_SUB_EMOTES, null); }
+function saveSubscribedEmotesCache(entry){ save(LS_SUB_EMOTES, entry); }
+async function loadSubscribedEmotesNow(isManual){
+  const btn = document.getElementById("loadSubEmotesBtn");
+  const orig = btn ? btn.textContent : "";
+  if (btn){ btn.disabled = true; btn.textContent = "Loading…"; }
+  if (isManual) setEmoteFetchStatus("Loading your subscribed channels' emotes…", false);
+  try{
+    const groups = await fetchSubscribedEmoteGroups();
+    saveSubscribedEmotesCache({ groups, fetchedAt: Date.now() });
+    renderEmoteGroups();
+    renderRewards();
+    const msg = groups.length
+      ? `Loaded emotes from ${groups.length} subscribed channel(s)`
+      : "No subscribed-channel emotes found (only global emotes are available right now).";
+    if (isManual){ setEmoteFetchStatus(msg, false); showToast(msg); }
+  }catch(err){
+    const msg = err.message || "Couldn't load subscribed emotes.";
+    if (isManual){ setEmoteFetchStatus(msg, true); showToast(msg); }
+  }finally{
+    if (btn){ btn.disabled = false; btn.textContent = orig; }
+  }
+}
+async function ensureSubscribedEmotesLoaded(){
+  const { clientId, token } = twitchApiCreds();
+  if (!clientId || !token) return;
+  const cache = loadSubscribedEmotesCache();
+  if (cache && cache.groups && (Date.now() - (cache.fetchedAt || 0) < EMOTE_CACHE_MS)) return;
+  await loadSubscribedEmotesNow(false);
+}
+document.getElementById("loadSubEmotesBtn").onclick = () => loadSubscribedEmotesNow(true);
+
 function loadEmoteChannels(){ return load(LS_EMOTE_CHANNELS, []); }
 function saveEmoteChannels(list){ save(LS_EMOTE_CHANNELS, list); }
 function loadGlobalEmotesCache(){ return load(LS_GLOBAL_EMOTES, null); }
 function saveGlobalEmotesCache(entry){ save(LS_GLOBAL_EMOTES, entry); }
 
-/* ============================================================
-   MY SUBSCRIBED CHANNELS — pulls emotes from every channel the
-   logged-in viewer (usually the streamer's main account, not the
-   bot) actually subscribes to or follows, via Helix's
-   /chat/emotes/user endpoint. Requires its own OAuth token with
-   the user:read:emotes scope — kept fully separate from the Bot
-   OAuth Token so logging in here never disturbs the IRC bot login.
-   ============================================================ */
-function loadMyEmotesCfg(){ return load(LS_MY_EMOTES_CFG, { token:"" }); }
-function saveMyEmotesToken(rawToken){
-  save(LS_MY_EMOTES_CFG, { token: "oauth:" + bearerToken(rawToken) });
-}
-function myEmotesToken(){ return bearerToken(loadMyEmotesCfg().token || ""); }
-function loadMyEmotesCache(){ return load(LS_MY_EMOTES_CACHE, null); }
-function saveMyEmotesCache(entry){ save(LS_MY_EMOTES_CACHE, entry); }
-
-function setMyEmotesStatus(msg, isError){
-  const el = document.getElementById("myEmotesStatus");
-  if (!el) return;
-  if (!msg){ el.classList.remove("show", "error", "ok"); el.textContent = ""; return; }
-  el.textContent = msg;
-  el.classList.add("show");
-  el.classList.toggle("error", !!isError);
-  el.classList.toggle("ok", !isError);
-}
-function refreshMyEmotesButtons(){
-  const hasToken = !!myEmotesToken();
-  const connectBtn = document.getElementById("connectMyEmotesBtn");
-  const refreshBtn = document.getElementById("refreshMyEmotesBtn");
-  if (connectBtn) connectBtn.textContent = hasToken ? "Reconnect My Account" : "Connect My Account";
-  if (refreshBtn) refreshBtn.disabled = !hasToken;
-  const cache = loadMyEmotesCache();
-  if (hasToken && cache && cache.groups){
-    const total = cache.groups.reduce((sum, g) => sum + g.emotes.length, 0);
-    setMyEmotesStatus(`Loaded ${total} emotes from ${cache.groups.length} channel(s).`, false);
-  } else if (hasToken){
-    setMyEmotesStatus(`Connected — click Refresh to load your subscribed-channel emotes.`, false);
-  } else {
-    setMyEmotesStatus("");
-  }
-}
-/** Resolves the Twitch user ID belonging to whichever token is passed (the "self" user for that OAuth token). */
-async function resolveSelfUserId(token){
-  const data = await helixFetch(`https://api.twitch.tv/helix/users`, token);
-  const user = (data.data || [])[0];
-  if (!user) throw new Error("Couldn't resolve the logged-in Twitch account.");
-  return user.id;
-}
-/** Batch-resolves broadcaster display names for a list of user IDs (Helix allows up to 100 ids per call). */
-async function resolveUserNames(ids, token){
-  const names = {};
-  for (let i = 0; i < ids.length; i += 100){
-    const chunk = ids.slice(i, i + 100);
-    const query = chunk.map(id => `id=${encodeURIComponent(id)}`).join("&");
-    const data = await helixFetch(`https://api.twitch.tv/helix/users?${query}`, token);
-    (data.data || []).forEach(u => { names[u.id] = u.display_name || u.login; });
-  }
-  return names;
-}
-async function fetchMySubscribedEmotes(){
-  const token = myEmotesToken();
-  if (!token) throw new Error("Connect your account first with the button above.");
-  const userId = await resolveSelfUserId(token);
-  const data = await helixFetch(`https://api.twitch.tv/helix/chat/emotes/user?user_id=${userId}`, token);
-  const raw = data.data || [];
-  if (!raw.length) return [];
-  const ownerIds = [...new Set(raw.map(e => e.owner_id).filter(Boolean))];
-  const names = ownerIds.length ? await resolveUserNames(ownerIds, token) : {};
-  const byOwner = {};
-  raw.forEach(e => {
-    const ownerId = e.owner_id || "global";
-    if (!byOwner[ownerId]) byOwner[ownerId] = [];
-    byOwner[ownerId].push({
-      name: e.name,
-      url: (e.images && (e.images.url_2x || e.images.url_1x || e.images.url_4x)) || ""
+/** Merges every emote source into one lowercase-name → image-url lookup,
+ *  used to show a real icon next to a badge code in the rewards table. */
+function buildEmoteIndex(){
+  const idx = new Map();
+  const addAll = (list) => {
+    (list || []).forEach(e => {
+      if (e && e.name && e.url && !idx.has(e.name.toLowerCase())) idx.set(e.name.toLowerCase(), e.url);
     });
-  });
-  return Object.keys(byOwner).map(ownerId => ({
-    label: names[ownerId] ? `${names[ownerId]}'s emotes (subscribed)` : "Emotes",
-    emotes: byOwner[ownerId]
-  }));
+  };
+  const globalCache = loadGlobalEmotesCache();
+  addAll(globalCache && globalCache.emotes);
+  const subCache = loadSubscribedEmotesCache();
+  (subCache && subCache.groups || []).forEach(g => addAll(g.emotes));
+  loadEmoteChannels().forEach(ch => addAll(ch.emotes));
+  return idx;
 }
-async function loadMySubscribedEmotes(){
-  const btn = document.getElementById("refreshMyEmotesBtn");
-  const orig = btn ? btn.textContent : "";
-  if (btn){ btn.disabled = true; btn.textContent = "Loading…"; }
-  setMyEmotesStatus("Fetching your subscribed-channel emotes…", false);
-  try{
-    const groups = await fetchMySubscribedEmotes();
-    saveMyEmotesCache({ groups, fetchedAt: Date.now() });
-    renderEmoteGroups();
-    const total = groups.reduce((sum, g) => sum + g.emotes.length, 0);
-    setMyEmotesStatus(total ? `Loaded ${total} emotes from ${groups.length} channel(s).` : "No subscribed-channel emotes found on this account.", false);
-    showToast("Subscribed-channel emotes loaded");
-  }catch(err){
-    setMyEmotesStatus(err.message || "Couldn't load your subscribed-channel emotes.", true);
-    showToast(err.message || "Couldn't load your subscribed-channel emotes.");
-  }finally{
-    if (btn){ btn.disabled = false; btn.textContent = orig; }
-  }
+function findEmoteUrlByName(name){
+  const b = (name || "").trim();
+  if (!b) return null;
+  return buildEmoteIndex().get(b.toLowerCase()) || null;
 }
-document.getElementById("connectMyEmotesBtn").onclick = () => {
-  saveTwitchApiCfgFromInputs();
-  const url = buildTwitchAuthorizeUrl({ scope: "user:read:emotes", state: "myemotes" });
-  if (url) window.location.href = url;
-};
-document.getElementById("refreshMyEmotesBtn").onclick = () => loadMySubscribedEmotes();
-refreshMyEmotesButtons();
+function renderBadgeIconHtml(badge){
+  const url = findEmoteUrlByName(badge);
+  if (!url) return "";
+  const safe = escapeHtml((badge || "").trim());
+  return `<img class="badge-emote-icon" src="${escapeHtml(url)}" alt="${safe}" title="${safe}">`;
+}
 
 function emoteChipHtml(e){
   return `<button type="button" class="emote-chip emote-chip-img" data-code="${escapeHtml(e.name)}" title="${escapeHtml(e.name)}">${e.url ? `<img src="${escapeHtml(e.url)}" alt="" loading="lazy">` : ""}<span>${escapeHtml(e.name)}</span></button>`;
@@ -1763,23 +1835,20 @@ function renderEmoteGroups(){
   globalGroup.innerHTML = `<div class="emote-group-label">Global Twitch emotes</div><div class="emote-picker">${globalEmotes.map(emoteChipHtml).join("")}</div>`;
   wrap.appendChild(globalGroup);
 
+  const subCache = loadSubscribedEmotesCache();
+  (subCache && subCache.groups || []).forEach(g => {
+    const group = document.createElement("div");
+    group.className = "emote-group";
+    group.innerHTML = `<div class="emote-group-label">${escapeHtml(g.login)} (subscribed)</div><div class="emote-picker">${g.emotes.map(emoteChipHtml).join("")}</div>`;
+    wrap.appendChild(group);
+  });
+
   loadEmoteChannels().forEach(ch => {
     const group = document.createElement("div");
     group.className = "emote-group";
     group.innerHTML = `<div class="emote-group-label">${escapeHtml(ch.login)}'s emotes</div><div class="emote-picker">${ch.emotes.map(emoteChipHtml).join("")}</div>`;
     wrap.appendChild(group);
   });
-
-  const myEmotesCache = loadMyEmotesCache();
-  if (myEmotesCache && myEmotesCache.groups){
-    myEmotesCache.groups.forEach(g => {
-      if (!g.emotes || !g.emotes.length) return;
-      const group = document.createElement("div");
-      group.className = "emote-group";
-      group.innerHTML = `<div class="emote-group-label">${escapeHtml(g.label)}</div><div class="emote-picker">${g.emotes.map(emoteChipHtml).join("")}</div>`;
-      wrap.appendChild(group);
-    });
-  }
 
   wireEmoteChips(wrap);
 }
@@ -1812,6 +1881,7 @@ function renderEmoteChannelChips(){
       saveEmoteChannels(loadEmoteChannels().filter(c => c.login !== login));
       renderEmoteChannelChips();
       renderEmoteGroups();
+      renderRewards();
       showToast(`Removed ${login}'s emotes`);
     };
   });
@@ -1839,6 +1909,7 @@ async function addOrRefreshEmoteChannel(loginRaw, isRefresh){
     saveEmoteChannels(channels);
     renderEmoteChannelChips();
     renderEmoteGroups();
+    renderRewards();
     const msg = isRefresh ? `Refreshed ${login}'s emotes (${emotes.length})` : `Added ${login} — ${emotes.length} emotes`;
     setEmoteFetchStatus(msg, false);
     showToast(msg);
@@ -1858,6 +1929,7 @@ async function ensureGlobalEmotesLoaded(){
     const emotes = await fetchGlobalEmotesLive();
     saveGlobalEmotesCache({ emotes, fetchedAt: Date.now() });
     renderEmoteGroups();
+    renderRewards();
   }catch(err){
     /* silent — falls back to the static COMMON_TWITCH_EMOTES list already rendered */
   }
@@ -1870,6 +1942,7 @@ document.getElementById("emoteChannelInput").addEventListener("keydown", (e) => 
 renderEmoteChannelChips();
 renderEmoteGroups();
 ensureGlobalEmotesLoaded();
+ensureSubscribedEmotesLoaded();
 
 document.getElementById("addRewardBtn").onclick = () => {
   const level = Number(document.getElementById("newLevel").value);
@@ -2055,8 +2128,10 @@ document.getElementById("adminUrlField").value = `${FALLENONE_DOMAIN}/${ADMIN_DA
    app's Client Type to be set to Public (implicit grant can't use
    a Client Secret, and this page has no server to hold one), and
    this dashboard's own URL registered as an OAuth Redirect URL.
+   Scope now includes user:read:emotes so the Levels & Rewards tab
+   can auto-load emotes from every channel this account subscribes to.
    ============================================================ */
-function buildTwitchAuthorizeUrl(opts){
+function buildTwitchAuthorizeUrl(){
   const clientId = document.getElementById("twitchClientId").value.trim();
   if (!clientId){
     showToast("Enter and save your Twitch Client ID first.");
@@ -2067,41 +2142,31 @@ function buildTwitchAuthorizeUrl(opts){
     client_id: clientId,
     redirect_uri: redirectUri,
     response_type: "token",
-    scope: (opts && opts.scope) || "chat:read chat:edit",
-    state: (opts && opts.state) || "bot",
+    scope: "chat:read chat:edit user:read:emotes",
     force_verify: "true"
   });
   return "https://id.twitch.tv/oauth2/authorize?" + params.toString();
 }
 document.getElementById("getBotTokenBtn").onclick = () => {
   saveTwitchApiCfgFromInputs();
-  const url = buildTwitchAuthorizeUrl({ scope: "chat:read chat:edit", state: "bot" });
+  const url = buildTwitchAuthorizeUrl();
   if (url) window.location.href = url;
 };
 /* On return from Twitch, the access token arrives in the URL hash
-   (e.g. #access_token=xxxx&scope=...&state=...). The "state" param
-   tells us which of the two separate logins this was — the bot
-   account login (IRC chat) or the "My Subscribed Channels" login
-   (a different account's emotes) — so each token lands in its own
-   storage rather than overwriting the other. */
+   (e.g. #access_token=xxxx&scope=...). Capture it, save it as the
+   Bot OAuth Token, and strip it out of the address bar. */
 (function captureTwitchTokenFromHash(){
   if (!location.hash || location.hash.indexOf("access_token=") === -1) return;
   const params = new URLSearchParams(location.hash.slice(1));
   const token = params.get("access_token");
   const err = params.get("error_description");
-  const state = params.get("state") || "bot";
   history.replaceState(null, "", location.pathname + location.search);
   if (err){ showToast("Twitch login failed: " + err); return; }
   if (!token) return;
-  if (state === "myemotes"){
-    saveMyEmotesToken(token);
-    showToast("Account connected ✓ — click Refresh to load your emotes.");
-  } else {
-    const cfg = loadBotCfg();
-    cfg.botToken = "oauth:" + token;
-    save(LS_BOT_CFG, cfg);
-    showToast("Twitch token received and saved ✓ — reconnecting bot…");
-  }
+  const cfg = loadBotCfg();
+  cfg.botToken = "oauth:" + token;
+  save(LS_BOT_CFG, cfg);
+  showToast("Twitch token received and saved ✓ — reconnecting bot…");
 })();
 
 function copyFieldValue(inputId, btnId){
