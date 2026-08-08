@@ -1070,7 +1070,7 @@
         </div>
       </div>
 
-      <div class="section-divider"><h3>Reply Messages</h3><div class="sub">Placeholders: {user} {level} {reward} {badge} — {items} is available for the $wallet message only.</div></div>
+      <div class="section-divider"><h3>Reply Messages</h3><div class="sub">Placeholders: {user} {level} {reward} {badge} {broadcaster} — {items} is available for the $wallet message only.</div></div>
 
       <div class="field"><label for="msgClaimSuccess">$claim Success Message</label><input type="text" id="msgClaimSuccess"></div>
       <div class="field"><label for="msgClaimAlready">$claim Already Reserved Message</label><input type="text" id="msgClaimAlready"></div>
@@ -1097,7 +1097,8 @@
         <code>$claim &lt;reward name&gt;</code> reserves that specific unlocked reward (case-insensitive title match) — e.g. <code>$claim No Swearing</code>. Leave the name off and <code>$claim</code> alone reserves the oldest unlocked-but-unclaimed reward instead.<br><br>
         <code>$redeem &lt;reward name&gt;</code> marks a reward as actually used on stream. It works on anything reserved via <code>$claim</code>, and will auto-reserve on the fly if the viewer calls <code>$redeem</code> directly without claiming first. Leave the name off to redeem the oldest claimed-but-unredeemed reward (or the oldest unclaimed one if nothing's been claimed yet).<br><br>
         <code>$wallet</code> (no argument, viewer's own) lists whatever that viewer currently has claimed but hasn't redeemed yet — their spendable inventory.<br><br>
-        <code>$refund {username}</code> (mods/broadcaster only) undoes that viewer's most recently <b>redeemed</b> reward only — it goes back to claimed/reserved, ready to <code>$redeem</code> again. It never touches a plain <code>$claim</code>. Example: <code>$refund fallenoneart</code>.
+        <code>$refund {username}</code> (mods/broadcaster only) undoes that viewer's most recently <b>redeemed</b> reward only — it goes back to claimed/reserved, ready to <code>$redeem</code> again. It never touches a plain <code>$claim</code>. Example: <code>$refund fallenoneart</code>.<br><br>
+        <code>{broadcaster}</code> fills in with the <b>Stream Account Name</b> saved on the Connection tab, so a message can say things like "redeemed for {broadcaster}'s stream" without hardcoding your channel name.
       </div>
     </div>
 
@@ -2230,6 +2231,8 @@ document.getElementById("copyAdminUrlBtn").onclick = () => copyFieldValue("admin
      unlocked -> claimed (reserved via $claim) -> redeemed (used via $redeem)
    $wallet is read-only (reports claimed-but-unredeemed levels).
    $refund only reverses the most recent redeem, back to claimed.
+   {broadcaster} in any message template resolves to the Stream
+   Account Name saved on the Connection tab (see getBroadcasterName()).
    ============================================================ */
 function defaultChatCfg(){
   return {
@@ -2245,7 +2248,7 @@ function defaultChatCfg(){
       claimNone: "{user}, nothing new to claim right now — keep leveling up!",
       claimNotFound: "{user}, there's no reward called \"{reward}\" — check the reward list!",
       claimLocked: "{user}, you haven't unlocked {reward} yet — reach Level {level} first!",
-      redeemSuccess: "🎉 {user} used the {reward} reward for reaching Level {level}! {badge}",
+      redeemSuccess: "🎉 {user} has redeemed {reward} for {broadcaster}'s stream {badge}",
       redeemAlready: "{user}, {reward} has already been used.",
       redeemNone: "{user}, you don't have anything to redeem right now — try $claim first or keep leveling up!",
       redeemNotFound: "{user}, there's no reward called \"{reward}\" — check the reward list!",
@@ -2325,6 +2328,15 @@ function fillTemplate(tpl, vars){
   return (tpl || "").replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined && vars[k] !== null ? vars[k] : ""));
 }
 
+/** Resolves {broadcaster} — the streamer's own channel name — from the
+ *  Stream Account Name saved on the Connection tab's bot config. Falls
+ *  back to "the streamer" if it hasn't been set yet, so templates never
+ *  render a blank/broken word if this is filled in later. */
+function getBroadcasterName(){
+  const cfg = loadBotCfg();
+  return (cfg.streamAccount || "").trim() || "the streamer";
+}
+
 function ensureRecShape(rec){
   rec.unlockedLevels = rec.unlockedLevels || [];
   rec.claimedLevels = rec.claimedLevels || [];
@@ -2351,6 +2363,7 @@ function rewardByTitle(title){
  */
 function processClaim(username, requestedName){
   const chatCfg = loadChatCfg();
+  const broadcaster = getBroadcasterName();
   const { key, users, rec } = getUserRec(username);
 
   const finishClaim = (level) => {
@@ -2359,7 +2372,7 @@ function processClaim(username, requestedName){
     save(LS_USERS, users);
     bc && bc.postMessage({ type:"user_update", user:key, data:rec });
     const reward = rewardByLevel(level);
-    const responseText = fillTemplate(chatCfg.messages.claimSuccess, { user:username, level, reward:reward.title||"", badge:reward.badge||"" });
+    const responseText = fillTemplate(chatCfg.messages.claimSuccess, { user:username, level, reward:reward.title||"", badge:reward.badge||"", broadcaster });
     renderUsers();
     return { responseText, claimed:true, rewardName: reward.title || "" };
   };
@@ -2368,22 +2381,22 @@ function processClaim(username, requestedName){
   if (query){
     const matched = rewardByTitle(query);
     if (!matched){
-      const responseText = fillTemplate(chatCfg.messages.claimNotFound, { user:username, level:rec.level, reward:query, badge:"" });
+      const responseText = fillTemplate(chatCfg.messages.claimNotFound, { user:username, level:rec.level, reward:query, badge:"", broadcaster });
       renderUsers();
       return { responseText, claimed:false, rewardName: query };
     }
     if (!rec.unlockedLevels.includes(matched.level)){
-      const responseText = fillTemplate(chatCfg.messages.claimLocked, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      const responseText = fillTemplate(chatCfg.messages.claimLocked, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"", broadcaster });
       renderUsers();
       return { responseText, claimed:false, rewardName: matched.title };
     }
     if (rec.redeemedLevels.includes(matched.level)){
-      const responseText = fillTemplate(chatCfg.messages.claimRedeemed, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      const responseText = fillTemplate(chatCfg.messages.claimRedeemed, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"", broadcaster });
       renderUsers();
       return { responseText, claimed:false, rewardName: matched.title };
     }
     if (rec.claimedLevels.includes(matched.level)){
-      const responseText = fillTemplate(chatCfg.messages.claimAlready, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      const responseText = fillTemplate(chatCfg.messages.claimAlready, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"", broadcaster });
       renderUsers();
       return { responseText, claimed:false, rewardName: matched.title };
     }
@@ -2392,7 +2405,7 @@ function processClaim(username, requestedName){
 
   const claimable = rec.unlockedLevels.filter(l => !rec.claimedLevels.includes(l)).sort((a,b) => a-b);
   if (claimable.length > 0) return finishClaim(claimable[0]);
-  const responseText = fillTemplate(chatCfg.messages.claimNone, { user:username, level:rec.level, reward:"", badge:"" });
+  const responseText = fillTemplate(chatCfg.messages.claimNone, { user:username, level:rec.level, reward:"", badge:"", broadcaster });
   renderUsers();
   return { responseText, claimed:false, rewardName: "" };
 }
@@ -2407,6 +2420,7 @@ function processClaim(username, requestedName){
  */
 function processRedeem(username, requestedName){
   const chatCfg = loadChatCfg();
+  const broadcaster = getBroadcasterName();
   const { key, users, rec } = getUserRec(username);
 
   const finishRedeem = (level) => {
@@ -2416,7 +2430,7 @@ function processRedeem(username, requestedName){
     save(LS_USERS, users);
     bc && bc.postMessage({ type:"user_update", user:key, data:rec });
     const reward = rewardByLevel(level);
-    const responseText = fillTemplate(chatCfg.messages.redeemSuccess, { user:username, level, reward:reward.title||"", badge:reward.badge||"" });
+    const responseText = fillTemplate(chatCfg.messages.redeemSuccess, { user:username, level, reward:reward.title||"", badge:reward.badge||"", broadcaster });
     renderUsers();
     return { responseText, redeemed:true, rewardName: reward.title || "" };
   };
@@ -2425,17 +2439,17 @@ function processRedeem(username, requestedName){
   if (query){
     const matched = rewardByTitle(query);
     if (!matched){
-      const responseText = fillTemplate(chatCfg.messages.redeemNotFound, { user:username, level:rec.level, reward:query, badge:"" });
+      const responseText = fillTemplate(chatCfg.messages.redeemNotFound, { user:username, level:rec.level, reward:query, badge:"", broadcaster });
       renderUsers();
       return { responseText, redeemed:false, rewardName: query };
     }
     if (!rec.unlockedLevels.includes(matched.level)){
-      const responseText = fillTemplate(chatCfg.messages.redeemLocked, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      const responseText = fillTemplate(chatCfg.messages.redeemLocked, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"", broadcaster });
       renderUsers();
       return { responseText, redeemed:false, rewardName: matched.title };
     }
     if (rec.redeemedLevels.includes(matched.level)){
-      const responseText = fillTemplate(chatCfg.messages.redeemAlready, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      const responseText = fillTemplate(chatCfg.messages.redeemAlready, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"", broadcaster });
       renderUsers();
       return { responseText, redeemed:false, rewardName: matched.title };
     }
@@ -2448,7 +2462,7 @@ function processRedeem(username, requestedName){
   const unclaimed = rec.unlockedLevels.filter(l => !rec.claimedLevels.includes(l) && !rec.redeemedLevels.includes(l)).sort((a,b) => a-b);
   if (unclaimed.length > 0) return finishRedeem(unclaimed[0]);
 
-  const responseText = fillTemplate(chatCfg.messages.redeemNone, { user:username, level:rec.level, reward:"", badge:"" });
+  const responseText = fillTemplate(chatCfg.messages.redeemNone, { user:username, level:rec.level, reward:"", badge:"", broadcaster });
   renderUsers();
   return { responseText, redeemed:false, rewardName: "" };
 }
@@ -2460,14 +2474,15 @@ function processRedeem(username, requestedName){
  */
 function processWallet(username){
   const chatCfg = loadChatCfg();
+  const broadcaster = getBroadcasterName();
   const { rec } = getUserRec(username);
   const held = rec.claimedLevels.filter(l => !rec.redeemedLevels.includes(l)).sort((a,b) => a-b);
   if (!held.length){
-    const responseText = fillTemplate(chatCfg.messages.walletEmpty, { user:username, level:rec.level, reward:"", badge:"" });
+    const responseText = fillTemplate(chatCfg.messages.walletEmpty, { user:username, level:rec.level, reward:"", badge:"", broadcaster });
     return { responseText, items: [] };
   }
   const titles = held.map(l => rewardByLevel(l).title || `Level ${l} reward`);
-  const responseText = fillTemplate(chatCfg.messages.walletHas, { user:username, level:rec.level, reward:"", badge:"", items: titles.join(", ") });
+  const responseText = fillTemplate(chatCfg.messages.walletHas, { user:username, level:rec.level, reward:"", badge:"", broadcaster, items: titles.join(", ") });
   return { responseText, items: titles };
 }
 
@@ -2481,6 +2496,7 @@ function processWallet(username){
  */
 function processRefund(targetUsername){
   const chatCfg = loadChatCfg();
+  const broadcaster = getBroadcasterName();
   const { key, users, rec } = getUserRec(targetUsername);
   let responseText, refunded = false;
   if (rec.redeemedLevels.length > 0){
@@ -2489,10 +2505,10 @@ function processRefund(targetUsername){
     save(LS_USERS, users);
     bc && bc.postMessage({ type:"user_update", user:key, data:rec });
     const reward = rewardByLevel(refundedLevel);
-    responseText = fillTemplate(chatCfg.messages.refundSuccess, { user:targetUsername, level:refundedLevel, reward:reward.title||"", badge:reward.badge||"" });
+    responseText = fillTemplate(chatCfg.messages.refundSuccess, { user:targetUsername, level:refundedLevel, reward:reward.title||"", badge:reward.badge||"", broadcaster });
     refunded = true;
   } else {
-    responseText = fillTemplate(chatCfg.messages.refundNone, { user:targetUsername, level:rec.level, reward:"", badge:"" });
+    responseText = fillTemplate(chatCfg.messages.refundNone, { user:targetUsername, level:rec.level, reward:"", badge:"", broadcaster });
   }
   renderUsers();
   return { responseText, refunded };
@@ -2644,7 +2660,7 @@ function handleIrcChatMessage(user, text, tags){
     const targetUser = (parts[1] || "").replace(/^@/, "");
     if (!targetUser){ return; } // needs $refund {username}
     if (!isModOrBroadcaster(tags)){
-      sendIrcMessage(fillTemplate(chatCfg.messages.refundDenied, { user, level:"", reward:"", badge:"" }));
+      sendIrcMessage(fillTemplate(chatCfg.messages.refundDenied, { user, level:"", reward:"", badge:"", broadcaster: getBroadcasterName() }));
       logActivity({ eventName:"Refund", user:targetUser, xpGained:0, leveledUp:false, level:getUserRec(targetUser).rec.level||1, rewardName:"denied — requested by " + user });
       pulseLiveDot();
       return;
