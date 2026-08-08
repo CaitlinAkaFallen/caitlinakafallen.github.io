@@ -574,6 +574,7 @@
       .activity-redeem{ color:var(--accent-secondary); font-weight:600; }
       .activity-redeem-cost{ color:var(--text-tertiary); font-size:10px; }
       .activity-refund{ color:#ffd27d; font-weight:600; }
+      .activity-wallet{ color:var(--accent-primary); font-weight:600; }
 
       .user-card{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; background:var(--bg-panel); margin-bottom:6px; }
       .user-card .avatar{ width:32px; height:32px; border-radius:50%; flex:0 0 auto; background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:900; color:#0a0915; font-size:13px; overflow:hidden; }
@@ -804,7 +805,7 @@
 
     <div class="panel" id="panel-connection">
       <h2>Connection</h2>
-      <div class="sub">Wire up viewer login and your Twitch chat bot so <code>$redeem</code> / <code>$claim</code> work live in chat.</div>
+      <div class="sub">Wire up viewer login and your Twitch chat bot so <code>$claim</code> / <code>$redeem</code> / <code>$wallet</code> work live in chat.</div>
 
       <div class="field">
         <label for="redirectUriField">Redirect URI</label>
@@ -1043,41 +1044,60 @@
 
     <div class="panel" id="panel-chat">
       <h2>Chat Commands</h2>
-      <div class="sub">Viewers type these directly in chat; replies post automatically once the bot is connected.</div>
+      <div class="sub">Viewers type these directly in chat; replies post automatically once the bot is connected. Rewards now move through three stages: <b>unlocked → claimed → redeemed</b>.</div>
 
-      <div class="section-divider"><h3>$redeem / $claim Commands</h3></div>
+      <div class="section-divider"><h3>$claim / $redeem / $wallet / $refund</h3></div>
       <div class="field">
         <div class="toggle-row">
-          <div class="row-labels"><div class="title">Chat commands enabled</div><div class="desc">Master switch for both commands below.</div></div>
+          <div class="row-labels"><div class="title">Chat commands enabled</div><div class="desc">Master switch for all commands below.</div></div>
           <label class="switch"><input type="checkbox" id="chatEnabledSwitch"><span class="track"></span></label>
         </div>
         <div class="toggle-row">
-          <div class="row-labels"><div class="title">$redeem</div><div class="desc">Uses a named unlocked reward (or the oldest one if no name is given) and announces it in chat.</div></div>
-          <label class="switch"><input type="checkbox" id="redeemCmdSwitch"><span class="track"></span></label>
-        </div>
-        <div class="toggle-row">
-          <div class="row-labels"><div class="title">$claim</div><div class="desc">Alias for $redeem — enable either or both.</div></div>
+          <div class="row-labels"><div class="title">$claim</div><div class="desc">Step 1 — reserves a named unlocked reward (or the oldest unclaimed one if no name is given). Doesn't mark it as used yet.</div></div>
           <label class="switch"><input type="checkbox" id="claimCmdSwitch"><span class="track"></span></label>
         </div>
         <div class="toggle-row">
-          <div class="row-labels"><div class="title">$refund {username}</div><div class="desc">Mod/broadcaster-only. Restocks that viewer's most recently claimed reward so they can $redeem it again later.</div></div>
+          <div class="row-labels"><div class="title">$redeem</div><div class="desc">Step 2 — marks a reserved reward as actually used on stream. If the viewer skipped $claim, $redeem reserves it for them automatically first.</div></div>
+          <label class="switch"><input type="checkbox" id="redeemCmdSwitch"><span class="track"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="row-labels"><div class="title">$wallet</div><div class="desc">Lets a viewer check their own claimed-but-not-yet-redeemed rewards — what they currently have to spend.</div></div>
+          <label class="switch"><input type="checkbox" id="walletCmdSwitch"><span class="track"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="row-labels"><div class="title">$refund {username}</div><div class="desc">Mod/broadcaster-only. Undoes that viewer's most recent $redeem only — the reward goes back to claimed/reserved. Does not undo a $claim.</div></div>
           <label class="switch"><input type="checkbox" id="refundCmdSwitch"><span class="track"></span></label>
         </div>
       </div>
 
-      <div class="section-divider"><h3>Reply Messages</h3><div class="sub">Placeholders: {user} {level} {reward} {badge}</div></div>
-      <div class="field"><label for="msgSuccess">Redeem Success Message</label><input type="text" id="msgSuccess"></div>
-      <div class="field"><label for="msgAlready">Nothing New / Already Used Message</label><input type="text" id="msgAlready"></div>
-      <div class="field"><label for="msgNone">No Rewards Unlocked Yet Message</label><input type="text" id="msgNone"></div>
-      <div class="field"><label for="msgNotFound">No Such Reward Message</label><input type="text" id="msgNotFound"></div>
-      <div class="field"><label for="msgLocked">Reward Not Unlocked Yet Message</label><input type="text" id="msgLocked"></div>
+      <div class="section-divider"><h3>Reply Messages</h3><div class="sub">Placeholders: {user} {level} {reward} {badge} — {items} is available for the $wallet message only.</div></div>
+
+      <div class="field"><label for="msgClaimSuccess">$claim Success Message</label><input type="text" id="msgClaimSuccess"></div>
+      <div class="field"><label for="msgClaimAlready">$claim Already Reserved Message</label><input type="text" id="msgClaimAlready"></div>
+      <div class="field"><label for="msgClaimRedeemed">$claim Already Used Message</label><input type="text" id="msgClaimRedeemed"></div>
+      <div class="field"><label for="msgClaimNone">$claim Nothing New Message</label><input type="text" id="msgClaimNone"></div>
+      <div class="field"><label for="msgClaimNotFound">$claim No Such Reward Message</label><input type="text" id="msgClaimNotFound"></div>
+      <div class="field"><label for="msgClaimLocked">$claim Reward Not Unlocked Message</label><input type="text" id="msgClaimLocked"></div>
+
+      <div class="field"><label for="msgRedeemSuccess">$redeem Success Message</label><input type="text" id="msgRedeemSuccess"></div>
+      <div class="field"><label for="msgRedeemAlready">$redeem Already Used Message</label><input type="text" id="msgRedeemAlready"></div>
+      <div class="field"><label for="msgRedeemNone">$redeem Nothing To Redeem Message</label><input type="text" id="msgRedeemNone"></div>
+      <div class="field"><label for="msgRedeemNotFound">$redeem No Such Reward Message</label><input type="text" id="msgRedeemNotFound"></div>
+      <div class="field"><label for="msgRedeemLocked">$redeem Reward Not Unlocked Message</label><input type="text" id="msgRedeemLocked"></div>
+
+      <div class="field"><label for="msgWalletHas">$wallet Has Items Message</label><input type="text" id="msgWalletHas"></div>
+      <div class="field"><label for="msgWalletEmpty">$wallet Empty Message</label><input type="text" id="msgWalletEmpty"></div>
+
       <div class="field"><label for="msgRefundSuccess">$refund Success Message</label><input type="text" id="msgRefundSuccess"></div>
       <div class="field"><label for="msgRefundNone">$refund Nothing To Refund Message</label><input type="text" id="msgRefundNone"></div>
       <div class="field"><label for="msgRefundDenied">$refund Not Allowed Message</label><input type="text" id="msgRefundDenied"></div>
+
       <div class="action-bar"><button class="primary-btn" id="saveChatCfgBtn">Save Chat Settings</button></div>
       <div class="hint full-row">
-        <code>$redeem &lt;reward name&gt;</code> uses that specific unlocked reward and announces it in chat — e.g. <code>$redeem No Swearing</code>. Reward names match your <b>Title</b> column on the Levels &amp; Rewards tab (case-insensitive). Leave the name off and <code>$redeem</code>/<code>$claim</code> alone uses the oldest unlocked-but-unused reward instead — both commands work identically; <code>$claim</code> is just an alias.<br><br>
-        <code>$refund {username}</code> (mods/broadcaster only) undoes that viewer's most recently used reward — it goes back to unused so they can save it and <code>$redeem</code> it again another time. Example: <code>$refund fallenoneart</code>.
+        <code>$claim &lt;reward name&gt;</code> reserves that specific unlocked reward (case-insensitive title match) — e.g. <code>$claim No Swearing</code>. Leave the name off and <code>$claim</code> alone reserves the oldest unlocked-but-unclaimed reward instead.<br><br>
+        <code>$redeem &lt;reward name&gt;</code> marks a reward as actually used on stream. It works on anything reserved via <code>$claim</code>, and will auto-reserve on the fly if the viewer calls <code>$redeem</code> directly without claiming first. Leave the name off to redeem the oldest claimed-but-unredeemed reward (or the oldest unclaimed one if nothing's been claimed yet).<br><br>
+        <code>$wallet</code> (no argument, viewer's own) lists whatever that viewer currently has claimed but hasn't redeemed yet — their spendable inventory.<br><br>
+        <code>$refund {username}</code> (mods/broadcaster only) undoes that viewer's most recently <b>redeemed</b> reward only — it goes back to claimed/reserved, ready to <code>$redeem</code> again. It never touches a plain <code>$claim</code>. Example: <code>$refund fallenoneart</code>.
       </div>
     </div>
 
@@ -1116,12 +1136,12 @@
         Real subs/cheers/raids no longer need this panel — see <b>Activity &amp; Viewers</b>, which applies XP automatically.
       </div>
 
-      <div class="section-divider"><h3>Reward Status</h3><div class="sub">Exactly what this viewer has unlocked vs. actually claimed — use this to see why <code>$redeem</code> is or isn't working.</div></div>
+      <div class="section-divider"><h3>Reward Status</h3><div class="sub">Exactly what this viewer has unlocked, reserved (claimed), and used (redeemed) — use this to see why <code>$claim</code>/<code>$redeem</code> is or isn't working.</div></div>
       <div class="field full-row" id="rewardStatusBox"></div>
       <div class="action-bar">
         <button class="ghost-btn danger" id="resetClaimsBtn">Reset This Viewer's Claims (testing)</button>
       </div>
-      <div class="hint full-row">Clears only their <b>claimed</b> list so already-unlocked rewards can be <code>$redeem</code>'d again for testing — their XP, level, and unlocked list are untouched. This is a local shortcut; the real in-chat equivalent is <code>$refund</code>.</div>
+      <div class="hint full-row">Clears this viewer's <b>claimed</b> and <b>redeemed</b> lists so already-unlocked rewards can be <code>$claim</code>'d and <code>$redeem</code>'d again for testing — their XP, level, and unlocked list are untouched. This is a local shortcut; the real in-chat equivalent of undoing a redeem is <code>$refund</code>.</div>
     </div>
 
     <div class="panel" id="panel-activity">
@@ -1130,7 +1150,7 @@
 
       <div class="section-divider"><h3>Live Activity <span class="live-dot" id="liveDot"></span></h3></div>
       <div class="field full-row">
-        <div id="activityLog" class="activity-feed"><div class="empty">Waiting for real Streamer.bot events and chat commands — subs, cheers, raids, $redeem/$claim, etc. will show up here automatically.</div></div>
+        <div id="activityLog" class="activity-feed"><div class="empty">Waiting for real Streamer.bot events and chat commands — subs, cheers, raids, $claim/$redeem/$wallet/$refund, etc. will show up here automatically.</div></div>
       </div>
 
       <div class="section-divider"><h3>Tracked Viewers</h3></div>
@@ -1350,14 +1370,15 @@
       <div class="field full-row hint">
         The card computes XP itself from the rates on the Levels &amp; Rewards tab, so your Streamer.bot actions only need to broadcast the <b>raw</b> event via <code>CPH.WebsocketBroadcastJson()</code> under a <code>Custom</code> event:
         <code>{source:"levelup", eventName, user, avatar, quantity}</code> — where <code>eventName</code> is one of <code>Sub / ReSub / GiftSub / Cheer / Donation / Raid / ChannelPointRedeem</code>, and <code>quantity</code> is bits cheered, subs gifted, raiders, or dollars (omit/1 for flat events like Sub or Channel Point Redeem). The <code>source:"levelup"</code> field is required — both this dashboard and the card overlay only listen for that tag, so unrelated Streamer.bot broadcasts (like other custom actions) are never mistaken for a level event.<br><br>
-        If an action ever broadcasts a fully pre-computed payload instead (<code>xpGained</code>/<code>totalXp</code>/etc. already set), the card detects that and uses it as-is — just keep the <code>source:"levelup"</code> tag on it too. <b>Important:</b> the C# action's hardcoded curve (<code>CurveBase</code>/<code>CurveGrowth</code>) must match the Base XP / Growth values on this tab, or the <code>leveledUp</code> flag it computes can desync from what this dashboard would compute — this dashboard now re-derives unlocked milestones from the viewer's current level on every event regardless, so a desync only delays an unlock by one event instead of losing it.<br><br>
+        If an action ever broadcasts a fully pre-computed payload instead (<code>xpGained</code>/<code>totalXp</code>/etc. already set), the card detects that and uses it as-is — just keep the <code>source:"levelup"</code> tag on it too.<br><br>
         For real grants to persist across Streamer.bot restarts too, add a small action <code>LVL_GrantXP</code> that reads <code>user</code>/<code>eventName</code>/<code>quantity</code> via <code>CPH.TryGetArg</code>, stores running totals in a global var like <code>lvl_xp_{user}</code> (guard first read with a <code>GetGlobalVar</code> null-check), then re-broadcasts the raw event. This mirrors your <code>sw_inv_</code> / <code>wheel_inv_</code> pattern.
       </div>
 
-      <div class="section-divider"><h3>Chat Commands ($redeem / $claim / $refund)</h3></div>
+      <div class="section-divider"><h3>Chat Commands ($claim / $redeem / $wallet / $refund)</h3></div>
       <div class="field full-row hint">
-        These no longer go through Streamer.bot. Connect your bot account's Twitch IRC credentials on the <b>Connection</b> tab, and this dashboard listens for <code>$redeem</code>/<code>$claim</code>/<code>$refund</code> and posts the reply itself. Keep this tab open on your streaming PC so it stays connected during stream.<br><br>
-        <code>$refund {username}</code> is restricted to the broadcaster and moderators — the bot reads the sender's IRC <code>badges</code> tag (requires the <code>twitch.tv/tags</code> capability, already requested on connect) to check for <code>broadcaster</code> or <code>moderator</code> before allowing it.
+        These no longer go through Streamer.bot. Connect your bot account's Twitch IRC credentials on the <b>Connection</b> tab, and this dashboard listens for <code>$claim</code>/<code>$redeem</code>/<code>$wallet</code>/<code>$refund</code> and posts the reply itself. Keep this tab open on your streaming PC so it stays connected during stream.<br><br>
+        Rewards move through three stages per viewer: <b>unlocked</b> (level reached) → <b>claimed</b> (reserved via <code>$claim</code>) → <b>redeemed</b> (marked used via <code>$redeem</code>). <code>$redeem</code> will auto-claim on the fly if a viewer calls it without claiming first, so it always works as a one-step shortcut too. <code>$wallet</code> just reads a viewer's own claimed-but-unredeemed levels back to them — it never changes any state.<br><br>
+        <code>$refund {username}</code> is restricted to the broadcaster and moderators — the bot reads the sender's IRC <code>badges</code> tag (requires the <code>twitch.tv/tags</code> capability, already requested on connect) to check for <code>broadcaster</code> or <code>moderator</code> before allowing it. It only reverses the most recent <b>redeem</b> (back to claimed) — it never touches a <code>$claim</code> by itself.
       </div>
     </div>
 
@@ -1396,6 +1417,7 @@ const EVENT_META = {
   ChannelPointRedeem: { label:"Channel Point Redeem",  unit:"per redeem" },
   Claim:              { label:"$claim used" },
   Redeem:             { label:"$redeem used" },
+  Wallet:             { label:"$wallet checked" },
   Refund:             { label:"$refund used" }
 };
 function defaultXpRates(){
@@ -1459,7 +1481,7 @@ function renderXpRates(){
   const body = document.getElementById("xpRatesBody");
   body.innerHTML = "";
   Object.keys(EVENT_META).forEach(key => {
-    if (key === "Claim" || key === "Redeem" || key === "Refund") return;
+    if (key === "Claim" || key === "Redeem" || key === "Wallet" || key === "Refund") return;
     const meta = EVENT_META[key];
     const r = rates[key] || { amount:0, perUnit:false };
     const tr = document.createElement("tr");
@@ -1552,33 +1574,6 @@ function handleRewardFieldEdit(input){
   bc && bc.postMessage({ type:"rewards_update", rewards });
   renderRewards();
   showToast("Milestone updated");
-
-  // A level/title edit can change which rewards are eligible to unlock for
-  // a viewer already at or above that level, so re-sync every tracked
-  // viewer's unlockedLevels against the current reward list right away —
-  // otherwise a newly-added or renumbered milestone stays invisible to
-  // $redeem until that viewer's next XP event.
-  resyncAllViewersUnlocks();
-}
-
-/* Re-derives unlockedLevels for every tracked viewer from their current
-   level against the current reward list. Safe to call anytime — it only
-   adds missing entries, never removes existing unlocks or claims. Used
-   after rewards are added/edited/deleted so newly-added or renumbered
-   milestones apply immediately instead of waiting for that viewer's next
-   XP event. */
-function resyncAllViewersUnlocks(){
-  const users = load(LS_USERS, {});
-  let changed = false;
-  Object.keys(users).forEach(key => {
-    if (unlockRewardsUpToLevel(users[key], users[key].level || 1)) changed = true;
-  });
-  if (changed){
-    save(LS_USERS, users);
-    bc && bc.postMessage({ type:"users_bulk_update" });
-    renderUsers();
-    renderRewardStatus();
-  }
 }
 
 /* A short fallback list of well-known Twitch global emote codes, used only
@@ -1994,7 +1989,6 @@ document.getElementById("addRewardBtn").onclick = () => {
   document.getElementById("newTitle").value = "";
   document.getElementById("newMessage").value = "";
   renderRewards();
-  resyncAllViewersUnlocks();
 };
 renderRewards();
 
@@ -2231,20 +2225,35 @@ document.getElementById("copyRedirectUriBtn").onclick = () => copyFieldValue("re
 document.getElementById("copyObsUrlBtn").onclick = () => copyFieldValue("obsUrlField", "copyObsUrlBtn");
 document.getElementById("copyAdminUrlBtn").onclick = () => copyFieldValue("adminUrlField", "copyAdminUrlBtn");
 
+/* ============================================================
+   Chat command config — three-stage reward lifecycle:
+     unlocked -> claimed (reserved via $claim) -> redeemed (used via $redeem)
+   $wallet is read-only (reports claimed-but-unredeemed levels).
+   $refund only reverses the most recent redeem, back to claimed.
+   ============================================================ */
 function defaultChatCfg(){
   return {
     enabled: true,
-    redeemEnabled: true,
     claimEnabled: true,
+    redeemEnabled: true,
+    walletEnabled: true,
     refundEnabled: true,
     messages: {
-      success: "🎉 {user} used the {reward} reward for reaching Level {level}! {badge}",
-      already: "{user}, nothing new to redeem right now — keep leveling up!",
-      none: "{user}, you haven't unlocked any rewards yet — keep leveling up!",
-      notFound: "{user}, there's no reward called \"{reward}\" — check the reward list!",
-      locked: "{user}, you haven't unlocked {reward} yet — reach Level {level} first!",
-      refundSuccess: "↩️ Refunded {user}'s {reward} reward (Level {level}) — it's unclaimed again and ready to $redeem later.",
-      refundNone: "{user} has nothing claimed to refund.",
+      claimSuccess: "🎟️ {user} reserved the {reward} reward (Level {level})! {badge} Type $redeem {reward} when you're ready to use it.",
+      claimAlready: "{user}, you've already reserved {reward} — type $redeem {reward} to use it, or $wallet to see everything you're holding.",
+      claimRedeemed: "{user}, {reward} has already been used.",
+      claimNone: "{user}, nothing new to claim right now — keep leveling up!",
+      claimNotFound: "{user}, there's no reward called \"{reward}\" — check the reward list!",
+      claimLocked: "{user}, you haven't unlocked {reward} yet — reach Level {level} first!",
+      redeemSuccess: "🎉 {user} used the {reward} reward for reaching Level {level}! {badge}",
+      redeemAlready: "{user}, {reward} has already been used.",
+      redeemNone: "{user}, you don't have anything to redeem right now — try $claim first or keep leveling up!",
+      redeemNotFound: "{user}, there's no reward called \"{reward}\" — check the reward list!",
+      redeemLocked: "{user}, you haven't unlocked {reward} yet — reach Level {level} first!",
+      walletHas: "{user}'s wallet: {items}",
+      walletEmpty: "{user}, your wallet is empty — nothing claimed and ready to redeem right now.",
+      refundSuccess: "↩️ Refunded {user}'s {reward} reward (Level {level}) — it's back to claimed/reserved, ready to $redeem again later.",
+      refundNone: "{user} has nothing redeemed to refund.",
       refundDenied: "Only the broadcaster or mods can use $refund."
     }
   };
@@ -2256,38 +2265,57 @@ function loadChatCfg(){
 function refreshChatCfgInputs(){
   const cfg = loadChatCfg();
   document.getElementById("chatEnabledSwitch").checked = !!cfg.enabled;
-  document.getElementById("redeemCmdSwitch").checked = !!cfg.redeemEnabled;
   document.getElementById("claimCmdSwitch").checked = !!cfg.claimEnabled;
+  document.getElementById("redeemCmdSwitch").checked = !!cfg.redeemEnabled;
+  document.getElementById("walletCmdSwitch").checked = !!cfg.walletEnabled;
   document.getElementById("refundCmdSwitch").checked = !!cfg.refundEnabled;
-  document.getElementById("msgSuccess").value = cfg.messages.success;
-  document.getElementById("msgAlready").value = cfg.messages.already;
-  document.getElementById("msgNone").value = cfg.messages.none;
-  document.getElementById("msgNotFound").value = cfg.messages.notFound;
-  document.getElementById("msgLocked").value = cfg.messages.locked;
+  document.getElementById("msgClaimSuccess").value = cfg.messages.claimSuccess;
+  document.getElementById("msgClaimAlready").value = cfg.messages.claimAlready;
+  document.getElementById("msgClaimRedeemed").value = cfg.messages.claimRedeemed;
+  document.getElementById("msgClaimNone").value = cfg.messages.claimNone;
+  document.getElementById("msgClaimNotFound").value = cfg.messages.claimNotFound;
+  document.getElementById("msgClaimLocked").value = cfg.messages.claimLocked;
+  document.getElementById("msgRedeemSuccess").value = cfg.messages.redeemSuccess;
+  document.getElementById("msgRedeemAlready").value = cfg.messages.redeemAlready;
+  document.getElementById("msgRedeemNone").value = cfg.messages.redeemNone;
+  document.getElementById("msgRedeemNotFound").value = cfg.messages.redeemNotFound;
+  document.getElementById("msgRedeemLocked").value = cfg.messages.redeemLocked;
+  document.getElementById("msgWalletHas").value = cfg.messages.walletHas;
+  document.getElementById("msgWalletEmpty").value = cfg.messages.walletEmpty;
   document.getElementById("msgRefundSuccess").value = cfg.messages.refundSuccess;
   document.getElementById("msgRefundNone").value = cfg.messages.refundNone;
   document.getElementById("msgRefundDenied").value = cfg.messages.refundDenied;
 }
-["chatEnabledSwitch","redeemCmdSwitch","claimCmdSwitch","refundCmdSwitch"].forEach(id => {
+["chatEnabledSwitch","claimCmdSwitch","redeemCmdSwitch","walletCmdSwitch","refundCmdSwitch"].forEach(id => {
   document.getElementById(id).onchange = () => {
     const cfg = loadChatCfg();
     cfg.enabled = document.getElementById("chatEnabledSwitch").checked;
-    cfg.redeemEnabled = document.getElementById("redeemCmdSwitch").checked;
     cfg.claimEnabled = document.getElementById("claimCmdSwitch").checked;
+    cfg.redeemEnabled = document.getElementById("redeemCmdSwitch").checked;
+    cfg.walletEnabled = document.getElementById("walletCmdSwitch").checked;
     cfg.refundEnabled = document.getElementById("refundCmdSwitch").checked;
     save(LS_CHAT_CFG, cfg);
   };
 });
 document.getElementById("saveChatCfgBtn").onclick = () => {
   const cfg = loadChatCfg();
-  cfg.messages.success = document.getElementById("msgSuccess").value || defaultChatCfg().messages.success;
-  cfg.messages.already = document.getElementById("msgAlready").value || defaultChatCfg().messages.already;
-  cfg.messages.none = document.getElementById("msgNone").value || defaultChatCfg().messages.none;
-  cfg.messages.notFound = document.getElementById("msgNotFound").value || defaultChatCfg().messages.notFound;
-  cfg.messages.locked = document.getElementById("msgLocked").value || defaultChatCfg().messages.locked;
-  cfg.messages.refundSuccess = document.getElementById("msgRefundSuccess").value || defaultChatCfg().messages.refundSuccess;
-  cfg.messages.refundNone = document.getElementById("msgRefundNone").value || defaultChatCfg().messages.refundNone;
-  cfg.messages.refundDenied = document.getElementById("msgRefundDenied").value || defaultChatCfg().messages.refundDenied;
+  const d = defaultChatCfg().messages;
+  cfg.messages.claimSuccess = document.getElementById("msgClaimSuccess").value || d.claimSuccess;
+  cfg.messages.claimAlready = document.getElementById("msgClaimAlready").value || d.claimAlready;
+  cfg.messages.claimRedeemed = document.getElementById("msgClaimRedeemed").value || d.claimRedeemed;
+  cfg.messages.claimNone = document.getElementById("msgClaimNone").value || d.claimNone;
+  cfg.messages.claimNotFound = document.getElementById("msgClaimNotFound").value || d.claimNotFound;
+  cfg.messages.claimLocked = document.getElementById("msgClaimLocked").value || d.claimLocked;
+  cfg.messages.redeemSuccess = document.getElementById("msgRedeemSuccess").value || d.redeemSuccess;
+  cfg.messages.redeemAlready = document.getElementById("msgRedeemAlready").value || d.redeemAlready;
+  cfg.messages.redeemNone = document.getElementById("msgRedeemNone").value || d.redeemNone;
+  cfg.messages.redeemNotFound = document.getElementById("msgRedeemNotFound").value || d.redeemNotFound;
+  cfg.messages.redeemLocked = document.getElementById("msgRedeemLocked").value || d.redeemLocked;
+  cfg.messages.walletHas = document.getElementById("msgWalletHas").value || d.walletHas;
+  cfg.messages.walletEmpty = document.getElementById("msgWalletEmpty").value || d.walletEmpty;
+  cfg.messages.refundSuccess = document.getElementById("msgRefundSuccess").value || d.refundSuccess;
+  cfg.messages.refundNone = document.getElementById("msgRefundNone").value || d.refundNone;
+  cfg.messages.refundDenied = document.getElementById("msgRefundDenied").value || d.refundDenied;
   save(LS_CHAT_CFG, cfg);
   showToast("Chat settings saved");
 };
@@ -2297,100 +2325,170 @@ function fillTemplate(tpl, vars){
   return (tpl || "").replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined && vars[k] !== null ? vars[k] : ""));
 }
 
+function ensureRecShape(rec){
+  rec.unlockedLevels = rec.unlockedLevels || [];
+  rec.claimedLevels = rec.claimedLevels || [];
+  rec.redeemedLevels = rec.redeemedLevels || [];
+  return rec;
+}
+function getUserRec(username){
+  const users = load(LS_USERS, {});
+  const key = normUser(username);
+  const rec = ensureRecShape(users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], redeemedLevels:[], history:[] });
+  return { key, users, rec };
+}
+function rewardByLevel(level){ return load(LS_REWARDS, []).find(r => Number(r.level) === Number(level)) || {}; }
+function rewardByTitle(title){
+  const q = (title || "").trim().toLowerCase();
+  return load(LS_REWARDS, []).find(r => (r.title || "").trim().toLowerCase() === q) || null;
+}
+
 /**
- * $redeem / $claim — with an optional reward-name argument.
- *   processClaim(username)                -> claims the oldest unlocked-but-unused reward (old behavior)
- *   processClaim(username, "No Swearing") -> claims that SPECIFIC reward by title (case-insensitive),
- *                                             telling the viewer if it doesn't exist, isn't unlocked yet,
- *                                             or was already used.
- * NOTE: before doing anything else, this re-derives unlockedLevels from
- * the viewer's current level (unlockRewardsUpToLevel) so a reward added,
- * renamed, or renumbered on the Levels & Rewards tab — or an unlock that
- * was missed because an earlier XP event arrived with a stale leveledUp
- * flag — is picked up right here, at claim time, instead of requiring
- * another XP event to "notice" it first.
+ * $claim [reward name] — STEP 1 of the two-step flow. Reserves a reward
+ * without marking it as used. Does not touch redeemedLevels at all.
+ *   processClaim(username)                -> claims the oldest unlocked-but-unclaimed reward
+ *   processClaim(username, "No Swearing") -> claims that SPECIFIC reward by title (case-insensitive)
  */
 function processClaim(username, requestedName){
   const chatCfg = loadChatCfg();
-  const key = normUser(username);
-  const users = load(LS_USERS, {});
-  const rec = users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], history:[] };
-  rec.unlockedLevels = rec.unlockedLevels || [];
-  rec.claimedLevels = rec.claimedLevels || [];
-  if (unlockRewardsUpToLevel(rec, rec.level || 1)){
-    users[key] = rec;
-    save(LS_USERS, users);
-    bc && bc.postMessage({ type:"user_update", user:key, data:rec });
-  }
-  const rewards = load(LS_REWARDS, []);
-  const pendingLevels = rec.unlockedLevels.filter(l => !rec.claimedLevels.includes(l)).sort((a,b) => a-b);
+  const { key, users, rec } = getUserRec(username);
 
   const finishClaim = (level) => {
     rec.claimedLevels.push(level);
     users[key] = rec;
     save(LS_USERS, users);
     bc && bc.postMessage({ type:"user_update", user:key, data:rec });
-    const reward = rewards.find(r => Number(r.level) === Number(level)) || {};
-    const responseText = fillTemplate(chatCfg.messages.success, { user:username, level, reward:reward.title||"", badge:reward.badge||"" });
+    const reward = rewardByLevel(level);
+    const responseText = fillTemplate(chatCfg.messages.claimSuccess, { user:username, level, reward:reward.title||"", badge:reward.badge||"" });
     renderUsers();
     return { responseText, claimed:true, rewardName: reward.title || "" };
   };
 
   const query = (requestedName || "").trim();
   if (query){
-    const q = query.toLowerCase();
-    const matched = rewards.find(r => (r.title || "").trim().toLowerCase() === q);
+    const matched = rewardByTitle(query);
     if (!matched){
-      const responseText = fillTemplate(chatCfg.messages.notFound, { user:username, level:rec.level, reward:query, badge:"" });
+      const responseText = fillTemplate(chatCfg.messages.claimNotFound, { user:username, level:rec.level, reward:query, badge:"" });
       renderUsers();
       return { responseText, claimed:false, rewardName: query };
     }
     if (!rec.unlockedLevels.includes(matched.level)){
-      const responseText = fillTemplate(chatCfg.messages.locked, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      const responseText = fillTemplate(chatCfg.messages.claimLocked, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      renderUsers();
+      return { responseText, claimed:false, rewardName: matched.title };
+    }
+    if (rec.redeemedLevels.includes(matched.level)){
+      const responseText = fillTemplate(chatCfg.messages.claimRedeemed, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
       renderUsers();
       return { responseText, claimed:false, rewardName: matched.title };
     }
     if (rec.claimedLevels.includes(matched.level)){
-      const responseText = fillTemplate(chatCfg.messages.already, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      const responseText = fillTemplate(chatCfg.messages.claimAlready, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
       renderUsers();
       return { responseText, claimed:false, rewardName: matched.title };
     }
     return finishClaim(matched.level);
   }
 
-  if (pendingLevels.length > 0) return finishClaim(pendingLevels[0]);
-  if (rec.unlockedLevels.length > 0){
-    const responseText = fillTemplate(chatCfg.messages.already, { user:username, level:rec.level, reward:"", badge:"" });
-    renderUsers();
-    return { responseText, claimed:false, rewardName: "" };
-  }
-  const responseText = fillTemplate(chatCfg.messages.none, { user:username, level:rec.level, reward:"", badge:"" });
+  const claimable = rec.unlockedLevels.filter(l => !rec.claimedLevels.includes(l)).sort((a,b) => a-b);
+  if (claimable.length > 0) return finishClaim(claimable[0]);
+  const responseText = fillTemplate(chatCfg.messages.claimNone, { user:username, level:rec.level, reward:"", badge:"" });
   renderUsers();
   return { responseText, claimed:false, rewardName: "" };
 }
 
 /**
- * $refund {username} — mod/broadcaster only. Undoes the most recently
- * claimed reward for the target user: pops the last entry off their
- * claimedLevels array so the reward is "unclaimed" again (it stays in
- * unlockedLevels, so the viewer can $redeem it again another time).
- * Nothing is removed from unlockedLevels — this only restocks the claim,
- * it never revokes XP or the level itself.
+ * $redeem [reward name] — STEP 2. Marks a reward as actually used on
+ * stream. If the target reward is unlocked but was never $claim'd, it is
+ * auto-reserved (added to claimedLevels) first so the lifecycle stays
+ * unlocked -> claimed -> redeemed even when a viewer skips straight to
+ * $redeem. Once a level is in redeemedLevels it stays "used" until a mod
+ * runs $refund.
  */
-function processRefund(targetUsername){
+function processRedeem(username, requestedName){
   const chatCfg = loadChatCfg();
-  const key = normUser(targetUsername);
-  const users = load(LS_USERS, {});
-  const rec = users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], history:[] };
-  rec.unlockedLevels = rec.unlockedLevels || [];
-  rec.claimedLevels = rec.claimedLevels || [];
-  let responseText, refunded = false;
-  if (rec.claimedLevels.length > 0){
-    const refundedLevel = rec.claimedLevels.pop();
+  const { key, users, rec } = getUserRec(username);
+
+  const finishRedeem = (level) => {
+    if (!rec.claimedLevels.includes(level)) rec.claimedLevels.push(level);
+    rec.redeemedLevels.push(level);
     users[key] = rec;
     save(LS_USERS, users);
     bc && bc.postMessage({ type:"user_update", user:key, data:rec });
-    const reward = load(LS_REWARDS, []).find(r => Number(r.level) === Number(refundedLevel)) || {};
+    const reward = rewardByLevel(level);
+    const responseText = fillTemplate(chatCfg.messages.redeemSuccess, { user:username, level, reward:reward.title||"", badge:reward.badge||"" });
+    renderUsers();
+    return { responseText, redeemed:true, rewardName: reward.title || "" };
+  };
+
+  const query = (requestedName || "").trim();
+  if (query){
+    const matched = rewardByTitle(query);
+    if (!matched){
+      const responseText = fillTemplate(chatCfg.messages.redeemNotFound, { user:username, level:rec.level, reward:query, badge:"" });
+      renderUsers();
+      return { responseText, redeemed:false, rewardName: query };
+    }
+    if (!rec.unlockedLevels.includes(matched.level)){
+      const responseText = fillTemplate(chatCfg.messages.redeemLocked, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      renderUsers();
+      return { responseText, redeemed:false, rewardName: matched.title };
+    }
+    if (rec.redeemedLevels.includes(matched.level)){
+      const responseText = fillTemplate(chatCfg.messages.redeemAlready, { user:username, level:matched.level, reward:matched.title, badge:matched.badge||"" });
+      renderUsers();
+      return { responseText, redeemed:false, rewardName: matched.title };
+    }
+    return finishRedeem(matched.level);
+  }
+
+  const claimedNotRedeemed = rec.claimedLevels.filter(l => !rec.redeemedLevels.includes(l)).sort((a,b) => a-b);
+  if (claimedNotRedeemed.length > 0) return finishRedeem(claimedNotRedeemed[0]);
+
+  const unclaimed = rec.unlockedLevels.filter(l => !rec.claimedLevels.includes(l) && !rec.redeemedLevels.includes(l)).sort((a,b) => a-b);
+  if (unclaimed.length > 0) return finishRedeem(unclaimed[0]);
+
+  const responseText = fillTemplate(chatCfg.messages.redeemNone, { user:username, level:rec.level, reward:"", badge:"" });
+  renderUsers();
+  return { responseText, redeemed:false, rewardName: "" };
+}
+
+/**
+ * $wallet — read-only. Reports whatever this viewer currently has
+ * claimed but NOT yet redeemed (their spendable inventory). Never
+ * changes unlockedLevels/claimedLevels/redeemedLevels.
+ */
+function processWallet(username){
+  const chatCfg = loadChatCfg();
+  const { rec } = getUserRec(username);
+  const held = rec.claimedLevels.filter(l => !rec.redeemedLevels.includes(l)).sort((a,b) => a-b);
+  if (!held.length){
+    const responseText = fillTemplate(chatCfg.messages.walletEmpty, { user:username, level:rec.level, reward:"", badge:"" });
+    return { responseText, items: [] };
+  }
+  const titles = held.map(l => rewardByLevel(l).title || `Level ${l} reward`);
+  const responseText = fillTemplate(chatCfg.messages.walletHas, { user:username, level:rec.level, reward:"", badge:"", items: titles.join(", ") });
+  return { responseText, items: titles };
+}
+
+/**
+ * $refund {username} — mod/broadcaster only. Undoes the most recently
+ * REDEEMED reward for the target user: pops the last entry off their
+ * redeemedLevels array so it's "not used" again. The claim stays intact
+ * (it stays in claimedLevels), so the viewer can $redeem it again without
+ * needing to $claim it a second time. This never touches a plain $claim
+ * that was never redeemed.
+ */
+function processRefund(targetUsername){
+  const chatCfg = loadChatCfg();
+  const { key, users, rec } = getUserRec(targetUsername);
+  let responseText, refunded = false;
+  if (rec.redeemedLevels.length > 0){
+    const refundedLevel = rec.redeemedLevels.pop();
+    users[key] = rec;
+    save(LS_USERS, users);
+    bc && bc.postMessage({ type:"user_update", user:key, data:rec });
+    const reward = rewardByLevel(refundedLevel);
     responseText = fillTemplate(chatCfg.messages.refundSuccess, { user:targetUsername, level:refundedLevel, reward:reward.title||"", badge:reward.badge||"" });
     refunded = true;
   } else {
@@ -2518,19 +2616,26 @@ function handleIrcChatMessage(user, text, tags){
   const cmd = (parts[0] || "").toLowerCase();
   const rewardNameArg = parts.slice(1).join(" ").trim();
 
-  const isRedeem = chatCfg.redeemEnabled && cmd === "$redeem";
-  const isClaim = chatCfg.claimEnabled && cmd === "$claim";
-  if (isRedeem || isClaim){
+  if (chatCfg.claimEnabled && cmd === "$claim"){
     const { responseText, rewardName } = processClaim(user, rewardNameArg || null);
     sendIrcMessage(responseText);
-    logActivity({
-      eventName: isClaim ? "Claim" : "Redeem",
-      user,
-      xpGained:0,
-      leveledUp:false,
-      level:(load(LS_USERS,{})[normUser(user)]||{}).level||1,
-      rewardName: rewardName || undefined
-    });
+    logActivity({ eventName:"Claim", user, xpGained:0, leveledUp:false, level:getUserRec(user).rec.level||1, rewardName: rewardName || undefined });
+    pulseLiveDot();
+    return;
+  }
+
+  if (chatCfg.redeemEnabled && cmd === "$redeem"){
+    const { responseText, rewardName } = processRedeem(user, rewardNameArg || null);
+    sendIrcMessage(responseText);
+    logActivity({ eventName:"Redeem", user, xpGained:0, leveledUp:false, level:getUserRec(user).rec.level||1, rewardName: rewardName || undefined });
+    pulseLiveDot();
+    return;
+  }
+
+  if (chatCfg.walletEnabled && cmd === "$wallet"){
+    const { responseText, items } = processWallet(user);
+    sendIrcMessage(responseText);
+    logActivity({ eventName:"Wallet", user, xpGained:0, leveledUp:false, level:getUserRec(user).rec.level||1, rewardName: items && items.length ? items.join(", ") : undefined });
     pulseLiveDot();
     return;
   }
@@ -2540,13 +2645,13 @@ function handleIrcChatMessage(user, text, tags){
     if (!targetUser){ return; } // needs $refund {username}
     if (!isModOrBroadcaster(tags)){
       sendIrcMessage(fillTemplate(chatCfg.messages.refundDenied, { user, level:"", reward:"", badge:"" }));
-      logActivity({ eventName:"Refund", user:targetUser, xpGained:0, leveledUp:false, level:(load(LS_USERS,{})[normUser(targetUser)]||{}).level||1, rewardName:"denied — requested by " + user });
+      logActivity({ eventName:"Refund", user:targetUser, xpGained:0, leveledUp:false, level:getUserRec(targetUser).rec.level||1, rewardName:"denied — requested by " + user });
       pulseLiveDot();
       return;
     }
     const { responseText } = processRefund(targetUser);
     sendIrcMessage(responseText);
-    logActivity({ eventName:"Refund", user:targetUser, xpGained:0, leveledUp:false, level:(load(LS_USERS,{})[normUser(targetUser)]||{}).level||1 });
+    logActivity({ eventName:"Refund", user:targetUser, xpGained:0, leveledUp:false, level:getUserRec(targetUser).rec.level||1 });
     pulseLiveDot();
   }
 }
@@ -2608,30 +2713,32 @@ document.getElementById("grantAmount").oninput = refreshComputedXpPreview;
 updateTestFieldsVisibility();
 
 /**
- * Reward Status readout — shows exactly what's in unlockedLevels vs.
- * claimedLevels for whatever username is typed in the Testing panel,
- * so "why won't $redeem work for this reward" is answerable at a glance
- * instead of guessing. Rewards are level-keyed, so this table doubles as
- * a sanity check after editing/reordering milestone levels too.
+ * Reward Status readout — shows exactly what's in unlockedLevels,
+ * claimedLevels, and redeemedLevels for whatever username is typed in the
+ * Testing panel, so "why won't $claim/$redeem work for this reward" is
+ * answerable at a glance instead of guessing. Rewards are level-keyed, so
+ * this table doubles as a sanity check after editing/reordering milestone
+ * levels too.
  */
 function renderRewardStatus(){
   const box = document.getElementById("rewardStatusBox");
   if (!box) return;
   const username = document.getElementById("grantUser").value.trim();
   if (!username){ box.innerHTML = `<div class="empty">Type a username above to see their reward status.</div>`; return; }
-  const key = normUser(username);
-  const users = load(LS_USERS, {});
-  const rec = users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[] };
-  const unlocked = rec.unlockedLevels || [];
-  const claimed = rec.claimedLevels || [];
+  const { rec } = getUserRec(username);
+  const unlocked = rec.unlockedLevels;
+  const claimed = rec.claimedLevels;
+  const redeemed = rec.redeemedLevels;
   const rewards = load(LS_REWARDS, []).sort((a,b) => a.level - b.level);
   if (!rewards.length){ box.innerHTML = `<div class="empty">No milestones configured yet — add some on the Levels &amp; Rewards tab.</div>`; return; }
   const rows = rewards.map(r => {
     const isUnlocked = unlocked.includes(r.level);
     const isClaimed = claimed.includes(r.level);
+    const isRedeemed = redeemed.includes(r.level);
     let state = "Not reached yet";
-    if (isUnlocked && isClaimed) state = "Unlocked &amp; claimed";
-    else if (isUnlocked && !isClaimed) state = "Unlocked — redeemable now";
+    if (isUnlocked && !isClaimed && !isRedeemed) state = "Unlocked — $claim it";
+    else if (isUnlocked && isClaimed && !isRedeemed) state = "Claimed — $redeem it";
+    else if (isUnlocked && isRedeemed) state = "Redeemed (used)";
     return `<tr><td><b>${r.level}</b></td><td>${escapeHtml(r.title||"")}</td><td>Lv ${rec.level||1} ${isUnlocked ? "≥" : "<"} ${r.level} → ${isUnlocked ? "unlocked" : "locked"}</td><td>${state}</td></tr>`;
   }).join("");
   box.innerHTML = `<table><thead><tr><th class="table-col-50">Lv</th><th>Title</th><th>Unlock check</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
@@ -2640,17 +2747,16 @@ document.getElementById("grantUser").addEventListener("input", renderRewardStatu
 document.getElementById("resetClaimsBtn").onclick = () => {
   const username = document.getElementById("grantUser").value.trim();
   if (!username){ showToast("Type a username first."); return; }
-  const key = normUser(username);
-  const users = load(LS_USERS, {});
-  const rec = users[key];
-  if (!rec){ showToast(`No record for ${username} yet.`); return; }
+  const { key, users, rec } = getUserRec(username);
+  if (!users[key]){ showToast(`No record for ${username} yet.`); return; }
   rec.claimedLevels = [];
+  rec.redeemedLevels = [];
   users[key] = rec;
   save(LS_USERS, users);
   bc && bc.postMessage({ type:"user_update", user:key, data:rec });
   renderRewardStatus();
   renderUsers();
-  showToast(`Cleared ${username}'s claimed rewards — unlocked rewards stay unlocked.`);
+  showToast(`Cleared ${username}'s claimed & redeemed rewards — unlocked rewards stay unlocked.`);
 };
 renderRewardStatus();
 
@@ -2674,14 +2780,7 @@ function buildEventPayload(user){
  * exactly matches the level just reached" because a single XP grant or
  * event can jump several levels at once (e.g. a big bit cheer, or a manual
  * test grant) — in that case every milestone in between should unlock too,
- * not just the one matching the final level landed on. Also called
- * unconditionally (not just on a "level up" transition) from
- * applyLiveEvent/grantBtn/processClaim/resyncAllViewersUnlocks, so it's
- * self-healing: if a leveledUp flag from an external source (e.g. the
- * Streamer.bot C# action, which computes its own copy of the curve) ever
- * disagrees with rec.level, or a reward gets added/renumbered after a
- * viewer already passed that level, the next touch of that viewer's record
- * catches it up instead of leaving it permanently missed. Returns true if
+ * not just the one matching the final level landed on. Returns true if
  * anything new was unlocked.
  */
 function unlockRewardsUpToLevel(rec, level){
@@ -2710,26 +2809,23 @@ document.getElementById("grantBtn").onclick = () => {
   if (!data.xpGained){ alert("That event/quantity computes to 0 XP — check your XP Rates config."); return; }
   const key = normUser(user);
   const users = load(LS_USERS, {});
-  const rec = users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], history:[] };
+  const rec = ensureRecShape(users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], redeemedLevels:[], history:[] });
   rec.xp = data.totalXp;
   rec.level = data.level;
   if (data.leveledUp){
     rec.history.push({ level:data.level, ts:Date.now() });
+    unlockRewardsUpToLevel(rec, data.level);
   }
-  // Unconditional — see unlockRewardsUpToLevel's comment. Runs on every
-  // grant, not just ones flagged leveledUp, so it can't silently skip a
-  // milestone.
-  const unlockedAnything = unlockRewardsUpToLevel(rec, rec.level);
   users[key] = rec;
   save(LS_USERS, users);
   bc && bc.postMessage({ type:"user_update", user: key, data: rec });
   bc && bc.postMessage({ type:"live_event", data });
   renderUsers();
   renderRewardStatus();
-  showToast("XP granted" + (unlockedAnything ? " — milestones up to Level " + rec.level + " unlocked" : ""));
+  showToast("XP granted" + (data.leveledUp ? " — milestones up to Level " + data.level + " unlocked" : ""));
 };
 
-bc && (bc.onmessage = (e) => { const m = e.data||{}; if (m.type === "user_update" || m.type === "users_bulk_update"){ renderUsers(); renderRewardStatus(); } });
+bc && (bc.onmessage = (e) => { const m = e.data||{}; if (m.type === "user_update"){ renderUsers(); renderRewardStatus(); } });
 window.addEventListener("storage", (e) => {
   if ([LS_USERS, LS_REWARDS, LS_DISPLAY, LS_XPRATES, LS_CURVE].includes(e.key)){
     renderUsers(); renderRewards(); refreshDisplayToggles(); renderXpRates(); refreshCurveInputs(); refreshComputedXpPreview();
@@ -2750,34 +2846,18 @@ function resolveLiveEvent(raw){
   const leveledUp = level > (prev.level || 1);
   return { ...raw, xpGained, totalXp, level, xpIntoLevel, xpForNextLevel, leveledUp };
 }
-/**
- * FIX (unlock desync): this used to only call unlockRewardsUpToLevel()
- * inside the `if (data.leveledUp)` branch. data.leveledUp can come
- * straight from the C# Streamer.bot action, which keeps its own hardcoded
- * copy of the XP curve (CurveBase/CurveGrowth in LevelUp.cs) — if that
- * ever drifts from the curve saved here (Levels & Rewards tab), C# could
- * report leveledUp:false for an event that, by this dashboard's own
- * curve/level math, actually crossed a milestone. rec.level itself was
- * still being overwritten unconditionally either way, so the viewer's
- * displayed level would silently outrun their unlockedLevels list and a
- * reward like "No Swearing" would never unlock even though they were
- * clearly past that level. unlockRewardsUpToLevel() now always runs
- * against rec.level (the source of truth in localStorage), regardless of
- * what leveledUp said — it's idempotent, so this is free on events where
- * nothing new unlocks.
- */
 function applyLiveEvent(raw){
   const data = resolveLiveEvent(raw);
   const key = normUser(data.user);
   const users = load(LS_USERS, {});
-  const rec = users[key] || { xp:0, level:1, unlockedLevels:[], history:[] };
+  const rec = ensureRecShape(users[key] || { xp:0, level:1, unlockedLevels:[], claimedLevels:[], redeemedLevels:[], history:[] });
   rec.xp = data.totalXp;
   rec.level = data.level;
   if (data.avatar) rec.avatar = data.avatar;
   if (data.leveledUp){
     rec.history.push({ level: data.level, ts: Date.now() });
+    unlockRewardsUpToLevel(rec, data.level);
   }
-  unlockRewardsUpToLevel(rec, rec.level);
   users[key] = rec;
   save(LS_USERS, users);
   bc && bc.postMessage({ type:"user_update", user:key, data:rec });
@@ -2799,10 +2879,14 @@ function logActivity(data){
   const meta = EVENT_META[data.eventName] || { label: data.eventName || "Event" };
   const xpPart = data.xpGained ? ` → <span class="activity-xp">+${data.xpGained} XP</span>` : "";
   // Reward name only exists on ChannelPointRedeem payloads (from the C#
-  // action's CPH.TryGetArg("rewardName"/"rewardCost")) or on Redeem/Claim
+  // action's CPH.TryGetArg("rewardName"/"rewardCost")) or on Claim/Redeem
   // chat-command events where the viewer named a specific reward.
-  const redeemPart = (["ChannelPointRedeem","Redeem","Claim"].includes(data.eventName) && data.rewardName)
+  const redeemPart = (["ChannelPointRedeem","Claim","Redeem"].includes(data.eventName) && data.rewardName)
     ? ` — <span class="activity-redeem">${escapeHtml(data.rewardName)}</span>${data.rewardCost ? `<span class="activity-redeem-cost"> (${data.rewardCost} pts)</span>` : ""}`
+    : "";
+  // Wallet events reuse rewardName as a comma-joined list of held items.
+  const walletPart = (data.eventName === "Wallet" && data.rewardName)
+    ? ` — <span class="activity-wallet">holding: ${escapeHtml(data.rewardName)}</span>`
     : "";
   // Refund events reuse rewardName as a free-text note (e.g. "denied — requested by X").
   const refundPart = (data.eventName === "Refund" && data.rewardName)
@@ -2813,7 +2897,7 @@ function logActivity(data){
     : "";
   const entry = document.createElement("div");
   entry.className = "activity-item";
-  entry.innerHTML = `${avatarHtml}<span class="activity-time">${new Date().toLocaleTimeString()}</span><b>${escapeHtml(data.user || "viewer")}</b> — ${escapeHtml(meta.label)}${redeemPart}${refundPart}${xpPart}${data.leveledUp ? `<span class="activity-levelup">LEVEL UP → ${data.level}</span>` : ""}`;
+  entry.innerHTML = `${avatarHtml}<span class="activity-time">${new Date().toLocaleTimeString()}</span><b>${escapeHtml(data.user || "viewer")}</b> — ${escapeHtml(meta.label)}${redeemPart}${walletPart}${refundPart}${xpPart}${data.leveledUp ? `<span class="activity-levelup">LEVEL UP → ${data.level}</span>` : ""}`;
   list.prepend(entry);
   while (list.children.length > 20) list.removeChild(list.lastChild);
 }
