@@ -59,6 +59,18 @@
   .card[data-layout="compact"] .xp-bar-track{ height:6px; }
   .card[data-layout="compact"] .level-badge{ min-width:14px; height:14px; font-size:7px; }
 
+  /* ================= LAYOUT: RADIAL =================
+     XP progress is shown as a ring traced around the avatar
+     instead of a bar underneath the name. */
+  .card[data-layout="radial"]{ width: 190px; height: 236px; }
+  .card[data-layout="radial"] .front{ flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:16px 10px; text-align:center; }
+  .card[data-layout="radial"] .avatar-wrap{ width:96px; height:96px; }
+  .card[data-layout="radial"] .info{ width:100%; align-items:center; }
+  .card[data-layout="radial"] .username{ font-size:15px; max-width:160px; }
+  .card[data-layout="radial"] .event-tag{ text-align:center; }
+  .card[data-layout="radial"] .xp-row{ width:100%; justify-content:center; gap:8px; }
+  .card[data-layout="radial"] .xp-bar-track{ display:none; }
+
   .card{
     position:relative; transform-style: preserve-3d; opacity: 0;
     transform: rotateY(90deg) scale(0.92);
@@ -104,6 +116,15 @@
   .avatar-ring{ position:absolute; inset:-3px; border-radius:50%; background: conic-gradient(from 0deg, var(--accent, var(--teal)), var(--accent2, var(--purple)), var(--accent, var(--teal))); filter: blur(0.3px); animation: spin 6s linear infinite; }
   @keyframes spin{ to{ transform: rotate(360deg); } }
   .avatar-img{ position:absolute; top:2px; left:2px; width:calc(100% - 4px); height:calc(100% - 4px); border-radius:50%; object-fit:cover; object-position:center; background:#1a1830; border:1.5px solid var(--bg-navy); box-sizing:border-box; }
+
+  /* Radial progress ring — sits around the avatar, replacing the bar
+     for the radial layout only. Hidden entirely on other layouts. */
+  .radial-ring{ display:none; position:absolute; inset:-8px; transform:rotate(-90deg); pointer-events:none; }
+  .card[data-layout="radial"] .radial-ring{ display:block; }
+  .radial-ring.is-hidden{ display:none !important; }
+  .radial-ring-track{ fill:none; stroke:rgba(255,255,255,0.12); stroke-width:5; }
+  .radial-ring-fill{ fill:none; stroke:var(--accent, var(--teal)); stroke-width:5; stroke-linecap:round; filter: drop-shadow(0 0 calc(6px * var(--glow-scale, 1)) var(--accent, var(--teal))); transition: stroke-dashoffset 1.1s cubic-bezier(.3,.9,.3,1); }
+
   .level-badge{ position:absolute; bottom:-3px; right:-3px; z-index:3; min-width:18px; height:18px; padding:0 2px; border-radius:50%; background: linear-gradient(135deg, var(--accent, var(--teal)), var(--accent2, var(--purple))); display:flex; align-items:center; justify-content:center; font-family:'Orbitron', sans-serif; font-weight:900; font-size:9px; color:#0a0915; box-shadow: 0 0 12px rgba(0,0,0,0.5), 0 0 calc(10px * var(--glow-scale, 1)) var(--accent, var(--teal)); border: 1.5px solid var(--bg-navy); }
 
   .info{ display:flex; flex-direction:column; gap:4px; min-width:0; }
@@ -159,6 +180,8 @@ const CHANNEL    = "fallenoneart_levelup_channel";
 const HOLD_MS         = 2600;
 const LEVELUP_HOLD_MS = 2600;
 const FLIP_MS         = 850;
+const RADIAL_RING_R    = 42;
+const RADIAL_RING_CIRC = 2 * Math.PI * RADIAL_RING_R;
 const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='#1a1830'/><circle cx='50' cy='38' r='18' fill='#7de8c8' opacity='0.5'/><ellipse cx='50' cy='88' rx='30' ry='24' fill='#7de8c8' opacity='0.5'/></svg>`
 );
@@ -378,6 +401,7 @@ async function showCard(data){
 
   const startPct = Math.max(0, Math.min(100, ((data.xpIntoLevel - data.xpGained) / (data.xpForNextLevel || 1)) * 100));
   const endPct   = Math.max(0, Math.min(100, (data.xpIntoLevel / (data.xpForNextLevel || 1)) * 100));
+  const startOffset = RADIAL_RING_CIRC - (RADIAL_RING_CIRC * startPct / 100);
   const reward = data.leveledUp ? rewardForLevel(data.level) : null;
 
   const showAvatar = currentDisplay.showAvatar !== false;
@@ -392,6 +416,10 @@ async function showCard(data){
           <div class="avatar-ring"></div>
           <img class="avatar-img" src="${data.avatar || DEFAULT_AVATAR}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
         </div>
+        <svg class="radial-ring${showProgress ? "" : " is-hidden"}" viewBox="0 0 96 96">
+          <circle class="radial-ring-track" cx="48" cy="48" r="${RADIAL_RING_R}"></circle>
+          <circle class="radial-ring-fill" cx="48" cy="48" r="${RADIAL_RING_R}" stroke-dasharray="${RADIAL_RING_CIRC}" stroke-dashoffset="${startOffset}"></circle>
+        </svg>
         <div class="level-badge${showBadge ? "" : " is-hidden"}">${data.level ?? 1}</div>
       </div>
       <div class="info">
@@ -420,8 +448,10 @@ async function showCard(data){
   await wait(FLIP_MS);
 
   const fill = card.querySelector(".xp-bar-fill");
+  const ringFill = card.querySelector(".radial-ring-fill");
   await nextFrame();
   fill.style.width = endPct + "%";
+  if (ringFill) ringFill.style.strokeDashoffset = String(RADIAL_RING_CIRC - (RADIAL_RING_CIRC * endPct / 100));
   await wait(1150);
 
   if (data.leveledUp){
