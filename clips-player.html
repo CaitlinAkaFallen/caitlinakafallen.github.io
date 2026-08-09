@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FallenOneArt Clips Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent-teal: #7de8c8;
+    --accent-purple: #c8a2ff;
+    --panel-bg: rgba(18, 18, 28, 0.72);
+    --panel-border: rgba(125, 232, 200, 0.35);
+    --text-dim: #8a8aa0;
+    --danger: #ff6b6b;
+    --font-display: 'Orbitron', sans-serif;
+    --font-mono: 'Share Tech Mono', monospace;
+    --clip-width: 720px;
+    --clip-max-height: 405px;
+  }
+  * { box-sizing: border-box; }
+  html, body{
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: transparent; overflow: hidden;
+    font-family: var(--font-mono);
+  }
+
+  /* Small connection indicator - only shown with ?debug=1 in the source URL */
+  .debug-header{
+    position: fixed; top: 14px; left: 14px;
+    display: none; align-items: center; gap: 8px;
+    font-family: var(--font-display); font-size: 11px; letter-spacing: 2px;
+    color: var(--text-dim); z-index: 5;
+  }
+  .debug-header.show{ display: flex; }
+  .pulse-dot{
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--danger); box-shadow: 0 0 6px var(--danger);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  .pulse-dot.connected{ background: var(--accent-teal); box-shadow: 0 0 8px var(--accent-teal); }
+  @keyframes pulse{ 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.8);} }
+
+  .clip-overlay{
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.96);
+    width: var(--clip-width); max-width: 92vw;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    z-index: 10;
+  }
+  .clip-overlay.visible{ opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+  .clip-frame{
+    position: relative;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 40px rgba(125, 232, 200, 0.15), 0 10px 30px rgba(0,0,0,0.5);
+    padding: 10px;
+  }
+  .clip-frame::before, .clip-frame::after,
+  .clip-frame .corner-tl, .clip-frame .corner-br {
+    content: ""; position: absolute; width: 18px; height: 18px;
+    border: 2px solid var(--accent-teal);
+  }
+  .clip-frame::before{ top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .clip-frame::after{ bottom: -1px; right: -1px; border-left: none; border-top: none; }
+  .clip-frame .corner-tl{ top: -1px; right: -1px; border-left: none; border-bottom: none; border-color: var(--accent-purple); }
+  .clip-frame .corner-br{ bottom: -1px; left: -1px; border-right: none; border-top: none; border-color: var(--accent-purple); }
+
+  video.clip-video{
+    display: block; width: 100%; max-height: var(--clip-max-height);
+    border-radius: 3px; background: #000;
+  }
+
+  .clip-meta{
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 8px; padding: 0 4px;
+  }
+  .clip-label{
+    font-family: var(--font-display); font-size: 13px; font-weight: 700;
+    letter-spacing: 1.5px; color: var(--accent-teal); text-transform: uppercase;
+  }
+  .clip-title{
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+    max-width: 60%; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; text-align: right;
+  }
+</style>
+</head>
+<body>
+
+  <div class="debug-header" id="debugHeader">
+    <span class="pulse-dot" id="wsDot"></span>
+    <span>CLIPS PLAYER</span>
+  </div>
+
+  <div class="clip-overlay" id="clipOverlay">
+    <div class="clip-frame">
+      <span class="corner-tl"></span>
+      <span class="corner-br"></span>
+      <video class="clip-video" id="clipVideo"></video>
+      <div class="clip-meta">
+        <span class="clip-label" id="clipLabel">SHOUTOUT</span>
+        <span class="clip-title" id="clipTitleText"></span>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* =======================================================
+     EDITABLE CONSTANTS
+     ======================================================= */
+  const urlParams = new URLSearchParams(window.location.search);
+
+  const CONFIG = {
+    WS_ADDRESS: urlParams.get('address') || 'localhost',
+    WS_PORT: urlParams.get('port') || '8080',
+    RECONNECT_DELAY_MS: 3000,
+    CLIP_FETCH_COUNT: 100,
+    CLIP_CACHE_TTL_MS: 10 * 60 * 1000,
+    OVERLAY_HIDE_DELAY_MS: 1200,
+    MAX_CLIP_DURATION_FALLBACK_MS: 60000,
+    EVENT_SOURCE_KEY: 'clipsdashboard',
+    BROADCAST_CHANNEL_NAME: 'fallenoneart_clips_channel', // must match admin dashboard
+    RECENT_LOG_MAX: 20,
+    DEBUG: urlParams.get('debug') === '1', // ?debug=1 shows a connection dot, for setup only
+  };
+
+  const STORAGE_KEYS = {
+    CLIENT_ID: 'fallenoneart_clips_client_id',       // set by clips-admin-dashboard.html
+    OAUTH_TOKEN: 'fallenoneart_clips_oauth_token',   // set by clips-admin-dashboard.html
+    RECENT_LOG: 'fallenoneart_clips_recent',
+  };
+
+  const state = {
+    clipCache: {},
+    hideTimer: null,
+  };
+
+  function getClientId() { return localStorage.getItem(STORAGE_KEYS.CLIENT_ID) || ''; }
+  function getOauthToken() { return localStorage.getItem(STORAGE_KEYS.OAUTH_TOKEN) || ''; }
+
+  /* =======================================================
+     DOM REFS
+     ======================================================= */
+  const debugHeader = document.getElementById('debugHeader');
+  const wsDot = document.getElementById('wsDot');
+  const clipOverlay = document.getElementById('clipOverlay');
+  const clipVideo = document.getElementById('clipVideo');
+  const clipLabel = document.getElementById('clipLabel');
+  const clipTitleText = document.getElementById('clipTitleText');
+
+  if (CONFIG.DEBUG) debugHeader.classList.add('show');
+
+  function updateWsStatusUI(connected) {
+    wsDot.classList.toggle('connected', connected);
+  }
+
+  /* =======================================================
+     TWITCH HELIX API
+     ======================================================= */
+  async function getBroadcasterId(login) {
+    const res = await fetch(`https://api.twitch.tv/helix/users?login=${encodeURIComponent(login)}`, {
+      headers: { 'Client-Id': getClientId(), 'Authorization': `Bearer ${getOauthToken()}` },
+    });
+    if (!res.ok) throw new Error(`Twitch Users API error (${res.status}) for "${login}"`);
+    const json = await res.json();
+    if (!json.data || !json.data.length) throw new Error(`No Twitch user found for "${login}"`);
+    return json.data[0].id;
+  }
+
+  async function getClipsForBroadcaster(broadcasterId) {
+    const res = await fetch(`https://api.twitch.tv/helix/clips?broadcaster_id=${broadcasterId}&first=${CONFIG.CLIP_FETCH_COUNT}`, {
+      headers: { 'Client-Id': getClientId(), 'Authorization': `Bearer ${getOauthToken()}` },
+    });
+    if (!res.ok) throw new Error(`Twitch Clips API error (${res.status})`);
+    const json = await res.json();
+    return json.data || [];
+  }
+
+  async function getClipsForLogin(loginRaw) {
+    const login = loginRaw.trim().toLowerCase();
+    const cached = state.clipCache[login];
+    const now = Date.now();
+    if (cached && (now - cached.fetchedAt) < CONFIG.CLIP_CACHE_TTL_MS) {
+      return cached.clips;
+    }
+    const broadcasterId = await getBroadcasterId(login);
+    const clips = await getClipsForBroadcaster(broadcasterId);
+    state.clipCache[login] = { broadcasterId, clips, fetchedAt: now };
+    return clips;
+  }
+
+  function pickRandomClip(clips) {
+    if (!clips.length) return null;
+    return clips[Math.floor(Math.random() * clips.length)];
+  }
+
+  // Standard (unofficial) trick: derive the mp4 from the clip's thumbnail path,
+  // since Helix doesn't return a direct video file URL. Could break if Twitch changes this.
+  function clipToMp4Url(clip) {
+    return clip.thumbnail_url.split('-preview-')[0] + '.mp4';
+  }
+
+  /* =======================================================
+     OVERLAY PLAYBACK
+     ======================================================= */
+  async function playClipEvent(login, label, eventName) {
+    if (!getClientId() || !getOauthToken()) {
+      console.warn('clipsdashboard: Client ID / OAuth token not set. Configure them in clips-admin-dashboard.html.');
+      return;
+    }
+    try {
+      const clips = await getClipsForLogin(login);
+      const clip = pickRandomClip(clips);
+      if (!clip) {
+        console.warn(`clipsdashboard: no clips found for "${login}".`);
+        return;
+      }
+      showClipOverlay(clip, label);
+      logRecentEvent(eventName, login);
+    } catch (err) {
+      console.error('clipsdashboard error:', err);
+    }
+  }
+
+  function showClipOverlay(clip, label) {
+    clearTimeout(state.hideTimer);
+    clipVideo.src = clipToMp4Url(clip);
+    clipLabel.textContent = label;
+    clipTitleText.textContent = clip.title || '';
+    clipOverlay.classList.add('visible');
+    clipVideo.currentTime = 0;
+    clipVideo.play().catch(e => console.warn('clipsdashboard: autoplay blocked -', e));
+    state.hideTimer = setTimeout(hideOverlay, CONFIG.MAX_CLIP_DURATION_FALLBACK_MS);
+  }
+
+  clipVideo.addEventListener('ended', () => {
+    clearTimeout(state.hideTimer);
+    state.hideTimer = setTimeout(hideOverlay, CONFIG.OVERLAY_HIDE_DELAY_MS);
+  });
+
+  function hideOverlay() {
+    clipOverlay.classList.remove('visible');
+    clipVideo.pause();
+    clipVideo.removeAttribute('src');
+    clipVideo.load();
+  }
+
+  /* =======================================================
+     RECENT EVENT LOG -> written to localStorage so the
+     admin dashboard's log panel updates live via 'storage'
+     ======================================================= */
+  function logRecentEvent(eventName, targetUser) {
+    let entries = [];
+    try {
+      entries = JSON.parse(localStorage.getItem(STORAGE_KEYS.RECENT_LOG) || '[]');
+    } catch { entries = []; }
+
+    entries.unshift({ eventName, targetUser, timestamp: Date.now() });
+    entries = entries.slice(0, CONFIG.RECENT_LOG_MAX);
+
+    localStorage.setItem(STORAGE_KEYS.RECENT_LOG, JSON.stringify(entries));
+  }
+
+  /* =======================================================
+     SHARED EVENT HANDLER (used by both WS and BroadcastChannel)
+     ======================================================= */
+  function handleClipsDashboardEvent(data) {
+    if (!data || data.source !== CONFIG.EVENT_SOURCE_KEY) return;
+
+    if (data.eventName === 'shoutout_clip' && data.targetUser) {
+      playClipEvent(data.targetUser, `Shoutout: ${data.targetUser}`, 'shoutout_clip');
+    } else if (data.eventName === 'brb_clip' && data.targetUser) {
+      playClipEvent(data.targetUser, 'BRB - enjoy this clip!', 'brb_clip');
+    }
+  }
+
+  /* =======================================================
+     BROADCASTCHANNEL - manual test triggers from the admin
+     dashboard, works without touching Streamer.bot at all
+     ======================================================= */
+  const bc = new BroadcastChannel(CONFIG.BROADCAST_CHANNEL_NAME);
+  bc.onmessage = (evt) => handleClipsDashboardEvent(evt.data);
+
+  /* =======================================================
+     STREAMER.BOT WEBSOCKET - real shoutout/BRB triggers
+     ======================================================= */
+  function connectWS() {
+    const ws = new WebSocket(`ws://${CONFIG.WS_ADDRESS}:${CONFIG.WS_PORT}/`);
+
+    ws.onopen = () => {
+      updateWsStatusUI(true);
+      ws.send(JSON.stringify({ request: 'Subscribe', events: { general: ['Custom'] }, id: '' }));
+    };
+    ws.onclose = () => {
+      updateWsStatusUI(false);
+      setTimeout(connectWS, CONFIG.RECONNECT_DELAY_MS);
+    };
+    ws.onerror = () => ws.close();
+    ws.onmessage = (evt) => {
+      let msg;
+      try { msg = JSON.parse(evt.data); } catch { return; }
+      handleClipsDashboardEvent(msg.data);
+    };
+  }
+
+  connectWS();
+})();
+</script>
+</body>
+</html>
