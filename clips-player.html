@@ -141,15 +141,20 @@
     BROADCAST_CHANNEL_NAME: 'fallenoneart_clips_channel', // must match admin dashboard
     RECENT_LOG_MAX: 20,
     DEBUG: urlParams.get('debug') === '1', // ?debug=1 shows a connection dot, for setup only
-    // Twitch's clip embed iframe only works if this matches the domain
-    // actually hosting this page. If you're opening this file directly
-    // (file://), window.location.hostname is empty, so this falls back to
-    // 'localhost' - which only works if you SERVE this page via
-    // http://localhost/... (e.g. a tiny local web server) rather than
-    // double-clicking the file or using OBS's "Local File" browser source
-    // mode. If you host this on your own site, add that domain to
-    // EMBED_PARENTS below.
-    EMBED_PARENTS: [window.location.hostname || 'localhost', 'localhost'],
+    // Twitch's clip embed iframe REQUIRES the "parent" query param to
+    // exactly match the hostname actually serving this page - if it
+    // doesn't match, Twitch silently refuses to embed (no console error,
+    // just a black box). window.location.hostname is unreliable inside
+    // OBS's browser source (it can come back empty, or differ slightly
+    // from what you'd expect depending on how the URL was entered), so
+    // the real domain is hardcoded here rather than relying on it.
+    // If you ever move this off caitlinscreativespace.xyz, update this list.
+    EMBED_PARENTS: [
+      'caitlinscreativespace.xyz',
+      'www.caitlinscreativespace.xyz',
+      window.location.hostname,
+      'localhost',
+    ].filter(Boolean),
 
     // ---- AUTO-PLAY MODE (idle filler clips) ----
     // Off by default so it never interferes with real !so / BRB triggers.
@@ -289,6 +294,14 @@
     const embedUrl = new URL(clip.embed_url);
     CONFIG.EMBED_PARENTS.forEach(p => embedUrl.searchParams.append('parent', p));
     embedUrl.searchParams.set('autoplay', 'true');
+
+    if (CONFIG.DEBUG) {
+      // A black video area with no console error almost always means
+      // Twitch rejected one of the "parent" values below - the page's
+      // ACTUAL serving hostname must be in that list exactly.
+      console.log('clipsdashboard debug: embed URL ->', embedUrl.toString());
+      console.log('clipsdashboard debug: page hostname ->', window.location.hostname);
+    }
 
     const iframe = document.createElement('iframe');
     iframe.src = embedUrl.toString();
@@ -445,7 +458,15 @@
     ws.onmessage = (evt) => {
       let msg;
       try { msg = JSON.parse(evt.data); } catch { return; }
-      handleClipsDashboardEvent(msg.data);
+      // CPH.WebsocketBroadcastJson() sends the payload RAW - Streamer.bot
+      // does not wrap it in a "data" envelope. That wrapping only applies
+      // to real subscribed Streamer.bot events (Custom, etc.), not to raw
+      // broadcasts. Reaching into msg.data here was always undefined,
+      // which silently dropped every live !so / BRB trigger while the
+      // admin dashboard's manual test buttons (which post the payload
+      // directly via BroadcastChannel) kept working - that mismatch is
+      // why "automatic" playback looked broken but manual tests didn't.
+      handleClipsDashboardEvent(msg);
     };
   }
 
