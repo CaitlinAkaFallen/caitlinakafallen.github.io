@@ -6,6 +6,7 @@
 <title>FallenOneArt Clips Player</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://embed.twitch.tv/embed/v1.js"></script>
 <style>
   :root{
     --accent-teal: #7de8c8;
@@ -72,9 +73,18 @@
   .clip-frame .corner-tl{ top: -1px; right: -1px; border-left: none; border-bottom: none; border-color: var(--accent-purple); }
   .clip-frame .corner-br{ bottom: -1px; left: -1px; border-right: none; border-top: none; border-color: var(--accent-purple); }
 
-  video.clip-video{
-    display: block; width: 100%; max-height: var(--clip-max-height);
-    border-radius: 3px; background: #000;
+  .clip-embed-container{
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: var(--clip-max-height);
+    border-radius: 3px;
+    background: #000;
+    overflow: hidden;
+  }
+  .clip-embed-container iframe{
+    width: 100% !important;
+    height: 100% !important;
+    border: 0;
   }
 
   .clip-meta{
@@ -103,7 +113,7 @@
     <div class="clip-frame">
       <span class="corner-tl"></span>
       <span class="corner-br"></span>
-      <video class="clip-video" id="clipVideo"></video>
+      <div id="clipEmbedContainer" class="clip-embed-container"></div>
       <div class="clip-meta">
         <span class="clip-label" id="clipLabel">SHOUTOUT</span>
         <span class="clip-title" id="clipTitleText"></span>
@@ -132,6 +142,14 @@
     BROADCAST_CHANNEL_NAME: 'fallenoneart_clips_channel', // must match admin dashboard
     RECENT_LOG_MAX: 20,
     DEBUG: urlParams.get('debug') === '1', // ?debug=1 shows a connection dot, for setup only
+    // Twitch's embed player only works if this matches the domain actually
+    // hosting this page. If you're opening this file directly (file://),
+    // window.location.hostname is empty, so this falls back to 'localhost' -
+    // which only works if you SERVE this page via http://localhost/... (e.g.
+    // a tiny local web server) rather than double-clicking the file or using
+    // OBS's "Local File" browser source mode. If you host this on your own
+    // site, add that domain to EMBED_PARENTS below.
+    EMBED_PARENTS: [window.location.hostname || 'localhost', 'localhost'],
   };
 
   const STORAGE_KEYS = {
@@ -154,7 +172,7 @@
   const debugHeader = document.getElementById('debugHeader');
   const wsDot = document.getElementById('wsDot');
   const clipOverlay = document.getElementById('clipOverlay');
-  const clipVideo = document.getElementById('clipVideo');
+  const clipEmbedContainer = document.getElementById('clipEmbedContainer');
   const clipLabel = document.getElementById('clipLabel');
   const clipTitleText = document.getElementById('clipTitleText');
 
@@ -204,10 +222,53 @@
     return clips[Math.floor(Math.random() * clips.length)];
   }
 
-  // Standard (unofficial) trick: derive the mp4 from the clip's thumbnail path,
-  // since Helix doesn't return a direct video file URL. Could break if Twitch changes this.
-  function clipToMp4Url(clip) {
-    return clip.thumbnail_url.split('-preview-')[0] + '.mp4';
+  /* =======================================================
+     TWITCH EMBED PLAYER
+     Helix's clip.id IS the clip slug that Twitch.Embed wants
+     as its "clip" option - no need to derive any file URL.
+     ======================================================= */
+  let twitchScriptReady = null;
+  function ensureTwitchEmbedScript() {
+    if (twitchScriptReady) return twitchScriptReady;
+    twitchScriptReady = new Promise((resolve, reject) => {
+      if (window.Twitch && window.Twitch.Embed) { resolve(); return; }
+      const check = setInterval(() => {
+        if (window.Twitch && window.Twitch.Embed) {
+          clearInterval(check);
+          resolve();
+        }
+      }, 100);
+      setTimeout(() => { clearInterval(check); reject(new Error('Twitch embed script did not load in time')); }, 10000);
+    });
+    return twitchScriptReady;
+  }
+
+  let currentEmbed = null;
+  let currentPlayer = null;
+
+  async function mountClipEmbed(clip) {
+    await ensureTwitchEmbedScript();
+
+    clipEmbedContainer.innerHTML = '';
+    currentPlayer = null;
+
+    currentEmbed = new Twitch.Embed(clipEmbedContainer.id, {
+      width: '100%',
+      height: '100%',
+      clip: clip.id,
+      parent: CONFIG.EMBED_PARENTS,
+      autoplay: true,
+      muted: false,
+    });
+
+    currentEmbed.addEventListener(Twitch.Embed.VIDEO_READY, () => {
+      currentPlayer = currentEmbed.getPlayer();
+      currentPlayer.play();
+      currentPlayer.addEventListener(Twitch.Player.ENDED, () => {
+        clearTimeout(state.hideTimer);
+        state.hideTimer = setTimeout(hideOverlay, CONFIG.OVERLAY_HIDE_DELAY_MS);
+      });
+    });
   }
 
   /* =======================================================
@@ -234,25 +295,20 @@
 
   function showClipOverlay(clip, label) {
     clearTimeout(state.hideTimer);
-    clipVideo.src = clipToMp4Url(clip);
     clipLabel.textContent = label;
     clipTitleText.textContent = clip.title || '';
     clipOverlay.classList.add('visible');
-    clipVideo.currentTime = 0;
-    clipVideo.play().catch(e => console.warn('clipsdashboard: autoplay blocked -', e));
+
+    mountClipEmbed(clip).catch(err => console.error('clipsdashboard: failed to mount clip embed -', err));
+
     state.hideTimer = setTimeout(hideOverlay, CONFIG.MAX_CLIP_DURATION_FALLBACK_MS);
   }
 
-  clipVideo.addEventListener('ended', () => {
-    clearTimeout(state.hideTimer);
-    state.hideTimer = setTimeout(hideOverlay, CONFIG.OVERLAY_HIDE_DELAY_MS);
-  });
-
   function hideOverlay() {
     clipOverlay.classList.remove('visible');
-    clipVideo.pause();
-    clipVideo.removeAttribute('src');
-    clipVideo.load();
+    clipEmbedContainer.innerHTML = '';
+    currentEmbed = null;
+    currentPlayer = null;
   }
 
   /* =======================================================
