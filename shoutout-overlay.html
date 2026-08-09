@@ -163,22 +163,13 @@
     const params = new URLSearchParams(window.location.search);
     const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
 
-    ws.onopen = () => {
-        // Subscribing to Custom Shoutout event
-        ws.send(JSON.stringify({ 
-            request: "Subscribe", 
-            events: { general: ["Custom"] }, 
-            id: "ShoutoutOverlay" 
-        }));
-    };
-
     ws.onmessage = (event) => {
         const response = JSON.parse(event.data);
-        const d = response.data;
 
-        // Ensure this matches the event name you trigger in Streamer.bot
-        if (d && d.eventName === "shoutout") {
-            triggerShoutout(d);
+        // CPH.WebsocketBroadcastJson sends the payload at the TOP LEVEL,
+        // it is NOT wrapped in a "data" key like SB's built-in events are.
+        if (response && response.eventName === "shoutout") {
+            triggerShoutout(response);
         }
     };
 
