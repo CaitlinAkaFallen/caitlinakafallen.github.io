@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>FallenOneArt Clips Dashboard - Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -53,7 +52,6 @@
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
   }
   .panel::before, .panel::after{
@@ -132,12 +130,37 @@
   </div>
 
   <div class="panel">
+    <h2>OBS WebSocket (Scene Detection)</h2>
+    <div class="field">
+      <label for="obsAddressInput">OBS address</label>
+      <input type="text" id="obsAddressInput" placeholder="localhost" />
+    </div>
+    <div class="row">
+      <div class="field" style="flex:1;">
+        <label for="obsPortInput">Port</label>
+        <input type="text" id="obsPortInput" placeholder="4455" />
+      </div>
+      <div class="field" style="flex:1;">
+        <label for="obsPasswordInput">Password (leave blank if auth disabled)</label>
+        <input type="password" id="obsPasswordInput" placeholder="OBS WebSocket password" />
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn" id="saveObsConfigBtn">Save & Connect to OBS</button>
+    </div>
+    <div class="divider"></div>
+    <div class="status-row"><span>OBS WebSocket</span><span id="obsStatusText" class="bad">Disconnected</span></div>
+    <div class="status-row"><span>Current Scene</span><span id="obsCurrentScene">—</span></div>
+    <p class="hint">This is a separate connection from the Streamer.bot WebSocket above — OBS WebSocket runs on its own port (default 4455 in OBS 28+, under Tools &gt; WebSocket Server Settings). When the current scene matches your BRB scene name below, this dashboard fires the BRB clip event directly — Streamer.bot doesn't need to relay the scene change at all.</p>
+  </div>
+
+  <div class="panel">
     <h2>Reference Notes</h2>
     <div class="field">
-      <label for="brbSceneNote">Your OBS "BRB" scene name (must match BRB_SCENE_NAME in the C# trigger)</label>
+      <label for="brbSceneNote">Your OBS "BRB" scene name</label>
       <input type="text" id="brbSceneNote" placeholder="e.g. BRB" />
     </div>
-    <p class="hint">This field is just a personal reminder saved locally — it does not talk to Streamer.bot. Update the BRB_SCENE_NAME constant directly in BRB-Clip-Trigger.cs to match.</p>
+    <p class="hint">Saved locally. Used above to auto-trigger the BRB clip when OBS switches to this scene. If you're still using BRB-Clip-Trigger.cs through Streamer.bot instead, keep this in sync with the BRB_SCENE_NAME constant there too.</p>
   </div>
 
   <div class="panel">
@@ -178,10 +201,14 @@
   const CONFIG = {
     WS_ADDRESS: 'localhost',
     WS_PORT: '8080',
+    OBS_DEFAULT_ADDRESS: 'localhost',
+    OBS_DEFAULT_PORT: '4455',
+    OBS_EVENT_SUBSCRIPTIONS: 5, // General(1) + Scenes(4) bitmask, per obs-websocket v5 protocol
     RECONNECT_DELAY_MS: 3000,
     EVENT_SOURCE_KEY: 'clipsdashboard',
     BROADCAST_CHANNEL_NAME: 'fallenoneart_clips_channel',
     RECENT_LOG_MAX: 20,
+    OWN_LOGIN_CACHE_TTL_MS: 30 * 60 * 1000, // 30 min - the connected account's own Twitch login
     REDIRECT_URI: window.location.origin + window.location.pathname,
   };
 
@@ -190,11 +217,17 @@
     OAUTH_TOKEN: 'fallenoneart_clips_oauth_token',
     BRB_SCENE_NOTE: 'fallenoneart_clips_brb_scene_note',
     RECENT_LOG: 'fallenoneart_clips_recent',
+    OBS_ADDRESS: 'fallenoneart_clips_obs_address',
+    OBS_PORT: 'fallenoneart_clips_obs_port',
+    OBS_PASSWORD: 'fallenoneart_clips_obs_password',
   };
 
   const state = {
     clientId: localStorage.getItem(STORAGE_KEYS.CLIENT_ID) || '',
     oauthToken: localStorage.getItem(STORAGE_KEYS.OAUTH_TOKEN) || '',
+    obsWs: null,
+    lastObsScene: null,
+    ownLoginCache: null, // { login, fetchedAt }
   };
 
   const bc = new BroadcastChannel(CONFIG.BROADCAST_CHANNEL_NAME);
@@ -214,6 +247,12 @@
   const testBrbUser = document.getElementById('testBrbUser');
   const testBrbBtn = document.getElementById('testBrbBtn');
   const logList = document.getElementById('logList');
+  const obsAddressInput = document.getElementById('obsAddressInput');
+  const obsPortInput = document.getElementById('obsPortInput');
+  const obsPasswordInput = document.getElementById('obsPasswordInput');
+  const saveObsConfigBtn = document.getElementById('saveObsConfigBtn');
+  const obsStatusText = document.getElementById('obsStatusText');
+  const obsCurrentScene = document.getElementById('obsCurrentScene');
 
   /* =======================================================
      UI INIT / HELPERS
@@ -221,6 +260,9 @@
   function refreshUI() {
     clientIdInput.value = state.clientId;
     brbSceneNote.value = localStorage.getItem(STORAGE_KEYS.BRB_SCENE_NOTE) || '';
+    obsAddressInput.value = localStorage.getItem(STORAGE_KEYS.OBS_ADDRESS) || CONFIG.OBS_DEFAULT_ADDRESS;
+    obsPortInput.value = localStorage.getItem(STORAGE_KEYS.OBS_PORT) || CONFIG.OBS_DEFAULT_PORT;
+    obsPasswordInput.value = localStorage.getItem(STORAGE_KEYS.OBS_PASSWORD) || '';
     updateAuthStatusUI();
     renderLog();
   }
@@ -331,11 +373,141 @@
   }
 
   /* =======================================================
+     OBS WEBSOCKET (v5 protocol) - a SEPARATE connection from
+     Streamer.bot, talks directly to OBS on its own port
+     (default 4455, set under OBS > Tools > WebSocket Server
+     Settings). Used to detect the BRB scene directly.
+     ======================================================= */
+  function updateObsStatusUI(connected) {
+    obsStatusText.textContent = connected ? 'Connected' : 'Disconnected';
+    obsStatusText.className = connected ? 'ok' : 'bad';
+    if (!connected) obsCurrentScene.textContent = '—';
+  }
+
+  async function sha256Base64(str) {
+    const bytes = new TextEncoder().encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', bytes);
+    return btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
+  }
+
+  async function buildObsAuthString(password, salt, challenge) {
+    const secret = await sha256Base64(password + salt);
+    return sha256Base64(secret + challenge);
+  }
+
+  saveObsConfigBtn.addEventListener('click', () => {
+    localStorage.setItem(STORAGE_KEYS.OBS_ADDRESS, obsAddressInput.value.trim() || CONFIG.OBS_DEFAULT_ADDRESS);
+    localStorage.setItem(STORAGE_KEYS.OBS_PORT, obsPortInput.value.trim() || CONFIG.OBS_DEFAULT_PORT);
+    localStorage.setItem(STORAGE_KEYS.OBS_PASSWORD, obsPasswordInput.value);
+    if (state.obsWs) state.obsWs.close();
+    connectObsWs();
+  });
+
+  function connectObsWs() {
+    const address = localStorage.getItem(STORAGE_KEYS.OBS_ADDRESS) || CONFIG.OBS_DEFAULT_ADDRESS;
+    const port = localStorage.getItem(STORAGE_KEYS.OBS_PORT) || CONFIG.OBS_DEFAULT_PORT;
+
+    const ws = new WebSocket(`ws://${address}:${port}`);
+    state.obsWs = ws;
+
+    ws.onclose = () => {
+      updateObsStatusUI(false);
+      setTimeout(connectObsWs, CONFIG.RECONNECT_DELAY_MS);
+    };
+    ws.onerror = () => ws.close();
+
+    ws.onmessage = async (evt) => {
+      let msg;
+      try { msg = JSON.parse(evt.data); } catch { return; }
+
+      // op 0 = Hello (sent right after connecting)
+      if (msg.op === 0) {
+        const d = msg.d;
+        const identifyPayload = {
+          op: 1,
+          d: { rpcVersion: d.rpcVersion, eventSubscriptions: CONFIG.OBS_EVENT_SUBSCRIPTIONS },
+        };
+        if (d.authentication) {
+          const password = localStorage.getItem(STORAGE_KEYS.OBS_PASSWORD) || '';
+          identifyPayload.d.authentication = await buildObsAuthString(
+            password, d.authentication.salt, d.authentication.challenge
+          );
+        }
+        ws.send(JSON.stringify(identifyPayload));
+        return;
+      }
+
+      // op 2 = Identified (handshake complete)
+      if (msg.op === 2) {
+        updateObsStatusUI(true);
+        ws.send(JSON.stringify({ op: 6, d: { requestType: 'GetCurrentProgramScene', requestId: 'initial-scene' } }));
+        return;
+      }
+
+      // op 7 = RequestResponse (reply to GetCurrentProgramScene)
+      if (msg.op === 7 && msg.d.requestType === 'GetCurrentProgramScene') {
+        const sceneName = msg.d.responseData && msg.d.responseData.currentProgramSceneName;
+        if (sceneName) handleObsSceneChange(sceneName);
+        return;
+      }
+
+      // op 5 = Event (scene actually changed)
+      if (msg.op === 5 && msg.d.eventType === 'CurrentProgramSceneChanged') {
+        const sceneName = msg.d.eventData && msg.d.eventData.sceneName;
+        if (sceneName) handleObsSceneChange(sceneName);
+      }
+    };
+  }
+
+  function handleObsSceneChange(sceneName) {
+    obsCurrentScene.textContent = sceneName;
+
+    const brbScene = (localStorage.getItem(STORAGE_KEYS.BRB_SCENE_NOTE) || '').trim().toLowerCase();
+    const alreadyOnScene = state.lastObsScene === sceneName;
+    state.lastObsScene = sceneName;
+
+    if (!brbScene || alreadyOnScene) return;
+    if (sceneName.trim().toLowerCase() !== brbScene) return;
+
+    triggerBrbFromObs();
+  }
+
+  async function getOwnLogin() {
+    const now = Date.now();
+    if (state.ownLoginCache && (now - state.ownLoginCache.fetchedAt) < CONFIG.OWN_LOGIN_CACHE_TTL_MS) {
+      return state.ownLoginCache.login;
+    }
+    const res = await fetch('https://api.twitch.tv/helix/users', {
+      headers: { 'Client-Id': state.clientId, 'Authorization': `Bearer ${state.oauthToken}` },
+    });
+    if (!res.ok) throw new Error(`Twitch Users API error (${res.status})`);
+    const json = await res.json();
+    if (!json.data || !json.data.length) throw new Error('Could not resolve connected account login.');
+    const login = json.data[0].login;
+    state.ownLoginCache = { login, fetchedAt: now };
+    return login;
+  }
+
+  async function triggerBrbFromObs() {
+    if (!state.clientId || !state.oauthToken) {
+      console.warn('clipsdashboard: connect your Twitch account before OBS can auto-trigger BRB clips.');
+      return;
+    }
+    try {
+      const login = await getOwnLogin();
+      bc.postMessage({ source: CONFIG.EVENT_SOURCE_KEY, eventName: 'brb_clip', targetUser: login });
+    } catch (err) {
+      console.error('clipsdashboard: failed to auto-trigger BRB clip -', err);
+    }
+  }
+
+  /* =======================================================
      INIT
      ======================================================= */
   handleOAuthRedirect();
   refreshUI();
   connectWS();
+  connectObsWs();
 })();
 </script>
 </body>
