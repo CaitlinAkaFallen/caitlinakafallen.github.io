@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pumpkin Patch Overlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Creepster&family=Nosifer&family=Butcherman&family=Eater&family=Pirata+One&family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon-color: #ff7a1a;
+    --stem-color: #9fe870;
+    --glow-intensity: 1;
+  }
+
+  /* Real transparency by default. .preview-mode (auto-applied outside OBS)
+     paints black so it's visible when you're just eyeballing it in a browser tab. */
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+  }
+
+  body.preview-mode {
+    background-color: #000000;
+  }
+
+  /* Small on-screen badge so you always know which mode you're looking at
+     when testing outside OBS. Never shows inside the OBS browser source. */
+  #mode-flag {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: #ffb37a;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,122,26,0.5);
+    padding: 3px 8px;
+    border-radius: 3px;
+    display: none;
+    z-index: 999;
+    pointer-events: none;
+  }
+  body.preview-mode #mode-flag { display: block; }
+
+  /* ---- Sign title: real SVG text, not CSS background-clip -------------
+     The old approach used an <h1> with background-clip:text for the fill
+     and a flat-color text-shadow for the glow. That's fragile: the glow
+     can only ever be one solid color, so a multi-stop gradient (like a
+     pride flag palette) gets its glow "won" by whichever color the code
+     picked, and the rest of the gradient reads as washed out/solid.
+     Rendering the title as real SVG <text> with a gradient fill and a
+     native SVG blur filter fixes this the same way the pumpkins already
+     work: the blur operates on the actual multicolored source, so the
+     glow itself is the gradient, smoothly blended, not a flat tint. */
+  #sign-title-svg {
+    display: block;
+    width: 100%;
+    margin: 0 auto 1rem;
+    overflow: visible;
+  }
+
+  #sign-title-text {
+    font-family: 'Alex Brush', cursive;
+    transition: opacity 0.2s ease;
+  }
+
+  #patch-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 2rem;
+    width: 100%;
+    padding: 0 2rem;
+    box-sizing: border-box;
+    flex-wrap: nowrap;
+  }
+
+  .pumpkin-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    min-width: 120px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
+  }
+
+  .pumpkin-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  @keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+    20%, 24%, 55% { opacity: 0.4; }
+  }
+
+  .flicker-active #sign-title-svg,
+  .flicker-active .pumpkin-wrapper {
+    animation: flicker 6s infinite alternate;
+    animation-delay: calc(var(--i, 0) * 0.35s);
+  }
+
+  .flicker-active .pumpkin-wrapper:nth-child(1) { animation-delay: 0.2s; animation-duration: 7s; }
+  .flicker-active .pumpkin-wrapper:nth-child(2) { animation-delay: 1.5s; animation-duration: 5.5s; }
+  .flicker-active .pumpkin-wrapper:nth-child(3) { animation-delay: 0.8s; animation-duration: 8s; }
+  .flicker-active .pumpkin-wrapper:nth-child(4) { animation-delay: 2.1s; animation-duration: 6.2s; }
+  .flicker-active .pumpkin-wrapper:nth-child(5) { animation-delay: 0.5s; animation-duration: 7.5s; }
+
+  svg[aria-hidden="true"] {
+    position: absolute;
+  }
+
+  /* ---- Animated expressions (blinking eyes) --------------------------
+     .face-eyes groups are nested inside .face-outer / .face-inner and
+     inherit their stroke/fill, so this only touches shape, never color.
+     transform-box: fill-box keeps the scale pivoting around the eye shapes
+     themselves instead of the SVG's top-left corner. Delay is staggered
+     per-pumpkin via the --i custom property set at render time so a full
+     patch doesn't blink in unison. Duration gets a little variety from
+     nth-child so it reads as organic rather than mechanical. */
+  .face-eyes {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+
+  @keyframes blink {
+    0%, 90%, 100% { transform: scaleY(1); }
+    94% { transform: scaleY(0.08); }
+  }
+
+  body.anim-active .pumpkin-wrapper .face-eyes {
+    animation: blink 5s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 0.6s);
+  }
+
+  body.anim-active .pumpkin-wrapper:nth-child(3n+1) .face-eyes { animation-duration: 4.4s; }
+  body.anim-active .pumpkin-wrapper:nth-child(3n+2) .face-eyes { animation-duration: 5.6s; }
+  body.anim-active .pumpkin-wrapper:nth-child(3n) .face-eyes   { animation-duration: 4.9s; }
+
+  /* ---- Mouth animation (talking/wobble) --------------------------------
+     Applies to .face-mouth groups, staggered per-pumpkin like the eyes.
+     Uses scaleY around the vertical center of the mouth shapes so grins,
+     smiles, and open-mouth faces all breathe/wobble in place. */
+  .face-mouth {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+
+  @keyframes mouth-wobble {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.85); }
+  }
+
+  body.anim-active .pumpkin-wrapper .face-mouth {
+    animation: mouth-wobble 2.6s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 0.4s);
+  }
+
+  body.anim-active .pumpkin-wrapper:nth-child(3n+1) .face-mouth { animation-duration: 2.3s; }
+  body.anim-active .pumpkin-wrapper:nth-child(3n+2) .face-mouth { animation-duration: 2.9s; }
+  body.anim-active .pumpkin-wrapper:nth-child(3n) .face-mouth   { animation-duration: 2.6s; }
+
+  /* ---- Wink animation ---------------------------------------------------
+     Only faces with .face-wink present get this; the winking eye group is
+     tagged .face-wink-eye and blinks on its own slower, more irregular
+     cadence so it doesn't just look like double-blinking. */
+  .face-wink-eye {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+
+  @keyframes wink {
+    0%, 82%, 100% { transform: scaleY(1); }
+    88% { transform: scaleY(0.08); }
+  }
+
+  body.anim-active .pumpkin-wrapper .face-wink-eye {
+    animation: wink 4.2s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 0.5s + 0.3s);
+  }
+
+  /* ---- Scary face shake -------------------------------------------------
+     A subtle jitter on the whole face group for an unsettling twitch,
+     distinct from the gentle flicker animation on the whole pumpkin. */
+  @keyframes scary-shake {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(-0.6px, 0.4px); }
+    40% { transform: translate(0.5px, -0.5px); }
+    60% { transform: translate(-0.4px, -0.3px); }
+    80% { transform: translate(0.6px, 0.3px); }
+  }
+
+  body.anim-active .pumpkin-wrapper .face-shake {
+    animation: scary-shake 0.18s steps(2, end) infinite;
+  }
+</style>
+</head>
+<body>
+
+<div id="mode-flag">PREVIEW MODE — black bg is local only, transparent in OBS</div>
+
+<!-- Shared gradients every pumpkin's outline references. There's only one
+     copy (not per-pumpkin) since all pumpkins use the same palette — we
+     just rewrite the <stop> colors here whenever the config changes. -->
+<svg width="0" height="0" aria-hidden="true">
+  <defs>
+    <linearGradient id="pumpkin-gradient" gradientUnits="userSpaceOnUse" x1="100" y1="40" x2="100" y2="180">
+      <stop id="pg-stop-0" offset="0%" stop-color="#ff7a1a" />
+      <stop id="pg-stop-1" offset="50%" stop-color="#ff7a1a" />
+      <stop id="pg-stop-2" offset="100%" stop-color="#ff7a1a" />
+    </linearGradient>
+    <linearGradient id="pumpkin-gradient-hot" gradientUnits="userSpaceOnUse" x1="100" y1="40" x2="100" y2="180">
+      <stop id="pgh-stop-0" offset="0%" stop-color="#fff3c4" />
+      <stop id="pgh-stop-1" offset="50%" stop-color="#fff3c4" />
+      <stop id="pgh-stop-2" offset="100%" stop-color="#fff3c4" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- Sign title, rendered as SVG text so its glow can blur the actual
+     gradient fill (see comment in <style> above). gradientUnits is
+     objectBoundingBox so the gradient always spans exactly the rendered
+     text's own width, no matter how long the title or how wide the font
+     is — no manual coordinate math needed when the title text changes. -->
+<svg id="sign-title-svg" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="title-gradient" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff7a1a" />
+      <stop offset="50%" stop-color="#ff7a1a" />
+      <stop offset="100%" stop-color="#ff7a1a" />
+    </linearGradient>
+    <filter id="title-glow-filter" x="-60%" y="-150%" width="220%" height="400%">
+      <feGaussianBlur in="SourceGraphic" id="tgf-blur1" stdDeviation="2" result="blur1" />
+      <feGaussianBlur in="SourceGraphic" id="tgf-blur2" stdDeviation="6" result="blur2" />
+      <feGaussianBlur in="SourceGraphic" id="tgf-blur3" stdDeviation="14" result="blur3" />
+      <feGaussianBlur in="SourceGraphic" id="tgf-blur4" stdDeviation="26" result="blur4" />
+      <feMerge>
+        <feMergeNode in="blur4" />
+        <feMergeNode in="blur3" />
+        <feMergeNode in="blur2" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <text id="sign-title-text" x="50%" y="65%" text-anchor="middle" dominant-baseline="middle" filter="url(#title-glow-filter)">The Pumpkin Patch</text>
+</svg>
+
+<div id="patch-container"></div>
+
+<!-- Master SVG Template, cloned per pumpkin. Face parts are injected at runtime
+     from FACE_LIBRARY so every pumpkin can get its own expression. Each face's
+     eye shapes are wrapped in <g class="face-eyes"> so the blink animation can
+     target just the eyes. Mouth shapes are wrapped in <g class="face-mouth">
+     for a subtle talk/wobble animation. Wink faces additionally tag their
+     closed/half eye as .face-wink-eye. -->
+<template id="pumpkin-template">
+  <div class="pumpkin-wrapper">
+    <svg class="pumpkin-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="neon-glow-filter" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="calc(2 * var(--glow-intensity))" result="blur1" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="calc(6 * var(--glow-intensity))" result="blur2" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="calc(14 * var(--glow-intensity))" result="blur3" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="calc(28 * var(--glow-intensity))" result="blur4" />
+          <feMerge>
+            <feMergeNode in="blur4" />
+            <feMergeNode in="blur3" />
+            <feMergeNode in="blur2" />
+            <feMergeNode in="blur1" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        <filter id="stem-glow-filter" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="calc(2 * var(--glow-intensity))" result="blur1" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="calc(7 * var(--glow-intensity))" result="blur2" />
+          <feMerge>
+            <feMergeNode in="blur2" />
+            <feMergeNode in="blur1" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        <radialGradient id="floor-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="var(--neon-color)" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="var(--neon-color)" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+
+      <!-- Floor reflection -->
+      <ellipse cx="100" cy="188" rx="78" ry="14" fill="url(#floor-glow)" />
+
+      <!-- Curled vine stem: dark backing, glow layer, bright core -->
+      <g class="stem-group">
+        <path class="stem-path" d="M100,46 C100,26 88,22 90,6 C92,-8 110,-10 114,3 C118,15 106,17 100,10"
+              fill="none" stroke="#000" stroke-width="10" stroke-linecap="round" />
+        <path class="stem-path" d="M100,46 C100,26 88,22 90,6 C92,-8 110,-10 114,3 C118,15 106,17 100,10"
+              fill="none" stroke="var(--stem-color)" stroke-width="5" stroke-linecap="round" filter="url(#stem-glow-filter)" />
+        <path class="stem-path" d="M100,46 C100,26 88,22 90,6 C92,-8 110,-10 114,3 C118,15 106,17 100,10"
+              fill="none" stroke="#f4ffd8" stroke-width="1.8" stroke-linecap="round" />
+      </g>
+
+      <!-- Outer neon glow tubes (ridges + face, injected face parts) -->
+      <g class="ridges-outer" filter="url(#neon-glow-filter)" fill="none" stroke="url(#pumpkin-gradient)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 100,44 C 74,44 74,178 100,178 C 126,178 126,44 100,44 Z" />
+        <path d="M 84,45 C 42,54 42,168 84,177" />
+        <path d="M 63,54 C 12,75 12,157 63,166" />
+        <path d="M 116,45 C 158,54 158,168 116,177" />
+        <path d="M 137,54 C 188,75 188,157 137,166" />
+      </g>
+      <g class="face-outer" filter="url(#neon-glow-filter)" fill="none" stroke="url(#pumpkin-gradient)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></g>
+
+      <!-- Inner hot core (thin bright lines on top, same geometry) -->
+      <g class="ridges-inner" fill="none" stroke="url(#pumpkin-gradient-hot)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 100,44 C 74,44 74,178 100,178 C 126,178 126,44 100,44 Z" />
+        <path d="M 84,45 C 42,54 42,168 84,177" />
+        <path d="M 63,54 C 12,75 12,157 63,166" />
+        <path d="M 116,45 C 158,54 158,168 116,177" />
+        <path d="M 137,54 C 188,75 188,157 137,166" />
+      </g>
+      <g class="face-inner" fill="none" stroke="url(#pumpkin-gradient-hot)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></g>
+    </svg>
+  </div>
+</template>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'pumpkinpatch_config';
+  const CHANNEL_NAME = 'pumpkinpatch_channel';
+
+  const root = document.documentElement;
+  const titleSvg = document.getElementById('sign-title-svg');
+  const titleTextEl = document.getElementById('sign-title-text');
+  const titleGradientEl = document.getElementById('title-gradient');
+  const titleBlurEls = [
+    document.getElementById('tgf-blur1'),
+    document.getElementById('tgf-blur2'),
+    document.getElementById('tgf-blur3'),
+    document.getElementById('tgf-blur4')
+  ];
+  const patchContainer = document.getElementById('patch-container');
+  const template = document.getElementById('pumpkin-template');
+
+  // ---- Sign text font + color options (mirrors the dashboard's FONTS list) ----
+  const FONT_MAP = {
+    'Space Grotesk':  { family: "'Space Grotesk', sans-serif", weight: 700 },
+    'Creepster':      { family: "'Creepster', cursive",        weight: 400 },
+    'Nosifer':        { family: "'Nosifer', cursive",          weight: 400 },
+    'Butcherman':     { family: "'Butcherman', cursive",       weight: 400 },
+    'Eater':          { family: "'Eater', cursive",            weight: 400 },
+    'Pirata One':     { family: "'Pirata One', cursive",       weight: 400 },
+    'JetBrains Mono': { family: "'JetBrains Mono', monospace", weight: 500 },
+    'Alex Brush':     { family: "'Alex Brush', cursive",       weight: 400 }
+  };
+
+  // ---- Face library --------------------------------------------------
+  // Each expression is a pair of SVG snippets (same shapes reused for the
+  // outer glow group and the inner hot-core group). Eye shapes are wrapped
+  // in <g class="face-eyes"> so the blink animation can target just the
+  // eyes. Mouth shapes are wrapped in <g class="face-mouth"> so the talk/
+  // wobble animation can target just the mouth. Faces with a wink are
+  // tagged .face-wink and their closed eye gets .face-wink-eye. The scary
+  // face additionally gets .face-shake on its whole face group for a
+  // twitchy jitter. Everything else inherits the parent's stroke/fill and
+  // is left untouched by any animation. Add new expressions here and
+  // they're automatically eligible for random assignment.
+  const FACE_LIBRARY = {
+    classic: `
+      <g class="face-eyes">
+        <polygon points="76,63 96,86 61,90" />
+        <polygon points="124,63 139,90 104,86" />
+      </g>
+      <polygon points="100,94 116,116 84,116" />
+      <g class="face-mouth">
+        <path d="M 34,120 C 49,141 74,146 84,146 L 84,130 L 106,130 L 106,146
+                 C 131,146 151,141 166,120 C 151,156 131,166 116,166
+                 L 116,150 L 96,150 L 96,166 C 71,166 49,156 34,120 Z" />
+      </g>
+    `,
+    grumpy: `
+      <g class="face-eyes">
+        <polygon points="60,58 100,78 60,95" />
+        <polygon points="140,58 140,95 100,78" />
+      </g>
+      <polygon points="100,96 118,118 82,118" />
+      <g class="face-mouth">
+        <path d="M 40,132 C 55,122 70,132 85,124 C 100,116 100,132 100,132
+                 C 100,132 100,116 115,124 C 130,132 145,122 160,132
+                 C 145,140 130,132 115,140 C 100,148 100,132 100,132
+                 C 100,132 100,148 85,140 C 70,132 55,140 40,132 Z" />
+      </g>
+    `,
+    silly: `
+      <g class="face-eyes">
+        <ellipse cx="76" cy="78" rx="17" ry="20" />
+        <polygon points="128,64 142,90 112,88" />
+      </g>
+      <polygon points="100,94 114,114 88,114" />
+      <g class="face-mouth">
+        <path d="M 38,124 C 55,148 80,152 100,148 C 120,152 145,148 162,124
+                 C 150,150 128,168 100,164 C 72,168 50,150 38,124 Z" />
+        <path d="M 92,150 C 92,164 108,164 108,150 C 108,168 92,168 92,150 Z" />
+      </g>
+    `,
+    sleepy: `
+      <g class="face-eyes">
+        <path d="M 60,80 C 72,68 88,68 98,80" stroke-width="7" />
+        <path d="M 102,80 C 112,68 128,68 140,80" stroke-width="7" />
+      </g>
+      <polygon points="100,98 114,116 86,116" />
+      <g class="face-mouth">
+        <path d="M 65,140 C 82,150 118,150 135,140 C 128,154 108,160 100,160 C 92,160 72,154 65,140 Z" />
+      </g>
+    `,
+    surprised: `
+      <g class="face-eyes">
+        <circle cx="76" cy="82" r="15" />
+        <circle cx="124" cy="82" r="15" />
+      </g>
+      <polygon points="100,100 112,118 88,118" />
+      <g class="face-mouth">
+        <ellipse cx="100" cy="148" rx="16" ry="20" />
+      </g>
+    `,
+    grin: `
+      <g class="face-eyes">
+        <polygon points="70,60 100,84 66,96" />
+        <polygon points="130,60 134,96 100,84" />
+      </g>
+      <polygon points="100,94 117,116 83,116" />
+      <g class="face-mouth">
+        <path d="M 32,116 C 50,150 76,158 100,152 C 124,158 150,150 168,116
+                 C 168,140 148,168 132,166 L 128,152 L 112,166 L 106,152
+                 L 100,166 L 94,152 L 88,166 L 72,152 L 68,166
+                 C 52,168 32,140 32,116 Z" />
+      </g>
+    `,
+    smile: `
+      <g class="face-eyes">
+        <path d="M 60,82 C 66,70 88,70 94,80" stroke-width="7" />
+        <path d="M 106,80 C 112,70 134,70 140,82" stroke-width="7" />
+      </g>
+      <polygon points="100,96 111,114 89,114" />
+      <g class="face-mouth">
+        <path d="M 54,126 C 70,152 130,152 146,126 C 138,150 118,162 100,162 C 82,162 62,150 54,126 Z" />
+      </g>
+    `,
+    wink: `
+      <g class="face-eyes face-wink">
+        <path class="face-wink-eye" d="M 58,80 C 70,68 86,68 96,80" stroke-width="7" />
+        <polygon points="126,62 142,90 108,86" />
+      </g>
+      <polygon points="100,98 114,118 86,118" />
+      <g class="face-mouth">
+        <path d="M 40,126 C 60,150 90,158 100,150 C 110,158 140,150 160,126
+                 C 152,152 122,168 100,162 C 78,168 48,152 40,126 Z" />
+      </g>
+    `,
+    scary: `
+      <g class="face-eyes face-shake">
+        <ellipse cx="74" cy="82" rx="6" ry="21" />
+        <ellipse cx="126" cy="82" rx="6" ry="21" />
+      </g>
+      <polygon class="face-shake" points="100,96 109,115 91,115" />
+      <g class="face-mouth face-shake">
+        <path d="M 28,124 L 40,140 L 48,122 L 58,142 L 66,122 L 76,142 L 86,122
+                 L 100,144 L 114,122 L 124,142 L 132,122 L 142,142 L 152,122
+                 L 160,140 L 172,124
+                 C 165,158 135,170 100,170 C 65,170 35,158 28,124 Z" />
+      </g>
+    `,
+    mischievous: `
+      <g class="face-eyes">
+        <polygon points="58,68 100,80 60,90 78,80" />
+        <polygon points="142,64 144,92 108,84" />
+      </g>
+      <polygon points="100,94 112,114 90,112" />
+      <g class="face-mouth">
+        <path d="M 36,122 C 52,150 80,160 104,154 C 126,160 150,146 164,120
+                 C 158,148 134,166 108,164 L 104,152 L 92,164 L 84,150
+                 C 64,156 46,144 36,122 Z" />
+      </g>
+    `,
+    dizzy: `
+      <g class="face-eyes">
+        <path d="M 64,70 L 84,90 M 84,70 L 64,90" stroke-width="6" />
+        <path d="M 116,70 L 136,90 M 136,70 L 116,90" stroke-width="6" />
+      </g>
+      <polygon points="100,96 111,114 89,114" />
+      <g class="face-mouth">
+        <path d="M 60,132 C 72,144 84,124 96,136 C 108,148 120,128 132,140
+                 C 128,156 108,164 100,164 C 92,164 72,156 60,132 Z" />
+      </g>
+    `
+  };
+  const EXPRESSION_NAMES = Object.keys(FACE_LIBRARY);
+
+  const DEFAULT_CONFIG = {
+    title: "The Pumpkin Patch",
+    color: "#ff7a1a",
+    colors: ["#ff7a1a", "#ff8c42", "#cc4b00"],
+    stemColor: "#9fe870",
+    titleFont: "Creepster",
+    titleFontSize: 6,
+    titleColorMode: "match", // "solid" | "gradient" | "match"
+    titleColor: "#ff8c42",
+    titleGradient: ["#ff6b1a", "#ffdd00"],
+    glowIntensity: 1,
+    flicker: true,
+    animatedExpressions: true,
+    pumpkinCount: 5,
+    // "random" = every pumpkin rolls its own face on each render.
+    // "custom"  = read cfg.pumpkinExpressions[i] for each pumpkin (falls back
+    //             to random for any index that's missing or invalid).
+    // Anything else that matches a FACE_LIBRARY key forces that face on all pumpkins.
+    expressionMode: "random",
+    pumpkinExpressions: [],
+    // Bump this from the dashboard to force a fresh random shuffle even when
+    // count/mode haven't changed (e.g. a "Reroll" button).
+    rerollTick: 0
+  };
+
+  let currentCount = -1;
+  let currentExpressionMode = null;
+  let currentExpressionsKey = null;
+  let currentRerollTick = null;
+  let filterSuffixCounter = 0;
+
+  // ---- OBS transparency auto-detect ----------------------------------
+  // OBS's browser source injects window.obsstudio. If it's not there, we're
+  // being viewed in a plain browser tab for testing, so paint black so the
+  // shapes are actually visible against page white. Inside OBS this never
+  // fires and the page stays fully transparent.
+  function applyBackgroundMode(cfg) {
+    let preview;
+    if (cfg && typeof cfg.forcePreview === 'boolean') {
+      preview = cfg.forcePreview;
+    } else {
+      preview = (typeof window.obsstudio === 'undefined');
+    }
+    document.body.classList.toggle('preview-mode', preview);
+  }
+
+  function pickRandomExpression() {
+    return EXPRESSION_NAMES[Math.floor(Math.random() * EXPRESSION_NAMES.length)];
+  }
+
+  // ---- Palette / gradient handling -----------------------------------
+  const gradientStopEls = [
+    document.getElementById('pg-stop-0'),
+    document.getElementById('pg-stop-1'),
+    document.getElementById('pg-stop-2')
+  ];
+  const hotStopEls = [
+    document.getElementById('pgh-stop-0'),
+    document.getElementById('pgh-stop-1'),
+    document.getElementById('pgh-stop-2')
+  ];
+
+  function hexToRgb(hex) {
+    let c = String(hex).replace('#', '').trim();
+    if (c.length === 3) c = c.split('').map(ch => ch + ch).join('');
+    const num = parseInt(c, 16);
+    if (Number.isNaN(num)) return { r: 255, g: 122, b: 26 }; // safe fallback
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  }
+
+  // Mixes a color toward white, used for the thin "hot core" lines so they
+  // stay recognizably tinted by the stripe color instead of flattening to
+  // one fixed cream shade for every palette.
+  function lighten(hex, amount) {
+    const { r, g, b } = hexToRgb(hex);
+    const lr = Math.round(r + (255 - r) * amount);
+    const lg = Math.round(g + (255 - g) * amount);
+    const lb = Math.round(b + (255 - b) * amount);
+    return `rgb(${lr}, ${lg}, ${lb})`;
+  }
+
+  function updatePalette(colors) {
+    const stripes = (Array.isArray(colors) && colors.length === 3) ? colors : [colors, colors, colors];
+    stripes.forEach((color, i) => {
+      if (gradientStopEls[i]) gradientStopEls[i].setAttribute('stop-color', color);
+      if (hotStopEls[i]) hotStopEls[i].setAttribute('stop-color', lighten(color, 0.55));
+    });
+  }
+
+  // Rebuilds the <stop> children of the SVG title gradient to match
+  // however many colors are in the active palette (2 for a custom text
+  // gradient, 3 for match-patch). Spread evenly across 0%–100% so the
+  // rendered gradient — and therefore its blurred glow — always uses
+  // every color the person picked.
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  function setTitleGradientStops(stops) {
+    while (titleGradientEl.firstChild) titleGradientEl.removeChild(titleGradientEl.firstChild);
+    const n = stops.length;
+    stops.forEach((color, i) => {
+      const stopEl = document.createElementNS(SVG_NS, 'stop');
+      const offset = n === 1 ? 0 : (i / (n - 1)) * 100;
+      stopEl.setAttribute('offset', offset + '%');
+      stopEl.setAttribute('stop-color', color);
+      titleGradientEl.appendChild(stopEl);
+    });
+  }
+
+  // ---- Sign text styling (font + solid/gradient/match-patch color) ----
+  // The title is real SVG <text> filled with url(#title-gradient) and
+  // blurred by a native SVG filter. Because the blur operates on the
+  // actual gradient-filled glyphs (not a flat CSS shadow color), the glow
+  // itself comes out as the full gradient, smoothly blended — exactly how
+  // the pumpkins' own neon glow already works.
+  function applyTitleStyle(cfg) {
+    const fontKey = cfg.titleFont || DEFAULT_CONFIG.titleFont;
+    const font = FONT_MAP[fontKey] || FONT_MAP[DEFAULT_CONFIG.titleFont];
+    titleTextEl.style.fontFamily = font.family;
+    titleTextEl.style.fontWeight = font.weight;
+
+    const fontSizePx = (cfg.titleFontSize || DEFAULT_CONFIG.titleFontSize) * 16;
+    titleTextEl.setAttribute('font-size', fontSizePx);
+
+    // Give the SVG viewport enough height for descenders/drips (Creepster,
+    // Nosifer, Butcherman, Eater all hang well below the baseline) plus
+    // the blur radius, so nothing gets clipped the way the dashboard
+    // preview used to before that was fixed.
+    const gi = cfg.glowIntensity !== undefined ? cfg.glowIntensity : DEFAULT_CONFIG.glowIntensity;
+    titleSvg.setAttribute('height', Math.round(fontSizePx * 1.9 + 40 * gi));
+
+    titleBlurEls[0].setAttribute('stdDeviation', 2 * gi);
+    titleBlurEls[1].setAttribute('stdDeviation', 6 * gi);
+    titleBlurEls[2].setAttribute('stdDeviation', 14 * gi);
+    titleBlurEls[3].setAttribute('stdDeviation', 26 * gi);
+
+    const mode = cfg.titleColorMode || DEFAULT_CONFIG.titleColorMode;
+
+    if (mode === 'solid') {
+      const solidColor = cfg.titleColor || DEFAULT_CONFIG.titleColor;
+      titleTextEl.setAttribute('fill', solidColor);
+    } else {
+      const stops = mode === 'gradient'
+        ? ((Array.isArray(cfg.titleGradient) && cfg.titleGradient.length >= 2) ? cfg.titleGradient : DEFAULT_CONFIG.titleGradient)
+        : ((Array.isArray(cfg.colors) && cfg.colors.length) ? cfg.colors : DEFAULT_CONFIG.colors);
+      setTitleGradientStops(stops);
+      titleTextEl.setAttribute('fill', 'url(#title-gradient)');
+    }
+  }
+
+  function loadInitial() {
+    let config = { ...DEFAULT_CONFIG };
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) config = { ...config, ...JSON.parse(stored) };
+    } catch (e) {}
+    applyConfig(config);
+  }
+
+  function applyConfig(cfg) {
+    if (!cfg) return;
+
+    if (cfg.title !== undefined) titleTextEl.textContent = cfg.title;
+    if (cfg.color) root.style.setProperty('--neon-color', cfg.color);
+    if (Array.isArray(cfg.colors) && cfg.colors.length === 3) {
+      updatePalette(cfg.colors);
+    } else if (cfg.color) {
+      updatePalette(cfg.color);
+    }
+    if (cfg.stemColor) root.style.setProperty('--stem-color', cfg.stemColor);
+    if (cfg.glowIntensity !== undefined) root.style.setProperty('--glow-intensity', cfg.glowIntensity);
+
+    applyTitleStyle(cfg);
+
+    if (cfg.flicker !== undefined) {
+      document.body.classList.toggle('flicker-active', !!cfg.flicker);
+    }
+    document.body.classList.toggle('anim-active', cfg.animatedExpressions !== false);
+
+    applyBackgroundMode(cfg);
+
+    const expressionMode = cfg.expressionMode || 'random';
+    const pumpkinExpressions = Array.isArray(cfg.pumpkinExpressions) ? cfg.pumpkinExpressions : [];
+    const rerollTick = cfg.rerollTick || 0;
+
+    const countChanged = cfg.pumpkinCount !== undefined && cfg.pumpkinCount !== currentCount;
+    const modeChanged = expressionMode !== currentExpressionMode;
+    const expressionsKey = JSON.stringify(pumpkinExpressions);
+    const expressionsChanged = expressionsKey !== currentExpressionsKey;
+    const rerollChanged = rerollTick !== currentRerollTick;
+
+    if (cfg.pumpkinCount !== undefined &&
+        (countChanged || modeChanged || expressionsChanged || rerollChanged)) {
+      currentExpressionMode = expressionMode;
+      currentExpressionsKey = expressionsKey;
+      currentRerollTick = rerollTick;
+      renderPumpkins(cfg.pumpkinCount, expressionMode, pumpkinExpressions);
+    }
+  }
+
+  function resolveFace(expressionMode, pumpkinExpressions, index) {
+    if (expressionMode === 'custom') {
+      const requested = pumpkinExpressions[index];
+      return FACE_LIBRARY[requested] ? requested : pickRandomExpression();
+    }
+    if (expressionMode !== 'random' && FACE_LIBRARY[expressionMode]) {
+      return expressionMode; // single face forced for every pumpkin
+    }
+    return pickRandomExpression();
+  }
+
+  function renderPumpkins(count, expressionMode, pumpkinExpressions) {
+    patchContainer.innerHTML = '';
+    currentCount = count;
+
+    for (let i = 0; i < count; i++) {
+      const clone = template.content.cloneNode(true);
+      const svg = clone.querySelector('svg');
+      const wrapper = clone.querySelector('.pumpkin-wrapper');
+
+      // Stagger point for both the flicker and blink animations so a full
+      // patch of pumpkins doesn't move in perfect unison.
+      wrapper.style.setProperty('--i', i);
+
+      // Give this instance's filters unique IDs so multiple pumpkins never
+      // collide on the same <filter id="..."> in the DOM.
+      const suffix = 'p' + (filterSuffixCounter++);
+      svg.querySelectorAll('defs > filter').forEach(f => {
+        const oldId = f.getAttribute('id');
+        const newId = oldId + '-' + suffix;
+        f.setAttribute('id', newId);
+        svg.querySelectorAll(`[filter="url(#${oldId})"]`).forEach(el => {
+          el.setAttribute('filter', `url(#${newId})`);
+        });
+      });
+
+      const faceName = resolveFace(expressionMode, pumpkinExpressions, i);
+      const faceMarkup = FACE_LIBRARY[faceName];
+      svg.querySelector('.face-outer').innerHTML = faceMarkup;
+      svg.querySelector('.face-inner').innerHTML = faceMarkup;
+
+      patchContainer.appendChild(clone);
+    }
+  }
+
+  try {
+    const bc = new BroadcastChannel(CHANNEL_NAME);
+    bc.onmessage = (event) => {
+      if (event.data && event.data.source === 'pumpkinpatch' && event.data.config) {
+        applyConfig(event.data.config);
+      }
+    };
+  } catch (e) {
+    console.log("BroadcastChannel not supported.");
+  }
+
+  window.addEventListener('message', (event) => {
+    if (event.data && event.data.source === 'pumpkinpatch-direct' && event.data.config) {
+      applyConfig(event.data.config);
+    }
+  });
+
+  window.addEventListener('storage', (event) => {
+    if (event.key === STORAGE_KEY && event.newValue) {
+      try {
+        applyConfig(JSON.parse(event.newValue));
+      } catch (e) {}
+    }
+  });
+
+  loadInitial();
+})();
+</script>
+
+</body>
+</html>

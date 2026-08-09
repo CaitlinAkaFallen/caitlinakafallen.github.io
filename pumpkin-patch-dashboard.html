@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pumpkin Patch Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Butcherman&family=Eater&family=Pirata+One&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0a0a0f;
+    --panel: #14141c;
+    --panel-2: #1b1b25;
+    --line: #2a2a36;
+    --text: #f4f1ea;
+    --text-dim: #8c8c9a;
+    --neon: #ff6b1a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at top, #1a1420 0%, var(--void) 55%);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    padding: 3vh 4vw 6vh;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.2vh;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  header h1 {
+    font-family: 'Creepster', cursive;
+    font-weight: 400;
+    font-size: 2.4rem;
+    letter-spacing: 0.03em;
+    margin: 0;
+    color: var(--neon);
+    text-shadow: 0 0 6px var(--neon), 0 0 22px color-mix(in srgb, var(--neon) 60%, transparent);
+  }
+
+  .status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  .status .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #33333f;
+  }
+
+  .status .dot.live {
+    background: #3ddc84;
+    box-shadow: 0 0 6px #3ddc84;
+  }
+
+  .connect-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 2.4vh;
+    flex-wrap: wrap;
+  }
+
+  .connect-bar p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    flex: 1;
+    min-width: 220px;
+    line-height: 1.5;
+  }
+
+  button.connect {
+    background: transparent;
+    border: 1px solid var(--neon);
+    color: var(--neon);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  button.connect:hover {
+    background: color-mix(in srgb, var(--neon) 12%, transparent);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 880px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  .preview-card {
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    position: static;
+  }
+
+  .preview-card .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 0.9rem 1.1rem 0;
+  }
+
+  .preview-frame-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background:
+      repeating-conic-gradient(#15151d 0% 25%, #101016 0% 50%) 50% / 24px 24px;
+    margin-top: 0.6rem;
+  }
+
+  .preview-frame-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .preview-hint {
+    padding: 0.7rem 1.1rem 1.1rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .panel {
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 1.6rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .panel h2 {
+    margin: 0 0 1.1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+
+  .panel-head-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.1rem;
+  }
+
+  .panel-head-row h2 { margin: 0; }
+
+  .field {
+    margin-bottom: 1.2rem;
+  }
+
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .field .hint {
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    margin-top: 0.35rem;
+  }
+
+  #expressionCustomBlock {
+    display: none;
+  }
+
+  #expressionCustomBlock .hint {
+    margin-top: 0.8rem;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: #0e0e14;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 0.65rem 0.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--neon);
+  }
+
+  select.custom-select {
+    width: 100%;
+    background: #0e0e14 url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238c8c9a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") no-repeat right 0.8rem top 50%;
+    background-size: 0.65rem auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 0.65rem 2rem 0.65rem 0.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+
+  select.custom-select:focus {
+    border-color: var(--neon);
+  }
+
+  select.custom-select.small {
+    padding: 0.5rem 1.8rem 0.5rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .swatch {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 0 10px 0 var(--sw-color, transparent);
+  }
+
+  .swatch.active {
+    border-color: #fff;
+  }
+
+  .swatch-custom {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    padding: 0;
+    background: conic-gradient(from 0deg, #ff6b1a, #39ff14, #00e5ff, #b026ff, #ff0844, #ff6b1a);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .swatch-custom.no-bg {
+    background: none;
+  }
+
+  .swatch-custom input[type="color"] {
+    position: absolute;
+    inset: -4px;
+    width: calc(100% + 8px);
+    height: calc(100% + 8px);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .custom-gradient-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed var(--line);
+  }
+
+  .custom-gradient-row .stripe-pickers {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .custom-gradient-row .stripe-pickers label {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 2px solid var(--line);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    display: block;
+  }
+
+  .custom-gradient-row .stripe-pickers input[type="color"] {
+    position: absolute;
+    inset: -4px;
+    width: calc(100% + 8px);
+    height: calc(100% + 8px);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .custom-gradient-row .stripe-swatch-fill {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+
+  .custom-gradient-row .hint {
+    margin: 0;
+  }
+
+  .swatch-dot {
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    display: block;
+  }
+
+  .hint-center {
+    align-self: center;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--neon);
+  }
+
+  .row-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+  }
+
+  .compact-label,
+  .row-value label {
+    margin: 0;
+  }
+
+  .row-value span.val {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .toggle-row .toggle-copy { flex: 1; }
+  .toggle-row .toggle-copy label { margin-bottom: 0.15rem; }
+  .toggle-row .toggle-copy .hint { margin-top: 0; }
+
+  .toggle {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    border-radius: 999px;
+    background: #33333f;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s ease;
+  }
+
+  .toggle.on {
+    background: var(--neon);
+    box-shadow: 0 0 8px var(--neon);
+  }
+
+  .toggle.on::after {
+    transform: translateX(18px);
+  }
+
+  #expressionRandomBlock {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  #expressionRandomBlock p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    flex: 1;
+    min-width: 180px;
+    line-height: 1.5;
+  }
+
+  .expression-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .expression-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .expression-row .row-index {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  .expression-row .face-emoji {
+    font-size: 1.1rem;
+    width: 1.5rem;
+    text-align: center;
+  }
+
+  button.mini {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    border-radius: 7px;
+    padding: 0.4rem 0.7rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  button.mini:hover {
+    border-color: var(--neon);
+    color: var(--neon);
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.7rem;
+    margin-top: 0.4rem;
+  }
+
+  button.primary {
+    flex: 1;
+    background: var(--neon);
+    color: #14100c;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 0 14px color-mix(in srgb, var(--neon) 55%, transparent);
+    transition: transform 0.1s ease;
+  }
+
+  button.primary:active { transform: scale(0.98); }
+
+  button.ghost {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  button.ghost:hover {
+    border-color: var(--text-dim);
+    color: var(--text);
+  }
+
+  .saved-flash {
+    font-size: 0.78rem;
+    color: #3ddc84;
+    margin-top: 0.6rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .saved-flash.show { opacity: 1; }
+
+  #expressionCustomBlock {
+    display: none;
+  }
+
+  #expressionCustomBlock .hint {
+    margin-top: 0.8rem;
+  }
+
+  /* ---- FIX: title preview was clipping font descenders/drips ----
+     Fonts like Creepster, Nosifer, Butcherman, and Eater draw their
+     signature "drip" shapes hanging below the baseline. The old rule
+     used overflow:hidden with a tight line-height, which sliced those
+     drips off — making the preview look like a completely different,
+     blockier font than what actually renders on the overlay (which has
+     plenty of vertical room). Loosening line-height/padding and letting
+     vertical overflow show fixes the mismatch. Horizontal overflow is
+     still contained via a scrollbar rather than a hard clip, so long
+     titles don't get squished or cut mid-letter. */
+  .title-preview {
+    margin-top: 0.9rem;
+    padding: 1.6rem 0.8rem 2.2rem;
+    border-radius: 10px;
+    background:
+      repeating-conic-gradient(#15151d 0% 25%, #101016 0% 50%) 50% / 20px 20px;
+    text-align: center;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .title-preview span {
+    display: inline-block;
+    font-size: 1.6rem;
+    line-height: 1.7;
+    white-space: nowrap;
+    padding: 0 0.2rem;
+  }
+
+  .mode-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .mode-tabs button {
+    flex: 1;
+    min-width: 90px;
+  }
+
+  .mode-tabs button.active {
+    border-color: var(--neon);
+    color: var(--neon);
+    background: color-mix(in srgb, var(--neon) 12%, transparent);
+  }
+
+  #titleSolidBlock,
+  #titleGradientBlock {
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed var(--line);
+    display: none;
+  }
+
+  #titleMatchBlock {
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed var(--line);
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Pumpkin Patch</h1>
+  <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">no overlay window open</span></div>
+</header>
+
+<div class="connect-bar">
+  <p>The live preview below always works. For the <strong>real</strong> overlay (OBS Browser Source or its own window), click Connect once so this dashboard has a direct link to push updates to — local storage sync alone isn't reliable across separate browser windows.</p>
+  <button type="button" class="connect" id="connectBtn">Open &amp; Connect Overlay Window</button>
+</div>
+
+<div class="layout">
+
+  <div class="preview-card">
+    <div class="label">Preview</div>
+    <div class="preview-frame-wrap">
+      <iframe id="previewFrame" title="Pumpkin Patch overlay preview" src="pumpkin-patch-overlay.html?debug=1"></iframe>
+    </div>
+    <div class="preview-hint">
+      This mirrors the overlay in real time. Add <code>pumpkin-patch-overlay.html</code> as a Browser Source in OBS (transparent background, no border) pointed at the same folder as this dashboard — then click Connect above once OBS is running, or point OBS's Browser Source URL directly and rely on Save &amp; Push Live for updates each time you change something here.
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2>Sign Name</h2>
+      <div class="field">
+        <label for="titleInput">What the neon sign says</label>
+        <input type="text" id="titleInput" maxlength="40" value="The Pumpkin Patch" placeholder="e.g. TabbyBat's Pumpkin Patch">
+        <div class="hint">Shows above the patch on stream. Keep it short so it fits the sign.</div>
+      </div>
+
+      <div class="field">
+        <label for="titleFontSelect">Sign font</label>
+        <select class="custom-select" id="titleFontSelect"></select>
+      </div>
+
+      <div class="field">
+        <div class="row-value">
+          <label class="compact-label" for="titleSizeRange">Sign font size</label>
+          <span class="val" id="titleSizeVal">6.0rem</span>
+        </div>
+        <input type="range" id="titleSizeRange" min="2" max="10" step="0.25" value="6">
+      </div>
+
+      <div class="field">
+        <label>Sign text color</label>
+        <div class="mode-tabs" id="titleColorModeTabs">
+          <button type="button" class="mini" data-mode="solid">Solid</button>
+          <button type="button" class="mini" data-mode="gradient">Gradient</button>
+          <button type="button" class="mini" data-mode="match">Match Patch</button>
+        </div>
+
+        <div id="titleSolidBlock">
+          <div class="swatches">
+            <label class="swatch-custom no-bg" title="Sign text color">
+              <span id="titleSolidDot" class="swatch-dot"></span>
+              <input type="color" id="titleSolidInput" value="#ff8c42" aria-label="Sign text color" title="Sign text color">
+            </label>
+            <span class="hint hint-center">Pick a flat color</span>
+          </div>
+        </div>
+
+        <div id="titleGradientBlock">
+          <div class="custom-gradient-row">
+            <div class="stripe-pickers" id="titleGradientStripes">
+              <label title="Stop 1"><span class="stripe-swatch-fill" id="titleGradFill0"></span><input type="color" id="titleGradColor0"></label>
+              <label title="Stop 2"><span class="stripe-swatch-fill" id="titleGradFill1"></span><input type="color" id="titleGradColor1"></label>
+            </div>
+            <div class="hint">Build a 2-color text gradient</div>
+          </div>
+        </div>
+
+        <div id="titleMatchBlock">
+          <p class="hint">Sign text uses the same gradient as your pumpkins above — change it there to update both.</p>
+        </div>
+
+        <div class="title-preview">
+          <span id="titlePreviewText">The Pumpkin Patch</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head-row">
+        <h2>Expressions &amp; Emotions</h2>
+        <button type="button" class="mini" id="rerollBtn" title="Force a fresh shuffle">🎲 Reroll</button>
+      </div>
+
+      <div class="field">
+        <div class="toggle-row">
+          <div class="toggle-copy">
+            <label>Let me choose each pumpkin's face</label>
+            <div class="hint">Off: every pumpkin gets a random face, reshuffled by Reroll or when the count changes. On: pick each pumpkin's expression yourself below.</div>
+          </div>
+          <button type="button" class="toggle" id="customExpressionToggle" aria-pressed="false" aria-label="Choose each pumpkin's expression manually" title="Choose each pumpkin's expression manually"></button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="toggle-row">
+          <div class="toggle-copy">
+            <label>Animated blinking eyes</label>
+            <div class="hint">Each pumpkin blinks on its own random rhythm instead of staying static.</div>
+          </div>
+          <button type="button" class="toggle on" id="animatedExpressionsToggle" aria-pressed="true" aria-label="Toggle animated blinking eyes" title="Toggle animated blinking eyes"></button>
+        </div>
+      </div>
+
+      <div class="field" id="expressionRandomBlock">
+        <p>Faces currently set to <strong>Random</strong> — click <strong>Reroll</strong> any time for a fresh look without touching anything else.</p>
+      </div>
+
+      <div class="field" id="expressionCustomBlock">
+        <div class="expression-rows" id="expressionRows"></div>
+        <div class="hint hint-spaced">Rows match your current pumpkin count below — resize the patch first, then set faces.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Pumpkin Color</h2>
+      <div class="field">
+        <label>Pride flag gradients</label>
+        <div class="swatches" id="swatches"></div>
+        <div class="custom-gradient-row">
+          <div class="stripe-pickers" id="customStripes">
+            <label title="Stripe 1"><span class="stripe-swatch-fill" id="customFill0"></span><input type="color" id="customColor0"></label>
+            <label title="Stripe 2"><span class="stripe-swatch-fill" id="customFill1"></span><input type="color" id="customColor1"></label>
+            <label title="Stripe 3"><span class="stripe-swatch-fill" id="customFill2"></span><input type="color" id="customColor2"></label>
+          </div>
+          <div class="hint">Build your own 3-color gradient</div>
+        </div>
+        <div class="hint">Each pumpkin glows with a smooth 3-stripe gradient instead of a flat color.</div>
+      </div>
+      <div class="field">
+        <div class="row-value">
+          <label class="compact-label" for="glowRange">Glow intensity</label>
+          <span class="val" id="glowVal">1.0x</span>
+        </div>
+        <input type="range" id="glowRange" min="0.4" max="2" step="0.1" value="1">
+      </div>
+      <div class="field">
+        <div class="toggle-row">
+          <label class="compact-label">Neon flicker</label>
+          <button type="button" class="toggle on" id="flickerToggle" aria-pressed="true" aria-label="Toggle neon flicker" title="Toggle neon flicker"></button>
+        </div>
+        <div class="hint">Occasional realistic sign flicker, not constant strobing.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Stem Color</h2>
+      <div class="field">
+        <label>Vine curl color</label>
+        <div class="swatches">
+          <label class="swatch-custom no-bg" title="Stem color">
+            <span id="stemDot" class="swatch-dot"></span>
+            <input type="color" id="stemInput" value="#9fe870" aria-label="Stem color" title="Stem color">
+          </label>
+          <span class="hint hint-center">Default: bright vine green</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Patch Size</h2>
+      <div class="field">
+        <div class="row-value">
+          <label for="countRange">Pumpkin count</label>
+          <span class="val" id="countVal">5</span>
+        </div>
+        <input type="range" id="countRange" min="1" max="12" step="1" value="5" title="Pumpkin count" aria-label="Pumpkin count">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="saveBtn">Save & Push Live</button>
+      <button class="ghost" id="resetBtn">Reset</button>
+    </div>
+    <div class="saved-flash" id="savedFlash">Saved — overlay updated.</div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  const STORAGE_KEY = 'pumpkinpatch_config';
+  const CHANNEL_NAME = 'pumpkinpatch_channel';
+  const OVERLAY_URL = 'pumpkin-patch-overlay.html';
+
+  const FONTS = [
+    { key: 'Space Grotesk',   label: 'Space Grotesk (clean)',   family: "'Space Grotesk', sans-serif",  weight: 700 },
+    { key: 'Creepster',       label: 'Creepster (drippy)',       family: "'Creepster', cursive",         weight: 400 },
+    { key: 'Nosifer',         label: 'Nosifer (horror block)',   family: "'Nosifer', cursive",           weight: 400 },
+    { key: 'Butcherman',      label: 'Butcherman (splattery)',   family: "'Butcherman', cursive",        weight: 400 },
+    { key: 'Eater',           label: 'Eater (rough scratch)',    family: "'Eater', cursive",             weight: 400 },
+    { key: 'Pirata One',      label: 'Pirata One (gothic)',      family: "'Pirata One', cursive",        weight: 400 },
+    { key: 'JetBrains Mono',  label: 'JetBrains Mono (retro)',   family: "'JetBrains Mono', monospace",  weight: 500 }
+  ];
+
+  const EXPRESSIONS = [
+    { key: 'classic',   label: 'Classic Grin', emoji: '🎃' },
+    { key: 'grumpy',    label: 'Grumpy',       emoji: '😠' },
+    { key: 'silly',     label: 'Silly',        emoji: '🤪' },
+    { key: 'sleepy',    label: 'Sleepy',       emoji: '😴' },
+    { key: 'surprised', label: 'Surprised',    emoji: '😮' },
+    { key: 'grin',      label: 'Big Grin',     emoji: '😁' },
+    { key: 'smile',     label: 'Smile',        emoji: '🙂' },
+    { key: 'wink',      label: 'Wink',         emoji: '😉' },
+    { key: 'scary',     label: 'Scary',        emoji: '😱' },
+    { key: 'mischievous', label: 'Mischievous', emoji: '😏' },
+    { key: 'dizzy',     label: 'Dizzy',        emoji: '😵' }
+  ];
+
+  const DEFAULT_CONFIG = {
+    title: "The Pumpkin Patch",
+    // "colors" is the 3-stripe gradient painted across each pumpkin.
+    // "color" is kept as a single value (the middle stripe) for glow tints,
+    // UI accents, and any older overlay build that only reads one color.
+    colors: ['#ff6b1a', '#ff8c42', '#cc4b00'],
+    color: '#ff8c42',
+    stemColor: "#9fe870",
+    titleFont: "Creepster",
+    titleFontSize: 6,
+    titleColorMode: "match", // "solid" | "gradient" | "match"
+    titleColor: "#ff8c42",
+    titleGradient: ['#ff6b1a', '#ffdd00'],
+    glowIntensity: 1,
+    flicker: true,
+    pumpkinCount: 5,
+    expressionMode: "random",
+    pumpkinExpressions: [],
+    animatedExpressions: true,
+    rerollTick: 0
+  };
+
+  // Each preset is a 3-color gradient. Where a flag has more than three
+  // stripes, the three most representative/distinct colors were picked so
+  // the gradient still reads clearly on a small pumpkin.
+  const PRESETS = [
+    { name: 'Classic Jack-o',  colors: ['#ffb347', '#ff6b1a', '#cc4b00'] },
+    { name: 'Pride (Rainbow)', colors: ['#ff0018', '#ffdd00', '#0000f9'] },
+    { name: 'Lesbian',         colors: ['#d52d00', '#ffffff', '#a30262'] },
+    { name: 'Bisexual',        colors: ['#d60270', '#9b4f96', '#0038a8'] },
+    { name: 'Pansexual',       colors: ['#ff218c', '#ffd800', '#21b1ff'] },
+    { name: 'Transgender',     colors: ['#5bcefa', '#f5a9b8', '#ffffff'] },
+    { name: 'Asexual',         colors: ['#000000', '#a4a4a4', '#800080'] },
+    { name: 'Nonbinary',       colors: ['#fcf434', '#ffffff', '#9c59d1'] },
+    { name: 'Genderfluid',     colors: ['#fe76a2', '#ffffff', '#3f48cc'] },
+    { name: 'Aromantic',       colors: ['#3da542', '#ffffff', '#000000'] },
+    { name: 'Polysexual',      colors: ['#f61cb9', '#07d569', '#1c92f6'] }
+  ];
+
+  const titleInput = document.getElementById('titleInput');
+  const titleFontSelect = document.getElementById('titleFontSelect');
+  const titleSizeRange = document.getElementById('titleSizeRange');
+  const titleSizeVal = document.getElementById('titleSizeVal');
+  const titleColorModeTabs = document.getElementById('titleColorModeTabs');
+  const titleSolidBlock = document.getElementById('titleSolidBlock');
+  const titleGradientBlock = document.getElementById('titleGradientBlock');
+  const titleMatchBlock = document.getElementById('titleMatchBlock');
+  const titleSolidInput = document.getElementById('titleSolidInput');
+  const titleSolidDot = document.getElementById('titleSolidDot');
+  const titleGradColorInputs = [
+    document.getElementById('titleGradColor0'),
+    document.getElementById('titleGradColor1')
+  ];
+  const titleGradFillEls = [
+    document.getElementById('titleGradFill0'),
+    document.getElementById('titleGradFill1')
+  ];
+  const titlePreviewText = document.getElementById('titlePreviewText');
+  const swatchesEl = document.getElementById('swatches');
+  const customColorInputs = [
+    document.getElementById('customColor0'),
+    document.getElementById('customColor1'),
+    document.getElementById('customColor2')
+  ];
+  const customFillEls = [
+    document.getElementById('customFill0'),
+    document.getElementById('customFill1'),
+    document.getElementById('customFill2')
+  ];
+  const stemInput = document.getElementById('stemInput');
+  const stemDot = document.getElementById('stemDot');
+  const glowRange = document.getElementById('glowRange');
+  const glowVal = document.getElementById('glowVal');
+  const countRange = document.getElementById('countRange');
+  const countVal = document.getElementById('countVal');
+  const flickerToggle = document.getElementById('flickerToggle');
+  const customExpressionToggle = document.getElementById('customExpressionToggle');
+  const animatedExpressionsToggle = document.getElementById('animatedExpressionsToggle');
+  const expressionRandomBlock = document.getElementById('expressionRandomBlock');
+  const expressionCustomBlock = document.getElementById('expressionCustomBlock');
+  const expressionRows = document.getElementById('expressionRows');
+  const rerollBtn = document.getElementById('rerollBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const savedFlash = document.getElementById('savedFlash');
+  const previewFrame = document.getElementById('previewFrame');
+  const connectBtn = document.getElementById('connectBtn');
+  const statusDot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+
+  let config = loadConfig();
+  let overlayWindow = null;
+
+  let bc = null;
+  try { bc = new BroadcastChannel(CHANNEL_NAME); } catch (e) {}
+
+  function loadConfig() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const merged = { ...DEFAULT_CONFIG, ...parsed };
+        if (!Array.isArray(merged.pumpkinExpressions)) merged.pumpkinExpressions = [];
+        // Migrate configs saved before the 3-stripe gradient system existed
+        // (they only had a single "color" and no "colors" array).
+        if (!Array.isArray(merged.colors) || merged.colors.length !== 3) {
+          const base = merged.color || DEFAULT_CONFIG.color;
+          merged.colors = [base, base, base];
+        }
+        return merged;
+      }
+    } catch (e) {}
+    return { ...DEFAULT_CONFIG, pumpkinExpressions: [] };
+  }
+
+  function randomExpressionKey() {
+    return EXPRESSIONS[Math.floor(Math.random() * EXPRESSIONS.length)].key;
+  }
+
+  function ensureExpressionArrayLength() {
+    const arr = config.pumpkinExpressions.slice(0, config.pumpkinCount);
+    while (arr.length < config.pumpkinCount) arr.push(randomExpressionKey());
+    config.pumpkinExpressions = arr;
+  }
+
+  function applyGradient(colors) {
+    config.colors = colors;
+    config.color = colors[1]; // middle stripe drives glow/UI accent color
+  }
+
+  function buildSwatches() {
+    swatchesEl.innerHTML = '';
+    PRESETS.forEach(p => {
+      const el = document.createElement('button');
+      el.className = 'swatch';
+      el.style.setProperty('--sw-color', p.colors[1]);
+      el.style.background = `linear-gradient(135deg, ${p.colors[0]} 0%, ${p.colors[1]} 50%, ${p.colors[2]} 100%)`;
+      el.title = p.name;
+      el.type = 'button';
+      el.dataset.presetColors = p.colors.join(',');
+      el.addEventListener('click', () => {
+        applyGradient([...p.colors]);
+        syncUI();
+        pushLive();
+      });
+      swatchesEl.appendChild(el);
+    });
+  }
+
+  function buildCustomStripePickers() {
+    customColorInputs.forEach((input, i) => {
+      input.value = config.colors[i];
+      customFillEls[i].style.background = config.colors[i];
+      input.addEventListener('input', () => {
+        const next = [...config.colors];
+        next[i] = customColorInputs[i].value;
+        customFillEls[i].style.background = next[i];
+        applyGradient(next);
+        syncUI();
+        pushLive();
+      });
+    });
+  }
+
+  function buildTitleFontSelect() {
+    titleFontSelect.innerHTML = '';
+    FONTS.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.key;
+      opt.textContent = f.label;
+      opt.style.fontFamily = f.family;
+      if (f.key === config.titleFont) opt.selected = true;
+      titleFontSelect.appendChild(opt);
+    });
+  }
+
+  function buildTitleGradientPickers() {
+    titleGradColorInputs.forEach((input, i) => {
+      input.value = config.titleGradient[i];
+      titleGradFillEls[i].style.background = config.titleGradient[i];
+      input.addEventListener('input', () => {
+        const next = [...config.titleGradient];
+        next[i] = titleGradColorInputs[i].value;
+        titleGradFillEls[i].style.background = next[i];
+        config.titleGradient = next;
+        applyTitlePreview();
+        pushLive();
+      });
+    });
+  }
+
+  function applyTitlePreview() {
+    const font = FONTS.find(f => f.key === config.titleFont) || FONTS[0];
+    titlePreviewText.textContent = config.title || DEFAULT_CONFIG.title;
+    titlePreviewText.style.fontFamily = font.family;
+    titlePreviewText.style.fontWeight = font.weight;
+    // Preview is scaled down from the real sign size, but not so small that
+    // drippy fonts (Creepster, Nosifer, Butcherman, Eater) lose their shape.
+    titlePreviewText.style.fontSize = Math.max((config.titleFontSize || DEFAULT_CONFIG.titleFontSize) * 0.3, 1.6) + 'rem';
+
+    // Reset any previous gradient-text styling before applying the current mode.
+    titlePreviewText.style.background = 'none';
+    titlePreviewText.style.webkitBackgroundClip = 'unset';
+    titlePreviewText.style.backgroundClip = 'unset';
+    titlePreviewText.style.webkitTextFillColor = 'unset';
+    titlePreviewText.style.color = config.titleColor;
+    titlePreviewText.style.textShadow = 'none';
+
+    if (config.titleColorMode === 'solid') {
+      titlePreviewText.style.color = config.titleColor;
+      titlePreviewText.style.textShadow = `0 0 8px ${config.titleColor}, 0 0 22px ${config.titleColor}`;
+    } else {
+      const stops = config.titleColorMode === 'match' ? config.colors : config.titleGradient;
+      titlePreviewText.style.background = `linear-gradient(90deg, ${stops.join(', ')})`;
+      titlePreviewText.style.webkitBackgroundClip = 'text';
+      titlePreviewText.style.backgroundClip = 'text';
+      titlePreviewText.style.webkitTextFillColor = 'transparent';
+      titlePreviewText.style.color = 'transparent';
+    }
+  }
+
+  function syncTitleColorModeUI() {
+    titleColorModeTabs.querySelectorAll('button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === config.titleColorMode);
+    });
+    titleSolidBlock.style.display = config.titleColorMode === 'solid' ? '' : 'none';
+    titleGradientBlock.style.display = config.titleColorMode === 'gradient' ? '' : 'none';
+    titleMatchBlock.style.display = config.titleColorMode === 'match' ? '' : 'none';
+    applyTitlePreview();
+  }
+
+  function buildExpressionRows() {
+    ensureExpressionArrayLength();
+    expressionRows.innerHTML = '';
+
+    config.pumpkinExpressions.forEach((exprKey, i) => {
+      const row = document.createElement('div');
+      row.className = 'expression-row';
+
+      const idx = document.createElement('div');
+      idx.className = 'row-index';
+      idx.textContent = '#' + (i + 1);
+
+      const select = document.createElement('select');
+      select.className = 'custom-select small';
+      select.setAttribute('aria-label', 'Expression for pumpkin ' + (i + 1));
+      EXPRESSIONS.forEach(ex => {
+        const opt = document.createElement('option');
+        opt.value = ex.key;
+        opt.textContent = ex.emoji + '  ' + ex.label;
+        if (ex.key === exprKey) opt.selected = true;
+        select.appendChild(opt);
+      });
+      select.addEventListener('change', () => {
+        config.pumpkinExpressions[i] = select.value;
+        pushLive();
+      });
+
+      const emoji = document.createElement('div');
+      emoji.className = 'face-emoji';
+      const match = EXPRESSIONS.find(ex => ex.key === exprKey);
+      emoji.textContent = match ? match.emoji : '🎃';
+
+      row.appendChild(idx);
+      row.appendChild(select);
+      row.appendChild(emoji);
+      expressionRows.appendChild(row);
+    });
+  }
+
+  function syncExpressionModeUI() {
+    const isCustom = config.expressionMode === 'custom';
+    customExpressionToggle.classList.toggle('on', isCustom);
+    customExpressionToggle.setAttribute('aria-pressed', String(isCustom));
+    expressionRandomBlock.style.display = isCustom ? 'none' : '';
+    expressionCustomBlock.style.display = isCustom ? '' : 'none';
+    rerollBtn.style.display = isCustom ? 'none' : '';
+    if (isCustom) buildExpressionRows();
+  }
+
+  function syncUI() {
+    titleInput.value = config.title;
+    glowRange.value = config.glowIntensity;
+    glowVal.textContent = Number(config.glowIntensity).toFixed(1) + 'x';
+    countRange.value = config.pumpkinCount;
+    countVal.textContent = config.pumpkinCount;
+    flickerToggle.classList.toggle('on', !!config.flicker);
+    flickerToggle.setAttribute('aria-pressed', String(!!config.flicker));
+    animatedExpressionsToggle.classList.toggle('on', config.animatedExpressions !== false);
+    animatedExpressionsToggle.setAttribute('aria-pressed', String(config.animatedExpressions !== false));
+
+    const currentColors = config.colors.join(',');
+    document.querySelectorAll('.swatch').forEach(sw => {
+      sw.classList.toggle('active', sw.dataset.presetColors === currentColors);
+    });
+
+    customColorInputs.forEach((input, i) => {
+      input.value = config.colors[i];
+      customFillEls[i].style.background = config.colors[i];
+    });
+
+    document.documentElement.style.setProperty('--neon', config.color);
+
+    stemInput.value = config.stemColor;
+    stemDot.style.background = config.stemColor;
+
+    titleFontSelect.value = config.titleFont;
+    titleSizeRange.value = config.titleFontSize;
+    titleSizeVal.textContent = Number(config.titleFontSize).toFixed(2) + 'rem';
+    titleSolidInput.value = config.titleColor;
+    titleSolidDot.style.background = config.titleColor;
+    titleGradColorInputs.forEach((input, i) => {
+      input.value = config.titleGradient[i];
+      titleGradFillEls[i].style.background = config.titleGradient[i];
+    });
+    syncTitleColorModeUI();
+
+    syncExpressionModeUI();
+  }
+
+  function pushLive() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    } catch (e) {}
+
+    if (bc) {
+      bc.postMessage({ source: 'pumpkinpatch', config });
+    }
+
+    try {
+      previewFrame.contentWindow.postMessage({ source: 'pumpkinpatch-direct', config }, '*');
+    } catch (e) {}
+
+    if (overlayWindow && !overlayWindow.closed) {
+      try {
+        overlayWindow.postMessage({ source: 'pumpkinpatch-direct', config }, '*');
+      } catch (e) {}
+    }
+
+    flashSaved();
+  }
+
+  function flashSaved() {
+    savedFlash.classList.add('show');
+    clearTimeout(flashSaved._t);
+    flashSaved._t = setTimeout(() => savedFlash.classList.remove('show'), 1400);
+  }
+
+  function setConnected(isConnected) {
+    statusDot.classList.toggle('live', isConnected);
+    statusText.textContent = isConnected ? 'overlay window connected' : 'no overlay window open';
+  }
+
+  connectBtn.addEventListener('click', () => {
+    if (overlayWindow && !overlayWindow.closed) {
+      overlayWindow.focus();
+      pushLive();
+      return;
+    }
+    overlayWindow = window.open(OVERLAY_URL + '?debug=1', 'pumpkinPatchOverlay', 'width=1280,height=720');
+    if (!overlayWindow) {
+      alert('Your browser blocked the popup. Allow popups for this page and try again.');
+      return;
+    }
+    setConnected(true);
+    setTimeout(pushLive, 700);
+
+    const watchClosed = setInterval(() => {
+      if (!overlayWindow || overlayWindow.closed) {
+        setConnected(false);
+        clearInterval(watchClosed);
+      }
+    }, 1000);
+  });
+
+  stemInput.addEventListener('input', (e) => {
+    config.stemColor = e.target.value;
+    stemDot.style.background = config.stemColor;
+    pushLive();
+  });
+
+  titleInput.addEventListener('input', () => {
+    config.title = titleInput.value || DEFAULT_CONFIG.title;
+    applyTitlePreview();
+    pushLive();
+  });
+
+  titleFontSelect.addEventListener('change', () => {
+    config.titleFont = titleFontSelect.value;
+    applyTitlePreview();
+    pushLive();
+  });
+
+  titleSizeRange.addEventListener('input', () => {
+    config.titleFontSize = parseFloat(titleSizeRange.value);
+    titleSizeVal.textContent = config.titleFontSize.toFixed(2) + 'rem';
+    applyTitlePreview();
+  });
+
+  titleSizeRange.addEventListener('change', () => {
+    pushLive();
+  });
+
+  titleColorModeTabs.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-mode]');
+    if (!btn) return;
+    config.titleColorMode = btn.dataset.mode;
+    syncTitleColorModeUI();
+    pushLive();
+  });
+
+  titleSolidInput.addEventListener('input', () => {
+    config.titleColor = titleSolidInput.value;
+    titleSolidDot.style.background = config.titleColor;
+    applyTitlePreview();
+    pushLive();
+  });
+
+  glowRange.addEventListener('input', () => {
+    config.glowIntensity = parseFloat(glowRange.value);
+    glowVal.textContent = config.glowIntensity.toFixed(1) + 'x';
+  });
+
+  countRange.addEventListener('input', () => {
+    config.pumpkinCount = parseInt(countRange.value, 10);
+    countVal.textContent = config.pumpkinCount;
+    if (config.expressionMode === 'custom') buildExpressionRows();
+  });
+
+  countRange.addEventListener('change', () => {
+    pushLive();
+  });
+
+  flickerToggle.addEventListener('click', () => {
+    config.flicker = !flickerToggle.classList.contains('on');
+    flickerToggle.classList.toggle('on', config.flicker);
+    flickerToggle.setAttribute('aria-pressed', String(config.flicker));
+    pushLive();
+  });
+
+  customExpressionToggle.addEventListener('click', () => {
+    config.expressionMode = (config.expressionMode === 'custom') ? 'random' : 'custom';
+    syncExpressionModeUI();
+    pushLive();
+  });
+
+  animatedExpressionsToggle.addEventListener('click', () => {
+    config.animatedExpressions = !(config.animatedExpressions !== false);
+    animatedExpressionsToggle.classList.toggle('on', config.animatedExpressions);
+    animatedExpressionsToggle.setAttribute('aria-pressed', String(config.animatedExpressions));
+    pushLive();
+  });
+
+  rerollBtn.addEventListener('click', () => {
+    config.rerollTick = (config.rerollTick || 0) + 1;
+    pushLive();
+  });
+
+  saveBtn.addEventListener('click', () => {
+    syncUI();
+    pushLive();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    config = { ...DEFAULT_CONFIG, colors: [...DEFAULT_CONFIG.colors], titleGradient: [...DEFAULT_CONFIG.titleGradient], pumpkinExpressions: [] };
+    buildSwatches();
+    syncUI();
+    pushLive();
+  });
+
+  buildSwatches();
+  buildCustomStripePickers();
+  buildTitleFontSelect();
+  buildTitleGradientPickers();
+  syncUI();
+})();
+</script>
+
+</body>
+</html>
