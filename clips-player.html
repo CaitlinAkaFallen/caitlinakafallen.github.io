@@ -6,7 +6,6 @@
 <title>FallenOneArt Clips Player</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<script src="https://embed.twitch.tv/embed/v1.js"></script>
 <style>
   :root{
     --accent-teal: #7de8c8;
@@ -142,13 +141,14 @@
     BROADCAST_CHANNEL_NAME: 'fallenoneart_clips_channel', // must match admin dashboard
     RECENT_LOG_MAX: 20,
     DEBUG: urlParams.get('debug') === '1', // ?debug=1 shows a connection dot, for setup only
-    // Twitch's embed player only works if this matches the domain actually
-    // hosting this page. If you're opening this file directly (file://),
-    // window.location.hostname is empty, so this falls back to 'localhost' -
-    // which only works if you SERVE this page via http://localhost/... (e.g.
-    // a tiny local web server) rather than double-clicking the file or using
-    // OBS's "Local File" browser source mode. If you host this on your own
-    // site, add that domain to EMBED_PARENTS below.
+    // Twitch's clip embed iframe only works if this matches the domain
+    // actually hosting this page. If you're opening this file directly
+    // (file://), window.location.hostname is empty, so this falls back to
+    // 'localhost' - which only works if you SERVE this page via
+    // http://localhost/... (e.g. a tiny local web server) rather than
+    // double-clicking the file or using OBS's "Local File" browser source
+    // mode. If you host this on your own site, add that domain to
+    // EMBED_PARENTS below.
     EMBED_PARENTS: [window.location.hostname || 'localhost', 'localhost'],
   };
 
@@ -223,52 +223,42 @@
   }
 
   /* =======================================================
-     TWITCH EMBED PLAYER
-     Helix's clip.id IS the clip slug that Twitch.Embed wants
-     as its "clip" option - no need to derive any file URL.
+     CLIP EMBED
+     Twitch.Embed (the v1.js JS SDK) only supports channel / video /
+     collection - it has NO "clip" option. Passing { clip: ... } to it
+     throws "MissingParameterError: A channel, video, or collection id
+     must be provided in options" because the SDK doesn't recognize
+     "clip" as a valid key at all. Clips are embedded via a plain iframe
+     pointed at clips.twitch.tv/embed instead. Helix's clip object
+     already gives us embed_url, so we just need to add our parent
+     domain(s) so Twitch allows the embed to load.
      ======================================================= */
-  let twitchScriptReady = null;
-  function ensureTwitchEmbedScript() {
-    if (twitchScriptReady) return twitchScriptReady;
-    twitchScriptReady = new Promise((resolve, reject) => {
-      if (window.Twitch && window.Twitch.Embed) { resolve(); return; }
-      const check = setInterval(() => {
-        if (window.Twitch && window.Twitch.Embed) {
-          clearInterval(check);
-          resolve();
-        }
-      }, 100);
-      setTimeout(() => { clearInterval(check); reject(new Error('Twitch embed script did not load in time')); }, 10000);
-    });
-    return twitchScriptReady;
-  }
-
   let currentEmbed = null;
-  let currentPlayer = null;
 
   async function mountClipEmbed(clip) {
-    await ensureTwitchEmbedScript();
-
     clipEmbedContainer.innerHTML = '';
-    currentPlayer = null;
+    currentEmbed = null;
 
-    currentEmbed = new Twitch.Embed(clipEmbedContainer.id, {
-      width: '100%',
-      height: '100%',
-      clip: clip.id,
-      parent: CONFIG.EMBED_PARENTS,
-      autoplay: true,
-      muted: false,
-    });
+    const embedUrl = new URL(clip.embed_url);
+    CONFIG.EMBED_PARENTS.forEach(p => embedUrl.searchParams.append('parent', p));
+    embedUrl.searchParams.set('autoplay', 'true');
 
-    currentEmbed.addEventListener(Twitch.Embed.VIDEO_READY, () => {
-      currentPlayer = currentEmbed.getPlayer();
-      currentPlayer.play();
-      currentPlayer.addEventListener(Twitch.Player.ENDED, () => {
-        clearTimeout(state.hideTimer);
-        state.hideTimer = setTimeout(hideOverlay, CONFIG.OVERLAY_HIDE_DELAY_MS);
-      });
-    });
+    const iframe = document.createElement('iframe');
+    iframe.src = embedUrl.toString();
+    iframe.width = '100%';
+    iframe.height = '100%';
+    iframe.allowFullscreen = true;
+    iframe.setAttribute('allow', 'autoplay; fullscreen');
+    iframe.style.border = '0';
+
+    clipEmbedContainer.appendChild(iframe);
+    currentEmbed = iframe;
+
+    // Clip iframes don't expose a JS player API to hook an ENDED event, so
+    // there's no way to detect real playback end anymore. The overlay's
+    // auto-hide now relies entirely on CONFIG.MAX_CLIP_DURATION_FALLBACK_MS
+    // (set in showClipOverlay below). Tune that value to roughly your
+    // typical clip length so the overlay doesn't linger or cut off early.
   }
 
   /* =======================================================
@@ -308,7 +298,6 @@
     clipOverlay.classList.remove('visible');
     clipEmbedContainer.innerHTML = '';
     currentEmbed = null;
-    currentPlayer = null;
   }
 
   /* =======================================================
