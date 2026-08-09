@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>FallenOneArt Clips Dashboard - Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -52,6 +53,7 @@
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
   }
   .panel::before, .panel::after{
@@ -67,6 +69,7 @@
   }
 
   .field{ display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+  .field.half{ flex: 1; }
   .field label{ font-size: 11px; color: var(--text-dim); letter-spacing: 0.5px; }
   .field input{
     background: rgba(0,0,0,0.4); border: 1px solid var(--panel-border);
@@ -76,6 +79,7 @@
   .field input:focus{ outline: none; border-color: var(--accent-teal); }
 
   .row{ display: flex; gap: 10px; flex-wrap: wrap; }
+  .row .field{ flex: 1; }
 
   .btn{
     background: rgba(125, 232, 200, 0.12); border: 1px solid var(--accent-teal);
@@ -136,11 +140,11 @@
       <input type="text" id="obsAddressInput" placeholder="localhost" />
     </div>
     <div class="row">
-      <div class="field" style="flex:1;">
+      <div class="field">
         <label for="obsPortInput">Port</label>
         <input type="text" id="obsPortInput" placeholder="4455" />
       </div>
-      <div class="field" style="flex:1;">
+      <div class="field">
         <label for="obsPasswordInput">Password (leave blank if auth disabled)</label>
         <input type="password" id="obsPasswordInput" placeholder="OBS WebSocket password" />
       </div>
