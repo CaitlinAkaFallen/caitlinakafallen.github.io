@@ -159,17 +159,51 @@
 <script>
     // Configuration
     const displayDuration = 10000; // 10 seconds
+    const DEBUG = true; // set to false once everything is confirmed working
 
     const params = new URLSearchParams(window.location.search);
-    const ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
+    const wsAddress = params.get("address") || "localhost";
+    const wsPort = params.get("port") || "8080";
+    const ws = new WebSocket(`ws://${wsAddress}:${wsPort}/`);
+
+    ws.onopen = () => {
+        if (DEBUG) console.log(`[Shoutout] WebSocket connected to ${wsAddress}:${wsPort}`);
+        // Subscribing to Custom Shoutout event
+        ws.send(JSON.stringify({ 
+            request: "Subscribe", 
+            events: { general: ["Custom"] }, 
+            id: "ShoutoutOverlay" 
+        }));
+    };
+
+    ws.onerror = (e) => {
+        console.error("[Shoutout] WebSocket error:", e);
+    };
+
+    ws.onclose = (e) => {
+        console.warn("[Shoutout] WebSocket closed:", e.code, e.reason);
+    };
 
     ws.onmessage = (event) => {
-        const response = JSON.parse(event.data);
+        if (DEBUG) console.log("[Shoutout] RAW WS MESSAGE:", event.data);
 
-        // CPH.WebsocketBroadcastJson sends the payload at the TOP LEVEL,
-        // it is NOT wrapped in a "data" key like SB's built-in events are.
-        if (response && response.eventName === "shoutout") {
-            triggerShoutout(response);
+        let response;
+        try {
+            response = JSON.parse(event.data);
+        } catch (err) {
+            console.error("[Shoutout] Failed to parse WS message:", err);
+            return;
+        }
+
+        // Handle both wrapped ({ data: {...} }) and unwrapped payload shapes,
+        // since Streamer.bot's WebsocketBroadcastJson sends the object as-is
+        // with no top-level "data" key.
+        const d = response.data || response;
+
+        // Ensure this matches the event name you trigger in Streamer.bot
+        if (d && d.eventName === "shoutout") {
+            if (DEBUG) console.log("[Shoutout] Triggering shoutout for:", d.targetUser);
+            triggerShoutout(d);
         }
     };
 
