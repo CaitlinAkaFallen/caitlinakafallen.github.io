@@ -150,6 +150,30 @@
     // mode. If you host this on your own site, add that domain to
     // EMBED_PARENTS below.
     EMBED_PARENTS: [window.location.hostname || 'localhost', 'localhost'],
+
+    // ---- AUTO-PLAY MODE (idle filler clips) ----
+    // Off by default so it never interferes with real !so / BRB triggers.
+    // Turn it on per-source by adding ?autoplay=1 to the Browser Source URL
+    // in OBS, e.g.:
+    //   https://caitlinscreativespace.xyz/clips-player.html?autoplay=1
+    // Optional extra params:
+    //   &autoplayChannel=someuser   - which channel's clips to pull from.
+    //                                 If omitted, uses the Twitch account
+    //                                 connected in clips-admin-dashboard.html
+    //                                 (i.e. your own channel).
+    //   &autoplayInterval=300000    - ms between auto-played clips
+    //                                 (default 5 minutes).
+    //   &autoplayImmediate=1        - also fire one clip shortly after the
+    //                                 source loads, instead of waiting for
+    //                                 the first full interval to elapse.
+    AUTO_PLAY_ENABLED: urlParams.get('autoplay') === '1',
+    AUTO_PLAY_CHANNEL: (urlParams.get('autoplayChannel') || '').trim().toLowerCase(),
+    AUTO_PLAY_INTERVAL_MS: parseInt(urlParams.get('autoplayInterval'), 10) || 5 * 60 * 1000,
+    AUTO_PLAY_IMMEDIATE: urlParams.get('autoplayImmediate') === '1',
+    AUTO_PLAY_IMMEDIATE_DELAY_MS: 8000, // small delay so OBS has finished loading the source first
+    AUTO_PLAY_LABEL: 'Featured Clip',
+    AUTO_PLAY_EVENT_NAME: 'auto_clip',
+    OWN_LOGIN_CACHE_TTL_MS: 30 * 60 * 1000, // 30 min, same as admin dashboard
   };
 
   const STORAGE_KEYS = {
@@ -161,6 +185,10 @@
   const state = {
     clipCache: {},
     hideTimer: null,
+    overlayVisible: false,     // true while a clip is showing (shoutout, BRB, or auto-play)
+    autoPlayTimer: null,
+    autoPlayChannelCache: null, // { login, fetchedAt } - only used when AUTO_PLAY_CHANNEL is blank
+    autoPlayWarned: false,      // avoid spamming console if creds are missing
   };
 
   function getClientId() { return localStorage.getItem(STORAGE_KEYS.CLIENT_ID) || ''; }
@@ -220,6 +248,25 @@
   function pickRandomClip(clips) {
     if (!clips.length) return null;
     return clips[Math.floor(Math.random() * clips.length)];
+  }
+
+  // Only used when ?autoplayChannel= is omitted - resolves the Twitch login
+  // of whichever account is connected via clips-admin-dashboard.html, the
+  // same way the admin dashboard resolves its own login for BRB auto-trigger.
+  async function getOwnLogin() {
+    const now = Date.now();
+    if (state.autoPlayChannelCache && (now - state.autoPlayChannelCache.fetchedAt) < CONFIG.OWN_LOGIN_CACHE_TTL_MS) {
+      return state.autoPlayChannelCache.login;
+    }
+    const res = await fetch('https://api.twitch.tv/helix/users', {
+      headers: { 'Client-Id': getClientId(), 'Authorization': `Bearer ${getOauthToken()}` },
+    });
+    if (!res.ok) throw new Error(`Twitch Users API error (${res.status})`);
+    const json = await res.json();
+    if (!json.data || !json.data.length) throw new Error('Could not resolve connected account login.');
+    const login = json.data[0].login;
+    state.autoPlayChannelCache = { login, fetchedAt: now };
+    return login;
   }
 
   /* =======================================================
@@ -285,6 +332,7 @@
 
   function showClipOverlay(clip, label) {
     clearTimeout(state.hideTimer);
+    state.overlayVisible = true;
     clipLabel.textContent = label;
     clipTitleText.textContent = clip.title || '';
     clipOverlay.classList.add('visible');
@@ -295,9 +343,52 @@
   }
 
   function hideOverlay() {
+    state.overlayVisible = false;
     clipOverlay.classList.remove('visible');
     clipEmbedContainer.innerHTML = '';
     currentEmbed = null;
+  }
+
+  /* =======================================================
+     AUTO-PLAY MODE
+     Periodically plays a random clip on its own, so the overlay isn't
+     sitting empty between real !so / BRB triggers. Skips a tick entirely
+     if a clip is already showing, rather than interrupting it.
+     ======================================================= */
+  async function resolveAutoPlayChannel() {
+    if (CONFIG.AUTO_PLAY_CHANNEL) return CONFIG.AUTO_PLAY_CHANNEL;
+    return getOwnLogin();
+  }
+
+  async function runAutoPlayTick() {
+    if (!CONFIG.AUTO_PLAY_ENABLED) return;
+    if (state.overlayVisible) return; // don't interrupt a clip already playing
+
+    if (!getClientId() || !getOauthToken()) {
+      if (!state.autoPlayWarned) {
+        console.warn('clipsdashboard: auto-play is enabled but Client ID / OAuth token are not set. Configure them in clips-admin-dashboard.html.');
+        state.autoPlayWarned = true;
+      }
+      return;
+    }
+
+    try {
+      const channel = await resolveAutoPlayChannel();
+      await playClipEvent(channel, CONFIG.AUTO_PLAY_LABEL, CONFIG.AUTO_PLAY_EVENT_NAME);
+    } catch (err) {
+      console.error('clipsdashboard: auto-play tick failed -', err);
+    }
+  }
+
+  function startAutoPlay() {
+    if (!CONFIG.AUTO_PLAY_ENABLED) return;
+
+    clearInterval(state.autoPlayTimer);
+    state.autoPlayTimer = setInterval(runAutoPlayTick, CONFIG.AUTO_PLAY_INTERVAL_MS);
+
+    if (CONFIG.AUTO_PLAY_IMMEDIATE) {
+      setTimeout(runAutoPlayTick, CONFIG.AUTO_PLAY_IMMEDIATE_DELAY_MS);
+    }
   }
 
   /* =======================================================
@@ -359,6 +450,7 @@
   }
 
   connectWS();
+  startAutoPlay();
 })();
 </script>
 </body>
