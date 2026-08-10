@@ -781,7 +781,7 @@
 
     <section class="panel" id="panel-settings">
       <h2>Configuration Settings</h2>
-      <div class="sub">Export, import, or save your settings configurations.</div>
+      <div class="sub">Export, import, or save your settings configurations. Backups include the overlay config, dashboard theme, and wallpaper history.</div>
 
       <div class="field">
         <label for="exportFilename">Save As Filename</label>
@@ -802,6 +802,7 @@
           <div class="upload-text">Drag JSON config here or click to browse</div>
           <div class="upload-subtext">Restore settings from a saved configuration file</div>
         </div>
+        <div class="hint">Imports are additive per section — a file missing a section (e.g. just the overlay config) won't wipe your existing theme or wallpaper history.</div>
       </div>
     </section>
 
@@ -1304,20 +1305,101 @@
   buildTitleGradientPickers();
   syncUI();
 
+  // ============================================
+  // CONFIG EXPORT / IMPORT (JSON backup & restore)
+  // ============================================
+  function isPlainObject(val) {
+    return !!val && typeof val === 'object' && !Array.isArray(val);
+  }
+
+  function gatherFullConfigBundle() {
+    return {
+      __fallenoneart_export__: true,
+      app: 'pumpkin-patch',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      config,
+      dashTheme,
+      wallpaperHistory: Array.isArray(wallpaperHistory) ? wallpaperHistory : []
+    };
+  }
+
+  function downloadConfigBundle() {
+    try {
+      const bundle = gatherFullConfigBundle();
+      let filename = exportFilenameInput.value.trim() || 'pumpkin-patch-config.json';
+      if (!/\.json$/i.test(filename)) filename += '.json';
+
+      const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.href = blobUrl;
+      downloadAnchor.download = filename;
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+
+      // Give the browser a moment to start the download before revoking the URL
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+
+      showToast('Configuration exported ✓');
+    } catch (e) {
+      console.error('Config export failed:', e);
+      showToast('Could not export config — check the console for details.');
+    }
+  }
+
+  function validateImportedBundle(data) {
+    if (!isPlainObject(data)) {
+      throw new Error('That file does not contain a valid config object.');
+    }
+    // Every top-level section is optional so partial/edited exports still import,
+    // but if present it must be the right shape.
+    if ('config' in data && !isPlainObject(data.config)) {
+      throw new Error('The "config" section in that file is not valid.');
+    }
+    if ('dashTheme' in data && !isPlainObject(data.dashTheme)) {
+      throw new Error('The "dashTheme" section in that file is not valid.');
+    }
+    if ('wallpaperHistory' in data && !Array.isArray(data.wallpaperHistory)) {
+      throw new Error('The "wallpaperHistory" section in that file is not valid.');
+    }
+    if (!('config' in data) && !('dashTheme' in data) && !('wallpaperHistory' in data)) {
+      throw new Error('That file does not contain any recognizable Pumpkin Patch config data.');
+    }
+    return true;
+  }
+
+  function applyImportedBundle(data) {
+    if (isPlainObject(data.config)) {
+      config = { ...DEFAULT_CONFIG, ...data.config };
+      if (!Array.isArray(config.pumpkinExpressions)) config.pumpkinExpressions = [];
+      if (!Array.isArray(config.colors) || config.colors.length !== 3) {
+        const base = config.color || DEFAULT_CONFIG.color;
+        config.colors = [base, base, base];
+      }
+    }
+    if (isPlainObject(data.dashTheme)) {
+      dashTheme = { ...DEFAULT_DASH_THEME, ...data.dashTheme };
+    }
+    if (Array.isArray(data.wallpaperHistory)) {
+      wallpaperHistory = data.wallpaperHistory.filter(item => isPlainObject(item) && typeof item.dataUrl === 'string');
+      saveWallpaperHistory();
+    }
+
+    pushLive();
+    syncUI();
+    saveDashTheme();
+    populateDashThemeForm();
+    applyDashTheme();
+    renderWallpaperHistory();
+  }
+
   // Export / Save As functionality
   const exportConfigBtn = document.getElementById('exportConfigBtn');
   const exportFilenameInput = document.getElementById('exportFilename');
-  exportConfigBtn.addEventListener('click', () => {
-    const filename = exportFilenameInput.value.trim() || 'pumpkin-patch-config.json';
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", filename);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-    showToast('Configuration exported ✓');
-  });
+  exportConfigBtn.addEventListener('click', downloadConfigBundle);
 
   // Upload configuration file functionality
   const configUploadZone = document.getElementById('configUploadZone');
@@ -1330,15 +1412,16 @@
     reader.onload = (evt) => {
       try {
         const imported = JSON.parse(evt.target.result);
-        config = { ...DEFAULT_CONFIG, ...imported };
-        pushLive();
-        syncUI();
+        validateImportedBundle(imported);
+        applyImportedBundle(imported);
         showToast('Configuration imported successfully ✓');
       } catch (err) {
-        showToast('Invalid JSON configuration file');
+        console.error('Config import failed:', err);
+        showToast(err.message || 'Invalid JSON configuration file');
       }
     };
     reader.readAsText(file);
+    importConfigFile.value = '';
   });
 
   const LS_DASH_THEME_KEY = 'pumpkinpatch_dashboard_theme';
