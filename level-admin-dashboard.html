@@ -888,13 +888,17 @@
 
       <div class="field">
         <label for="twitchClientId">Twitch Client ID</label>
-        <input type="text" id="twitchClientId" placeholder="from dev.twitch.tv/console/apps">
+        <div class="input-group">
+          <input type="password" id="twitchClientId" placeholder="Client ID from your Twitch app">
+          <button type="button" class="icon-btn" id="toggleStreamerToken" title="Show/hide">👁</button>
+        </div>
         <div class="hint">
           Register a free app at <code>dev.twitch.tv/console/apps</code>, paste its Client ID here, and save it. Two requirements for the button below to work:<br><br>
           1. <b>Client Type</b> must be set to <b>Public</b> (not Confidential) — this dashboard is a plain HTML file with no server, so it can't hold a Client Secret safely.<br>
           2. Add this dashboard's own URL as an <b>OAuth Redirect URL</b> on the app: <code id="twitchRedirectHintUrl">(shown once the Admin Dashboard URL above loads)</code> — it must match exactly, including <code>https://</code>.
         </div>
       </div>
+      
 
       <div class="action-bar">
         <button class="ghost-btn" id="saveTwitchApiCfgBtn">Save Client ID</button>
@@ -1700,6 +1704,12 @@ async function helixFetch(url){
   }
   return res.json();
 }
+
+document.getElementById("toggleStreamerToken").onclick = () => {
+  const input = document.getElementById("twitchClientId");
+  input.type = input.type === "password" ? "text" : "password";
+};
+
 function mapHelixEmotes(list){
   return (list || []).map(e => ({
     name: e.name,
