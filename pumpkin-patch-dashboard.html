@@ -5,794 +5,816 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pumpkin Patch Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Butcherman&family=Eater&family=Pirata+One&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&family=Creepster&family=Nosifer&family=Butcherman&family=Eater&family=Pirata+One&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --void: #0a0a0f;
-    --panel: #14141c;
-    --panel-2: #1b1b25;
-    --line: #2a2a36;
-    --text: #f4f1ea;
-    --text-dim: #8c8c9a;
-    --neon: #ff6b1a;
+  :root{
+    --accent-primary:#ff6b1a;
+    --accent-secondary:#b026ff;
+    --bg-deep:#0a0a0f;
+    --bg-panel:rgba(20,20,28,0.55);
+    --bg-panel-elevated:rgba(27,27,37,0.7);
+    --border-soft:rgba(255,255,255,0.1);
+    --border-medium:rgba(255,255,255,0.15);
+    --text-primary:#f4f1ea;
+    --text-secondary:#9c98a8;
+    --text-tertiary:#6f6c78;
+    --nav-text-color:#9c98a8;
+    --font-display:'Orbitron', sans-serif;
+    --font-mono:'Share Tech Mono', monospace;
+    --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md:0 8px 24px rgba(0,0,0,0.4);
+    --shadow-lg:0 16px 48px rgba(0,0,0,0.5);
+    --glow-primary:0 0 20px rgba(255,107,26,0.32);
+    --glow-secondary:0 0 20px rgba(176,38,255,0.28);
+
+    --dash-panel-opacity:0.55;
+    --dash-panel-color-rgb:27,27,37;
+    --dash-border-opacity:0.15;
+    --dash-panel-border-rgb:255,255,255;
+    --dash-blur:10px;
+    --dash-glow-intensity:1;
+    --dash-active-glow:0 0 20px rgba(255,107,26,0.32);
+    --dash-corner-radius:12px;
+    --dash-sidebar-opacity:0.65;
+    --dash-transition-speed:0.25s;
   }
 
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    min-height: 100vh;
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0;
+    background:var(--bg-deep);
+    color:var(--text-primary);
+    font-family:var(--font-mono);
+    min-height:100vh;
+    font-weight:400;
+    letter-spacing:0.5px;
+  }
+  body{
     background:
-      radial-gradient(ellipse at top, #1a1420 0%, var(--void) 55%);
-    color: var(--text);
-    font-family: 'Space Grotesk', sans-serif;
-    padding: 3vh 4vw 6vh;
-  }
-
-  header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 1.2vh;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  header h1 {
-    font-family: 'Creepster', cursive;
-    font-weight: 400;
-    font-size: 2.4rem;
-    letter-spacing: 0.03em;
-    margin: 0;
-    color: var(--neon);
-    text-shadow: 0 0 6px var(--neon), 0 0 22px color-mix(in srgb, var(--neon) 60%, transparent);
-  }
-
-  .status {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-  }
-
-  .status .dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #33333f;
-  }
-
-  .status .dot.live {
-    background: #3ddc84;
-    box-shadow: 0 0 6px #3ddc84;
-  }
-
-  .connect-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 0.9rem 1.1rem;
-    margin-bottom: 2.4vh;
-    flex-wrap: wrap;
-  }
-
-  .connect-bar p {
-    margin: 0;
-    font-size: 0.82rem;
-    color: var(--text-dim);
-    flex: 1;
-    min-width: 220px;
-    line-height: 1.5;
-  }
-
-  button.connect {
-    background: transparent;
-    border: 1px solid var(--neon);
-    color: var(--neon);
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  button.connect:hover {
-    background: color-mix(in srgb, var(--neon) 12%, transparent);
-  }
-
-  .layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
-    gap: 2rem;
-    align-items: start;
-  }
-
-  @media (max-width: 880px) {
-    .layout { grid-template-columns: 1fr; }
-  }
-
-  .preview-card {
-    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    overflow: hidden;
-    position: static;
-  }
-
-  .preview-card .label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    padding: 0.9rem 1.1rem 0;
-  }
-
-  .preview-frame-wrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    background:
-      repeating-conic-gradient(#15151d 0% 25%, #101016 0% 50%) 50% / 24px 24px;
-    margin-top: 0.6rem;
-  }
-
-  .preview-frame-wrap iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-  }
-
-  .preview-hint {
-    padding: 0.7rem 1.1rem 1.1rem;
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    line-height: 1.5;
-  }
-
-  .panel {
-    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 1.6rem;
-    margin-bottom: 1.4rem;
-  }
-
-  .panel h2 {
-    margin: 0 0 1.1rem;
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-weight: 600;
-  }
-
-  .panel-head-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 1.1rem;
-  }
-
-  .panel-head-row h2 { margin: 0; }
-
-  .field {
-    margin-bottom: 1.2rem;
-  }
-
-  .field:last-child { margin-bottom: 0; }
-
-  .field label {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-  }
-
-  .field .hint {
-    font-size: 0.74rem;
-    color: var(--text-dim);
-    margin-top: 0.35rem;
-  }
-
-  #expressionCustomBlock {
-    display: none;
-  }
-
-  #expressionCustomBlock .hint {
-    margin-top: 0.8rem;
-  }
-
-  input[type="text"] {
-    width: 100%;
-    background: #0e0e14;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    color: var(--text);
-    padding: 0.65rem 0.8rem;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.2s ease;
-  }
-
-  input[type="text"]:focus {
-    border-color: var(--neon);
-  }
-
-  select.custom-select {
-    width: 100%;
-    background: #0e0e14 url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238c8c9a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") no-repeat right 0.8rem top 50%;
-    background-size: 0.65rem auto;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    color: var(--text);
-    padding: 0.65rem 2rem 0.65rem 0.8rem;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.95rem;
-    outline: none;
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    appearance: none;
-    cursor: pointer;
-    transition: border-color 0.2s ease;
-  }
-
-  select.custom-select:focus {
-    border-color: var(--neon);
-  }
-
-  select.custom-select.small {
-    padding: 0.5rem 1.8rem 0.5rem 0.7rem;
-    font-size: 0.85rem;
-  }
-
-  .swatches {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-  }
-
-  .swatch {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    cursor: pointer;
-    position: relative;
-    box-shadow: 0 0 10px 0 var(--sw-color, transparent);
-  }
-
-  .swatch.active {
-    border-color: #fff;
-  }
-
-  .swatch-custom {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 2px solid var(--line);
-    padding: 0;
-    background: conic-gradient(from 0deg, #ff6b1a, #39ff14, #00e5ff, #b026ff, #ff0844, #ff6b1a);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .swatch-custom.no-bg {
-    background: none;
-  }
-
-  .swatch-custom input[type="color"] {
-    position: absolute;
-    inset: -4px;
-    width: calc(100% + 8px);
-    height: calc(100% + 8px);
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    opacity: 0;
-  }
-
-  .custom-gradient-row {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    margin-top: 0.9rem;
-    padding-top: 0.9rem;
-    border-top: 1px dashed var(--line);
-  }
-
-  .custom-gradient-row .stripe-pickers {
-    display: flex;
-    gap: 0.4rem;
-  }
-
-  .custom-gradient-row .stripe-pickers label {
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
-    border: 2px solid var(--line);
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    display: block;
-  }
-
-  .custom-gradient-row .stripe-pickers input[type="color"] {
-    position: absolute;
-    inset: -4px;
-    width: calc(100% + 8px);
-    height: calc(100% + 8px);
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    opacity: 0;
-  }
-
-  .custom-gradient-row .stripe-swatch-fill {
-    position: absolute;
-    inset: 0;
-    display: block;
-  }
-
-  .custom-gradient-row .hint {
-    margin: 0;
-  }
-
-  .swatch-dot {
-    position: absolute;
-    inset: 2px;
-    border-radius: 50%;
-    display: block;
-  }
-
-  .hint-center {
-    align-self: center;
-  }
-
-  input[type="range"] {
-    width: 100%;
-    accent-color: var(--neon);
-  }
-
-  .row-value {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.85rem;
-  }
-
-  .compact-label,
-  .row-value label {
-    margin: 0;
-  }
-
-  .row-value span.val {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--text-dim);
-    font-size: 0.78rem;
-  }
-
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .toggle-row .toggle-copy { flex: 1; }
-  .toggle-row .toggle-copy label { margin-bottom: 0.15rem; }
-  .toggle-row .toggle-copy .hint { margin-top: 0; }
-
-  .toggle {
-    position: relative;
-    width: 42px;
-    height: 24px;
-    border-radius: 999px;
-    background: #33333f;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    flex-shrink: 0;
-  }
-
-  .toggle::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #fff;
-    transition: transform 0.2s ease;
-  }
-
-  .toggle.on {
-    background: var(--neon);
-    box-shadow: 0 0 8px var(--neon);
-  }
-
-  .toggle.on::after {
-    transform: translateX(18px);
-  }
-
-  #expressionRandomBlock {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.7rem;
-  }
-
-  #expressionRandomBlock p {
-    margin: 0;
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    flex: 1;
-    min-width: 180px;
-    line-height: 1.5;
-  }
-
-  .expression-rows {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-
-  .expression-row {
-    display: grid;
-    grid-template-columns: 28px 1fr auto;
-    align-items: center;
-    gap: 0.6rem;
-  }
-
-  .expression-row .row-index {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    text-align: center;
-  }
-
-  .expression-row .face-emoji {
-    font-size: 1.1rem;
-    width: 1.5rem;
-    text-align: center;
-  }
-
-  button.mini {
-    background: transparent;
-    border: 1px solid var(--line);
-    color: var(--text-dim);
-    border-radius: 7px;
-    padding: 0.4rem 0.7rem;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.78rem;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  button.mini:hover {
-    border-color: var(--neon);
-    color: var(--neon);
-  }
-
-  .actions {
-    display: flex;
-    gap: 0.7rem;
-    margin-top: 0.4rem;
-  }
-
-  button.primary {
-    flex: 1;
-    background: var(--neon);
-    color: #14100c;
-    border: none;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    box-shadow: 0 0 14px color-mix(in srgb, var(--neon) 55%, transparent);
-    transition: transform 0.1s ease;
-  }
-
-  button.primary:active { transform: scale(0.98); }
-
-  button.ghost {
-    background: transparent;
-    border: 1px solid var(--line);
-    color: var(--text-dim);
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-
-  button.ghost:hover {
-    border-color: var(--text-dim);
-    color: var(--text);
-  }
-
-  .saved-flash {
-    font-size: 0.78rem;
-    color: #3ddc84;
-    margin-top: 0.6rem;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .saved-flash.show { opacity: 1; }
-
-  #expressionCustomBlock {
-    display: none;
-  }
-
-  #expressionCustomBlock .hint {
-    margin-top: 0.8rem;
-  }
-
-  /* ---- FIX: title preview was clipping font descenders/drips ----
-     Fonts like Creepster, Nosifer, Butcherman, and Eater draw their
-     signature "drip" shapes hanging below the baseline. The old rule
-     used overflow:hidden with a tight line-height, which sliced those
-     drips off — making the preview look like a completely different,
-     blockier font than what actually renders on the overlay (which has
-     plenty of vertical room). Loosening line-height/padding and letting
-     vertical overflow show fixes the mismatch. Horizontal overflow is
-     still contained via a scrollbar rather than a hard clip, so long
-     titles don't get squished or cut mid-letter. */
-  .title-preview {
-    margin-top: 0.9rem;
-    padding: 1.6rem 0.8rem 2.2rem;
-    border-radius: 10px;
-    background:
-      repeating-conic-gradient(#15151d 0% 25%, #101016 0% 50%) 50% / 20px 20px;
-    text-align: center;
-    overflow-x: auto;
-    overflow-y: visible;
-  }
-
-  .title-preview span {
-    display: inline-block;
-    font-size: 1.6rem;
-    line-height: 1.7;
-    white-space: nowrap;
-    padding: 0 0.2rem;
-  }
-
-  .mode-tabs {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .mode-tabs button {
-    flex: 1;
-    min-width: 90px;
-  }
-
-  .mode-tabs button.active {
-    border-color: var(--neon);
-    color: var(--neon);
-    background: color-mix(in srgb, var(--neon) 12%, transparent);
-  }
-
-  #titleSolidBlock,
-  #titleGradientBlock {
-    margin-top: 0.9rem;
-    padding-top: 0.9rem;
-    border-top: 1px dashed var(--line);
-    display: none;
-  }
-
-  #titleMatchBlock {
-    margin-top: 0.9rem;
-    padding-top: 0.9rem;
-    border-top: 1px dashed var(--line);
-    display: none;
-  }
+      radial-gradient(ellipse at 15% -20%, rgba(255,107,26,0.15), transparent 50%),
+      radial-gradient(ellipse at 110% 20%, rgba(176,38,255,0.12), transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(255,107,26,0.06), transparent 60%),
+      var(--bg-deep);
+    transition:background-color 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background-image 0.8s ease;
+  }
+
+  a{ color:var(--accent-primary); text-decoration:none; }
+  a:hover{ color:var(--accent-secondary); }
+
+  .shell{ display:grid; grid-template-columns:240px 1fr; min-height:100vh; gap:1px; background:var(--border-soft); }
+  @media (max-width:900px){ .shell{ grid-template-columns:1fr; } }
+
+  .sidebar{
+    background:linear-gradient(180deg, rgba(20,20,28, var(--dash-sidebar-opacity)), rgba(12,11,18, var(--dash-sidebar-opacity)));
+    -webkit-backdrop-filter:blur(var(--dash-blur));
+    backdrop-filter:blur(var(--dash-blur));
+    padding:28px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    border-right:1px solid rgba(255,255,255,0.15);
+  }
+
+  .brand{
+    font-family:var(--font-display);
+    font-weight:900;
+    font-size:13px;
+    letter-spacing:2px;
+    color:var(--text-primary);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px 24px;
+    background:linear-gradient(135deg, rgba(255,107,26,0.06), rgba(176,38,255,0.04));
+    border-radius:var(--dash-corner-radius);
+    margin-bottom:8px;
+  }
+  .brand .dot{
+    width:10px; height:10px; border-radius:50%;
+    background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    box-shadow:var(--glow-primary), inset 0 0 8px rgba(255,107,26,0.4);
+    animation:pulse-dot 2s ease-in-out infinite;
+    flex:0 0 auto;
+  }
+  @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:0.7;}}
+  .brand small{ display:block; font-family:var(--font-mono); font-size:9px; color:var(--text-tertiary); letter-spacing:2px; margin-top:4px; }
+
+  .status-mini{ display:flex; align-items:center; gap:8px; padding:9px 12px; border:1px solid var(--border-medium); border-radius:10px;
+    background:rgba(20,20,28,0.5); margin-bottom:8px; font-size:10.5px; letter-spacing:.5px; }
+  .status-mini .dot-led{ width:8px; height:8px; border-radius:50%; background:var(--text-tertiary); flex:0 0 auto; }
+  .status-mini .dot-led.on{ background:var(--accent-primary); box-shadow:0 0 8px var(--accent-primary); }
+
+  .nav-btn{
+    text-align:left; background:transparent; border:1px solid transparent; color:var(--nav-text-color);
+    font-family:var(--font-mono); font-size:12px; letter-spacing:0.5px; padding:12px 14px; border-radius:var(--dash-corner-radius);
+    cursor:pointer; display:flex; align-items:center; gap:10px; transition:all var(--dash-transition-speed) cubic-bezier(0.4,0,0.2,1); width:100%;
+  }
+  .nav-btn:hover{ color:var(--text-primary); background:rgba(255,107,26,0.08); border-color:rgba(255,107,26,0.2); transform:translateX(2px); }
+  .nav-btn.active{
+    color:var(--accent-primary);
+    background:linear-gradient(135deg, rgba(255,107,26,0.15), rgba(176,38,255,0.08));
+    border:1px solid rgba(255,107,26,0.4);
+    box-shadow:var(--dash-active-glow);
+    font-weight:600;
+  }
+  .nav-btn .num{ font-size:10px; opacity:.5; font-weight:600; }
+
+  .main{ padding:36px 40px 80px; overflow-y:auto; }
+
+  .preview-card{
+    background:linear-gradient(135deg, rgba(20,20,28,0.6), rgba(27,27,37,0.7));
+    border:1.5px solid var(--border-medium);
+    border-radius:var(--dash-corner-radius);
+    overflow:hidden;
+    margin-bottom:28px;
+    max-width:920px;
+    -webkit-backdrop-filter:blur(var(--dash-blur));
+    backdrop-filter:blur(var(--dash-blur));
+    box-shadow:var(--shadow-md);
+  }
+  .preview-card .label{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--text-tertiary); padding:14px 16px 0;
+  }
+  .preview-frame-wrap{
+    position:relative; width:100%; aspect-ratio:16/10;
+    background:repeating-conic-gradient(#15151d 0% 25%, #101016 0% 50%) 50% / 24px 24px;
+    margin-top:10px;
+  }
+  .preview-frame-wrap iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .preview-hint{ padding:12px 16px 16px; font-size:11.5px; color:var(--text-tertiary); line-height:1.6; }
+  .preview-hint strong{ color:var(--accent-primary); }
+
+  .panel{ display:none; max-width:920px; }
+  .panel.active{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:28px 28px;
+    align-items:start;
+    animation:fadein .4s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes fadein{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  .panel.active > h2,
+  .panel.active > .sub,
+  .panel.active > .section-divider,
+  .panel.active > .status-card,
+  .panel.active > .action-bar,
+  .panel.active > .field-row,
+  .panel.active > .full-row,
+  .panel.active > .field.full-row,
+  .panel.active > button.ghost-btn{
+    grid-column:1 / -1;
+  }
+  .panel.active > button.ghost-btn{ justify-self:start; }
+
+  .panel.active > .field{
+    background:rgba(var(--dash-panel-color-rgb), var(--dash-panel-opacity));
+    border:1px solid rgba(var(--dash-panel-border-rgb), var(--dash-border-opacity));
+    border-radius:var(--dash-corner-radius);
+    padding:16px 18px;
+    margin-bottom:0;
+    box-shadow:0 4px 16px rgba(0,0,0,0.25);
+    transition:border-color .25s ease;
+  }
+  .panel.active > .field:hover{ border-color:rgba(255,107,26,0.28); }
+  .panel.active > .field.no-card{ background:transparent; border:none; padding:0; box-shadow:none; }
+
+  @media (max-width:820px){ .panel.active{ grid-template-columns:1fr; } }
+
+  .panel h2{
+    font-family:var(--font-display); font-size:24px; letter-spacing:2px; margin:0 0 8px; font-weight:900;
+    background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .panel .sub{ color:var(--text-secondary); font-size:13px; margin-bottom:8px; line-height:1.7; }
+
+  .section-divider{
+    margin:8px 0 4px; padding-top:20px; border-top:1px solid var(--border-medium); position:relative;
+  }
+  .section-divider h3{ font-family:var(--font-display); font-size:14px; letter-spacing:1.5px; margin:0 0 4px; color:var(--accent-primary); font-weight:700; }
+  .section-divider .sub{ margin-bottom:0; font-size:12px; color:var(--text-tertiary); line-height:1.5; }
+  .section-divider .head-row{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+
+  .field label{ display:block; font-size:11px; letter-spacing:1.6px; text-transform:uppercase; color:var(--text-secondary); margin-bottom:10px; font-weight:600; }
+  .field .hint{ font-size:11px; color:var(--text-tertiary); margin-top:8px; line-height:1.6; }
+
+  input[type="text"], select{
+    width:100%; background:linear-gradient(135deg, rgba(20,20,28,0.45), rgba(16,15,22,0.45));
+    border:1px solid var(--border-medium); border-radius:10px; color:var(--text-primary);
+    font-family:var(--font-mono); font-size:13px; padding:11px 13px; outline:none;
+    -webkit-appearance:none; appearance:none; transition:all .25s ease;
+    -webkit-backdrop-filter:blur(var(--dash-blur)); backdrop-filter:blur(var(--dash-blur));
+  }
+  select{
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239c98a8' viewBox='0 0 16 16'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>");
+    background-repeat:no-repeat; background-position:right 12px center; padding-right:36px !important; cursor:pointer;
+  }
+  select option{ background-color:#171622; color:#fff; }
+  input[type="text"]:hover, select:hover{ border-color:rgba(255,107,26,0.3); }
+  input[type="text"]:focus, select:focus{ border-color:var(--accent-primary); box-shadow:0 0 0 2px rgba(255,107,26,0.18), var(--glow-primary); }
+
+  input[readonly]{ color:var(--text-secondary); cursor:default; }
+  .input-group{ display:flex; gap:8px; align-items:center; }
+  .input-group input{ flex:1; }
+
+  button.icon-btn{
+    background:rgba(20,20,28,0.8); border:1.5px solid var(--border-medium); color:var(--text-primary);
+    border-radius:var(--dash-corner-radius); width:40px; height:40px; cursor:pointer; font-size:15px;
+    transition:all .2s ease; display:flex; align-items:center; justify-content:center; padding:0; flex:0 0 auto;
+  }
+  button.icon-btn:hover{ border-color:var(--accent-primary); color:var(--accent-primary); box-shadow:0 0 12px rgba(255,107,26,0.3); }
+  button.icon-btn.copied{ color:var(--accent-primary); border-color:var(--accent-primary); }
+  button.icon-btn.icon-sm{ width:32px; height:32px; font-size:12px; }
+
+  button.primary-btn{
+    font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:1.6px; text-transform:uppercase;
+    background:var(--accent-primary); color:#160e08; border:none; border-radius:var(--dash-corner-radius); padding:13px 20px; cursor:pointer;
+    box-shadow:0 0 16px rgba(255,107,26,0.4); transition:transform .1s ease;
+  }
+  button.primary-btn:active{ transform:scale(0.98); }
+
+  button.ghost-btn{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:1px; background:transparent;
+    border:1.5px solid var(--border-medium); color:var(--text-secondary); border-radius:var(--dash-corner-radius);
+    padding:11px 18px; cursor:pointer; transition:all .2s ease; text-transform:uppercase;
+  }
+  button.ghost-btn:hover{ color:var(--text-primary); border-color:var(--accent-primary); background:rgba(255,107,26,0.08); }
+
+  .status-card{
+    border:1.5px solid var(--border-medium); border-radius:var(--dash-corner-radius);
+    background:linear-gradient(135deg, rgba(20,20,28,0.6), rgba(16,15,22,0.7));
+    -webkit-backdrop-filter:blur(var(--dash-blur)); backdrop-filter:blur(var(--dash-blur));
+    padding:16px 18px; margin-bottom:4px; display:flex; align-items:flex-start; gap:14px;
+  }
+  .status-led{ width:11px; height:11px; border-radius:50%; background:rgba(111,108,120,0.6); flex:0 0 auto; border:2px solid rgba(111,108,120,0.4); margin-top:2px; }
+  .status-led.on{ background:var(--accent-primary); border-color:rgba(255,107,26,0.6); box-shadow:0 0 12px var(--accent-primary); animation:pulse-led 2s ease-in-out infinite; }
+  @keyframes pulse-led{0%,100%{opacity:1;}50%{opacity:0.7;}}
+  .status-text{ font-size:13px; line-height:1.6; }
+  .status-text strong{ color:var(--accent-primary); }
+
+  .action-bar{
+    background:linear-gradient(180deg, rgba(255,107,26,0.04), rgba(10,10,15,0.5));
+    border:1px solid var(--border-medium); border-radius:var(--dash-corner-radius);
+    padding:18px 22px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+
+  .toast{
+    position:fixed; top:24px; right:24px;
+    background:linear-gradient(135deg, rgba(20,20,28,0.95), rgba(16,15,22,1));
+    border:1.5px solid var(--accent-primary); color:var(--text-primary); padding:14px 20px;
+    border-radius:var(--dash-corner-radius); font-size:12px; font-weight:600; letter-spacing:.5px;
+    box-shadow:0 8px 32px rgba(255,107,26,0.3);
+    transform:translateY(-20px); opacity:0; transition:all .35s cubic-bezier(0.4,0,0.2,1); pointer-events:none; z-index:1000;
+  }
+  .toast.show{ transform:translateY(0); opacity:1; }
+
+  .toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .toggle-row .row-labels .title{ font-size:13px; font-weight:600; color:var(--text-primary); }
+  .toggle-row .row-labels .desc{ font-size:11px; color:var(--text-tertiary); margin-top:2px; line-height:1.5; }
+  .switch{ position:relative; display:inline-block; width:44px; height:24px; flex:0 0 auto; }
+  .switch input{ opacity:0; width:0; height:0; position:absolute; }
+  .switch .track{ position:absolute; inset:0; background:rgba(255,255,255,0.08); border:1px solid var(--border-medium); border-radius:24px; cursor:pointer; transition:background .25s ease, border-color .25s ease; }
+  .switch .track:before{ content:''; position:absolute; width:18px; height:18px; left:2px; top:2px; background:#c7c3d8; border-radius:50%; transition:transform .25s cubic-bezier(0.4,0,0.2,1), background .25s ease; }
+  .switch input:checked + .track{ background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); border-color:var(--accent-primary); }
+  .switch input:checked + .track:before{ transform:translateX(20px); background:#fff; }
+
+  .choice-cards{ display:flex; gap:10px; flex-wrap:wrap; }
+  .choice-card{
+    flex:1 1 110px; border:1.5px solid var(--border-medium); border-radius:var(--dash-corner-radius); padding:12px 12px;
+    cursor:pointer; background:linear-gradient(135deg, rgba(20,20,28,0.5), rgba(16,15,22,0.6)); text-align:center;
+    font-size:12px; color:var(--text-secondary); transition:all .2s ease;
+  }
+  .choice-card:hover{ border-color:rgba(255,107,26,0.4); transform:translateY(-2px); }
+  .choice-card.selected{
+    border-color:var(--accent-primary); color:var(--text-primary);
+    background:linear-gradient(135deg, rgba(255,107,26,0.15), rgba(176,38,255,0.08));
+    box-shadow:0 0 0 1px var(--accent-primary) inset, var(--glow-primary); font-weight:600;
+  }
+
+  .swatches{ display:flex; flex-wrap:wrap; gap:10px; }
+  .swatch{ width:38px; height:38px; border-radius:50%; border:2px solid transparent; cursor:pointer; position:relative; box-shadow:0 0 10px 0 var(--sw-color, transparent); }
+  .swatch.active{ border-color:#fff; }
+  .swatch-custom{
+    width:34px; height:34px; border-radius:50%; border:2px solid var(--border-medium); padding:0;
+    background:conic-gradient(from 0deg, #ff6b1a, #39ff14, #00e5ff, #b026ff, #ff0844, #ff6b1a);
+    cursor:pointer; position:relative; overflow:hidden; flex:0 0 auto;
+  }
+  .swatch-custom.no-bg{ background:none; }
+  .swatch-custom input[type="color"]{ position:absolute; inset:-4px; width:calc(100% + 8px); height:calc(100% + 8px); border:none; padding:0; cursor:pointer; opacity:0; }
+  .swatch-dot{ position:absolute; inset:2px; border-radius:50%; display:block; }
+  .swatch-row{ display:flex; align-items:center; gap:12px; }
+  .color-field{ display:flex; align-items:center; gap:14px; }
+  .color-field .swatch-label{ font-size:12px; color:var(--text-secondary); font-weight:500; }
+
+  input[type="color"]{
+    -webkit-appearance:none; appearance:none; width:100%; height:40px; border:1px solid var(--border-medium);
+    border-radius:10px; background:rgba(20,20,28,0.5); cursor:pointer; padding:4px;
+  }
+  input[type="color"]::-webkit-color-swatch-wrapper{ padding:0; border-radius:8px; overflow:hidden; }
+  input[type="color"]::-webkit-color-swatch{ border:none; border-radius:8px; }
+  input[type="color"]:hover{ border-color:rgba(255,107,26,0.3); }
+
+  .stripe-row{ display:flex; align-items:center; gap:10px; margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-medium); }
+  .stripe-pickers{ display:flex; gap:6px; }
+  .stripe-pickers label{ width:26px; height:26px; border-radius:6px; border:2px solid var(--border-medium); position:relative; overflow:hidden; cursor:pointer; display:block; }
+  .stripe-pickers input[type="color"]{ position:absolute; inset:-4px; width:calc(100% + 8px); height:calc(100% + 8px); border:none; padding:0; cursor:pointer; opacity:0; }
+  .stripe-swatch-fill{ position:absolute; inset:0; display:block; }
+
+  input[type="range"]{ width:100%; -webkit-appearance:none; appearance:none; height:6px; border-radius:6px; background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); opacity:.85; cursor:pointer; }
+  input[type="range"]::-webkit-slider-thumb{ -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 0 8px rgba(255,107,26,0.6); cursor:pointer; border:2px solid var(--accent-primary); }
+  input[type="range"]::-moz-range-thumb{ width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 0 8px rgba(255,107,26,0.6); cursor:pointer; border:2px solid var(--accent-primary); }
+  .range-row{ display:flex; align-items:center; gap:12px; }
+  .range-row input[type="range"]{ flex:1; }
+  .range-row .val{ font-family:var(--font-display); font-size:12px; color:var(--accent-primary); width:52px; text-align:right; flex:0 0 auto; font-weight:600; }
+
+  #titleSolidBlock, #titleGradientBlock, #titleMatchBlock{ margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-medium); display:none; }
+
+  .title-preview{
+    margin-top:14px; padding:1.6rem 0.8rem 2.2rem; border-radius:10px;
+    background:repeating-conic-gradient(#15151d 0% 25%, #101016 0% 50%) 50% / 20px 20px;
+    text-align:center; overflow-x:auto; overflow-y:visible;
+  }
+  .title-preview span{ display:inline-block; font-size:1.6rem; line-height:1.7; white-space:nowrap; padding:0 0.2rem; }
+
+  .expression-rows{ display:flex; flex-direction:column; gap:8px; }
+  .expression-row{ display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:10px; }
+  .expression-row .row-index{ font-family:var(--font-mono); font-size:11px; color:var(--text-tertiary); text-align:center; }
+  .expression-row .face-emoji{ font-size:1.05rem; width:1.4rem; text-align:center; }
+  .expression-row select{ padding:8px 30px 8px 10px; font-size:12.5px; }
+
+  .hidden{ display:none !important; }
+
+  .upload-zone{
+    border:2px dashed var(--accent-primary); border-radius:var(--dash-corner-radius); padding:32px 20px; text-align:center;
+    background:linear-gradient(135deg, rgba(255,107,26,0.08), rgba(176,38,255,0.04)); cursor:pointer;
+    transition:all .3s cubic-bezier(0.4,0,0.2,1); position:relative; overflow:hidden;
+  }
+  .upload-zone:hover{ background:linear-gradient(135deg, rgba(255,107,26,0.14), rgba(176,38,255,0.08)); border-color:var(--accent-secondary); box-shadow:0 0 24px rgba(255,107,26,0.25); }
+  .upload-zone.drag-over{ background:linear-gradient(135deg, rgba(255,107,26,0.2), rgba(176,38,255,0.12)); box-shadow:0 0 32px rgba(255,107,26,0.4); transform:scale(1.02); }
+  .upload-icon{
+    font-size:32px; background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:10px; display:block;
+    animation:float-up 2.5s ease-in-out infinite; font-weight:bold;
+  }
+  @keyframes float-up{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
+  .upload-text{ font-family:var(--font-mono); font-size:13px; color:var(--text-primary); margin-bottom:6px; font-weight:600; }
+  .upload-subtext{ font-size:11px; color:var(--text-secondary); }
+
+  .upload-preview{
+    border:1.5px solid var(--border-medium); border-radius:var(--dash-corner-radius);
+    background:linear-gradient(135deg, rgba(20,20,28,0.6), rgba(16,15,22,0.7));
+    padding:14px; display:flex; align-items:center; gap:14px; position:relative; overflow:hidden;
+  }
+  .upload-preview img{ width:64px; height:64px; border-radius:var(--dash-corner-radius); object-fit:cover; border:1.5px solid rgba(255,107,26,0.4); flex:0 0 auto; }
+  .preview-info{ flex:1; min-width:0; }
+  .preview-filename{ font-size:12px; color:var(--text-primary); font-weight:600; margin-bottom:4px; word-break:break-all; }
+  .preview-size{ font-size:10px; color:var(--text-secondary); letter-spacing:1px; text-transform:uppercase; font-weight:600; }
+  .upload-clear{
+    position:absolute; top:10px; right:10px;
+    background:linear-gradient(135deg, rgba(176,38,255,0.2), rgba(176,38,255,0.1)); border:1.5px solid rgba(176,38,255,0.5); color:var(--accent-secondary);
+    width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:15px;
+    display:flex; align-items:center; justify-content:center; transition:all .2s ease; padding:0;
+  }
+  .upload-clear:hover{ background:linear-gradient(135deg, rgba(176,38,255,0.35), rgba(176,38,255,0.2)); transform:scale(1.1) rotate(90deg); }
+
+  .wallpaper-history-section{ margin-top:16px; }
+  .wallpaper-history-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(60px, 1fr)); gap:10px; margin-top:10px; }
+  .wallpaper-history-item{
+    position:relative; aspect-ratio:1; border-radius:8px; overflow:hidden; border:2px solid var(--border-medium);
+    cursor:pointer; transition:all .2s ease; background:rgba(20,20,28,0.6);
+  }
+  .wallpaper-history-item img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .wallpaper-history-item:hover{ border-color:rgba(255,107,26,0.5); transform:translateY(-2px); }
+  .wallpaper-history-item.active{ border-color:var(--accent-primary); box-shadow:var(--glow-primary); }
+  .wallpaper-history-item.active::after{ content:'\2713'; position:absolute; bottom:2px; right:4px; font-size:11px; color:var(--accent-primary); font-weight:bold; text-shadow:0 0 4px rgba(0,0,0,0.9); }
+  .wallpaper-history-delete{
+    position:absolute; top:2px; right:2px; width:18px; height:18px; border-radius:4px;
+    background:rgba(10,10,15,0.75); border:1px solid rgba(255,255,255,0.2); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:10px; cursor:pointer;
+    opacity:0; transition:opacity .2s ease, background .2s ease; line-height:1; padding:0;
+  }
+  .wallpaper-history-item:hover .wallpaper-history-delete{ opacity:1; }
+  .wallpaper-history-delete:hover{ background:rgba(255,80,80,0.85); border-color:rgba(255,80,80,0.9); }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Pumpkin Patch</h1>
-  <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">no overlay window open</span></div>
-</header>
+<div class="shell">
 
-<div class="connect-bar">
-  <p>The live preview below always works. For the <strong>real</strong> overlay (OBS Browser Source or its own window), click Connect once so this dashboard has a direct link to push updates to — local storage sync alone isn't reliable across separate browser windows.</p>
-  <button type="button" class="connect" id="connectBtn">Open &amp; Connect Overlay Window</button>
-</div>
-
-<div class="layout">
-
-  <div class="preview-card">
-    <div class="label">Preview</div>
-    <div class="preview-frame-wrap">
-      <iframe id="previewFrame" title="Pumpkin Patch overlay preview" src="pumpkin-patch-overlay.html?debug=1"></iframe>
+  <nav class="sidebar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>PUMPKIN PATCH<small>OBS OVERLAY CONTROL</small></span>
     </div>
-    <div class="preview-hint">
-      This mirrors the overlay in real time. Add <code>pumpkin-patch-overlay.html</code> as a Browser Source in OBS (transparent background, no border) pointed at the same folder as this dashboard — then click Connect above once OBS is running, or point OBS's Browser Source URL directly and rely on Save &amp; Push Live for updates each time you change something here.
-    </div>
-  </div>
+    <div class="status-mini"><span class="dot-led" id="sideDotMini"></span><span id="sideTextMini">Overlay: no window open</span></div>
 
-  <div>
-    <div class="panel">
-      <h2>Sign Name</h2>
+    <button type="button" class="nav-btn active" data-tab="overlay"><span class="num">01</span><span>Overlay Link</span></button>
+    <button type="button" class="nav-btn" data-tab="sign"><span class="num">02</span><span>Sign Name</span></button>
+    <button type="button" class="nav-btn" data-tab="expressions"><span class="num">03</span><span>Expressions</span></button>
+    <button type="button" class="nav-btn" data-tab="color"><span class="num">04</span><span>Pumpkin Color</span></button>
+    <button type="button" class="nav-btn" data-tab="stem"><span class="num">05</span><span>Stem Color</span></button>
+    <button type="button" class="nav-btn" data-tab="size"><span class="num">06</span><span>Patch Size</span></button>
+    <button type="button" class="nav-btn" data-tab="theme"><span class="num">07</span><span>Dashboard Theme</span></button>
+    <button type="button" class="nav-btn" data-tab="settings"><span class="num">08</span><span>Settings</span></button>
+  </nav>
+
+  <div class="main">
+
+    <div class="preview-card">
+      <div class="label">Live Preview</div>
+      <div class="preview-frame-wrap">
+        <iframe id="previewFrame" title="Pumpkin Patch overlay preview" src="pumpkin-patch-overlay.html?debug=1"></iframe>
+      </div>
+      <div class="preview-hint">
+        This mirrors the overlay in real time. In OBS, add a <strong>Browser Source</strong> pointed at your hosted overlay URL (Overlay Link tab) — transparent background, no border — then click Connect there once OBS is running so this dashboard can push live updates to it directly.
+      </div>
+    </div>
+
+    <section class="panel active" id="panel-overlay">
+      <h2>Overlay Link</h2>
+      <div class="sub">Wire this dashboard up to OBS and, optionally, a standalone overlay window.</div>
+
+      <div class="status-card">
+        <span class="status-led" id="statusLed"></span>
+        <span class="status-text" id="statusText">No overlay window open.</span>
+      </div>
+
       <div class="field">
-        <label for="titleInput">What the neon sign says</label>
+        <label for="obsUrlInput">OBS browser source URL</label>
+        <div class="input-group">
+          <input type="text" id="obsUrlInput" readonly value="https://caitlinscreativespace.xyz/pumpkin-patch-overlay.html">
+          <button type="button" class="icon-btn" id="copyUrlBtn" title="Copy">📋</button>
+        </div>
+        <div class="hint">Paste this into OBS's Browser Source. Set it to a transparent background with no border.</div>
+      </div>
+
+      <div class="field full-row">
+        <label>Connect a standalone overlay window</label>
+        <div class="hint" style="margin:0 0 12px;">The preview above always works. For the <strong>real</strong> overlay (OBS Browser Source or its own window), connect once so this dashboard has a direct link to push updates to — local storage sync alone isn't reliable across separate browser windows.</div>
+        <div class="action-bar">
+          <button type="button" class="primary-btn" id="connectBtn">Open &amp; Connect Overlay Window</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-sign">
+      <h2>Sign Name</h2>
+      <div class="sub">What the neon sign above the patch says, and how it's styled.</div>
+
+      <div class="field">
+        <label for="titleInput">Sign text</label>
         <input type="text" id="titleInput" maxlength="40" value="The Pumpkin Patch" placeholder="e.g. TabbyBat's Pumpkin Patch">
-        <div class="hint">Shows above the patch on stream. Keep it short so it fits the sign.</div>
+        <div class="hint">Keep it short so it fits the sign.</div>
       </div>
 
       <div class="field">
         <label for="titleFontSelect">Sign font</label>
-        <select class="custom-select" id="titleFontSelect"></select>
+        <select id="titleFontSelect"></select>
       </div>
 
       <div class="field">
-        <div class="row-value">
-          <label class="compact-label" for="titleSizeRange">Sign font size</label>
-          <span class="val" id="titleSizeVal">6.0rem</span>
-        </div>
-        <input type="range" id="titleSizeRange" min="2" max="10" step="0.25" value="6">
+        <label for="titleSizeRange">Sign font size</label>
+        <div class="range-row"><input type="range" id="titleSizeRange" min="2" max="10" step="0.25" value="6"><span class="val" id="titleSizeVal">6.0rem</span></div>
       </div>
 
-      <div class="field">
+      <div class="field full-row">
         <label>Sign text color</label>
-        <div class="mode-tabs" id="titleColorModeTabs">
-          <button type="button" class="mini" data-mode="solid">Solid</button>
-          <button type="button" class="mini" data-mode="gradient">Gradient</button>
-          <button type="button" class="mini" data-mode="match">Match Patch</button>
+        <div class="choice-cards" id="titleColorModeTabs">
+          <div class="choice-card" data-mode="solid">Solid</div>
+          <div class="choice-card" data-mode="gradient">Gradient</div>
+          <div class="choice-card" data-mode="match">Match Patch</div>
         </div>
 
         <div id="titleSolidBlock">
-          <div class="swatches">
+          <div class="swatch-row">
             <label class="swatch-custom no-bg" title="Sign text color">
               <span id="titleSolidDot" class="swatch-dot"></span>
-              <input type="color" id="titleSolidInput" value="#ff8c42" aria-label="Sign text color" title="Sign text color">
+              <input type="color" id="titleSolidInput" value="#ff8c42" aria-label="Sign text color">
             </label>
-            <span class="hint hint-center">Pick a flat color</span>
+            <span class="hint" style="margin:0;">Pick a flat color</span>
           </div>
         </div>
 
         <div id="titleGradientBlock">
-          <div class="custom-gradient-row">
+          <div class="stripe-row">
             <div class="stripe-pickers" id="titleGradientStripes">
               <label title="Stop 1"><span class="stripe-swatch-fill" id="titleGradFill0"></span><input type="color" id="titleGradColor0"></label>
               <label title="Stop 2"><span class="stripe-swatch-fill" id="titleGradFill1"></span><input type="color" id="titleGradColor1"></label>
             </div>
-            <div class="hint">Build a 2-color text gradient</div>
+            <div class="hint" style="margin:0;">Build a 2-color text gradient</div>
           </div>
         </div>
 
         <div id="titleMatchBlock">
-          <p class="hint">Sign text uses the same gradient as your pumpkins above — change it there to update both.</p>
+          <p class="hint" style="margin:0;">Sign text uses the same gradient as your pumpkins — change it on the Pumpkin Color tab to update both.</p>
         </div>
 
-        <div class="title-preview">
-          <span id="titlePreviewText">The Pumpkin Patch</span>
-        </div>
+        <div class="title-preview"><span id="titlePreviewText">The Pumpkin Patch</span></div>
       </div>
-    </div>
+    </section>
 
-    <div class="panel">
-      <div class="panel-head-row">
-        <h2>Expressions &amp; Emotions</h2>
-        <button type="button" class="mini" id="rerollBtn" title="Force a fresh shuffle">🎲 Reroll</button>
-      </div>
+    <section class="panel" id="panel-expressions">
+      <h2>Expressions &amp; Emotions</h2>
+      <div class="sub">Control what face each pumpkin makes.</div>
 
       <div class="field">
         <div class="toggle-row">
-          <div class="toggle-copy">
-            <label>Let me choose each pumpkin's face</label>
-            <div class="hint">Off: every pumpkin gets a random face, reshuffled by Reroll or when the count changes. On: pick each pumpkin's expression yourself below.</div>
-          </div>
-          <button type="button" class="toggle" id="customExpressionToggle" aria-pressed="false" aria-label="Choose each pumpkin's expression manually" title="Choose each pumpkin's expression manually"></button>
+          <div class="row-labels"><div class="title">Choose each pumpkin's face</div><div class="desc">Off: every pumpkin gets a random face, reshuffled by Reroll or when the count changes.</div></div>
+          <label class="switch"><input type="checkbox" id="customExpressionToggle"><span class="track"></span></label>
         </div>
       </div>
 
       <div class="field">
         <div class="toggle-row">
-          <div class="toggle-copy">
-            <label>Animated blinking eyes</label>
-            <div class="hint">Each pumpkin blinks on its own random rhythm instead of staying static.</div>
-          </div>
-          <button type="button" class="toggle on" id="animatedExpressionsToggle" aria-pressed="true" aria-label="Toggle animated blinking eyes" title="Toggle animated blinking eyes"></button>
+          <div class="row-labels"><div class="title">Animated blinking eyes</div><div class="desc">Each pumpkin blinks on its own random rhythm instead of staying static.</div></div>
+          <label class="switch"><input type="checkbox" id="animatedExpressionsToggle" checked><span class="track"></span></label>
         </div>
       </div>
 
-      <div class="field" id="expressionRandomBlock">
-        <p>Faces currently set to <strong>Random</strong> — click <strong>Reroll</strong> any time for a fresh look without touching anything else.</p>
+      <div class="field full-row" id="expressionRandomBlock">
+        <div class="section-divider">
+          <div class="head-row">
+            <h3>Random faces</h3>
+            <button type="button" class="icon-btn icon-sm" id="rerollBtn" title="Force a fresh shuffle">🎲</button>
+          </div>
+          <div class="sub">Faces currently set to <strong>Random</strong> — click Reroll any time for a fresh look without touching anything else.</div>
+        </div>
       </div>
 
-      <div class="field" id="expressionCustomBlock">
+      <div class="field full-row" id="expressionCustomBlock">
+        <div class="section-divider"><h3>Set each pumpkin's face</h3><div class="sub">Rows match your current pumpkin count — resize the patch first, then set faces.</div></div>
         <div class="expression-rows" id="expressionRows"></div>
-        <div class="hint hint-spaced">Rows match your current pumpkin count below — resize the patch first, then set faces.</div>
       </div>
-    </div>
+    </section>
 
-    <div class="panel">
+    <section class="panel" id="panel-color">
       <h2>Pumpkin Color</h2>
-      <div class="field">
+      <div class="sub">Every pumpkin glows with a smooth 3-stripe gradient.</div>
+
+      <div class="field full-row">
         <label>Pride flag gradients</label>
         <div class="swatches" id="swatches"></div>
-        <div class="custom-gradient-row">
+        <div class="stripe-row">
           <div class="stripe-pickers" id="customStripes">
             <label title="Stripe 1"><span class="stripe-swatch-fill" id="customFill0"></span><input type="color" id="customColor0"></label>
             <label title="Stripe 2"><span class="stripe-swatch-fill" id="customFill1"></span><input type="color" id="customColor1"></label>
             <label title="Stripe 3"><span class="stripe-swatch-fill" id="customFill2"></span><input type="color" id="customColor2"></label>
           </div>
-          <div class="hint">Build your own 3-color gradient</div>
+          <div class="hint" style="margin:0;">Build your own 3-color gradient</div>
         </div>
-        <div class="hint">Each pumpkin glows with a smooth 3-stripe gradient instead of a flat color.</div>
       </div>
+
       <div class="field">
-        <div class="row-value">
-          <label class="compact-label" for="glowRange">Glow intensity</label>
-          <span class="val" id="glowVal">1.0x</span>
-        </div>
-        <input type="range" id="glowRange" min="0.4" max="2" step="0.1" value="1">
+        <label for="glowRange">Glow intensity</label>
+        <div class="range-row"><input type="range" id="glowRange" min="0.4" max="2" step="0.1" value="1"><span class="val" id="glowVal">1.0x</span></div>
       </div>
+
       <div class="field">
         <div class="toggle-row">
-          <label class="compact-label">Neon flicker</label>
-          <button type="button" class="toggle on" id="flickerToggle" aria-pressed="true" aria-label="Toggle neon flicker" title="Toggle neon flicker"></button>
+          <div class="row-labels"><div class="title">Neon flicker</div><div class="desc">Occasional realistic sign flicker, not constant strobing.</div></div>
+          <label class="switch"><input type="checkbox" id="flickerToggle" checked><span class="track"></span></label>
         </div>
-        <div class="hint">Occasional realistic sign flicker, not constant strobing.</div>
       </div>
-    </div>
+    </section>
 
-    <div class="panel">
+    <section class="panel" id="panel-stem">
       <h2>Stem Color</h2>
+      <div class="sub">The vine curl on top of each pumpkin.</div>
+
       <div class="field">
         <label>Vine curl color</label>
-        <div class="swatches">
+        <div class="swatch-row">
           <label class="swatch-custom no-bg" title="Stem color">
             <span id="stemDot" class="swatch-dot"></span>
-            <input type="color" id="stemInput" value="#9fe870" aria-label="Stem color" title="Stem color">
+            <input type="color" id="stemInput" value="#9fe870" aria-label="Stem color">
           </label>
-          <span class="hint hint-center">Default: bright vine green</span>
+          <span class="hint" style="margin:0;">Default: bright vine green</span>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="panel">
+    <section class="panel" id="panel-size">
       <h2>Patch Size</h2>
+      <div class="sub">How many pumpkins line up on the overlay.</div>
+
       <div class="field">
-        <div class="row-value">
-          <label for="countRange">Pumpkin count</label>
-          <span class="val" id="countVal">5</span>
-        </div>
-        <input type="range" id="countRange" min="1" max="12" step="1" value="5" title="Pumpkin count" aria-label="Pumpkin count">
+        <label for="countRange">Pumpkin count</label>
+        <div class="range-row"><input type="range" id="countRange" min="1" max="12" step="1" value="5"><span class="val" id="countVal">5</span></div>
       </div>
+    </section>
+
+    <section class="panel" id="panel-theme">
+      <h2>Dashboard Theme</h2>
+      <div class="sub">Customize this control panel's appearance — this never affects the Pumpkin Patch overlay itself.</div>
+
+      <div class="section-divider"><h3>Background</h3></div>
+
+      <div class="field">
+        <label>Background style</label>
+        <div class="choice-cards">
+          <div class="choice-card" data-dash-choice="bgType" data-value="gradient">Gradient</div>
+          <div class="choice-card" data-dash-choice="bgType" data-value="solid">Solid</div>
+          <div class="choice-card" data-dash-choice="bgType" data-value="image">Image</div>
+        </div>
+      </div>
+
+      <div class="field" id="fieldBgSolid">
+        <label>Solid color</label>
+        <div class="color-field"><input type="color" id="inputDashBgColor1" value="#0a0a0f"></div>
+      </div>
+
+      <div class="field" id="fieldBgGradient">
+        <label>Gradient colors</label>
+        <div class="color-field"><input type="color" id="inputDashGradColor1" value="#ff6b1a"><span class="swatch-label">Color 1</span></div>
+        <div class="color-field"><input type="color" id="inputDashGradColor2" value="#b026ff"><span class="swatch-label">Color 2</span></div>
+        <div class="hint">Angle</div>
+        <div class="range-row"><input type="range" id="inputDashGradAngle" min="0" max="360" step="5"><span class="val" id="valDashGradAngle"></span></div>
+      </div>
+
+      <div class="field full-row hidden" id="fieldBgImage">
+        <label>Image source</label>
+        <div class="toggle-row" style="margin-bottom:14px;"><span style="font-size:13px;">Upload file</span><label class="switch"><input type="checkbox" id="toggleBgImageSource"><span class="track"></span></label><span class="hint" style="margin:0;">URL</span></div>
+
+        <div id="bgImageUrlSection">
+          <label for="inputDashBgImageUrl">Image URL</label>
+          <input type="text" id="inputDashBgImageUrl" placeholder="https://example.com/background.jpg">
+        </div>
+
+        <div id="bgImageUploadSection" class="hidden">
+          <label>Upload wallpaper</label>
+          <input type="file" id="inputDashBgImageUpload" accept="image/*" class="hidden">
+          <div class="upload-zone" id="uploadZone">
+            <div class="upload-icon">▲</div>
+            <div class="upload-text">Drag wallpaper here or click to browse</div>
+            <div class="upload-subtext">JPG, PNG, WebP, GIF (max 5MB)</div>
+          </div>
+          <div id="uploadPreview" class="upload-preview hidden">
+            <img id="previewImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Preview">
+            <div class="preview-info">
+              <div class="preview-filename" id="previewFilename"></div>
+              <div class="preview-size" id="previewSize"></div>
+            </div>
+            <button type="button" class="upload-clear" id="uploadClear" title="Remove">✕</button>
+          </div>
+
+          <div class="wallpaper-history-section" id="wallpaperHistorySection">
+            <label>Wallpaper history</label>
+            <div class="hint" id="wallpaperHistoryEmptyHint">Uploaded wallpapers are saved here so you can switch back anytime.</div>
+            <div class="wallpaper-history-grid" id="wallpaperHistoryGrid"></div>
+          </div>
+        </div>
+
+        <label style="margin-top:14px;">Position</label>
+        <select id="inputDashBgPosition">
+          <option value="cover">Cover (fill, crop edges)</option>
+          <option value="contain">Contain (fit, no crop)</option>
+          <option value="center">Center (actual size)</option>
+          <option value="repeat">Repeat (tile)</option>
+        </select>
+      </div>
+
+      <div class="section-divider"><h3>Text Colors</h3></div>
+
+      <div class="field">
+        <label>Navigation tab text</label>
+        <div class="color-field"><input type="color" id="inputDashNavTextColor" value="#9c98a8"><span class="swatch-label">Inactive tab color</span></div>
+      </div>
+
+      <div class="field">
+        <label>Primary text color</label>
+        <div class="color-field"><input type="color" id="inputDashPrimaryText" value="#f4f1ea"><span class="swatch-label">Headings &amp; main text</span></div>
+      </div>
+
+      <div class="field">
+        <label>Secondary text color</label>
+        <div class="color-field"><input type="color" id="inputDashSecondaryText" value="#9c98a8"><span class="swatch-label">Labels &amp; descriptions</span></div>
+      </div>
+
+      <div class="field">
+        <label>Hint text color</label>
+        <div class="color-field"><input type="color" id="inputDashTertiaryText" value="#6f6c78"><span class="swatch-label">Small hint text under fields</span></div>
+      </div>
+
+      <div class="section-divider"><h3>Panel &amp; Card Styling</h3></div>
+
+      <div class="field">
+        <label>Panel color</label>
+        <div class="color-field"><input type="color" id="inputDashPanelColor" value="#1b1b25"><span class="swatch-label">Base color behind card backgrounds</span></div>
+      </div>
+
+      <div class="field">
+        <label>Panel background opacity</label>
+        <div class="range-row"><input type="range" id="inputDashPanelOpacity" min="0.1" max="1" step="0.05"><span class="val" id="valDashPanelOpacity"></span></div>
+        <div class="hint">Glassmorphism effect for card backgrounds.</div>
+      </div>
+
+      <div class="field">
+        <label>Panel border color</label>
+        <div class="color-field"><input type="color" id="inputDashPanelBorder" value="#ffffff"><span class="swatch-label">Card &amp; input borders</span></div>
+      </div>
+
+      <div class="field">
+        <label>Panel border opacity</label>
+        <div class="range-row"><input type="range" id="inputDashBorderOpacity" min="0" max="0.3" step="0.02"><span class="val" id="valDashBorderOpacity"></span></div>
+      </div>
+
+      <div class="section-divider"><h3>Accent Colors</h3></div>
+
+      <div class="field">
+        <label>Primary accent (buttons &amp; active states)</label>
+        <div class="color-field"><input type="color" id="inputDashAccent1" value="#ff6b1a"><span class="swatch-label">Main interactive color</span></div>
+      </div>
+
+      <div class="field">
+        <label>Secondary accent (glows &amp; highlights)</label>
+        <div class="color-field"><input type="color" id="inputDashAccent2" value="#b026ff"><span class="swatch-label">Gradient &amp; glow accents</span></div>
+      </div>
+
+      <div class="section-divider"><h3>Glassmorphism &amp; Effects</h3></div>
+
+      <div class="field">
+        <label>Blur strength (px)</label>
+        <div class="range-row"><input type="range" id="inputDashBlur" min="0" max="20" step="1"><span class="val" id="valDashBlur"></span></div>
+        <div class="hint">Backdrop blur on panels and inputs.</div>
+      </div>
+
+      <div class="field">
+        <label>Glow intensity</label>
+        <div class="range-row"><input type="range" id="inputDashGlowIntensity" min="0" max="1" step="0.1"><span class="val" id="valDashGlowIntensity"></span></div>
+        <div class="hint">How bright accent glows appear.</div>
+      </div>
+
+      <div class="field">
+        <label>Corner radius</label>
+        <div class="range-row"><input type="range" id="inputDashCornerRadius" min="0" max="24" step="1"><span class="val" id="valDashCornerRadius"></span></div>
+        <div class="hint">Roundness of cards, buttons, inputs.</div>
+      </div>
+
+      <div class="section-divider"><h3>Sidebar Styling</h3></div>
+
+      <div class="field">
+        <label>Sidebar background opacity</label>
+        <div class="range-row"><input type="range" id="inputDashSidebarOpacity" min="0.1" max="1" step="0.05"><span class="val" id="valDashSidebarOpacity"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Active tab glow</label>
+        <div class="toggle-row"><span style="font-size:13px;">Show glow on active nav button</span><label class="switch"><input type="checkbox" id="toggleDashSidebarGlow" checked><span class="track"></span></label></div>
+      </div>
+
+      <div class="section-divider"><h3>Animation Speed</h3></div>
+
+      <div class="field">
+        <label>Transition speed</label>
+        <select id="inputDashTransitionSpeed">
+          <option value="instant">Instant</option>
+          <option value="fast">Fast (100ms)</option>
+          <option value="normal" selected>Normal (250ms)</option>
+          <option value="slow">Slow (500ms)</option>
+          <option value="leisurely">Leisurely (800ms)</option>
+        </select>
+      </div>
+
+      <button class="ghost-btn" id="btnResetDashTheme">Reset dashboard theme</button>
+    </section>
+
+    <section class="panel" id="panel-settings">
+      <h2>Configuration Settings</h2>
+      <div class="sub">Export, import, or save your settings configurations.</div>
+
+      <div class="field">
+        <label for="exportFilename">Save As Filename</label>
+        <div class="input-group" style="margin-bottom:10px;">
+          <input type="text" id="exportFilename" value="pumpkin-patch-config.json" placeholder="filename.json">
+        </div>
+        <div class="hint">Specify the custom file name for your JSON configuration export.</div>
+        <div class="action-bar" style="margin-top:14px;">
+          <button type="button" class="primary-btn" id="exportConfigBtn">Export / Save Configuration</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Upload Configuration File</label>
+        <input type="file" id="importConfigFile" accept=".json" class="hidden">
+        <div class="upload-zone" id="configUploadZone">
+          <div class="upload-icon">📂</div>
+          <div class="upload-text">Drag JSON config here or click to browse</div>
+          <div class="upload-subtext">Restore settings from a saved configuration file</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="action-bar" style="margin-top:8px; max-width:920px;">
+      <button class="primary-btn" id="saveBtn">Save &amp; Push Live</button>
+      <button class="ghost-btn" id="resetBtn">Reset</button>
     </div>
 
-    <div class="actions">
-      <button class="primary" id="saveBtn">Save & Push Live</button>
-      <button class="ghost" id="resetBtn">Reset</button>
-    </div>
-    <div class="saved-flash" id="savedFlash">Saved — overlay updated.</div>
   </div>
 
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 (function () {
@@ -826,15 +848,12 @@
 
   const DEFAULT_CONFIG = {
     title: "The Pumpkin Patch",
-    // "colors" is the 3-stripe gradient painted across each pumpkin.
-    // "color" is kept as a single value (the middle stripe) for glow tints,
-    // UI accents, and any older overlay build that only reads one color.
     colors: ['#ff6b1a', '#ff8c42', '#cc4b00'],
     color: '#ff8c42',
     stemColor: "#9fe870",
     titleFont: "Creepster",
     titleFontSize: 6,
-    titleColorMode: "match", // "solid" | "gradient" | "match"
+    titleColorMode: "match",
     titleColor: "#ff8c42",
     titleGradient: ['#ff6b1a', '#ffdd00'],
     glowIntensity: 1,
@@ -846,9 +865,6 @@
     rerollTick: 0
   };
 
-  // Each preset is a 3-color gradient. Where a flag has more than three
-  // stripes, the three most representative/distinct colors were picked so
-  // the gradient still reads clearly on a small pumpkin.
   const PRESETS = [
     { name: 'Classic Jack-o',  colors: ['#ffb347', '#ff6b1a', '#cc4b00'] },
     { name: 'Pride (Rainbow)', colors: ['#ff0018', '#ffdd00', '#0000f9'] },
@@ -873,26 +889,12 @@
   const titleMatchBlock = document.getElementById('titleMatchBlock');
   const titleSolidInput = document.getElementById('titleSolidInput');
   const titleSolidDot = document.getElementById('titleSolidDot');
-  const titleGradColorInputs = [
-    document.getElementById('titleGradColor0'),
-    document.getElementById('titleGradColor1')
-  ];
-  const titleGradFillEls = [
-    document.getElementById('titleGradFill0'),
-    document.getElementById('titleGradFill1')
-  ];
+  const titleGradColorInputs = [document.getElementById('titleGradColor0'), document.getElementById('titleGradColor1')];
+  const titleGradFillEls = [document.getElementById('titleGradFill0'), document.getElementById('titleGradFill1')];
   const titlePreviewText = document.getElementById('titlePreviewText');
   const swatchesEl = document.getElementById('swatches');
-  const customColorInputs = [
-    document.getElementById('customColor0'),
-    document.getElementById('customColor1'),
-    document.getElementById('customColor2')
-  ];
-  const customFillEls = [
-    document.getElementById('customFill0'),
-    document.getElementById('customFill1'),
-    document.getElementById('customFill2')
-  ];
+  const customColorInputs = [document.getElementById('customColor0'), document.getElementById('customColor1'), document.getElementById('customColor2')];
+  const customFillEls = [document.getElementById('customFill0'), document.getElementById('customFill1'), document.getElementById('customFill2')];
   const stemInput = document.getElementById('stemInput');
   const stemDot = document.getElementById('stemDot');
   const glowRange = document.getElementById('glowRange');
@@ -908,11 +910,17 @@
   const rerollBtn = document.getElementById('rerollBtn');
   const saveBtn = document.getElementById('saveBtn');
   const resetBtn = document.getElementById('resetBtn');
-  const savedFlash = document.getElementById('savedFlash');
+  const toast = document.getElementById('toast');
   const previewFrame = document.getElementById('previewFrame');
   const connectBtn = document.getElementById('connectBtn');
-  const statusDot = document.getElementById('statusDot');
+  const statusLed = document.getElementById('statusLed');
   const statusText = document.getElementById('statusText');
+  const sideDotMini = document.getElementById('sideDotMini');
+  const sideTextMini = document.getElementById('sideTextMini');
+  const copyUrlBtn = document.getElementById('copyUrlBtn');
+  const obsUrlInput = document.getElementById('obsUrlInput');
+  const navItems = document.querySelectorAll('.nav-btn');
+  const stagePanels = document.querySelectorAll('.panel');
 
   let config = loadConfig();
   let overlayWindow = null;
@@ -927,8 +935,6 @@
         const parsed = JSON.parse(stored);
         const merged = { ...DEFAULT_CONFIG, ...parsed };
         if (!Array.isArray(merged.pumpkinExpressions)) merged.pumpkinExpressions = [];
-        // Migrate configs saved before the 3-stripe gradient system existed
-        // (they only had a single "color" and no "colors" array).
         if (!Array.isArray(merged.colors) || merged.colors.length !== 3) {
           const base = merged.color || DEFAULT_CONFIG.color;
           merged.colors = [base, base, base];
@@ -937,6 +943,13 @@
       }
     } catch (e) {}
     return { ...DEFAULT_CONFIG, pumpkinExpressions: [] };
+  }
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove('show'), 1800);
   }
 
   function randomExpressionKey() {
@@ -951,7 +964,7 @@
 
   function applyGradient(colors) {
     config.colors = colors;
-    config.color = colors[1]; // middle stripe drives glow/UI accent color
+    config.color = colors[1];
   }
 
   function buildSwatches() {
@@ -1020,11 +1033,8 @@
     titlePreviewText.textContent = config.title || DEFAULT_CONFIG.title;
     titlePreviewText.style.fontFamily = font.family;
     titlePreviewText.style.fontWeight = font.weight;
-    // Preview is scaled down from the real sign size, but not so small that
-    // drippy fonts (Creepster, Nosifer, Butcherman, Eater) lose their shape.
     titlePreviewText.style.fontSize = Math.max((config.titleFontSize || DEFAULT_CONFIG.titleFontSize) * 0.3, 1.6) + 'rem';
 
-    // Reset any previous gradient-text styling before applying the current mode.
     titlePreviewText.style.background = 'none';
     titlePreviewText.style.webkitBackgroundClip = 'unset';
     titlePreviewText.style.backgroundClip = 'unset';
@@ -1046,8 +1056,8 @@
   }
 
   function syncTitleColorModeUI() {
-    titleColorModeTabs.querySelectorAll('button').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.mode === config.titleColorMode);
+    titleColorModeTabs.querySelectorAll('.choice-card').forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.mode === config.titleColorMode);
     });
     titleSolidBlock.style.display = config.titleColorMode === 'solid' ? '' : 'none';
     titleGradientBlock.style.display = config.titleColorMode === 'gradient' ? '' : 'none';
@@ -1068,7 +1078,6 @@
       idx.textContent = '#' + (i + 1);
 
       const select = document.createElement('select');
-      select.className = 'custom-select small';
       select.setAttribute('aria-label', 'Expression for pumpkin ' + (i + 1));
       EXPRESSIONS.forEach(ex => {
         const opt = document.createElement('option');
@@ -1096,11 +1105,9 @@
 
   function syncExpressionModeUI() {
     const isCustom = config.expressionMode === 'custom';
-    customExpressionToggle.classList.toggle('on', isCustom);
-    customExpressionToggle.setAttribute('aria-pressed', String(isCustom));
+    customExpressionToggle.checked = isCustom;
     expressionRandomBlock.style.display = isCustom ? 'none' : '';
     expressionCustomBlock.style.display = isCustom ? '' : 'none';
-    rerollBtn.style.display = isCustom ? 'none' : '';
     if (isCustom) buildExpressionRows();
   }
 
@@ -1110,10 +1117,8 @@
     glowVal.textContent = Number(config.glowIntensity).toFixed(1) + 'x';
     countRange.value = config.pumpkinCount;
     countVal.textContent = config.pumpkinCount;
-    flickerToggle.classList.toggle('on', !!config.flicker);
-    flickerToggle.setAttribute('aria-pressed', String(!!config.flicker));
-    animatedExpressionsToggle.classList.toggle('on', config.animatedExpressions !== false);
-    animatedExpressionsToggle.setAttribute('aria-pressed', String(config.animatedExpressions !== false));
+    flickerToggle.checked = !!config.flicker;
+    animatedExpressionsToggle.checked = config.animatedExpressions !== false;
 
     const currentColors = config.colors.join(',');
     document.querySelectorAll('.swatch').forEach(sw => {
@@ -1124,8 +1129,6 @@
       input.value = config.colors[i];
       customFillEls[i].style.background = config.colors[i];
     });
-
-    document.documentElement.style.setProperty('--neon', config.color);
 
     stemInput.value = config.stemColor;
     stemDot.style.background = config.stemColor;
@@ -1145,36 +1148,20 @@
   }
 
   function pushLive() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-    } catch (e) {}
-
-    if (bc) {
-      bc.postMessage({ source: 'pumpkinpatch', config });
-    }
-
-    try {
-      previewFrame.contentWindow.postMessage({ source: 'pumpkinpatch-direct', config }, '*');
-    } catch (e) {}
-
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(config)); } catch (e) {}
+    if (bc) bc.postMessage({ source: 'pumpkinpatch', config });
+    try { previewFrame.contentWindow.postMessage({ source: 'pumpkinpatch-direct', config }, '*'); } catch (e) {}
     if (overlayWindow && !overlayWindow.closed) {
-      try {
-        overlayWindow.postMessage({ source: 'pumpkinpatch-direct', config }, '*');
-      } catch (e) {}
+      try { overlayWindow.postMessage({ source: 'pumpkinpatch-direct', config }, '*'); } catch (e) {}
     }
-
-    flashSaved();
-  }
-
-  function flashSaved() {
-    savedFlash.classList.add('show');
-    clearTimeout(flashSaved._t);
-    flashSaved._t = setTimeout(() => savedFlash.classList.remove('show'), 1400);
+    showToast('Saved — overlay updated');
   }
 
   function setConnected(isConnected) {
-    statusDot.classList.toggle('live', isConnected);
-    statusText.textContent = isConnected ? 'overlay window connected' : 'no overlay window open';
+    statusLed.classList.toggle('on', isConnected);
+    statusText.innerHTML = isConnected ? 'Overlay window <strong>connected</strong>.' : 'No overlay window open.';
+    sideDotMini.classList.toggle('on', isConnected);
+    sideTextMini.textContent = isConnected ? 'Overlay: connected' : 'Overlay: no window open';
   }
 
   connectBtn.addEventListener('click', () => {
@@ -1185,7 +1172,7 @@
     }
     overlayWindow = window.open(OVERLAY_URL + '?debug=1', 'pumpkinPatchOverlay', 'width=1280,height=720');
     if (!overlayWindow) {
-      alert('Your browser blocked the popup. Allow popups for this page and try again.');
+      showToast('Popup blocked — allow popups and try again');
       return;
     }
     setConnected(true);
@@ -1222,15 +1209,12 @@
     titleSizeVal.textContent = config.titleFontSize.toFixed(2) + 'rem';
     applyTitlePreview();
   });
-
-  titleSizeRange.addEventListener('change', () => {
-    pushLive();
-  });
+  titleSizeRange.addEventListener('change', () => { pushLive(); });
 
   titleColorModeTabs.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-mode]');
-    if (!btn) return;
-    config.titleColorMode = btn.dataset.mode;
+    const card = e.target.closest('.choice-card[data-mode]');
+    if (!card) return;
+    config.titleColorMode = card.dataset.mode;
     syncTitleColorModeUI();
     pushLive();
   });
@@ -1246,34 +1230,28 @@
     config.glowIntensity = parseFloat(glowRange.value);
     glowVal.textContent = config.glowIntensity.toFixed(1) + 'x';
   });
+  glowRange.addEventListener('change', () => { pushLive(); });
 
   countRange.addEventListener('input', () => {
     config.pumpkinCount = parseInt(countRange.value, 10);
     countVal.textContent = config.pumpkinCount;
     if (config.expressionMode === 'custom') buildExpressionRows();
   });
+  countRange.addEventListener('change', () => { pushLive(); });
 
-  countRange.addEventListener('change', () => {
+  flickerToggle.addEventListener('change', () => {
+    config.flicker = flickerToggle.checked;
     pushLive();
   });
 
-  flickerToggle.addEventListener('click', () => {
-    config.flicker = !flickerToggle.classList.contains('on');
-    flickerToggle.classList.toggle('on', config.flicker);
-    flickerToggle.setAttribute('aria-pressed', String(config.flicker));
-    pushLive();
-  });
-
-  customExpressionToggle.addEventListener('click', () => {
-    config.expressionMode = (config.expressionMode === 'custom') ? 'random' : 'custom';
+  customExpressionToggle.addEventListener('change', () => {
+    config.expressionMode = customExpressionToggle.checked ? 'custom' : 'random';
     syncExpressionModeUI();
     pushLive();
   });
 
-  animatedExpressionsToggle.addEventListener('click', () => {
-    config.animatedExpressions = !(config.animatedExpressions !== false);
-    animatedExpressionsToggle.classList.toggle('on', config.animatedExpressions);
-    animatedExpressionsToggle.setAttribute('aria-pressed', String(config.animatedExpressions));
+  animatedExpressionsToggle.addEventListener('change', () => {
+    config.animatedExpressions = animatedExpressionsToggle.checked;
     pushLive();
   });
 
@@ -1294,11 +1272,475 @@
     pushLive();
   });
 
+  navItems.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navItems.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.dataset.tab;
+      stagePanels.forEach(p => p.classList.toggle('active', p.id === 'panel-' + target));
+    });
+  });
+
+  copyUrlBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(obsUrlInput.value);
+    } catch (e) {
+      obsUrlInput.select();
+      try { document.execCommand('copy'); } catch (e2) {}
+    }
+    copyUrlBtn.textContent = '✓';
+    copyUrlBtn.classList.add('copied');
+    clearTimeout(copyUrlBtn._t);
+    copyUrlBtn._t = setTimeout(() => {
+      copyUrlBtn.textContent = '📋';
+      copyUrlBtn.classList.remove('copied');
+    }, 1400);
+    showToast('Copied to clipboard');
+  });
+
   buildSwatches();
   buildCustomStripePickers();
   buildTitleFontSelect();
   buildTitleGradientPickers();
   syncUI();
+
+  // Export / Save As functionality
+  const exportConfigBtn = document.getElementById('exportConfigBtn');
+  const exportFilenameInput = document.getElementById('exportFilename');
+  exportConfigBtn.addEventListener('click', () => {
+    const filename = exportFilenameInput.value.trim() || 'pumpkin-patch-config.json';
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", filename);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showToast('Configuration exported ✓');
+  });
+
+  // Upload configuration file functionality
+  const configUploadZone = document.getElementById('configUploadZone');
+  const importConfigFile = document.getElementById('importConfigFile');
+  configUploadZone.addEventListener('click', () => importConfigFile.click());
+  importConfigFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const imported = JSON.parse(evt.target.result);
+        config = { ...DEFAULT_CONFIG, ...imported };
+        pushLive();
+        syncUI();
+        showToast('Configuration imported successfully ✓');
+      } catch (err) {
+        showToast('Invalid JSON configuration file');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  const LS_DASH_THEME_KEY = 'pumpkinpatch_dashboard_theme';
+  const LS_WALLPAPER_HISTORY_KEY = 'pumpkinpatch_wallpaper_history';
+  const MAX_WALLPAPER_HISTORY = 8;
+
+  const DEFAULT_DASH_THEME = {
+    bgType:'gradient', bgColor1:'#0a0a0f', gradColor1:'#ff6b1a', gradColor2:'#b026ff', gradAngle:135,
+    bgImageUrl:'', bgImageSourceType:'url', bgImageUpload:'', bgPosition:'cover', navTextColor:'#9c98a8',
+    primaryText:'#f4f1ea', secondaryText:'#9c98a8', tertiaryText:'#6f6c78', panelColor:'#1b1b25', panelOpacity:0.55,
+    panelBorder:'#ffffff', borderOpacity:0.15, accent1:'#ff6b1a', accent2:'#b026ff', blurStrength:10, glowIntensity:1,
+    cornerRadius:12, sidebarOpacity:0.65, sidebarGlow:true, transitionSpeed:'normal'
+  };
+
+  let dashTheme = { ...DEFAULT_DASH_THEME };
+  let wallpaperHistory = [];
+
+  function loadDashTheme(){ try{ const raw = localStorage.getItem(LS_DASH_THEME_KEY); if (raw) dashTheme = { ...DEFAULT_DASH_THEME, ...JSON.parse(raw) }; }catch(e){} }
+  function saveDashTheme(){ localStorage.setItem(LS_DASH_THEME_KEY, JSON.stringify(dashTheme)); }
+
+  function hexToRgbTriplet(hex){
+    const clean = (hex || '#ffffff').replace('#','');
+    const full = clean.length === 3 ? clean.split('').map(c=>c+c).join('') : clean;
+    const r = parseInt(full.substring(0,2), 16) || 255;
+    const g = parseInt(full.substring(2,4), 16) || 255;
+    const b = parseInt(full.substring(4,6), 16) || 255;
+    return `${r}, ${g}, ${b}`;
+  }
+
+  function applyDashTheme(){
+    document.documentElement.style.setProperty('--nav-text-color', dashTheme.navTextColor);
+    document.documentElement.style.setProperty('--text-primary', dashTheme.primaryText);
+    document.documentElement.style.setProperty('--text-secondary', dashTheme.secondaryText);
+    document.documentElement.style.setProperty('--text-tertiary', dashTheme.tertiaryText);
+    document.documentElement.style.setProperty('--dash-panel-opacity', dashTheme.panelOpacity);
+    document.documentElement.style.setProperty('--dash-panel-color-rgb', hexToRgbTriplet(dashTheme.panelColor));
+    document.documentElement.style.setProperty('--dash-border-opacity', dashTheme.borderOpacity);
+    document.documentElement.style.setProperty('--dash-panel-border-rgb', hexToRgbTriplet(dashTheme.panelBorder));
+    document.documentElement.style.setProperty('--dash-blur', dashTheme.blurStrength + 'px');
+    document.documentElement.style.setProperty('--dash-glow-intensity', dashTheme.glowIntensity);
+    document.documentElement.style.setProperty('--dash-active-glow', dashTheme.sidebarGlow
+      ? `0 0 ${(20 * dashTheme.glowIntensity).toFixed(0)}px rgba(255,107,26,${(0.32 * dashTheme.glowIntensity).toFixed(2)})`
+      : 'none');
+    document.documentElement.style.setProperty('--dash-corner-radius', dashTheme.cornerRadius + 'px');
+    document.documentElement.style.setProperty('--dash-sidebar-opacity', dashTheme.sidebarOpacity);
+    document.documentElement.style.setProperty('--accent-primary', dashTheme.accent1);
+    document.documentElement.style.setProperty('--accent-secondary', dashTheme.accent2);
+
+    const speedMap = { instant:'0s', fast:'0.1s', normal:'0.25s', slow:'0.5s', leisurely:'0.8s' };
+    document.documentElement.style.setProperty('--dash-transition-speed', speedMap[dashTheme.transitionSpeed] || '0.25s');
+
+    const body = document.body;
+    if (dashTheme.bgType === 'solid'){ body.style.background = dashTheme.bgColor1; }
+    else if (dashTheme.bgType === 'gradient'){ body.style.background = `linear-gradient(${dashTheme.gradAngle}deg, ${dashTheme.gradColor1}33, ${dashTheme.gradColor2}33), var(--bg-deep)`; }
+    else if (dashTheme.bgType === 'image'){
+      const bgSource = dashTheme.bgImageSourceType === 'upload' && dashTheme.bgImageUpload ? dashTheme.bgImageUpload : dashTheme.bgImageUrl;
+      if (bgSource){
+        const posMap = {cover:'background-size:cover; background-repeat:no-repeat; background-position:center;',contain:'background-size:contain; background-repeat:no-repeat; background-position:center;',center:'background-size:auto; background-repeat:no-repeat; background-position:center;',repeat:'background-size:auto; background-repeat:repeat; background-position:top left;'};
+        body.setAttribute('style', `background-image:url('${bgSource}'); ${posMap[dashTheme.bgPosition] || posMap.cover}; transition: background-color 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background-image 0.8s ease;`);
+      }
+    }
+    document.querySelectorAll('[data-dash-choice]').forEach(card=>{ card.classList.toggle('selected', dashTheme[card.dataset.dashChoice] === card.dataset.value); });
+    document.getElementById('fieldBgSolid').style.display = dashTheme.bgType === 'solid' ? 'block' : 'none';
+    document.getElementById('fieldBgGradient').style.display = dashTheme.bgType === 'gradient' ? 'block' : 'none';
+    document.getElementById('fieldBgImage').classList.toggle('hidden', dashTheme.bgType !== 'image');
+    updateImageSourceToggle();
+    renderWallpaperHistory();
+  }
+
+  function populateDashThemeForm(){
+    document.getElementById('inputDashBgColor1').value = dashTheme.bgColor1;
+    document.getElementById('inputDashGradColor1').value = dashTheme.gradColor1;
+    document.getElementById('inputDashGradColor2').value = dashTheme.gradColor2;
+    document.getElementById('inputDashGradAngle').value = dashTheme.gradAngle;
+    document.getElementById('valDashGradAngle').textContent = dashTheme.gradAngle + '°';
+    document.getElementById('inputDashBgImageUrl').value = dashTheme.bgImageUrl;
+    document.getElementById('inputDashBgPosition').value = dashTheme.bgPosition;
+    document.getElementById('inputDashNavTextColor').value = dashTheme.navTextColor;
+    document.getElementById('inputDashPrimaryText').value = dashTheme.primaryText;
+    document.getElementById('inputDashSecondaryText').value = dashTheme.secondaryText;
+    document.getElementById('inputDashTertiaryText').value = dashTheme.tertiaryText;
+    document.getElementById('inputDashPanelColor').value = dashTheme.panelColor;
+    document.getElementById('inputDashPanelOpacity').value = dashTheme.panelOpacity;
+    document.getElementById('valDashPanelOpacity').textContent = (dashTheme.panelOpacity * 100).toFixed(0) + '%';
+    document.getElementById('inputDashPanelBorder').value = dashTheme.panelBorder;
+    document.getElementById('inputDashBorderOpacity').value = dashTheme.borderOpacity;
+    document.getElementById('valDashBorderOpacity').textContent = (dashTheme.borderOpacity * 100).toFixed(1) + '%';
+    document.getElementById('inputDashAccent1').value = dashTheme.accent1;
+    document.getElementById('inputDashAccent2').value = dashTheme.accent2;
+    document.getElementById('inputDashBlur').value = dashTheme.blurStrength;
+    document.getElementById('valDashBlur').textContent = dashTheme.blurStrength + 'px';
+    document.getElementById('inputDashGlowIntensity').value = dashTheme.glowIntensity;
+    document.getElementById('valDashGlowIntensity').textContent = (dashTheme.glowIntensity * 100).toFixed(0) + '%';
+    document.getElementById('inputDashCornerRadius').value = dashTheme.cornerRadius;
+    document.getElementById('valDashCornerRadius').textContent = dashTheme.cornerRadius + 'px';
+    document.getElementById('inputDashSidebarOpacity').value = dashTheme.sidebarOpacity;
+    document.getElementById('valDashSidebarOpacity').textContent = (dashTheme.sidebarOpacity * 100).toFixed(0) + '%';
+    document.getElementById('toggleDashSidebarGlow').checked = dashTheme.sidebarGlow;
+    document.getElementById('inputDashTransitionSpeed').value = dashTheme.transitionSpeed;
+    document.getElementById('toggleBgImageSource').checked = dashTheme.bgImageSourceType === 'upload';
+    updateImageSourceToggle();
+  }
+
+  function updateImageSourceToggle(){
+    const isUpload = document.getElementById('toggleBgImageSource').checked;
+    document.getElementById('bgImageUrlSection').classList.toggle('hidden', isUpload);
+    document.getElementById('bgImageUploadSection').classList.toggle('hidden', !isUpload);
+  }
+
+  document.getElementById('toggleBgImageSource').addEventListener('change', ()=>{
+    dashTheme.bgImageSourceType = document.getElementById('toggleBgImageSource').checked ? 'upload' : 'url';
+    updateImageSourceToggle();
+    applyDashTheme();
+    saveDashTheme();
+    showToast('Image source toggled ✓');
+  });
+
+  function formatFileSize(bytes){
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  function resizeImageDataUrl(dataUrl, maxDim, quality){
+    return new Promise((resolve)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let width = img.width;
+        let height = img.height;
+        if (width > maxDim || height > maxDim){
+          if (width > height){ height = Math.round(height * (maxDim / width)); width = maxDim; }
+          else{ width = Math.round(width * (maxDim / height)); height = maxDim; }
+        }
+        try{
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        }catch(e){ resolve(dataUrl); }
+      };
+      img.onerror = ()=> resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
+  function extractImageColors(dataUrl){
+    return new Promise((resolve)=>{
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = ()=>{
+        try{
+          const canvas = document.createElement('canvas');
+          canvas.width = 150;
+          canvas.height = 150;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, 150, 150);
+
+          const imageData = ctx.getImageData(0, 0, 150, 150);
+          const data = imageData.data;
+
+          const colorMap = {};
+          for (let i = 0; i < data.length; i += 4){
+            const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+            if (a < 125) continue;
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            if (brightness < 30 || brightness > 230) continue;
+            const hex = `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+            colorMap[hex] = (colorMap[hex] || 0) + 1;
+          }
+
+          const sorted = Object.entries(colorMap).sort((a, b) => b[1] - a[1]).slice(0, 5).map(entry => entry[0]);
+          resolve(sorted);
+        }catch(e){ resolve(['#ff6b1a', '#b026ff']); }
+      };
+      img.onerror = ()=> resolve(['#ff6b1a', '#b026ff']);
+      img.src = dataUrl;
+    });
+  }
+
+  function loadWallpaperHistory(){
+    try{ const raw = localStorage.getItem(LS_WALLPAPER_HISTORY_KEY); wallpaperHistory = raw ? JSON.parse(raw) : []; }catch(e){ wallpaperHistory = []; }
+  }
+  function saveWallpaperHistory(){
+    try{ localStorage.setItem(LS_WALLPAPER_HISTORY_KEY, JSON.stringify(wallpaperHistory)); }
+    catch(e){
+      if (wallpaperHistory.length > 1){
+        wallpaperHistory.pop();
+        try{ localStorage.setItem(LS_WALLPAPER_HISTORY_KEY, JSON.stringify(wallpaperHistory)); }
+        catch(e2){ showToast('Wallpaper history is full — remove some to add more.'); }
+      }
+    }
+  }
+  function addToWallpaperHistory(dataUrl, name){
+    wallpaperHistory = wallpaperHistory.filter(item => item.dataUrl !== dataUrl);
+    wallpaperHistory.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), dataUrl, name: name || 'Wallpaper', timestamp: Date.now() });
+    if (wallpaperHistory.length > MAX_WALLPAPER_HISTORY) wallpaperHistory = wallpaperHistory.slice(0, MAX_WALLPAPER_HISTORY);
+    saveWallpaperHistory();
+    renderWallpaperHistory();
+  }
+  function removeFromWallpaperHistory(id){
+    wallpaperHistory = wallpaperHistory.filter(item => item.id !== id);
+    saveWallpaperHistory();
+    renderWallpaperHistory();
+    showToast('Removed from wallpaper history');
+  }
+  function renderWallpaperHistory(){
+    const grid = document.getElementById('wallpaperHistoryGrid');
+    const emptyHint = document.getElementById('wallpaperHistoryEmptyHint');
+    if (!grid) return;
+    grid.innerHTML = '';
+    if (!wallpaperHistory.length){ if (emptyHint) emptyHint.style.display = 'block'; return; }
+    if (emptyHint) emptyHint.style.display = 'none';
+    wallpaperHistory.forEach(item=>{
+      const cell = document.createElement('div');
+      cell.className = 'wallpaper-history-item' + (dashTheme.bgImageUpload === item.dataUrl ? ' active' : '');
+      cell.title = item.name;
+      cell.innerHTML = `<img src="${item.dataUrl}" alt="${item.name}" loading="lazy"><button type="button" class="wallpaper-history-delete" title="Remove from history">✕</button>`;
+      cell.addEventListener('click', (e)=>{
+        if (e.target.closest('.wallpaper-history-delete')) return;
+        applyWallpaperFromHistory(item);
+      });
+      cell.querySelector('.wallpaper-history-delete').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        removeFromWallpaperHistory(item.id);
+      });
+      grid.appendChild(cell);
+    });
+  }
+  async function applyWallpaperFromHistory(item){
+    dashTheme.bgImageUpload = item.dataUrl;
+    dashTheme.bgImageSourceType = 'upload';
+    document.getElementById('toggleBgImageSource').checked = true;
+    updateImageSourceToggle();
+
+    const colors = await extractImageColors(item.dataUrl);
+    if (colors.length >= 2){
+      dashTheme.gradColor1 = colors[0];
+      dashTheme.gradColor2 = colors[colors.length > 1 ? 1 : 0];
+      dashTheme.navTextColor = colors[colors.length > 2 ? 2 : colors[0]];
+      document.getElementById('inputDashGradColor1').value = dashTheme.gradColor1;
+      document.getElementById('inputDashGradColor2').value = dashTheme.gradColor2;
+      document.getElementById('inputDashNavTextColor').value = dashTheme.navTextColor;
+    }
+
+    applyDashTheme();
+    saveDashTheme();
+    renderWallpaperHistory();
+
+    document.getElementById('uploadZone').style.display = 'none';
+    document.getElementById('uploadPreview').classList.remove('hidden');
+    document.getElementById('previewImg').src = item.dataUrl;
+    document.getElementById('previewFilename').textContent = item.name;
+    document.getElementById('previewSize').textContent = 'From history';
+
+    showToast(`Applied "${item.name}" ✓`);
+  }
+
+  function handleFile(file){
+    if (!file.type.startsWith('image/')){ showToast('Please select an image file.'); return; }
+    if (file.size > 5242880){ showToast('File too large (max 5MB)'); return; }
+    const reader = new FileReader();
+    reader.onload = async (evt)=>{
+      const originalDataUrl = evt.target.result;
+      const storedDataUrl = await resizeImageDataUrl(originalDataUrl, 1600, 0.82);
+
+      dashTheme.bgImageUpload = storedDataUrl;
+      dashTheme.bgImageSourceType = 'upload';
+
+      const colors = await extractImageColors(storedDataUrl);
+      if (colors.length >= 2){
+        dashTheme.gradColor1 = colors[0];
+        dashTheme.gradColor2 = colors[colors.length > 1 ? 1 : 0];
+        dashTheme.navTextColor = colors[colors.length > 2 ? 2 : colors[0]];
+
+        document.getElementById('inputDashGradColor1').value = dashTheme.gradColor1;
+        document.getElementById('inputDashGradColor2').value = dashTheme.gradColor2;
+        document.getElementById('inputDashNavTextColor').value = dashTheme.navTextColor;
+
+        showToast('Colors extracted & applied ✓');
+      }
+
+      document.getElementById('toggleBgImageSource').checked = true;
+      updateImageSourceToggle();
+      applyDashTheme();
+      saveDashTheme();
+      showUploadPreview(file, storedDataUrl);
+      addToWallpaperHistory(storedDataUrl, file.name);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function showUploadPreview(file, dataUrl){
+    const zone = document.getElementById('uploadZone');
+    const preview = document.getElementById('uploadPreview');
+    const img = document.getElementById('previewImg');
+    const filename = document.getElementById('previewFilename');
+    const size = document.getElementById('previewSize');
+
+    img.src = dataUrl;
+    filename.textContent = file.name;
+    size.textContent = formatFileSize(file.size);
+
+    zone.style.display = 'none';
+    preview.classList.remove('hidden');
+  }
+
+  function clearUploadPreview(){
+    const zone = document.getElementById('uploadZone');
+    const preview = document.getElementById('uploadPreview');
+    const fileInput = document.getElementById('inputDashBgImageUpload');
+
+    fileInput.value = '';
+    dashTheme.bgImageUpload = '';
+    applyDashTheme();
+    saveDashTheme();
+
+    zone.style.display = 'block';
+    preview.classList.add('hidden');
+    showToast('Wallpaper cleared');
+  }
+
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput = document.getElementById('inputDashBgImageUpload');
+  const uploadClear = document.getElementById('uploadClear');
+
+  uploadZone.addEventListener('click', ()=> fileInput.click());
+  fileInput.addEventListener('change', (e)=>{ const file = e.target.files[0]; if (file) handleFile(file); });
+  uploadZone.addEventListener('dragover', (e)=>{ e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', ()=>{ uploadZone.classList.remove('drag-over'); });
+  uploadZone.addEventListener('drop', (e)=>{
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+  uploadClear.addEventListener('click', clearUploadPreview);
+
+  document.querySelectorAll('#panel-theme input, #panel-theme select').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      if (el.id === 'inputDashBgImageUpload') return;
+
+      dashTheme.bgColor1 = document.getElementById('inputDashBgColor1').value;
+      dashTheme.gradColor1 = document.getElementById('inputDashGradColor1').value;
+      dashTheme.gradColor2 = document.getElementById('inputDashGradColor2').value;
+      dashTheme.gradAngle = parseInt(document.getElementById('inputDashGradAngle').value);
+      dashTheme.bgImageUrl = document.getElementById('inputDashBgImageUrl').value;
+      dashTheme.bgPosition = document.getElementById('inputDashBgPosition').value;
+      dashTheme.navTextColor = document.getElementById('inputDashNavTextColor').value;
+      dashTheme.primaryText = document.getElementById('inputDashPrimaryText').value;
+      dashTheme.secondaryText = document.getElementById('inputDashSecondaryText').value;
+      dashTheme.tertiaryText = document.getElementById('inputDashTertiaryText').value;
+      dashTheme.panelColor = document.getElementById('inputDashPanelColor').value;
+      dashTheme.panelOpacity = parseFloat(document.getElementById('inputDashPanelOpacity').value);
+      dashTheme.panelBorder = document.getElementById('inputDashPanelBorder').value;
+      dashTheme.borderOpacity = parseFloat(document.getElementById('inputDashBorderOpacity').value);
+      dashTheme.accent1 = document.getElementById('inputDashAccent1').value;
+      dashTheme.accent2 = document.getElementById('inputDashAccent2').value;
+      dashTheme.blurStrength = parseInt(document.getElementById('inputDashBlur').value);
+      dashTheme.glowIntensity = parseFloat(document.getElementById('inputDashGlowIntensity').value);
+      dashTheme.cornerRadius = parseInt(document.getElementById('inputDashCornerRadius').value);
+      dashTheme.sidebarOpacity = parseFloat(document.getElementById('inputDashSidebarOpacity').value);
+      dashTheme.sidebarGlow = document.getElementById('toggleDashSidebarGlow').checked;
+      dashTheme.transitionSpeed = document.getElementById('inputDashTransitionSpeed').value;
+
+      document.getElementById('valDashGradAngle').textContent = dashTheme.gradAngle + '°';
+      document.getElementById('valDashPanelOpacity').textContent = (dashTheme.panelOpacity * 100).toFixed(0) + '%';
+      document.getElementById('valDashBorderOpacity').textContent = (dashTheme.borderOpacity * 100).toFixed(1) + '%';
+      document.getElementById('valDashBlur').textContent = dashTheme.blurStrength + 'px';
+      document.getElementById('valDashGlowIntensity').textContent = (dashTheme.glowIntensity * 100).toFixed(0) + '%';
+      document.getElementById('valDashCornerRadius').textContent = dashTheme.cornerRadius + 'px';
+      document.getElementById('valDashSidebarOpacity').textContent = (dashTheme.sidebarOpacity * 100).toFixed(0) + '%';
+
+      applyDashTheme();
+      saveDashTheme();
+    });
+  });
+
+  document.querySelectorAll('[data-dash-choice]').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      dashTheme[card.dataset.dashChoice] = card.dataset.value;
+      applyDashTheme();
+      saveDashTheme();
+      showToast('Background style updated ✓');
+    });
+  });
+
+  document.getElementById('btnResetDashTheme').addEventListener('click', ()=>{
+    dashTheme = { ...DEFAULT_DASH_THEME };
+    populateDashThemeForm();
+    applyDashTheme();
+    saveDashTheme();
+    showToast('Dashboard theme reset ✓');
+  });
+
+  loadDashTheme();
+  loadWallpaperHistory();
+  populateDashThemeForm();
+  applyDashTheme();
 })();
 </script>
 
