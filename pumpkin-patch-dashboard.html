@@ -415,8 +415,9 @@
     <button type="button" class="nav-btn" data-tab="color"><span class="num">04</span><span>Pumpkin Color</span></button>
     <button type="button" class="nav-btn" data-tab="stem"><span class="num">05</span><span>Stem Color</span></button>
     <button type="button" class="nav-btn" data-tab="size"><span class="num">06</span><span>Patch Size</span></button>
-    <button type="button" class="nav-btn" data-tab="theme"><span class="num">07</span><span>Dashboard Theme</span></button>
-    <button type="button" class="nav-btn" data-tab="settings"><span class="num">08</span><span>Settings</span></button>
+    <button type="button" class="nav-btn" data-tab="motion"><span class="num">07</span><span>Pumpkin Motion</span></button>
+    <button type="button" class="nav-btn" data-tab="theme"><span class="num">08</span><span>Dashboard Theme</span></button>
+    <button type="button" class="nav-btn" data-tab="settings"><span class="num">09</span><span>Settings</span></button>
   </nav>
 
   <div class="main">
@@ -601,6 +602,53 @@
       <div class="field">
         <label for="countRange">Pumpkin count</label>
         <div class="range-row"><input type="range" id="countRange" min="1" max="12" step="1" value="5"><span class="val" id="countVal">5</span></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-motion">
+      <h2>Pumpkin Motion</h2>
+      <div class="sub">Layer on extra movement — everything below is additive to the existing neon flicker and blink animations, and can be mixed and matched.</div>
+
+      <div class="field">
+        <div class="toggle-row">
+          <div class="row-labels"><div class="title">Idle bob</div><div class="desc">Gentle up-down float, staggered per pumpkin.</div></div>
+          <label class="switch"><input type="checkbox" id="motionBobToggle" checked><span class="track"></span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="toggle-row">
+          <div class="row-labels"><div class="title">Gentle sway</div><div class="desc">Slow side-to-side rock, like it's sitting in a breeze.</div></div>
+          <label class="switch"><input type="checkbox" id="motionSwayToggle" checked><span class="track"></span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="toggle-row">
+          <div class="row-labels"><div class="title">Breathing glow</div><div class="desc">Neon glow intensity slowly rises and falls, on top of the existing flicker.</div></div>
+          <label class="switch"><input type="checkbox" id="motionGlowPulseToggle" checked><span class="track"></span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="toggle-row">
+          <div class="row-labels"><div class="title">Ember sparks</div><div class="desc">Tiny embers drift upward from the top of each pumpkin.</div></div>
+          <label class="switch"><input type="checkbox" id="motionEmbersToggle" checked><span class="track"></span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="toggle-row">
+          <div class="row-labels"><div class="title">Startled jump</div><div class="desc">Occasional quick hop, like it got spooked.</div></div>
+          <label class="switch"><input type="checkbox" id="motionStartleToggle" checked><span class="track"></span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="toggle-row">
+          <div class="row-labels"><div class="title">3D tilt wobble</div><div class="desc">Slight forward-back rock for a more dimensional feel.</div></div>
+          <label class="switch"><input type="checkbox" id="motionTilt3dToggle" checked><span class="track"></span></label>
+        </div>
       </div>
     </section>
 
@@ -863,7 +911,13 @@
     expressionMode: "random",
     pumpkinExpressions: [],
     animatedExpressions: true,
-    rerollTick: 0
+    rerollTick: 0,
+    motionBob: true,
+    motionSway: true,
+    motionGlowPulse: true,
+    motionEmbers: true,
+    motionStartle: true,
+    motionTilt3d: true
   };
 
   const PRESETS = [
@@ -909,6 +963,12 @@
   const expressionCustomBlock = document.getElementById('expressionCustomBlock');
   const expressionRows = document.getElementById('expressionRows');
   const rerollBtn = document.getElementById('rerollBtn');
+  const motionBobToggle = document.getElementById('motionBobToggle');
+  const motionSwayToggle = document.getElementById('motionSwayToggle');
+  const motionGlowPulseToggle = document.getElementById('motionGlowPulseToggle');
+  const motionEmbersToggle = document.getElementById('motionEmbersToggle');
+  const motionStartleToggle = document.getElementById('motionStartleToggle');
+  const motionTilt3dToggle = document.getElementById('motionTilt3dToggle');
   const saveBtn = document.getElementById('saveBtn');
   const resetBtn = document.getElementById('resetBtn');
   const toast = document.getElementById('toast');
@@ -1121,6 +1181,13 @@
     flickerToggle.checked = !!config.flicker;
     animatedExpressionsToggle.checked = config.animatedExpressions !== false;
 
+    motionBobToggle.checked = config.motionBob !== false;
+    motionSwayToggle.checked = config.motionSway !== false;
+    motionGlowPulseToggle.checked = config.motionGlowPulse !== false;
+    motionEmbersToggle.checked = config.motionEmbers !== false;
+    motionStartleToggle.checked = config.motionStartle !== false;
+    motionTilt3dToggle.checked = config.motionTilt3d !== false;
+
     const currentColors = config.colors.join(',');
     document.querySelectorAll('.swatch').forEach(sw => {
       sw.classList.toggle('active', sw.dataset.presetColors === currentColors);
@@ -1253,6 +1320,36 @@
 
   animatedExpressionsToggle.addEventListener('change', () => {
     config.animatedExpressions = animatedExpressionsToggle.checked;
+    pushLive();
+  });
+
+  motionBobToggle.addEventListener('change', () => {
+    config.motionBob = motionBobToggle.checked;
+    pushLive();
+  });
+
+  motionSwayToggle.addEventListener('change', () => {
+    config.motionSway = motionSwayToggle.checked;
+    pushLive();
+  });
+
+  motionGlowPulseToggle.addEventListener('change', () => {
+    config.motionGlowPulse = motionGlowPulseToggle.checked;
+    pushLive();
+  });
+
+  motionEmbersToggle.addEventListener('change', () => {
+    config.motionEmbers = motionEmbersToggle.checked;
+    pushLive();
+  });
+
+  motionStartleToggle.addEventListener('change', () => {
+    config.motionStartle = motionStartleToggle.checked;
+    pushLive();
+  });
+
+  motionTilt3dToggle.addEventListener('change', () => {
+    config.motionTilt3d = motionTilt3dToggle.checked;
     pushLive();
   });
 
