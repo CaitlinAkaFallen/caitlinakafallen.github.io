@@ -270,12 +270,18 @@ async function getAvatar(username) {
 }
 
 function insertEmotes(data) {
-    if (!data.parts) return data.message?.message || data.message || "";
+    const text = data.text || "";
+    const emotes = data.emotes || [];
+    if (!emotes.length) return text;
+
     let output = "";
-    data.parts.forEach(part => {
-        if (part.type === "text") output += part.text;
-        else if (part.type === "emote") output += `<div class="emoteWrapper"><img src="${part.imageUrl}"></div>`;
+    let cursor = 0;
+    [...emotes].sort((a, b) => a.StartIndex - b.StartIndex).forEach(e => {
+        if (e.StartIndex > cursor) output += text.slice(cursor, e.StartIndex);
+        output += `<div class="emoteWrapper"><img src="${e.ImageUrl}"></div>`;
+        cursor = (e.EndIndex ?? e.StartIndex) + 1;
     });
+    output += text.slice(cursor);
     return output;
 }
 
@@ -335,8 +341,13 @@ client.on('Twitch.WatchStreak', async ({ data }) => {
     createCard(data, "WATCH_STREAK", avatar, pronouns, `Returning for stream #${data.streak}!`);
 });
 
-client.on('Twitch.ChatMessage', async ({ data }) => {
-    const user = data.message.username;
+// Subscribe to "Twitch.ChatMessage" events and register a callback
+client.on('Twitch.ChatMessage', async ({ event, data }) => {
+    // Code here will run every time the event is received!
+    console.log('Received event:', event.source, event.type);
+    console.log('Event data:', data);
+
+    const user = data.user?.login || data.user?.name;
     const [avatar, pronouns] = await Promise.all([getAvatar(user), getPronouns(user)]);
     createCard(data, "CHAT", avatar, pronouns);
 });
@@ -350,7 +361,7 @@ function createCard(data, eventKey, avatarUrl, pronouns = "", customMsg = "") {
     const card = document.createElement("div");
     card.className = `card ${theme.cssClass}`;
 
-    const displayName = m.displayName || m.user_name || m.name || m.from_broadcaster_user_name || "User";
+    const displayName = m.displayName || m.user_name || m.name || m.from_broadcaster_user_name || m.user?.name || m.user?.login || "User";
     const displayText = customMsg || insertEmotes(data);
     const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
