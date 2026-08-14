@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sleek Vertical Chat 3.0</title>
+<title>Sleek Vertical Chat 3.1</title>
 
 <!-- Streamer.bot WebSocket Client -->
 <script src="https://cdn.jsdelivr.net/npm/@streamerbot/client/dist/streamerbot-client.js"></script>
@@ -26,6 +26,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    align-items: flex-start; /* cards hug their own content width instead of stretching */
     gap: 20px;
     width: 500px;
     height: calc(100vh - 80px);
@@ -38,6 +39,9 @@ body {
     align-items: center;
     padding: 10px 16px 10px 20px;
     min-height: 65px;
+    width: fit-content;   /* shrink for short messages ("hi") */
+    max-width: 460px;     /* cap width, wraps + grows down for longer messages */
+    min-width: 210px;     /* keep tiny messages from looking cramped */
     flex-shrink: 0;
 
     background: linear-gradient(135deg, rgba(15, 15, 20, 0.65) 0%, rgba(5, 5, 10, 0.55) 100%);
@@ -112,7 +116,7 @@ body {
 }
 
 /* TEXT CONTENT */
-.content { flex: 1; min-width: 0; }
+.content { flex: 1; min-width: 0; max-width: 100%; }
 
 .top-row {
     display: flex;
