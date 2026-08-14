@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Horizontal Stream Feed v2.9</title>
+<title>Horizontal Stream Feed v3.0</title>
 
 <script src="https://unpkg.com/@streamerbot/client/dist/streamerbot-client.js"></script>
 
@@ -269,23 +269,59 @@ async function getAvatar(username) {
     return `https://decapi.me/twitch/avatar/${key}`;
 }
 
-function insertEmotes(data) {
-    const text = data.text || "";
-    const emotes = data.emotes || [];
-    if (!emotes.length) return text;
-
-    let output = "";
-    let cursor = 0;
-    [...emotes].sort((a, b) => a.StartIndex - b.StartIndex).forEach(e => {
-        if (e.StartIndex > cursor) output += text.slice(cursor, e.StartIndex);
-        output += `<div class="emoteWrapper"><img src="${e.ImageUrl}"></div>`;
-        cursor = (e.EndIndex ?? e.StartIndex) + 1;
-    });
-    output += text.slice(cursor);
-    return output;
+// --- Emote / text rendering ---------------------------------------------
+// Twitch.ChatMessage does NOT put image URLs on `parts` (parts only has
+// type/text). The actual emote images live in the separate `emotes` array,
+// keyed by StartIndex/EndIndex against the raw `text` string. We splice
+// them in ourselves.
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 }
 
-const client = new StreamerbotClient({ host, port });
+function renderMessageWithEmotes(text, emotes) {
+    if (!text) return "";
+    if (!emotes || !emotes.length) return escapeHtml(text);
+
+    // Use an array of characters (not raw string indexing) so multi-byte
+    // emoji/unicode in chat don't throw off the StartIndex/EndIndex offsets.
+    const chars = Array.from(text);
+
+    const normalized = emotes
+        .map(e => {
+            const start = e.StartIndex ?? e.startIndex;
+            const end = e.EndIndex ?? e.endIndex ?? start;
+            const url = e.ImageUrl ?? e.imageUrl;
+            const name = e.Name ?? e.name ?? "";
+            return { start, end: end + 1, url, name };
+        })
+        .filter(e => e.url != null && Number.isInteger(e.start))
+        .sort((a, b) => a.start - b.start);
+
+    let result = "";
+    let cursor = 0;
+
+    normalized.forEach(e => {
+        if (e.start < cursor || e.start >= chars.length) return; // skip bad/overlapping ranges
+        result += escapeHtml(chars.slice(cursor, e.start).join(""));
+        result += `<div class="emoteWrapper"><img src="${e.url}" alt="${escapeHtml(e.name)}" title="${escapeHtml(e.name)}"></div>`;
+        cursor = Math.min(e.end, chars.length);
+    });
+    result += escapeHtml(chars.slice(cursor).join(""));
+    return result;
+}
+
+// --- Streamer.bot client -------------------------------------------------
+// Matches the pattern from the Streamer.bot docs (client.on with
+// {event, data} destructure). host/port are still read from the OBS
+// browser-source query string (?address=&port=) so existing scenes keep working.
+const client = new StreamerbotClient({
+    host,
+    port,
+    onConnect: () => console.log("Connected to Streamer.bot"),
+});
 
 // 1. BITS
 client.on('Twitch.Cheer', async ({ data }) => {
@@ -341,15 +377,32 @@ client.on('Twitch.WatchStreak', async ({ data }) => {
     createCard(data, "WATCH_STREAK", avatar, pronouns, `Returning for stream #${data.streak}!`);
 });
 
-// Subscribe to "Twitch.ChatMessage" events and register a callback
+// --- CHAT ---------------------------------------------------------------
+// Real Twitch.ChatMessage payload shape (per Streamer.bot docs):
+//   data.user   -> { id, login, name, badges: [{name, version, imageUrl, info}], color, ... }
+//   data.text   -> plain message string
+//   data.emotes -> [{ Type, Name, StartIndex, EndIndex, ImageUrl }]
+// There is no data.message.username / data.parts[].imageUrl in this event.
 client.on('Twitch.ChatMessage', async ({ event, data }) => {
-    // Code here will run every time the event is received!
     console.log('Received event:', event.source, event.type);
     console.log('Event data:', data);
 
-    const user = data.user?.login || data.user?.name;
-    const [avatar, pronouns] = await Promise.all([getAvatar(user), getPronouns(user)]);
-    createCard(data, "CHAT", avatar, pronouns);
+    const user = data.user || {};
+    const login = (user.login || user.name || "").toLowerCase();
+    const displayName = user.name || user.login || "User";
+
+    const [avatar, pronouns] = await Promise.all([getAvatar(login), getPronouns(login)]);
+
+    // Shim a `.message` object onto the event so createCard's existing
+    // displayName/badges lookups (used by the other event types too) work
+    // unchanged for chat as well.
+    data.message = {
+        displayName,
+        badges: user.badges || []
+    };
+
+    const displayText = renderMessageWithEmotes(data.text || "", data.emotes);
+    createCard(data, "CHAT", avatar, pronouns, displayText);
 });
 
 // This createCard function matches your working layout exactly
@@ -361,11 +414,11 @@ function createCard(data, eventKey, avatarUrl, pronouns = "", customMsg = "") {
     const card = document.createElement("div");
     card.className = `card ${theme.cssClass}`;
 
-    const displayName = m.displayName || m.user_name || m.name || m.from_broadcaster_user_name || m.user?.name || m.user?.login || "User";
-    const displayText = customMsg || insertEmotes(data);
+    const displayName = m.displayName || m.user_name || m.name || m.from_broadcaster_user_name || "User";
+    const displayText = customMsg;
     const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    const badgesHtml = (m.badges) ? m.badges.map(b => `<img src="${b.imageUrl}">`).join('') : '';
+
+    const badgesHtml = (m.badges) ? m.badges.map(b => `<img src="${b.imageUrl}" alt="${b.name || ''}" title="${b.name || ''}">`).join('') : '';
 
     card.innerHTML = `
         <div class="avatar-wrap">
