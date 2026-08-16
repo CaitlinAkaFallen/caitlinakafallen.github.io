@@ -514,6 +514,19 @@
       </div>
 
       <div class="field field-full">
+        <label for="connTabRedirectUri">Twitch Redirect URI (Clip Gallery)</label>
+        <div class="input-group">
+          <input type="text" id="connTabRedirectUri" readonly>
+          <button type="button" class="icon-btn" id="connTabCopyRedirectBtn" title="Copy Redirect URI">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="hint">Auto-detected from wherever this page is loaded from. Register this exact URL as an <code>OAuth Redirect URL</code> on your Twitch app before connecting the Clip Gallery's Twitch login.</div>
+      </div>
+
+      <div class="field field-full">
         <label>Session Stats</label>
         <div class="stat-grid">
           <div class="stat"><span class="stat-value" id="statUptime">00:00</span><span class="stat-label">Uptime</span></div>
@@ -586,8 +599,15 @@
 
       <div class="field field-full gallery-connect-hint" id="galleryRedirectHint">
         <label>Redirect URI to register</label>
-        <div>Add this exact URL to your app's <strong>OAuth Redirect URLs</strong> in the Twitch console: <code id="galleryRedirectUri">—</code></div>
-        <div class="gallery-hint-note">This page must be loaded over <code>http://</code> or <code>https://</code> (a local dev server, or hosted on caitlinscreativespace.xyz). Twitch login can't redirect back to a double-clicked <code>file://</code> page.</div>
+        <div class="input-group">
+          <input type="text" id="galleryRedirectUri" readonly>
+          <button type="button" class="icon-btn" id="galleryCopyRedirectBtn" title="Copy Redirect URI">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="gallery-hint-note">Add this exact URL to your app's <strong>OAuth Redirect URLs</strong> in the Twitch console. This page must be loaded over <code>http://</code> or <code>https://</code> (a local dev server, or hosted on caitlinscreativespace.xyz). Twitch login can't redirect back to a double-clicked <code>file://</code> page.</div>
       </div>
 
       <div class="action-bar">
@@ -1034,6 +1054,35 @@
     els.feedStatus.classList.toggle('on', !!watching);
     els.feedLabel.textContent = watching ? 'Watching' : 'Not watching';
   }
+
+  // ============================================
+  // REDIRECT URI (auto-detected, shown + copyable in both Connection and Clip Gallery tabs)
+  // ============================================
+  function getRedirectUri(){
+    return location.origin + location.pathname;
+  }
+  function initRedirectUriFields(){
+    const uri = getRedirectUri();
+    const connField = document.getElementById('connTabRedirectUri');
+    const galleryField = document.getElementById('galleryRedirectUri');
+    if (connField) connField.value = uri;
+    if (galleryField) galleryField.value = uri;
+  }
+  async function copyRedirectUri(btn){
+    const uri = getRedirectUri();
+    try{
+      await navigator.clipboard.writeText(uri);
+      showToast('Redirect URI copied ✓');
+      const original = btn.innerHTML;
+      btn.classList.add('copied');
+      setTimeout(()=>{ btn.classList.remove('copied'); }, 1400);
+    }catch(err){
+      showToast('Copy failed', 'err');
+    }
+  }
+  document.getElementById('connTabCopyRedirectBtn').addEventListener('click', (e)=> copyRedirectUri(e.currentTarget));
+  document.getElementById('galleryCopyRedirectBtn').addEventListener('click', (e)=> copyRedirectUri(e.currentTarget));
+  initRedirectUriFields();
 
   // ============================================
   // AVATAR RESOLUTION (unchanged logic from original Clip Forwarder)
@@ -1911,7 +1960,6 @@
 
   const gEls = {
     clientId: document.getElementById('twitchClientId'),
-    redirectHint: document.getElementById('galleryRedirectUri'),
     connectBtn: document.getElementById('galleryConnectBtn'),
     disconnectBtn: document.getElementById('galleryDisconnectBtn'),
     tokenPill: document.getElementById('galleryTokenPill'),
@@ -1944,8 +1992,6 @@
   let galleryBroadcasterLogin = null;
   let galleryCursor = null;
   let galleryLastRangeKey = null;
-
-  gEls.redirectHint.textContent = location.origin + location.pathname;
 
   function defaultGalleryFromTo(){
     const to = new Date();
@@ -2034,7 +2080,7 @@
       return;
     }
     saveGalleryClientId(clientId);
-    const redirectUri = location.origin + location.pathname;
+    const redirectUri = getRedirectUri();
     const state = galleryRandomState();
     try{ sessionStorage.setItem(LS_GALLERY_OAUTH_STATE_KEY, state); }catch(e){}
     const authUrl = 'https://id.twitch.tv/oauth2/authorize'
