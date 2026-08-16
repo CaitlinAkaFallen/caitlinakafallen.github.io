@@ -1,0 +1,2532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clip Forwarder — FallenOneArt Command Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent-primary:#7de8c8;
+    --accent-secondary:#c8a2ff;
+    --accent-tertiary:#ff6b9d;
+    --bg-deep:#0a0915;
+    --bg-panel:rgba(22,20,34,0.55);
+    --bg-panel-elevated:rgba(30,25,50,0.7);
+    --border-soft:rgba(255,255,255,0.1);
+    --border-medium:rgba(255,255,255,0.15);
+    --text-primary:#f3f1f8;
+    --text-secondary:#9a97ab;
+    --text-tertiary:#6f6c80;
+    --nav-text-color:#9a97ab;
+    --font-display:'Orbitron', sans-serif;
+    --font-mono:'Share Tech Mono', monospace;
+    --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md:0 8px 24px rgba(0,0,0,0.4);
+    --shadow-lg:0 16px 48px rgba(0,0,0,0.5);
+    --glow-primary:0 0 20px rgba(125,232,200,0.3);
+    --glow-secondary:0 0 20px rgba(200,162,255,0.3);
+    --dash-panel-opacity:0.55;
+    --dash-panel-color-rgb:30,25,50;
+    --dash-border-opacity:0.15;
+    --dash-panel-border-rgb:255,255,255;
+    --dash-blur:10px;
+    --dash-glow-intensity:1;
+    --dash-active-glow:0 0 20px rgba(125,232,200,0.3);
+    --dash-corner-radius:12px;
+    --dash-sidebar-opacity:0.5;
+    --dash-transition-speed:0.25s;
+    --red:#ff6b81;
+    --amber:#ffd166;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg-deep);color:var(--text-primary);font-family:var(--font-mono);min-height:100vh;font-weight:400;letter-spacing:0.5px;}
+  body{
+    background:
+      radial-gradient(ellipse at 15% -20%, rgba(125,232,200,0.15), transparent 50%),
+      radial-gradient(ellipse at 110% 20%, rgba(200,162,255,0.12), transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(255,107,157,0.05), transparent 60%),
+      var(--bg-deep);
+    transition:background-color 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background-image 0.8s ease;
+  }
+  a{ color:var(--accent-primary); text-decoration:none; transition:all .3s ease; }
+  a:hover{ color:var(--accent-secondary); text-shadow:0 0 10px rgba(125,232,200,0.5); }
+
+  .shell{ display:grid; grid-template-columns:240px 1fr; min-height:100vh; gap:1px; background:var(--border-soft); }
+  @media (max-width:1000px){ .shell{ grid-template-columns:1fr; } }
+
+  .sidebar{
+    background:linear-gradient(180deg, rgba(22,20,34, var(--dash-sidebar-opacity)), rgba(15,12,25, var(--dash-sidebar-opacity)));
+    -webkit-backdrop-filter:blur(var(--dash-blur));
+    backdrop-filter:blur(var(--dash-blur));
+    padding:28px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    border-right:1px solid rgba(255,255,255,var(--dash-border-opacity));
+  }
+  .brand{
+    font-family:var(--font-display);
+    font-weight:900;
+    font-size:14px;
+    letter-spacing:2px;
+    color:var(--text-primary);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px 24px;
+    background:linear-gradient(135deg, rgba(125,232,200,0.05), rgba(200,162,255,0.03));
+    border-radius:var(--dash-corner-radius);
+    margin-bottom:8px;
+  }
+  .brand .dot{
+    width:10px; height:10px; border-radius:50%;
+    background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    box-shadow:var(--glow-primary), inset 0 0 8px rgba(125,232,200,0.4);
+    animation:pulse-dot 2s ease-in-out infinite;
+    flex:0 0 auto;
+  }
+  @keyframes pulse-dot{0%,100%{opacity:1;box-shadow:var(--glow-primary), inset 0 0 8px rgba(125,232,200,0.4);}50%{opacity:0.7;box-shadow:var(--glow-primary), inset 0 0 12px rgba(125,232,200,0.6);}}
+  .brand small{ display:block; font-family:var(--font-mono); font-size:9px; color:var(--text-tertiary); letter-spacing:2px; font-weight:500; margin-top:4px; }
+
+  .feed-head-label{
+    font-family:var(--font-display);
+    font-size:12px;
+    letter-spacing:1.2px;
+  }
+
+  .nav-btn{
+    text-align:left; background:transparent; border:1px solid transparent; color:var(--nav-text-color);
+    font-family:var(--font-mono); font-size:12px; letter-spacing:0.5px; padding:12px 14px;
+    border-radius:var(--dash-corner-radius); cursor:pointer; display:flex; align-items:center; gap:10px;
+    transition:all var(--dash-transition-speed) cubic-bezier(0.4,0,0.2,1); position:relative; overflow:hidden;
+  }
+  .nav-btn::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(90deg, transparent, rgba(125,232,200,0.1), transparent);
+    opacity:0; transition:opacity var(--dash-transition-speed) ease;
+  }
+  .nav-btn:hover{ color:var(--text-primary); background:rgba(125,232,200,0.08); border-color:rgba(125,232,200,0.2); transform:translateX(2px); }
+  .nav-btn:hover::before{opacity:1;}
+  .nav-btn.active{
+    color:var(--accent-primary);
+    background:linear-gradient(135deg, rgba(125,232,200,0.15), rgba(200,162,255,0.08));
+    border:1px solid rgba(125,232,200,0.4);
+    box-shadow:var(--dash-active-glow);
+    font-weight:600;
+  }
+  .nav-btn .num{ font-size:10px; opacity:.5; font-weight:600; }
+  .nav-btn .nav-badge{
+    margin-left:auto; min-width:16px; height:16px; padding:0 4px; border-radius:8px;
+    background:var(--accent-secondary); color:#0a0915; font-size:9px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; font-family:var(--font-display);
+  }
+  .nav-btn .nav-led{ width:7px; height:7px; border-radius:50%; background:var(--text-tertiary); flex:0 0 auto; margin-left:auto; }
+  .nav-btn .nav-led.on{ background:var(--accent-primary); box-shadow:0 0 7px var(--accent-primary); }
+
+  .main{ padding:36px 40px 80px; overflow-y:auto; background:linear-gradient(180deg, transparent, rgba(125,232,200,0.02)); }
+  @supports (scrollbar-width: thin) { .main{ scrollbar-width:thin; scrollbar-color:transparent transparent; } }
+  .main::-webkit-scrollbar{width:8px;}
+  .main::-webkit-scrollbar-track{background:transparent;}
+  .main::-webkit-scrollbar-thumb{background:transparent; border-radius:4px;}
+
+  .panel{ display:none; max-width:920px; }
+  .panel.active{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:28px 28px;
+    align-items:start;
+    animation:fadein-adv .4s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes fadein-adv{ from{opacity:0; transform:translateY(8px); filter:blur(2px);} to{opacity:1; transform:translateY(0); filter:blur(0);} }
+
+  .panel.active > h2,
+  .panel.active > .sub,
+  .panel.active > .section-divider,
+  .panel.active > .status-card,
+  .panel.active > .action-bar,
+  .panel.active > button.primary-btn,
+  .panel.active > button.ghost-btn,
+  .panel.active > .field-full,
+  .panel.active > .field:has(select),
+  .panel.active > .field:has(.toggle-row),
+  .panel.active > .field:has(.choice-cards),
+  .panel.active > .field:has(.input-group),
+  .panel.active > .field:has(input[type="text"]),
+  .panel.active > .field:has(.stat-grid),
+  .panel.active > .feed-wrap,
+  .panel.active > .log-wrap{
+    grid-column:1 / -1;
+  }
+
+  .panel h2{
+    font-family:var(--font-display); font-size:26px; letter-spacing:2px; margin:0 0 8px;
+    background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-weight:900;
+  }
+  .panel .sub{ color:var(--text-secondary); font-size:13px; margin-bottom:8px; line-height:1.7; font-weight:400; }
+
+  .section-divider{ margin:8px 0 4px; padding-top:24px; border-top:1px solid var(--border-medium); position:relative; }
+  .section-divider::before{ content:''; position:absolute; top:-1px; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, rgba(125,232,200,0.3), transparent); }
+  .section-divider h3{ font-family:var(--font-display); font-size:15px; letter-spacing:1.5px; margin:0 0 4px; color:var(--accent-primary); font-weight:700; }
+  .section-divider .sub{ margin-bottom:0; font-size:12px; color:var(--text-tertiary); line-height:1.5; }
+
+  .field{
+    background:rgba(var(--dash-panel-color-rgb), var(--dash-panel-opacity));
+    border:1px solid rgba(var(--dash-panel-border-rgb), var(--dash-border-opacity));
+    border-radius:var(--dash-corner-radius);
+    padding:16px 18px;
+    margin-bottom:0;
+    box-shadow:0 4px 16px rgba(0,0,0,0.25);
+    transition:border-color .25s ease, background .25s ease;
+  }
+  .field:hover{ border-color:rgba(125,232,200,0.25); }
+  .field.field-full,
+  .field:has(.input-group),
+  .field:has(.stat-grid){ background:transparent; border:none; padding:0; box-shadow:none; }
+
+  .field label{ display:block; font-size:11px; letter-spacing:1.8px; text-transform:uppercase; color:var(--text-secondary); margin-bottom:10px; font-weight:600; opacity:0.9; }
+  .field .hint{ font-size:11px; color:var(--text-tertiary); opacity:.85; margin-top:8px; line-height:1.6; font-weight:400; }
+  .field .hint code{ color:var(--accent-primary); background:rgba(125,232,200,0.08); padding:1px 5px; border-radius:4px; }
+  .gallery-redirect-note{ margin-top:6px; }
+  .wallpaper-history-section{ margin-top:18px; }
+
+  input[type="text"], input[type="password"], input[type="url"], input[type="file"], input[type="datetime-local"], select{
+    width:100%;
+    background:linear-gradient(135deg, rgba(30, 25, 50, 0.432), rgba(25, 22, 40, 0.425));
+    border:1px solid var(--border-medium); border-radius:10px; color:var(--text-primary);
+    font-family:var(--font-mono); font-size:13px; padding:12px 14px; transition:all .25s ease;
+    -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+    -moz-appearance:none; -webkit-appearance:none; appearance:none;
+  }
+  select{
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239a97ab' viewBox='0 0 16 16'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>");
+    background-repeat:no-repeat; background-position:right 14px center; padding-right:40px !important; cursor:pointer;
+  }
+  select option{ background-color:#17162283; color:#ffffff; font-family:monospace; }
+  input[type="text"]:hover, input[type="password"]:hover, select:hover{ border-color:rgba(125,232,200,0.3); background:linear-gradient(135deg, rgba(30,25,50,0.8), rgba(25,22,40,1)); }
+  input[type="text"]:focus, input[type="password"]:focus, select:focus{
+    outline:none; border-color:var(--accent-primary); background:linear-gradient(135deg, rgba(30,25,50,1), rgba(25,22,40,1));
+    box-shadow:0 0 0 2px rgba(125,232,200,0.2), var(--glow-primary);
+  }
+  input[type="text"]:disabled, select:disabled{ opacity:.5; cursor:not-allowed; }
+
+  input[type="range"]{ -webkit-appearance:none; appearance:none; width:100%; accent-color:var(--accent-primary); height:6px; cursor:pointer; background:rgba(255,255,255,0.1); border-radius:4px; }
+  input[type="range"]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border:2px solid rgba(255,255,255,0.2); cursor:pointer; box-shadow:var(--glow-primary); transition:all .2s ease; }
+  input[type="range"]::-webkit-slider-thumb:hover{ transform:scale(1.2); box-shadow:var(--glow-primary), 0 0 30px rgba(125,232,200,0.4); }
+  input[type="range"]::-moz-range-thumb{ width:18px; height:18px; border-radius:50%; background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border:2px solid rgba(255,255,255,0.2); cursor:pointer; box-shadow:var(--glow-primary); }
+  .range-row{ display:flex; align-items:center; gap:14px; }
+  .range-row .val{ font-size:13px; color:var(--accent-primary); width:60px; text-align:right; flex:0 0 auto; font-weight:600; font-family:var(--font-display); letter-spacing:1px; }
+
+  input[type="color"]{ width:50px; height:40px; border:2px solid var(--border-medium); border-radius:10px; background:linear-gradient(135deg, #1a1a2e, #2d2d3d); cursor:pointer; padding:3px; transition:all .25s ease; }
+  input[type="color"]:hover{ border-color:var(--accent-primary); box-shadow:var(--glow-primary); }
+  .color-field{ display:flex; align-items:center; gap:14px; }
+  .color-field .swatch-label{ font-size:12px; color:var(--text-secondary); font-weight:500; }
+
+  .toggle-row{ display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border-soft); transition:all var(--dash-transition-speed) ease; }
+  .toggle-row:hover{ background:rgba(125,232,200,0.02); padding:12px 8px; margin:0 -8px; border-radius:6px; }
+  .toggle-row:last-child{ border-bottom:none; }
+  .toggle-row span{ font-size:13px; font-weight:500; color:var(--text-primary); }
+
+  .switch{ position:relative; width:44px; height:24px; flex:0 0 auto; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .switch .track{ position:absolute; inset:0; background:linear-gradient(90deg, rgba(125,232,200,0.1), rgba(200,162,255,0.1)); border:1px solid var(--border-medium); border-radius:24px; cursor:pointer; transition:all .3s cubic-bezier(0.4,0,0.2,1); }
+  .switch .track:before{ content:''; position:absolute; width:18px; height:18px; left:3px; top:2px; background:linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6)); border-radius:50%; transition:all .3s cubic-bezier(0.4,0,0.2,1); box-shadow:0 2px 8px rgba(0,0,0,0.3); }
+  .switch input:checked + .track{ background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); border-color:var(--accent-primary); box-shadow:var(--glow-primary); }
+  .switch input:checked + .track:before{ transform:translateX(20px); box-shadow:0 0 12px rgba(125,232,200,0.6), inset 0 0 4px rgba(0,0,0,0.2); }
+
+  .choice-cards{ display:flex; gap:10px; flex-wrap:wrap; }
+  .choice-cards .choice-card{ flex:1 1 130px; }
+  .choice-card{
+    flex:1; border:1.5px solid var(--border-medium); border-radius:var(--dash-corner-radius); padding:14px 12px;
+    cursor:pointer; background:linear-gradient(135deg, rgba(30,25,50,0.5), rgba(25,22,40,0.6)); text-align:center;
+    font-size:12px; color:var(--text-secondary); transition:all var(--dash-transition-speed) ease;
+  }
+  .choice-card:hover{ border-color:rgba(125,232,200,0.4); background:linear-gradient(135deg, rgba(30,25,50,0.7), rgba(25,22,40,0.8)); transform:translateY(-2px); }
+  .choice-card.selected{ border-color:var(--accent-primary); color:var(--text-primary); background:linear-gradient(135deg, rgba(125,232,200,0.15), rgba(200,162,255,0.08)); box-shadow:0 0 0 1px var(--accent-primary) inset, var(--glow-primary); font-weight:600; }
+
+  button.primary-btn{
+    font-family:var(--font-display); font-weight:700; font-size:13px; letter-spacing:2px; text-transform:uppercase;
+    background:transparent; color:var(--accent-primary); border:none; padding:14px 24px; cursor:pointer;
+    position:relative; overflow:hidden; transition:all var(--dash-transition-speed) ease;
+  }
+  button.primary-btn::after{ content:''; position:absolute; bottom:0; left:0; width:0; height:3px; background:linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); transition:width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  button.primary-btn:hover{ transform:scale(1.05); text-shadow:0 0 20px rgba(125,232,200,0.5); }
+  button.primary-btn:hover::after{ width:100%; }
+  button.primary-btn:active{ transform:scale(0.98); }
+  button.primary-btn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+  button.primary-btn.danger{ color:var(--red); }
+  button.primary-btn.danger::after{ background:linear-gradient(90deg, var(--red), var(--accent-secondary)); }
+  button.primary-btn.hidden{ display:none; }
+
+  button.ghost-btn{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:1px; background:transparent; border:1.5px solid var(--border-medium);
+    color:var(--text-secondary); border-radius:var(--dash-corner-radius); padding:11px 18px; cursor:pointer;
+    transition:all var(--dash-transition-speed) ease; font-weight:500; text-transform:uppercase;
+  }
+  button.ghost-btn:hover{ color:var(--text-primary); border-color:var(--accent-primary); background:rgba(125,232,200,0.08); box-shadow:0 0 16px rgba(125,232,200,0.2); transform:translateY(-1px); }
+  button.ghost-btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+  button.icon-btn{
+    background:rgba(22,20,34,0.8); border:1.5px solid var(--border-medium); color:var(--text-primary); border-radius:var(--dash-corner-radius);
+    width:42px; height:42px; cursor:pointer; font-size:12px; transition:all var(--dash-transition-speed) ease;
+    display:flex; align-items:center; justify-content:center; font-weight:bold; padding:0; letter-spacing:.5px;
+  }
+  button.icon-btn:hover{ border-color:var(--accent-primary); color:var(--accent-primary); box-shadow:0 0 12px rgba(125,232,200,0.3); background:rgba(22,20,34,1); transform:scale(1.06); }
+  button.icon-btn.copied{ color:var(--accent-primary); border-color:var(--accent-primary); }
+
+  .input-group{ display:flex; gap:8px; align-items:flex-start; }
+  .input-group input{ flex:1; }
+
+  .status-card{
+    border:1.5px solid var(--border-medium); border-radius:var(--dash-corner-radius);
+    background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.7));
+    -webkit-backdrop-filter:blur(var(--dash-blur)); backdrop-filter:blur(var(--dash-blur));
+    padding:18px; margin-bottom:0; display:flex; align-items:flex-start; gap:14px; position:relative; overflow:hidden;
+  }
+  .status-card::before{ content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(125,232,200,0.05), transparent); pointer-events:none; }
+  .status-led{ width:12px; height:12px; border-radius:50%; background:rgba(111,108,128,0.6); flex:0 0 auto; position:relative; border:2px solid rgba(111,108,128,0.4); top:2px; }
+  .status-led.on{ background:var(--accent-primary); border-color:rgba(125,232,200,0.6); box-shadow:0 0 12px var(--accent-primary), inset 0 0 4px rgba(255,255,255,0.3); animation:pulse-led 2s ease-in-out infinite; }
+  .status-led.connecting{ background:var(--amber); border-color:rgba(255,209,102,0.6); box-shadow:0 0 12px var(--amber); animation:pulse-led 1s ease-in-out infinite; }
+  @keyframes pulse-led{0%,100%{opacity:1;}50%{opacity:0.7;}}
+  .status-text{ font-size:13px; line-height:1.6; position:relative; z-index:1; font-weight:500; }
+  .status-text strong{ color:var(--accent-primary); font-weight:700; }
+
+  .action-bar{
+    background:linear-gradient(180deg, rgba(125,232,200,0.04), rgba(10,9,21,0.6));
+    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+    border:1px solid var(--border-medium); border-radius:var(--dash-corner-radius);
+    padding:20px 24px; display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:8px;
+  }
+  .apphint{ font-size:11px; color:var(--text-tertiary); }
+
+  .saved-badge{ display:none; font-size:10.5px; color:var(--accent-primary); letter-spacing:1px; align-items:center; gap:6px; }
+  .saved-badge.show{ display:inline-flex; animation:fadeOut 2.2s forwards; }
+  @keyframes fadeOut{0%{opacity:1;}70%{opacity:1;}100%{opacity:0;}}
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .stat{ background:rgba(5,7,13,0.55); border:1px solid var(--border-medium); border-radius:10px; padding:14px 8px; text-align:center; }
+  .stat-value{ display:block; font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--accent-primary); }
+  .stat-label{ display:block; margin-top:4px; font-size:8.5px; letter-spacing:1px; color:var(--text-tertiary); text-transform:uppercase; }
+
+  .toast{
+    position:fixed; top:24px; right:24px; background:linear-gradient(135deg, rgba(30,25,50,0.95), rgba(25,22,40,1));
+    border:1.5px solid var(--accent-primary); color:var(--text-primary); padding:14px 20px; border-radius:var(--dash-corner-radius);
+    font-size:12px; font-weight:600; letter-spacing:0.5px; box-shadow:0 8px 32px rgba(125,232,200,0.3), 0 0 20px rgba(125,232,200,0.2);
+    transform:translateY(-20px); opacity:0; transition:all .35s cubic-bezier(0.4,0,0.2,1); pointer-events:none; z-index:1000;
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); max-width:320px;
+  }
+  .toast.show{ transform:translateY(0); opacity:1; pointer-events:auto; }
+  .toast.err{ border-color:var(--red); box-shadow:0 8px 32px rgba(255,107,129,0.3), 0 0 20px rgba(255,107,129,0.2); }
+  .toast.warn{ border-color:var(--amber); box-shadow:0 8px 32px rgba(255,209,102,0.3), 0 0 20px rgba(255,209,102,0.2); }
+
+  .save-bar{
+    position:sticky; bottom:0; left:0; right:0;
+    background:linear-gradient(180deg, rgba(125,232,200,0.02), rgba(10,9,21,0.95));
+    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+    border-top:1px solid var(--border-medium); padding:28px 32px 20px; display:flex; align-items:center; gap:18px; margin-top:24px; z-index:40;
+  }
+  .save-bar.hidden{ display:none; }
+
+  .upload-zone{
+    border:2px dashed var(--accent-primary); border-radius:var(--dash-corner-radius); padding:36px 24px; text-align:center;
+    background:linear-gradient(135deg, rgba(125,232,200,0.08), rgba(200,162,255,0.04)); cursor:pointer;
+    transition:all .3s cubic-bezier(0.4,0,0.2,1); position:relative; overflow:hidden;
+  }
+  .upload-zone:hover{ background:linear-gradient(135deg, rgba(125,232,200,0.14), rgba(200,162,255,0.08)); border-color:var(--accent-secondary); box-shadow:0 0 24px rgba(125,232,200,0.25); transform:translateY(-2px); }
+  .upload-zone.drag-over{ background:linear-gradient(135deg, rgba(125,232,200,0.2), rgba(200,162,255,0.12)); border-color:var(--accent-primary); box-shadow:0 0 32px rgba(125,232,200,0.4); transform:scale(1.02); }
+  .upload-icon{ font-size:36px; background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:12px; display:block; animation:float-adv 2.5s ease-in-out infinite; font-weight:bold; }
+  @keyframes float-adv{ 0%,100%{ transform:translateY(0) scale(1); } 50%{ transform:translateY(-8px) scale(1.05); } }
+  .upload-text{ font-family:var(--font-mono); font-size:13px; color:var(--text-primary); margin-bottom:6px; font-weight:600; letter-spacing:0.5px; }
+  .upload-subtext{ font-size:11px; color:var(--text-secondary); opacity:.85; font-weight:500; }
+
+  .upload-preview{
+    border:1.5px solid var(--border-medium); border-radius:var(--dash-corner-radius); background:linear-gradient(135deg, rgba(30,25,50,0.6), rgba(25,22,40,0.7));
+    padding:16px; display:flex; align-items:center; gap:14px; position:relative; overflow:hidden;
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  }
+  .upload-preview img{ width:68px; height:68px; border-radius:var(--dash-corner-radius); object-fit:cover; border:1.5px solid rgba(125,232,200,0.4); flex:0 0 auto; box-shadow:0 4px 12px rgba(125,232,200,0.2); }
+  .preview-info{ flex:1; min-width:0; z-index:1; }
+  .preview-filename{ font-size:12px; color:var(--text-primary); font-weight:600; margin-bottom:4px; word-break:break-all; font-family:var(--font-mono); letter-spacing:0.5px; }
+  .preview-size{ font-size:10px; color:var(--text-secondary); letter-spacing:1.2px; text-transform:uppercase; font-weight:600; }
+  .upload-clear{
+    position:absolute; top:10px; right:10px; background:linear-gradient(135deg, rgba(200,162,255,0.2), rgba(200,162,255,0.1));
+    border:1.5px solid rgba(200,162,255,0.5); color:var(--accent-secondary); width:32px; height:32px; border-radius:8px; cursor:pointer;
+    font-size:16px; display:flex; align-items:center; justify-content:center; transition:all var(--dash-transition-speed) ease; z-index:2; font-weight:bold; padding:0;
+  }
+  .upload-clear:hover{ background:linear-gradient(135deg, rgba(200,162,255,0.35), rgba(200,162,255,0.2)); box-shadow:0 0 16px rgba(200,162,255,0.4); transform:scale(1.12) rotate(90deg); }
+
+  .wallpaper-history-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(64px, 1fr)); gap:10px; margin-top:10px; }
+  .wallpaper-history-item{ position:relative; aspect-ratio:1; border-radius:8px; overflow:hidden; border:2px solid var(--border-medium); cursor:pointer; transition:all .2s ease; background:rgba(30,25,50,0.6); }
+  .wallpaper-history-item img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .wallpaper-history-item:hover{ border-color:rgba(125,232,200,0.5); transform:translateY(-2px); box-shadow:0 4px 12px rgba(125,232,200,0.15); }
+  .wallpaper-history-item.active{ border-color:var(--accent-primary); box-shadow:var(--glow-primary); }
+  .wallpaper-history-item.active::after{ content:'✓'; position:absolute; bottom:2px; right:4px; font-size:11px; color:var(--accent-primary); font-weight:bold; text-shadow:0 0 4px rgba(0,0,0,0.9); }
+  .wallpaper-history-delete{
+    position:absolute; top:2px; right:2px; width:18px; height:18px; border-radius:4px; background:rgba(10,9,21,0.75);
+    border:1px solid rgba(255,255,255,0.2); color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px;
+    cursor:pointer; opacity:0; transition:opacity .2s ease, background .2s ease; line-height:1; padding:0;
+  }
+  .wallpaper-history-item:hover .wallpaper-history-delete{ opacity:1; }
+  .wallpaper-history-delete:hover{ background:rgba(255,80,80,0.85); border-color:rgba(255,80,80,0.9); }
+  .config-io-row{ display:flex; gap:12px; flex-wrap:wrap; }
+  .hidden{ display:none !important; }
+
+  .svg-icon{ display:inline-block; width:1em; height:1em; vertical-align:-0.15em; fill:currentColor; overflow:hidden; }
+  button.icon-btn{ font-size:18px; }
+
+  /* ===== Live Feed (Clip Forwarder specific) ===== */
+  .feed-wrap{ display:flex; flex-direction:column; gap:0; }
+  .feed-head{ display:flex; align-items:center; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+  .feed-head .scan{ width:9px; height:9px; border-radius:50%; background:var(--accent-primary); box-shadow:0 0 10px var(--accent-primary); animation:pulse-led 1.6s infinite; }
+  .feed-toggle{ display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px; background:rgba(125,232,200,0.06); border:1px solid rgba(125,232,200,0.2); font-size:10px; letter-spacing:1px; color:var(--text-tertiary); margin-left:auto; }
+  .feed-toggle .led{ width:6px; height:6px; border-radius:50%; background:var(--red); }
+  .feed-toggle.on{ border-color:rgba(125,232,200,0.32); color:var(--text-secondary); }
+  .feed-toggle.on .led{ background:var(--accent-primary); box-shadow:0 0 6px var(--accent-primary); }
+  .feed-scanline{
+    height:2px; margin:0 0 16px; border-radius:2px; flex:none;
+    background:linear-gradient(90deg, transparent, var(--accent-primary), var(--accent-secondary), transparent);
+    background-size:200% 100%; opacity:.5; animation:sweep 5s linear infinite;
+  }
+  @keyframes sweep{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+  .feed-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:14px; }
+  .empty-state{
+    grid-column:1/-1; min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:10px; color:var(--text-tertiary); text-align:center;
+    background:rgba(var(--dash-panel-color-rgb), var(--dash-panel-opacity));
+    border:1px solid rgba(var(--dash-panel-border-rgb), var(--dash-border-opacity));
+    border-radius:var(--dash-corner-radius); padding:30px;
+  }
+  .empty-state .ring{ width:64px; height:64px; border-radius:50%; border:2px dashed rgba(125,232,200,0.25); display:flex; align-items:center; justify-content:center; font-size:22px; color:var(--text-tertiary); }
+  .empty-state p{ margin:0; font-size:12px; letter-spacing:.5px; max-width:280px; line-height:1.6; }
+
+  .clip-card{
+    position:relative; background:var(--bg-panel-elevated); border:1px solid var(--border-medium); border-radius:var(--dash-corner-radius);
+    padding:16px; display:flex; gap:14px; align-items:flex-start; box-shadow:0 8px 24px rgba(0,0,0,0.3);
+    animation:cardIn .35s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardIn{from{opacity:0;transform:translateY(8px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+  .avatar-lock{ flex:none; width:52px; height:52px; position:relative; }
+  .avatar-lock img, .avatar-lock .fallback{
+    width:100%; height:100%; border-radius:50%; object-fit:cover; border:2px solid rgba(125,232,200,0.4); background:rgba(125,232,200,0.08);
+    display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--accent-primary);
+  }
+  .avatar-lock::before, .avatar-lock::after{ content:''; position:absolute; width:10px; height:10px; border-color:var(--accent-primary); border-style:solid; opacity:0; animation:lockOn .6s .1s ease-out forwards; }
+  .avatar-lock::before{top:-4px;left:-4px;border-width:2px 0 0 2px;border-top-left-radius:4px;}
+  .avatar-lock::after{bottom:-4px;right:-4px;border-width:0 2px 2px 0;border-bottom-right-radius:4px;}
+  @keyframes lockOn{0%{opacity:0;transform:scale(1.5);}60%{opacity:1;}100%{opacity:1;transform:scale(1);}}
+  .clip-body{flex:1;min-width:0;}
+  .clip-user{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .clip-user .name{font-family:var(--font-display);font-size:12.5px;font-weight:700;color:var(--text-primary);}
+  .clip-user .tag{ font-size:8.5px; letter-spacing:1px; color:var(--amber); border:1px solid rgba(255,209,102,0.35); background:rgba(255,209,102,0.08); padding:2px 6px; border-radius:5px; }
+  .clip-user .time{font-size:10px;color:var(--text-tertiary);margin-left:auto;flex:none;}
+  .clip-msg{font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5;}
+  .clip-link{ display:inline-flex; align-items:center; gap:7px; font-size:11px; color:var(--accent-primary); text-decoration:none; border:1px solid rgba(125,232,200,0.28); background:rgba(125,232,200,0.06); padding:6px 11px; border-radius:8px; transition:all .15s; word-break:break-all; }
+  .clip-link:hover{ background:rgba(125,232,200,0.14); border-color:var(--accent-primary); }
+  .clip-forward-note{font-size:9.5px;color:var(--text-tertiary);margin-top:8px;letter-spacing:.4px;}
+
+  /* ===== Activity Log ===== */
+  .log-wrap{ background:rgba(var(--dash-panel-color-rgb), var(--dash-panel-opacity)); border:1px solid rgba(var(--dash-panel-border-rgb), var(--dash-border-opacity)); border-radius:var(--dash-corner-radius); padding:8px 4px 4px; }
+  .log-head{ display:flex; align-items:center; justify-content:space-between; padding:8px 16px 12px; }
+  .log-head h3{ font-family:var(--font-display); font-size:11.5px; letter-spacing:1.4px; margin:0; color:var(--accent-secondary); display:flex; align-items:center; gap:8px; }
+  .log-head h3 .dot{ width:6px; height:6px; border-radius:50%; background:var(--accent-secondary); box-shadow:0 0 7px var(--accent-secondary); }
+  .log{ padding:0 16px 16px; max-height:420px; min-height:200px; overflow-y:auto; font-size:11.5px; line-height:1.7; }
+  .log div{ white-space:pre-wrap; word-break:break-all; padding:2px 0; }
+  .log .t-ok{ color:var(--accent-primary); }
+  .log .t-err{ color:var(--red); }
+  .log .t-info{ color:var(--text-secondary); }
+  .log .t-warn{ color:var(--amber); }
+  .log::-webkit-scrollbar{width:6px;}
+  .log::-webkit-scrollbar-thumb{background:rgba(125,232,200,0.25);border-radius:3px;}
+
+  /* ===== Clip Gallery ===== */
+  .gallery-toolbar{ display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; }
+  .gallery-toolbar .field{ flex:1 1 180px; }
+  .gallery-range-row{ display:flex; gap:12px; flex-wrap:wrap; }
+  .gallery-range-row .field{ flex:1 1 220px; }
+  .gallery-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:16px; }
+  .gallery-card{
+    position:relative; background:var(--bg-panel-elevated); border:1px solid var(--border-medium); border-radius:var(--dash-corner-radius);
+    overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.3); animation:cardIn .35s cubic-bezier(.2,.8,.2,1); display:flex; flex-direction:column;
+  }
+  .gallery-thumb-wrap{ position:relative; aspect-ratio:16/9; background:rgba(5,7,13,0.6); overflow:hidden; }
+  .gallery-thumb-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .gallery-thumb-wrap .gallery-dur{ position:absolute; bottom:6px; right:6px; font-size:9.5px; background:rgba(10,9,21,0.8); color:var(--text-primary); padding:2px 6px; border-radius:5px; letter-spacing:.5px; }
+  .gallery-thumb-wrap .gallery-new{ position:absolute; top:6px; left:6px; font-size:8.5px; letter-spacing:1px; color:var(--bg-deep); background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); font-weight:700; padding:3px 7px; border-radius:5px; box-shadow:0 0 10px rgba(125,232,200,0.5); }
+  .gallery-body{ padding:12px 14px 14px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .gallery-title{ font-size:12px; font-weight:600; color:var(--text-primary); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .gallery-meta{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:10.5px; color:var(--text-tertiary); }
+  .gallery-connect-hint > div + div{ margin-top:6px; }
+  .gallery-meta .creator{ color:var(--accent-primary); font-weight:600; }
+  .gallery-meta .dot-sep{ opacity:.5; }
+  .gallery-stats{ display:flex; gap:10px; font-size:10px; color:var(--text-secondary); }
+  .gallery-link{ margin-top:auto; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:10.5px; color:var(--accent-primary); text-decoration:none; border:1px solid rgba(125,232,200,0.28); background:rgba(125,232,200,0.06); padding:7px 10px; border-radius:8px; transition:all .15s; }
+  .gallery-link:hover{ background:rgba(125,232,200,0.14); border-color:var(--accent-primary); }
+  .gallery-connect-hint{ font-size:11px; color:var(--text-tertiary); line-height:1.7; }
+  .gallery-connect-hint code{ color:var(--accent-primary); background:rgba(125,232,200,0.08); padding:1px 5px; border-radius:4px; word-break:break-all; }
+  .token-pill{ display:inline-flex; align-items:center; gap:6px; font-size:10px; letter-spacing:.5px; padding:4px 10px; border-radius:999px; border:1px solid var(--border-medium); color:var(--text-tertiary); }
+  .token-pill .led{ width:6px; height:6px; border-radius:50%; background:var(--red); }
+  .token-pill.on{ color:var(--text-secondary); border-color:rgba(125,232,200,0.32); }
+  .token-pill.on .led{ background:var(--accent-primary); box-shadow:0 0 6px var(--accent-primary); }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <nav class="sidebar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>FALLENONEART<br><small>CLIP FORWARDER</small></span>
+    </div>
+    <button class="nav-btn active" data-tab="connection"><span class="num">01</span> Connection <span class="nav-led" id="navLedConnection"></span></button>
+    <button class="nav-btn" data-tab="config"><span class="num">02</span> Config Target</button>
+    <button class="nav-btn" data-tab="feed"><span class="num">03</span> Live Feed <span class="nav-badge" id="navBadgeClips">0</span></button>
+    <button class="nav-btn" data-tab="gallery"><span class="num">04</span> Clip Gallery <span class="nav-badge" id="navBadgeGallery">0</span></button>
+    <button class="nav-btn" data-tab="log"><span class="num">05</span> Activity Log <span class="nav-badge" id="navBadgeLog">0</span></button>
+    <button class="nav-btn" data-tab="settings"><span class="num">06</span> Settings</button>
+    <button class="nav-btn" data-tab="theme"><span class="num">07</span> Dashboard Theme</button>
+  </nav>
+
+  <main class="main">
+
+    <!-- CONNECTION -->
+    <section class="panel active" id="panel-connection">
+      <h2>Streamer.bot Connection</h2>
+      <p class="sub">Connect the command deck to Streamer.bot's WebSocket server so it can watch chat, run actions, and read/save config globals.</p>
+
+      <div class="status-card">
+        <span class="status-led" id="statusLed"></span>
+        <div class="status-text" id="statusText">Not connected yet.</div>
+      </div>
+
+      <div class="field">
+        <label for="wsAddress">WS Address</label>
+        <input type="text" id="wsAddress" value="127.0.0.1" placeholder="127.0.0.1">
+        <div class="hint">Usually <code>127.0.0.1</code> unless Streamer.bot runs on another machine.</div>
+      </div>
+
+      <div class="field">
+        <label for="wsPort">Port</label>
+        <input type="text" id="wsPort" value="8080" placeholder="8080">
+        <div class="hint">Streamer.bot's WebSocket server must be running and auto-started for this to connect.</div>
+      </div>
+
+      <div class="field field-full">
+        <label>Session Stats</label>
+        <div class="stat-grid">
+          <div class="stat"><span class="stat-value" id="statUptime">00:00</span><span class="stat-label">Uptime</span></div>
+          <div class="stat"><span class="stat-value" id="statActions">0</span><span class="stat-label">Actions</span></div>
+          <div class="stat"><span class="stat-value" id="statClips">0</span><span class="stat-label">Clips</span></div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button type="button" class="primary-btn" id="connectBtn">Connect</button>
+        <button type="button" class="primary-btn danger hidden" id="disconnectBtn">Disconnect</button>
+        <span class="apphint">Requires Streamer.bot's WebSocket server to be running.</span>
+      </div>
+    </section>
+
+    <!-- CONFIG TARGET -->
+    <section class="panel" id="panel-config">
+      <h2>Config Target</h2>
+      <p class="sub">Pick the Streamer.bot action that saves settings — the one running the <code>Save Config</code> code (globals <code>fallenoneart_webhookUrl</code> / <code>fallenoneart_channelName</code>).</p>
+
+      <div class="field field-full">
+        <label>Save Config Action</label>
+        <select id="actionSelect" disabled aria-label="Save Config Action">
+          <option value="">Connect to load actions…</option>
+        </select>
+        <div class="hint">Your pick is remembered so it doesn't need to be re-selected on every connect.</div>
+      </div>
+    </section>
+
+    <!-- LIVE FEED -->
+    <section class="panel" id="panel-feed">
+      <h2>Live Clip Feed</h2>
+      <p class="sub">Watching Twitch chat for clip links. Detected clips lock on here with the poster's avatar, then Streamer.bot forwards them to Discord.</p>
+
+      <div class="feed-wrap">
+        <div class="feed-head">
+          <span class="scan"></span>
+          <strong class="feed-head-label">SCANNING CHAT</strong>
+          <div class="feed-toggle" id="feedStatus"><span class="led"></span><span id="feedLabel">Not watching</span></div>
+        </div>
+        <div class="feed-scanline"></div>
+        <div class="feed-grid" id="clipFeed">
+          <div class="empty-state" id="emptyState">
+            <div class="ring">◎</div>
+            <p>No clips detected yet. Once someone drops a clip link in chat, it'll lock on here — with their Twitch avatar — and Streamer.bot forwards it to Discord.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLIP GALLERY -->
+    <section class="panel" id="panel-gallery">
+      <h2>Clip Gallery</h2>
+      <p class="sub">Pulls clips straight from your channel via the Twitch Helix API — new clips created during stream and older ones already sitting on your channel — and shows who made each one.</p>
+
+      <div class="status-card">
+        <span class="status-led" id="galleryStatusLed"></span>
+        <div class="status-text" id="galleryStatusText">Not connected to Twitch yet.</div>
+      </div>
+
+      <div class="field field-full">
+        <label for="twitchClientId">Twitch Client ID</label>
+        <input type="text" id="twitchClientId" placeholder="Paste your Client ID here">
+        <div class="hint">
+          Get this from the <a href="https://dev.twitch.tv/console/apps" target="_blank" rel="noopener">Twitch Developer Console</a> → your app → <strong>Client ID</strong>.
+          This never gets hardcoded into the file — it's typed here and saved only in this browser's local storage.
+          Never paste your <strong>Client Secret</strong> anywhere in this dashboard; the Client ID is the only credential this gallery needs.
+        </div>
+      </div>
+
+      <div class="field field-full gallery-connect-hint" id="galleryRedirectHint">
+        <label>Redirect URI to register</label>
+        <div>Add this exact URL to your app's <strong>OAuth Redirect URLs</strong> in the Twitch console: <code id="galleryRedirectUri">—</code></div>
+        <div class="gallery-hint-note">This page must be loaded over <code>http://</code> or <code>https://</code> (a local dev server, or hosted on caitlinscreativespace.xyz). Twitch login can't redirect back to a double-clicked <code>file://</code> page.</div>
+      </div>
+
+      <div class="action-bar">
+        <button type="button" class="primary-btn" id="galleryConnectBtn">Connect Twitch Account</button>
+        <button type="button" class="primary-btn danger hidden" id="galleryDisconnectBtn">Disconnect</button>
+        <span class="token-pill" id="galleryTokenPill"><span class="led"></span><span id="galleryTokenPillText">Not connected</span></span>
+      </div>
+
+      <div class="section-divider">
+        <h3>Clip Range</h3>
+        <div class="sub">Choose a date range to pull existing clips from, then load them in. Auto-refresh only checks for anything newer than your last load.</div>
+      </div>
+
+      <div class="gallery-range-row">
+        <div class="field">
+          <label for="galleryFrom">From</label>
+          <input type="datetime-local" id="galleryFrom">
+        </div>
+        <div class="field">
+          <label for="galleryTo">To</label>
+          <input type="datetime-local" id="galleryTo">
+        </div>
+      </div>
+
+      <div class="field field-full">
+        <label for="galleryAutoRefresh">Auto-Refresh Interval</label>
+        <select id="galleryAutoRefresh">
+          <option value="0">Off</option>
+          <option value="30000">Every 30 seconds</option>
+          <option value="60000" selected>Every 60 seconds</option>
+          <option value="300000">Every 5 minutes</option>
+        </select>
+        <div class="hint">Only runs while this Clip Gallery tab is open, and stops as soon as you switch tabs.</div>
+      </div>
+
+      <div class="action-bar">
+        <button type="button" class="primary-btn" id="galleryLoadBtn" disabled>Load Clips For Range</button>
+        <button type="button" class="ghost-btn" id="galleryRefreshBtn" disabled>Refresh Now</button>
+        <button type="button" class="ghost-btn" id="galleryClearBtn">Clear Gallery</button>
+        <span class="apphint" id="galleryLastChecked">Not checked yet.</span>
+      </div>
+
+      <div class="field field-full">
+        <label>Gallery Stats</label>
+        <div class="stat-grid">
+          <div class="stat"><span class="stat-value" id="galleryStatTotal">0</span><span class="stat-label">Clips Stored</span></div>
+          <div class="stat"><span class="stat-value" id="galleryStatNew">0</span><span class="stat-label">New This Session</span></div>
+          <div class="stat"><span class="stat-value" id="galleryStatClippers">0</span><span class="stat-label">Unique Clippers</span></div>
+        </div>
+      </div>
+
+      <div class="gallery-grid" id="galleryGrid">
+        <div class="empty-state" id="galleryEmptyState">
+          <div class="ring">◎</div>
+          <p>Paste a Client ID, connect your Twitch account, then load a date range to pull in clips from your channel.</p>
+        </div>
+      </div>
+
+      <div class="action-bar hidden" id="galleryLoadMoreBar">
+        <button type="button" class="ghost-btn" id="galleryLoadMoreBtn">Load More Clips</button>
+        <span class="apphint">More clips exist in this range than were pulled in one page.</span>
+      </div>
+    </section>
+
+    <!-- ACTIVITY LOG -->
+    <section class="panel" id="panel-log">
+      <h2>Activity Log</h2>
+      <p class="sub">Connection events, action loads, and errors from this session.</p>
+
+      <div class="log-wrap">
+        <div class="log-head">
+          <h3><span class="dot"></span>Console</h3>
+          <button type="button" class="ghost-btn" id="btnClearLog">Clear</button>
+        </div>
+        <div class="log" id="log"></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="panel" id="panel-settings">
+      <h2>Settings</h2>
+      <p class="sub">Twitch channel name, Discord webhook, and config backup/restore all live here.</p>
+
+      <div class="field field-full">
+        <label for="channelName">Streamer Channel Name</label>
+        <input type="text" id="channelName" value="fallenoneart" placeholder="fallenoneart">
+      </div>
+
+      <div class="field field-full">
+        <label for="webhookUrl">Discord Webhook URL</label>
+        <div class="input-group">
+          <input type="password" id="webhookUrl" placeholder="https://discord.com/api/webhooks/…">
+          <button type="button" class="icon-btn" id="pwToggle" title="Show/Hide Webhook URL">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28L3.46 8.84C2.08 10.29 1 12.04 1 12s1.73 4.39 6 7.5c1.55.84 3.15 1.31 4.8 1.53l3.02 3.02c1.25.125 2.47.1 3.38.084l2.85 2.85c.36.36.93.36 1.28 0l1.28-1.28c.36-.36.36-.92 0-1.28L3.54 3c-.36-.36-.92-.36-1.28 0l-1.28 1.27c-.36.36-.36.92 0 1.28zm9.5 6.12L9.48 9.65C9.5 9.77 9.5 9.88 9.5 10c0 1.66 1.34 3 3 3 .12 0 .23 0 .35-.02l2.5 2.5c-.67.33-1.41.5-2.2.5-2.76 0-5-2.24-5-5 0-.79.17-1.53.5-2.2zm5.7-6.41c-.89.6-1.96 1.37-2.3 1.69L15.13 2c.64-.3 1.21-.59 1.69-.82l1.41 1.41zM19 13.5c0-3.59-2.91-6.5-6.5-6.5-.62 0-1.23.09-1.82.23l1.5 1.5c.4-.05.81-.08 1.21-.08 2.76 0 5 2.24 5 5 0 .4-.03.81-.08 1.21l1.5 1.5c.14-.59.23-1.2.23-1.82z"/>
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" id="copyBtn" title="Copy">
+            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button type="button" class="primary-btn" id="saveBtn" disabled>Save Config</button>
+        <button type="button" class="ghost-btn" id="loadBtn" disabled>Reload</button>
+        <button type="button" class="ghost-btn" id="testBtn">Test Webhook</button>
+        <span class="saved-badge" id="savedBadge">✓ Saved</span>
+      </div>
+
+      <div class="section-divider">
+        <h3>Config Backup &amp; Restore</h3>
+        <div class="sub">Export everything (channel name, webhook URL, WS connection, saved action, dashboard theme, Clip Gallery Client ID) to a JSON file, or restore from a previously exported file.</div>
+      </div>
+
+      <div class="field field-full">
+        <label>Config File</label>
+        <div class="config-io-row">
+          <button type="button" class="primary-btn" id="btnExportConfig">Download Config</button>
+          <button type="button" class="ghost-btn" id="btnImportConfigTrigger">Upload Config</button>
+          <input type="file" id="inputImportConfig" accept="application/json,.json" class="hidden">
+        </div>
+        <div class="hint">Importing overrides your current settings on this device immediately. Your Twitch login token is never included in the export — you'll need to reconnect Twitch on the device you import to.</div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD THEME -->
+    <section class="panel" id="panel-theme">
+      <h2>Dashboard Theme</h2>
+      <p class="sub">Customize the control panel appearance — this never affects what viewers see, only your own command deck.</p>
+
+      <div class="section-divider">
+        <h3>Background</h3>
+      </div>
+
+      <div class="field field-full">
+        <label>Background Style</label>
+        <div class="choice-cards">
+          <div class="choice-card" data-dash-choice="bgType" data-value="gradient">Gradient</div>
+          <div class="choice-card" data-dash-choice="bgType" data-value="solid">Solid</div>
+          <div class="choice-card" data-dash-choice="bgType" data-value="image">Image</div>
+        </div>
+      </div>
+
+      <div class="field" id="fieldBgSolid">
+        <label>Solid Color</label>
+        <div class="color-field"><input type="color" id="inputDashBgColor1" value="#0a0915"></div>
+      </div>
+
+      <div class="field" id="fieldBgGradient">
+        <label>Gradient Colors</label>
+        <div class="color-field"><input type="color" id="inputDashGradColor1" value="#7de8c8"><span class="swatch-label">Color 1</span></div>
+        <div class="color-field color-field-spacing"><input type="color" id="inputDashGradColor2" value="#c8a2ff"><span class="swatch-label">Color 2</span></div>
+        <div class="hint">Angle</div>
+        <div class="range-row"><input type="range" id="inputDashGradAngle" min="0" max="360" step="5"><span class="val" id="valDashGradAngle"></span></div>
+      </div>
+
+      <div class="field field-full hidden" id="fieldBgImage">
+        <label>Image Source</label>
+        <div class="toggle-row"><span>Upload file</span><label class="switch"><input type="checkbox" id="toggleBgImageSource"><span class="track"></span></label><span class="hint">URL</span></div>
+
+        <div id="bgImageUrlSection">
+          <label for="inputDashBgImageUrl">Image URL</label>
+          <input type="text" id="inputDashBgImageUrl" placeholder="https://example.com/background.jpg">
+        </div>
+
+        <div id="bgImageUploadSection" class="hidden">
+          <label>Upload Wallpaper</label>
+          <input type="file" id="inputDashBgImageUpload" accept="image/*" class="hidden">
+          <div class="upload-zone" id="uploadZone">
+            <div class="upload-icon">▲</div>
+            <div class="upload-text">Drag wallpaper here or click to browse</div>
+            <div class="upload-subtext">JPG, PNG, WebP, GIF (max 5MB)</div>
+          </div>
+          <div id="uploadPreview" class="upload-preview hidden">
+            <img id="previewImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Preview">
+            <div class="preview-info">
+              <div class="preview-filename" id="previewFilename"></div>
+              <div class="preview-size" id="previewSize"></div>
+            </div>
+            <button type="button" class="upload-clear" id="uploadClear" title="Remove">✕</button>
+          </div>
+
+          <div class="wallpaper-history-section">
+            <label>Wallpaper History</label>
+            <div class="hint" id="wallpaperHistoryEmptyHint">Uploaded wallpapers are saved here so you can switch back anytime.</div>
+            <div class="wallpaper-history-grid" id="wallpaperHistoryGrid"></div>
+          </div>
+        </div>
+
+        <label class="field-label-margin-top">Position</label>
+        <select id="inputDashBgPosition">
+          <option value="cover">Cover (fill, crop edges)</option>
+          <option value="contain">Contain (fit, no crop)</option>
+          <option value="center">Center (actual size)</option>
+          <option value="repeat">Repeat (tile)</option>
+        </select>
+      </div>
+
+      <div class="section-divider">
+        <h3>Text Colors</h3>
+      </div>
+
+      <div class="field">
+        <label>Navigation Tab Text</label>
+        <div class="color-field"><input type="color" id="inputDashNavTextColor" value="#9a97ab"><span class="swatch-label">Inactive tab color</span></div>
+      </div>
+
+      <div class="field">
+        <label>Primary Text Color</label>
+        <div class="color-field"><input type="color" id="inputDashPrimaryText" value="#f3f1f8"><span class="swatch-label">Headings &amp; main text</span></div>
+      </div>
+
+      <div class="field">
+        <label>Secondary Text Color</label>
+        <div class="color-field"><input type="color" id="inputDashSecondaryText" value="#9a97ab"><span class="swatch-label">Labels &amp; descriptions</span></div>
+      </div>
+
+      <div class="field">
+        <label>Hint Text Color</label>
+        <div class="color-field"><input type="color" id="inputDashTertiaryText" value="#6f6c80"><span class="swatch-label">Small hint text under fields</span></div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Panel &amp; Card Styling</h3>
+      </div>
+
+      <div class="field">
+        <label>Panel Color</label>
+        <div class="color-field"><input type="color" id="inputDashPanelColor" value="#1e1932"><span class="swatch-label">Base color behind card backgrounds</span></div>
+      </div>
+
+      <div class="field">
+        <label>Panel Background Opacity</label>
+        <div class="range-row"><input type="range" id="inputDashPanelOpacity" min="0.1" max="1" step="0.05"><span class="val" id="valDashPanelOpacity"></span></div>
+        <div class="hint">Glassmorphism effect for card backgrounds.</div>
+      </div>
+
+      <div class="field">
+        <label>Panel Border Color</label>
+        <div class="color-field"><input type="color" id="inputDashPanelBorder" value="#ffffff"><span class="swatch-label">Card &amp; input borders</span></div>
+      </div>
+
+      <div class="field">
+        <label>Panel Border Opacity</label>
+        <div class="range-row"><input type="range" id="inputDashBorderOpacity" min="0" max="0.3" step="0.02"><span class="val" id="valDashBorderOpacity"></span></div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Accent Colors</h3>
+      </div>
+
+      <div class="field">
+        <label>Primary Accent (Buttons &amp; Active States)</label>
+        <div class="color-field"><input type="color" id="inputDashAccent1" value="#7de8c8"><span class="swatch-label">Main interactive color</span></div>
+      </div>
+
+      <div class="field">
+        <label>Secondary Accent (Glows &amp; Highlights)</label>
+        <div class="color-field"><input type="color" id="inputDashAccent2" value="#c8a2ff"><span class="swatch-label">Gradient &amp; glow accents</span></div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Glassmorphism &amp; Effects</h3>
+      </div>
+
+      <div class="field">
+        <label>Blur Strength (px)</label>
+        <div class="range-row"><input type="range" id="inputDashBlur" min="0" max="20" step="1"><span class="val" id="valDashBlur"></span></div>
+        <div class="hint">Backdrop blur on panels and inputs.</div>
+      </div>
+
+      <div class="field">
+        <label>Glow Intensity</label>
+        <div class="range-row"><input type="range" id="inputDashGlowIntensity" min="0" max="1" step="0.1"><span class="val" id="valDashGlowIntensity"></span></div>
+        <div class="hint">How bright accent glows appear.</div>
+      </div>
+
+      <div class="field">
+        <label>Corner Radius</label>
+        <div class="range-row"><input type="range" id="inputDashCornerRadius" min="0" max="24" step="1"><span class="val" id="valDashCornerRadius"></span></div>
+        <div class="hint">Roundness of cards, buttons, inputs.</div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Sidebar Styling</h3>
+      </div>
+
+      <div class="field">
+        <label>Sidebar Background Opacity</label>
+        <div class="range-row"><input type="range" id="inputDashSidebarOpacity" min="0.1" max="1" step="0.05"><span class="val" id="valDashSidebarOpacity"></span></div>
+      </div>
+
+      <div class="field">
+        <label>Active Tab Glow</label>
+        <div class="toggle-row"><span>Show glow on active nav button</span><label class="switch"><input type="checkbox" id="toggleDashSidebarGlow" checked><span class="track"></span></label></div>
+      </div>
+
+      <div class="section-divider">
+        <h3>Animation Speed</h3>
+      </div>
+
+      <div class="field field-full">
+        <label>Transition Speed</label>
+        <select id="inputDashTransitionSpeed">
+          <option value="instant">Instant</option>
+          <option value="fast">Fast (100ms)</option>
+          <option value="normal" selected>Normal (250ms)</option>
+          <option value="slow">Slow (500ms)</option>
+          <option value="leisurely">Leisurely (800ms)</option>
+        </select>
+      </div>
+
+      <button class="ghost-btn" id="btnResetDashTheme">Reset dashboard theme</button>
+    </section>
+
+    <div class="save-bar hidden" id="saveBar">
+      <button class="primary-btn" id="btnSave">Save &amp; Push Config</button>
+      <span class="hint" id="saveHint">Sends the Discord webhook + channel name to Streamer.bot's Save Config action.</span>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast" id="toast">Saved ✓</div>
+
+<script>
+(function(){
+  const DEFAULT_WEBHOOK = 'https://discord.com/api/webhooks/1454989492959182929/m0wOeleur6-DfNZv6zLzWR-5Q60BHtOZneMEYefGtwFxX2iNPAjRJ4LJ5Lao3ivOQ-Ri';
+  const DEFAULT_CHANNEL = 'fallenoneart';
+  const LS_ACTION_KEY = 'fallenoneart_clipforwarder_actionName';
+  const LS_SETTINGS_KEY = 'fallenoneart_clipforwarder_settings';
+  const LS_DASH_THEME_KEY = 'fallenoneart_clipforwarder_dashboard_theme';
+  const LS_WALLPAPER_HISTORY_KEY = 'fallenoneart_clipforwarder_wallpaper_history';
+  const MAX_WALLPAPER_HISTORY = 8;
+
+  const DEFAULT_DASH_THEME = {
+    bgType:'gradient', bgColor1:'#0a0915', gradColor1:'#7de8c8', gradColor2:'#c8a2ff', gradAngle:135,
+    bgImageUrl:'', bgImageSourceType:'url', bgImageUpload:'', bgPosition:'cover', navTextColor:'#9a97ab',
+    primaryText:'#f3f1f8', secondaryText:'#9a97ab', tertiaryText:'#6f6c80', panelColor:'#1e1932', panelOpacity:0.55,
+    panelBorder:'#ffffff', borderOpacity:0.15, accent1:'#7de8c8', accent2:'#c8a2ff', blurStrength:10, glowIntensity:1,
+    cornerRadius:12, sidebarOpacity:0.5, sidebarGlow:true, transitionSpeed:'normal'
+  };
+  const DEFAULT_SETTINGS = { wsAddress:'127.0.0.1', wsPort:'8080', channelName:DEFAULT_CHANNEL, webhookUrl:DEFAULT_WEBHOOK };
+
+  let dashTheme = { ...DEFAULT_DASH_THEME };
+  let wallpaperHistory = [];
+  let settings = { ...DEFAULT_SETTINGS };
+
+  const els = {
+    wsAddress: document.getElementById('wsAddress'),
+    wsPort: document.getElementById('wsPort'),
+    connectBtn: document.getElementById('connectBtn'),
+    disconnectBtn: document.getElementById('disconnectBtn'),
+    statusLed: document.getElementById('statusLed'),
+    statusText: document.getElementById('statusText'),
+    navLedConnection: document.getElementById('navLedConnection'),
+    actionSelect: document.getElementById('actionSelect'),
+    channelName: document.getElementById('channelName'),
+    webhookUrl: document.getElementById('webhookUrl'),
+    pwToggle: document.getElementById('pwToggle'),
+    copyBtn: document.getElementById('copyBtn'),
+    saveBtn: document.getElementById('saveBtn'),
+    loadBtn: document.getElementById('loadBtn'),
+    testBtn: document.getElementById('testBtn'),
+    savedBadge: document.getElementById('savedBadge'),
+    log: document.getElementById('log'),
+    navBadgeLog: document.getElementById('navBadgeLog'),
+    navBadgeClips: document.getElementById('navBadgeClips'),
+    clipFeed: document.getElementById('clipFeed'),
+    emptyState: document.getElementById('emptyState'),
+    feedStatus: document.getElementById('feedStatus'),
+    feedLabel: document.getElementById('feedLabel'),
+    toast: document.getElementById('toast'),
+    statUptime: document.getElementById('statUptime'),
+    statActions: document.getElementById('statActions'),
+    statClips: document.getElementById('statClips'),
+  };
+
+  const params = new URLSearchParams(location.search);
+  if (params.get('address')) els.wsAddress.value = params.get('address');
+  if (params.get('port')) els.wsPort.value = params.get('port');
+
+  let ws = null;
+  let pending = {};
+  let reqCounter = 0;
+  let clipCount = 0;
+  let logCount = 0;
+  let connectedAt = null;
+  let uptimeTimer = null;
+  const avatarCache = new Map();
+  const clipShown = new Set();
+  const clipTimers = new Map();
+
+  // ============================================
+  // NAV / PANEL SWITCHING (matches music player dashboard)
+  // ============================================
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+      updateSaveBarVisibility(btn.dataset.tab);
+      if (typeof onTabChanged === 'function') onTabChanged(btn.dataset.tab);
+    });
+  });
+  function updateSaveBarVisibility(tab){
+    const saveBar = document.getElementById('saveBar');
+    saveBar.classList.toggle('hidden', tab !== 'settings');
+  }
+
+  // ============================================
+  // TOAST / LOG
+  // ============================================
+  function showToast(msg, type){
+    const t = els.toast;
+    t.className = 'toast' + (type === 'err' ? ' err' : type === 'warn' ? ' warn' : '');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._hideTimer);
+    t._hideTimer = setTimeout(()=> t.classList.remove('show'), 2600);
+  }
+
+  function logLine(msg, type){
+    const d = document.createElement('div');
+    d.className = 't-' + (type || 'info');
+    const ts = new Date().toLocaleTimeString();
+    d.textContent = '[' + ts + '] ' + msg;
+    els.log.appendChild(d);
+    els.log.scrollTop = els.log.scrollHeight;
+    logCount += 1;
+    els.navBadgeLog.textContent = String(logCount);
+  }
+  document.getElementById('btnClearLog').addEventListener('click', ()=>{
+    els.log.innerHTML = '';
+    logCount = 0;
+    els.navBadgeLog.textContent = '0';
+  });
+
+  function setFeedStatus(watching){
+    els.feedStatus.classList.toggle('on', !!watching);
+    els.feedLabel.textContent = watching ? 'Watching' : 'Not watching';
+  }
+
+  // ============================================
+  // AVATAR RESOLUTION (unchanged logic from original Clip Forwarder)
+  // ============================================
+  function initialsFor(name){
+    const clean = (name || '?').trim();
+    return clean.slice(0, 1).toUpperCase() || '?';
+  }
+
+  function buildAvatarEl(username, avatarUrl){
+    const wrap = document.createElement('div');
+    wrap.className = 'avatar-lock';
+    const cleanName = String(username).trim().toLowerCase();
+
+    function showImage(src){
+      const img = document.createElement('img');
+      img.alt = username + ' avatar';
+      img.loading = 'lazy';
+      img.referrerPolicy = 'no-referrer';
+      img.onerror = () => showFallback();
+      img.src = src;
+      wrap.innerHTML = '';
+      wrap.appendChild(img);
+    }
+    function showFallback(){
+      const fb = document.createElement('div');
+      fb.className = 'fallback';
+      fb.textContent = initialsFor(username);
+      wrap.innerHTML = '';
+      wrap.appendChild(fb);
+    }
+
+    if (avatarUrl){ showImage(avatarUrl); return wrap; }
+    if (avatarCache.has(cleanName)){
+      const cached = avatarCache.get(cleanName);
+      if (cached) showImage(cached); else showFallback();
+      return wrap;
+    }
+
+    showFallback();
+    resolveAvatarUrl(cleanName).then(url => {
+      if (!wrap.isConnected) return;
+      if (url) showImage(url);
+    });
+    return wrap;
+  }
+
+  async function resolveAvatarUrl(login){
+    try {
+      const res = await fetch('https://api.ivr.fi/v2/twitch/user?login=' + encodeURIComponent(login));
+      if (res.ok){
+        const data = await res.json();
+        const user = Array.isArray(data) ? data[0] : data;
+        if (user && user.logo){
+          avatarCache.set(login, user.logo);
+          return user.logo;
+        }
+      }
+    } catch (e){ /* fall through */ }
+
+    try {
+      const res2 = await fetch('https://decapi.me/twitch/avatar/' + encodeURIComponent(login));
+      if (res2.ok){
+        const text = (await res2.text()).trim();
+        if (/^https?:\/\//i.test(text)){
+          avatarCache.set(login, text);
+          return text;
+        }
+      }
+    } catch (e){ /* fall through */ }
+
+    avatarCache.set(login, null);
+    return null;
+  }
+
+  // ============================================
+  // CLIP DETECTION / FEED (unchanged logic from original Clip Forwarder)
+  // ============================================
+  function extractClipUrl(text){
+    if (!text) return null;
+    const parts = text.split(' ');
+    for (const raw of parts){
+      const p = raw.trim();
+      if (/^https:\/\/clips\.twitch\.tv\//i.test(p)) return p;
+      if (p.startsWith('https://') && p.includes('twitch.tv/') && p.includes('/clip/')) return p;
+    }
+    return null;
+  }
+
+  function extractChatText(data){
+    if (!data) return '';
+    if (data.message && typeof data.message.text === 'string') return data.message.text;
+    if (typeof data.text === 'string') return data.text;
+    if (typeof data.message === 'string') return data.message;
+    return '';
+  }
+
+  function extractChatUser(data){
+    const u = data && data.user;
+    if (!u) return 'someone';
+    return u.display || u.displayName || u.name || u.userName || u.login || 'someone';
+  }
+
+  function bumpClipStats(){
+    clipCount += 1;
+    els.statClips.textContent = String(clipCount);
+    els.navBadgeClips.textContent = String(clipCount);
+  }
+
+  function addClipCard(user, url, rawText, avatarUrl){
+    if (els.emptyState) { els.emptyState.remove(); els.emptyState = null; }
+
+    const card = document.createElement('div');
+    card.className = 'clip-card';
+    card.appendChild(buildAvatarEl(user, avatarUrl));
+
+    const body = document.createElement('div');
+    body.className = 'clip-body';
+
+    const userRow = document.createElement('div');
+    userRow.className = 'clip-user';
+    const nameEl = document.createElement('span');
+    nameEl.className = 'name';
+    nameEl.textContent = user;
+    const tagEl = document.createElement('span');
+    tagEl.className = 'tag';
+    tagEl.textContent = 'CLIP LOCKED';
+    const timeEl = document.createElement('span');
+    timeEl.className = 'time';
+    timeEl.textContent = new Date().toLocaleTimeString();
+    userRow.appendChild(nameEl);
+    userRow.appendChild(tagEl);
+    userRow.appendChild(timeEl);
+    body.appendChild(userRow);
+
+    if (rawText && rawText.trim() !== url){
+      const msgEl = document.createElement('div');
+      msgEl.className = 'clip-msg';
+      msgEl.textContent = rawText;
+      body.appendChild(msgEl);
+    }
+
+    const link = document.createElement('a');
+    link.className = 'clip-link';
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = '▶ ' + url;
+    body.appendChild(link);
+
+    const note = document.createElement('div');
+    note.className = 'clip-forward-note';
+    note.textContent = 'Streamer.bot is forwarding this to Discord now.';
+    body.appendChild(note);
+
+    card.appendChild(body);
+    els.clipFeed.prepend(card);
+  }
+
+  function markShown(url){
+    clipShown.add(url);
+    setTimeout(() => clipShown.delete(url), 15000);
+  }
+
+  function handleChatDetectedClip(user, url, text){
+    if (clipShown.has(url) || clipTimers.has(url)) return;
+    const t = setTimeout(() => {
+      clipTimers.delete(url);
+      if (clipShown.has(url)) return;
+      markShown(url);
+      addClipCard(user, url, text, null);
+      bumpClipStats();
+    }, 700);
+    clipTimers.set(url, t);
+  }
+
+  function handleBroadcastClip(data){
+    const url = data && data.url;
+    if (!url) return;
+    const user = (data && data.user) || 'someone';
+    if (clipTimers.has(url)){ clearTimeout(clipTimers.get(url)); clipTimers.delete(url); }
+    if (clipShown.has(url)) return;
+    markShown(url);
+    addClipCard(user, url, data.message || '', data.avatarUrl || null);
+    bumpClipStats();
+  }
+
+  function handleEvent(evt, data){
+    if (!evt) return;
+    if (evt.source === 'FallenOneArt' && evt.type === 'ClipForwarded'){
+      handleBroadcastClip(data || {});
+      return;
+    }
+    if (evt.source === 'Twitch' && evt.type === 'ChatMessage'){
+      const text = extractChatText(data);
+      const url = extractClipUrl(text);
+      if (url){
+        const user = extractChatUser(data);
+        handleChatDetectedClip(user, url, text);
+      }
+    }
+  }
+
+  // ============================================
+  // CONNECTION (unchanged logic from original Clip Forwarder, status-card UI)
+  // ============================================
+  function setStatus(state){
+    els.statusLed.classList.remove('on', 'connecting');
+    els.navLedConnection.classList.remove('on');
+    if (state === 'on'){
+      els.statusLed.classList.add('on');
+      els.statusText.innerHTML = '<strong>Connected</strong> to Streamer.bot.';
+      els.navLedConnection.classList.add('on');
+    } else if (state === 'connecting'){
+      els.statusLed.classList.add('connecting');
+      els.statusText.textContent = 'Connecting…';
+    } else {
+      els.statusText.textContent = 'Not connected yet.';
+    }
+  }
+
+  function setConnectButtonsVisible(connected){
+    els.connectBtn.classList.toggle('hidden', connected);
+    els.disconnectBtn.classList.toggle('hidden', !connected);
+  }
+
+  function startUptimeClock(){
+    connectedAt = Date.now();
+    if (uptimeTimer) clearInterval(uptimeTimer);
+    uptimeTimer = setInterval(() => {
+      const secs = Math.floor((Date.now() - connectedAt) / 1000);
+      const m = String(Math.floor(secs / 60)).padStart(2, '0');
+      const s = String(secs % 60).padStart(2, '0');
+      els.statUptime.textContent = m + ':' + s;
+    }, 1000);
+  }
+  function stopUptimeClock(){
+    if (uptimeTimer) clearInterval(uptimeTimer);
+    uptimeTimer = null;
+    els.statUptime.textContent = '00:00';
+  }
+
+  function nextId(){ reqCounter += 1; return 'dash-' + Date.now() + '-' + reqCounter; }
+
+  function send(request){
+    return new Promise((resolve, reject) => {
+      if (!ws || ws.readyState !== WebSocket.OPEN){ reject(new Error('Not connected')); return; }
+      const id = nextId();
+      request.id = id;
+      pending[id] = { resolve, reject };
+      ws.send(JSON.stringify(request));
+      setTimeout(() => {
+        if (pending[id]){ delete pending[id]; reject(new Error('Request timed out: ' + request.request)); }
+      }, 8000);
+    });
+  }
+
+  function connect(){
+    const address = els.wsAddress.value.trim() || '127.0.0.1';
+    const port = els.wsPort.value.trim() || '8080';
+    const url = 'ws://' + address + ':' + port + '/';
+
+    setStatus('connecting');
+    logLine('Connecting to ' + url + ' …', 'info');
+
+    try { ws = new WebSocket(url); }
+    catch (err){
+      logLine('Failed to open socket: ' + err.message, 'err');
+      showToast('Could not open socket', 'err');
+      setStatus('off');
+      return;
+    }
+
+    ws.onopen = () => {
+      setStatus('on');
+      logLine('Connected to Streamer.bot.', 'ok');
+      showToast('Connected to Streamer.bot');
+      setConnectButtonsVisible(true);
+      els.actionSelect.disabled = false;
+      els.saveBtn.disabled = false;
+      els.loadBtn.disabled = false;
+      startUptimeClock();
+      loadActions();
+      loadCurrentConfig();
+      subscribeToChat();
+    };
+
+    ws.onmessage = (event) => {
+      let data;
+      try { data = JSON.parse(event.data); } catch(e){ return; }
+      if (data.event){ handleEvent(data.event, data.data); return; }
+      if (data.id && pending[data.id]){ pending[data.id].resolve(data); delete pending[data.id]; }
+    };
+
+    ws.onerror = () => {
+      logLine('WebSocket error — check address/port and that Streamer.bot is running.', 'err');
+      showToast('WebSocket error', 'err');
+    };
+
+    ws.onclose = () => {
+      setStatus('off');
+      logLine('Disconnected.', 'warn');
+      setConnectButtonsVisible(false);
+      els.actionSelect.disabled = true;
+      els.saveBtn.disabled = true;
+      els.loadBtn.disabled = true;
+      setFeedStatus(false);
+      stopUptimeClock();
+      ws = null;
+    };
+  }
+  function disconnect(){ if (ws) ws.close(); }
+
+  function getSavedActionName(){
+    try { return localStorage.getItem(LS_ACTION_KEY) || ''; } catch (e) { return ''; }
+  }
+  function setSavedActionName(name){
+    try { if (name) localStorage.setItem(LS_ACTION_KEY, name); } catch (e) {}
+  }
+
+  async function loadActions(){
+    try {
+      const res = await send({ request: 'GetActions' });
+      const actions = res.actions || [];
+      els.actionSelect.innerHTML = '';
+      els.statActions.textContent = String(actions.length);
+      if (!actions.length){
+        els.actionSelect.innerHTML = '<option value="">No actions found</option>';
+        return;
+      }
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Select an action…';
+      els.actionSelect.appendChild(placeholder);
+
+      const savedActionName = getSavedActionName();
+      let matched = false;
+      actions.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.name;
+        opt.textContent = a.name + (a.group ? '  [' + a.group + ']' : '');
+        const shouldSelect = savedActionName ? a.name === savedActionName : /save.*config|config.*save/i.test(a.name);
+        if (shouldSelect){ opt.selected = true; matched = true; }
+        els.actionSelect.appendChild(opt);
+      });
+      if (matched) setSavedActionName(els.actionSelect.value);
+      logLine('Loaded ' + actions.length + ' action(s) from Streamer.bot.', 'ok');
+    } catch (err){
+      logLine('Could not load actions: ' + err.message, 'err');
+      showToast('Could not load actions', 'err');
+    }
+  }
+  els.actionSelect.addEventListener('change', () => {
+    if (els.actionSelect.value) setSavedActionName(els.actionSelect.value);
+  });
+
+  async function subscribeToChat(){
+    try {
+      await send({ request: 'Subscribe', events: { Twitch: ['ChatMessage'] } });
+      setFeedStatus(true);
+      logLine('Subscribed to Twitch chat — watching for clip links.', 'ok');
+    } catch (err){
+      setFeedStatus(false);
+      logLine('Could not subscribe to chat events: ' + err.message, 'warn');
+    }
+  }
+
+  function extractValue(res){
+    if (!res) return null;
+    if (typeof res.value !== 'undefined') return res.value;
+    if (res.variable && typeof res.variable.value !== 'undefined') return res.variable.value;
+    if (res.global && typeof res.global.value !== 'undefined') return res.global.value;
+    return null;
+  }
+
+  async function loadCurrentConfig(){
+    try {
+      const webhookRes = await send({ request: 'GetGlobal', variable: 'fallenoneart_webhookUrl', persisted: true }).catch(() => null);
+      const channelRes = await send({ request: 'GetGlobal', variable: 'fallenoneart_channelName', persisted: true }).catch(() => null);
+      const wVal = extractValue(webhookRes);
+      const cVal = extractValue(channelRes);
+
+      if (wVal !== null && wVal !== undefined){ els.webhookUrl.value = wVal; }
+      else if (!els.webhookUrl.value){ els.webhookUrl.value = DEFAULT_WEBHOOK; }
+
+      if (cVal !== null && cVal !== undefined){ els.channelName.value = cVal; }
+      else if (!els.channelName.value){ els.channelName.value = DEFAULT_CHANNEL; }
+
+      persistSettings();
+
+      if ((wVal !== null && wVal !== undefined) || (cVal !== null && cVal !== undefined)){
+        logLine('Loaded existing config from Streamer.bot globals.', 'ok');
+      } else {
+        logLine('No saved config found in Streamer.bot yet — using local defaults.', 'info');
+      }
+    } catch (err){
+      logLine('Could not read current config from Streamer.bot: ' + err.message, 'warn');
+    }
+  }
+
+  async function saveConfig(){
+    const actionName = els.actionSelect.value;
+    if (!actionName){
+      logLine('Pick a Save Config action first.', 'warn');
+      showToast('Pick a Save Config action first', 'warn');
+      return;
+    }
+    setSavedActionName(actionName);
+    const webhookUrl = els.webhookUrl.value.trim();
+    const channelName = els.channelName.value.trim();
+    persistSettings();
+
+    try {
+      await send({ request: 'DoAction', action: { name: actionName }, args: { webhookUrl: webhookUrl, channelName: channelName } });
+      logLine('Saved config via action "' + actionName + '" (channel: "' + channelName + '").', 'ok');
+      showToast('Config saved');
+      els.savedBadge.classList.remove('show');
+      void els.savedBadge.offsetWidth;
+      els.savedBadge.classList.add('show');
+    } catch (err){
+      logLine('Save failed: ' + err.message, 'err');
+      showToast('Save failed', 'err');
+    }
+  }
+
+  async function sendTestWebhook(){
+    const webhookUrl = els.webhookUrl.value.trim();
+    if (!webhookUrl){
+      logLine('Enter a webhook URL before testing.', 'warn');
+      showToast('Enter a webhook URL first', 'warn');
+      return;
+    }
+    const channelName = els.channelName.value.trim();
+    const content = 'Clip Forwarder test ping' + (channelName ? ' from **' + channelName + '**' : '') + ' — if you can read this, the webhook works. 🎃';
+    try {
+      const resp = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: 'Clip Forwarder', content })
+      });
+      if (resp.ok || resp.status === 204){
+        logLine('Test message sent to Discord.', 'ok');
+        showToast('Test message sent');
+      } else {
+        logLine('Discord responded with status ' + resp.status + '.', 'err');
+        showToast('Discord error: ' + resp.status, 'err');
+      }
+    } catch (err){
+      logLine('Test webhook failed: ' + err.message, 'err');
+      showToast('Test webhook failed', 'err');
+    }
+  }
+
+  els.pwToggle.addEventListener('click', () => {
+    const isPw = els.webhookUrl.type === 'password';
+    els.webhookUrl.type = isPw ? 'text' : 'password';
+    els.pwToggle.textContent = isPw ? 'HIDE' : 'SHOW';
+  });
+  els.copyBtn.addEventListener('click', async () => {
+    const val = els.webhookUrl.value.trim();
+    if (!val){ showToast('Nothing to copy', 'warn'); return; }
+    try {
+      await navigator.clipboard.writeText(val);
+      els.copyBtn.textContent = 'DONE';
+      els.copyBtn.classList.add('copied');
+      setTimeout(() => { els.copyBtn.textContent = 'COPY'; els.copyBtn.classList.remove('copied'); }, 1400);
+    } catch (err){ showToast('Copy failed', 'err'); }
+  });
+
+  els.connectBtn.addEventListener('click', connect);
+  els.disconnectBtn.addEventListener('click', disconnect);
+  els.saveBtn.addEventListener('click', saveConfig);
+  els.loadBtn.addEventListener('click', loadCurrentConfig);
+  els.testBtn.addEventListener('click', sendTestWebhook);
+  document.getElementById('btnSave').addEventListener('click', saveConfig);
+
+  // ============================================
+  // SETTINGS PERSISTENCE (localStorage, mirrors music dashboard's config pattern)
+  // ============================================
+  function loadSettings(){
+    try{
+      const raw = localStorage.getItem(LS_SETTINGS_KEY);
+      if (raw) settings = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    }catch(e){}
+  }
+  function persistSettings(){
+    settings = {
+      wsAddress: els.wsAddress.value.trim() || '127.0.0.1',
+      wsPort: els.wsPort.value.trim() || '8080',
+      channelName: els.channelName.value.trim() || DEFAULT_CHANNEL,
+      webhookUrl: els.webhookUrl.value.trim()
+    };
+    try{ localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(settings)); }catch(e){}
+  }
+  function populateSettingsForm(){
+    els.wsAddress.value = settings.wsAddress || '127.0.0.1';
+    els.wsPort.value = settings.wsPort || '8080';
+    els.channelName.value = settings.channelName || DEFAULT_CHANNEL;
+    els.webhookUrl.value = settings.webhookUrl || DEFAULT_WEBHOOK;
+  }
+  document.querySelectorAll('#panel-connection #wsAddress, #panel-connection #wsPort, #panel-settings #channelName, #panel-settings #webhookUrl').forEach(el=>{
+    el.addEventListener('change', persistSettings);
+  });
+
+  // ============================================
+  // DASHBOARD THEME (copied 1:1 from music player dashboard)
+  // ============================================
+  function loadDashTheme(){
+    try{ const raw = localStorage.getItem(LS_DASH_THEME_KEY); if(raw) dashTheme = { ...DEFAULT_DASH_THEME, ...JSON.parse(raw) }; }catch(e){}
+  }
+  function saveDashTheme(){ localStorage.setItem(LS_DASH_THEME_KEY, JSON.stringify(dashTheme)); }
+
+  function hexToRgbTriplet(hex){
+    const clean = (hex || '#ffffff').replace('#','');
+    const full = clean.length === 3 ? clean.split('').map(c=>c+c).join('') : clean;
+    const r = parseInt(full.substring(0,2), 16) || 255;
+    const g = parseInt(full.substring(2,4), 16) || 255;
+    const b = parseInt(full.substring(4,6), 16) || 255;
+    return `${r}, ${g}, ${b}`;
+  }
+
+  function applyDashTheme(){
+    document.documentElement.style.setProperty('--nav-text-color', dashTheme.navTextColor);
+    document.documentElement.style.setProperty('--text-primary', dashTheme.primaryText);
+    document.documentElement.style.setProperty('--text-secondary', dashTheme.secondaryText);
+    document.documentElement.style.setProperty('--text-tertiary', dashTheme.tertiaryText);
+    document.documentElement.style.setProperty('--dash-panel-opacity', dashTheme.panelOpacity);
+    document.documentElement.style.setProperty('--dash-panel-color-rgb', hexToRgbTriplet(dashTheme.panelColor));
+    document.documentElement.style.setProperty('--dash-border-opacity', dashTheme.borderOpacity);
+    document.documentElement.style.setProperty('--dash-panel-border-rgb', hexToRgbTriplet(dashTheme.panelBorder));
+    document.documentElement.style.setProperty('--dash-blur', dashTheme.blurStrength + 'px');
+    document.documentElement.style.setProperty('--dash-glow-intensity', dashTheme.glowIntensity);
+    document.documentElement.style.setProperty('--dash-active-glow', dashTheme.sidebarGlow
+      ? `0 0 ${(20 * dashTheme.glowIntensity).toFixed(0)}px rgba(125,232,200,${(0.3 * dashTheme.glowIntensity).toFixed(2)})`
+      : 'none');
+    document.documentElement.style.setProperty('--dash-corner-radius', dashTheme.cornerRadius + 'px');
+    document.documentElement.style.setProperty('--dash-sidebar-opacity', dashTheme.sidebarOpacity);
+
+    const speedMap = { instant:'0s', fast:'0.1s', normal:'0.25s', slow:'0.5s', leisurely:'0.8s' };
+    document.documentElement.style.setProperty('--dash-transition-speed', speedMap[dashTheme.transitionSpeed] || '0.25s');
+
+    const body = document.body;
+    if(dashTheme.bgType === 'solid'){ body.style.background = dashTheme.bgColor1; }
+    else if(dashTheme.bgType === 'gradient'){ body.style.background = `linear-gradient(${dashTheme.gradAngle}deg, ${dashTheme.gradColor1}33, ${dashTheme.gradColor2}33), var(--bg-deep)`; }
+    else if(dashTheme.bgType === 'image'){
+      const bgSource = dashTheme.bgImageSourceType === 'upload' && dashTheme.bgImageUpload ? dashTheme.bgImageUpload : dashTheme.bgImageUrl;
+      if(bgSource){
+        const posMap = {
+          cover:'background-size:cover; background-repeat:no-repeat; background-position:center;',
+          contain:'background-size:contain; background-repeat:no-repeat; background-position:center;',
+          center:'background-size:auto; background-repeat:no-repeat; background-position:center;',
+          repeat:'background-size:auto; background-repeat:repeat; background-position:top left;'
+        };
+        body.setAttribute('style', `background-image:url('${bgSource}'); ${posMap[dashTheme.bgPosition] || posMap.cover}; transition: background-color 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background-image 0.8s ease;`);
+      }
+    }
+    document.querySelectorAll('[data-dash-choice]').forEach(card=>{ card.classList.toggle('selected', dashTheme[card.dataset.dashChoice] === card.dataset.value); });
+    document.getElementById('fieldBgSolid').style.display = dashTheme.bgType === 'solid' ? 'block' : 'none';
+    document.getElementById('fieldBgGradient').style.display = dashTheme.bgType === 'gradient' ? 'block' : 'none';
+    document.getElementById('fieldBgImage').classList.toggle('hidden', dashTheme.bgType !== 'image');
+    updateImageSourceToggle();
+    renderWallpaperHistory();
+  }
+
+  function populateDashThemeForm(){
+    document.getElementById('inputDashBgColor1').value = dashTheme.bgColor1;
+    document.getElementById('inputDashGradColor1').value = dashTheme.gradColor1;
+    document.getElementById('inputDashGradColor2').value = dashTheme.gradColor2;
+    document.getElementById('inputDashGradAngle').value = dashTheme.gradAngle;
+    document.getElementById('valDashGradAngle').textContent = dashTheme.gradAngle + '°';
+    document.getElementById('inputDashBgImageUrl').value = dashTheme.bgImageUrl;
+    document.getElementById('inputDashBgPosition').value = dashTheme.bgPosition;
+    document.getElementById('inputDashNavTextColor').value = dashTheme.navTextColor;
+    document.getElementById('inputDashPrimaryText').value = dashTheme.primaryText;
+    document.getElementById('inputDashSecondaryText').value = dashTheme.secondaryText;
+    document.getElementById('inputDashTertiaryText').value = dashTheme.tertiaryText;
+    document.getElementById('inputDashPanelColor').value = dashTheme.panelColor;
+    document.getElementById('inputDashPanelOpacity').value = dashTheme.panelOpacity;
+    document.getElementById('valDashPanelOpacity').textContent = (dashTheme.panelOpacity * 100).toFixed(0) + '%';
+    document.getElementById('inputDashPanelBorder').value = dashTheme.panelBorder;
+    document.getElementById('inputDashBorderOpacity').value = dashTheme.borderOpacity;
+    document.getElementById('valDashBorderOpacity').textContent = (dashTheme.borderOpacity * 100).toFixed(1) + '%';
+    document.getElementById('inputDashAccent1').value = dashTheme.accent1;
+    document.getElementById('inputDashAccent2').value = dashTheme.accent2;
+    document.getElementById('inputDashBlur').value = dashTheme.blurStrength;
+    document.getElementById('valDashBlur').textContent = dashTheme.blurStrength + 'px';
+    document.getElementById('inputDashGlowIntensity').value = dashTheme.glowIntensity;
+    document.getElementById('valDashGlowIntensity').textContent = (dashTheme.glowIntensity * 100).toFixed(0) + '%';
+    document.getElementById('inputDashCornerRadius').value = dashTheme.cornerRadius;
+    document.getElementById('valDashCornerRadius').textContent = dashTheme.cornerRadius + 'px';
+    document.getElementById('inputDashSidebarOpacity').value = dashTheme.sidebarOpacity;
+    document.getElementById('valDashSidebarOpacity').textContent = (dashTheme.sidebarOpacity * 100).toFixed(0) + '%';
+    document.getElementById('toggleDashSidebarGlow').checked = dashTheme.sidebarGlow;
+    document.getElementById('inputDashTransitionSpeed').value = dashTheme.transitionSpeed;
+    document.getElementById('toggleBgImageSource').checked = dashTheme.bgImageSourceType === 'upload';
+    updateImageSourceToggle();
+  }
+
+  function updateImageSourceToggle(){
+    const isUpload = document.getElementById('toggleBgImageSource').checked;
+    document.getElementById('bgImageUrlSection').classList.toggle('hidden', isUpload);
+    document.getElementById('bgImageUploadSection').classList.toggle('hidden', !isUpload);
+  }
+  document.getElementById('toggleBgImageSource').addEventListener('change', ()=>{
+    dashTheme.bgImageSourceType = document.getElementById('toggleBgImageSource').checked ? 'upload' : 'url';
+    updateImageSourceToggle();
+    applyDashTheme();
+    saveDashTheme();
+    showToast('Image source toggled ✓');
+  });
+
+  function formatFileSize(bytes){
+    if(bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  function resizeImageDataUrl(dataUrl, maxDim, quality){
+    return new Promise((resolve)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let width = img.width, height = img.height;
+        if(width > maxDim || height > maxDim){
+          if(width > height){ height = Math.round(height * (maxDim / width)); width = maxDim; }
+          else{ width = Math.round(width * (maxDim / height)); height = maxDim; }
+        }
+        try{
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        }catch(e){ resolve(dataUrl); }
+      };
+      img.onerror = ()=> resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
+  function extractImageColors(dataUrl){
+    return new Promise((resolve)=>{
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = ()=>{
+        try{
+          const canvas = document.createElement('canvas');
+          canvas.width = 150; canvas.height = 150;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, 150, 150);
+          const imageData = ctx.getImageData(0, 0, 150, 150);
+          const data = imageData.data;
+          const colorMap = {};
+          for(let i = 0; i < data.length; i += 4){
+            const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+            if(a < 125) continue;
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            if(brightness < 30 || brightness > 230) continue;
+            const hex = `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+            colorMap[hex] = (colorMap[hex] || 0) + 1;
+          }
+          const sorted = Object.entries(colorMap).sort((a, b) => b[1] - a[1]).slice(0, 5).map(entry => entry[0]);
+          resolve(sorted);
+        }catch(e){ resolve(['#7de8c8', '#c8a2ff']); }
+      };
+      img.onerror = ()=> resolve(['#7de8c8', '#c8a2ff']);
+      img.src = dataUrl;
+    });
+  }
+
+  function loadWallpaperHistory(){
+    try{ const raw = localStorage.getItem(LS_WALLPAPER_HISTORY_KEY); wallpaperHistory = raw ? JSON.parse(raw) : []; }
+    catch(e){ wallpaperHistory = []; }
+  }
+  function saveWallpaperHistory(){
+    try{ localStorage.setItem(LS_WALLPAPER_HISTORY_KEY, JSON.stringify(wallpaperHistory)); }
+    catch(e){
+      if(wallpaperHistory.length > 1){
+        wallpaperHistory.pop();
+        try{ localStorage.setItem(LS_WALLPAPER_HISTORY_KEY, JSON.stringify(wallpaperHistory)); }
+        catch(e2){ showToast('Wallpaper history is full — remove some to add more.'); }
+      }
+    }
+  }
+  function addToWallpaperHistory(dataUrl, name){
+    wallpaperHistory = wallpaperHistory.filter(item => item.dataUrl !== dataUrl);
+    wallpaperHistory.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), dataUrl, name: name || 'Wallpaper', timestamp: Date.now() });
+    if(wallpaperHistory.length > MAX_WALLPAPER_HISTORY) wallpaperHistory = wallpaperHistory.slice(0, MAX_WALLPAPER_HISTORY);
+    saveWallpaperHistory();
+    renderWallpaperHistory();
+  }
+  function renderWallpaperHistory(){
+    const grid = document.getElementById('wallpaperHistoryGrid');
+    const emptyHint = document.getElementById('wallpaperHistoryEmptyHint');
+    if(!grid) return;
+    grid.innerHTML = '';
+    if(!wallpaperHistory.length){ if(emptyHint) emptyHint.style.display = 'block'; return; }
+    if(emptyHint) emptyHint.style.display = 'none';
+    wallpaperHistory.forEach(item=>{
+      const cell = document.createElement('div');
+      cell.className = 'wallpaper-history-item' + (dashTheme.bgImageUpload === item.dataUrl ? ' active' : '');
+      cell.title = item.name;
+      cell.innerHTML = `<img src="${item.dataUrl}" alt="${item.name}" loading="lazy"><button type="button" class="wallpaper-history-delete" title="Remove from history">✕</button>`;
+      cell.addEventListener('click', (e)=>{
+        if(e.target.closest('.wallpaper-history-delete')) return;
+        applyWallpaperFromHistory(item);
+      });
+      cell.querySelector('.wallpaper-history-delete').addEventListener('click', (e)=>{ e.stopPropagation(); removeFromWallpaperHistory(item.id); });
+      grid.appendChild(cell);
+    });
+  }
+  async function applyWallpaperFromHistory(item){
+    dashTheme.bgImageUpload = item.dataUrl;
+    dashTheme.bgImageSourceType = 'upload';
+    document.getElementById('toggleBgImageSource').checked = true;
+    updateImageSourceToggle();
+
+    const colors = await extractImageColors(item.dataUrl);
+    if(colors.length >= 2){
+      dashTheme.gradColor1 = colors[0];
+      dashTheme.gradColor2 = colors[colors.length > 1 ? 1 : 0];
+      dashTheme.navTextColor = colors[colors.length > 2 ? 2 : colors[0]];
+      document.getElementById('inputDashGradColor1').value = dashTheme.gradColor1;
+      document.getElementById('inputDashGradColor2').value = dashTheme.gradColor2;
+      document.getElementById('inputDashNavTextColor').value = dashTheme.navTextColor;
+    }
+
+    applyDashTheme();
+    saveDashTheme();
+    renderWallpaperHistory();
+
+    document.getElementById('uploadZone').style.display = 'none';
+    document.getElementById('uploadPreview').classList.remove('hidden');
+    document.getElementById('previewImg').src = item.dataUrl;
+    document.getElementById('previewFilename').textContent = item.name;
+    document.getElementById('previewSize').textContent = 'From history';
+
+    showToast(`Applied "${item.name}" ✓`);
+  }
+  function removeFromWallpaperHistory(id){
+    wallpaperHistory = wallpaperHistory.filter(item => item.id !== id);
+    saveWallpaperHistory();
+    renderWallpaperHistory();
+    showToast('Removed from wallpaper history');
+  }
+
+  function handleFile(file){
+    if(!file.type.startsWith('image/')){ showToast('Please select an image file.'); return; }
+    if(file.size > 5242880){ showToast('File too large (max 5MB)'); return; }
+    const reader = new FileReader();
+    reader.onload = async (evt)=>{
+      const originalDataUrl = evt.target.result;
+      const storedDataUrl = await resizeImageDataUrl(originalDataUrl, 1600, 0.82);
+
+      dashTheme.bgImageUpload = storedDataUrl;
+      dashTheme.bgImageSourceType = 'upload';
+
+      const colors = await extractImageColors(storedDataUrl);
+      if(colors.length >= 2){
+        dashTheme.gradColor1 = colors[0];
+        dashTheme.gradColor2 = colors[colors.length > 1 ? 1 : 0];
+        dashTheme.navTextColor = colors[colors.length > 2 ? 2 : colors[0]];
+        document.getElementById('inputDashGradColor1').value = dashTheme.gradColor1;
+        document.getElementById('inputDashGradColor2').value = dashTheme.gradColor2;
+        document.getElementById('inputDashNavTextColor').value = dashTheme.navTextColor;
+        showToast('Colors extracted & applied ✓');
+      }
+
+      document.getElementById('toggleBgImageSource').checked = true;
+      updateImageSourceToggle();
+      applyDashTheme();
+      saveDashTheme();
+      showUploadPreview(file, storedDataUrl);
+      addToWallpaperHistory(storedDataUrl, file.name);
+    };
+    reader.readAsDataURL(file);
+  }
+  function showUploadPreview(file, dataUrl){
+    document.getElementById('previewImg').src = dataUrl;
+    document.getElementById('previewFilename').textContent = file.name;
+    document.getElementById('previewSize').textContent = formatFileSize(file.size);
+    document.getElementById('uploadZone').style.display = 'none';
+    document.getElementById('uploadPreview').classList.remove('hidden');
+  }
+  function clearUploadPreview(){
+    document.getElementById('inputDashBgImageUpload').value = '';
+    dashTheme.bgImageUpload = '';
+    applyDashTheme();
+    saveDashTheme();
+    document.getElementById('uploadZone').style.display = 'block';
+    document.getElementById('uploadPreview').classList.add('hidden');
+    showToast('Wallpaper cleared');
+  }
+
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput = document.getElementById('inputDashBgImageUpload');
+  uploadZone.addEventListener('click', ()=> fileInput.click());
+  fileInput.addEventListener('change', (e)=>{ const file = e.target.files[0]; if(file) handleFile(file); });
+  uploadZone.addEventListener('dragover', (e)=>{ e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', ()=> uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', (e)=>{
+    e.preventDefault(); uploadZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0]; if(file) handleFile(file);
+  });
+  document.getElementById('uploadClear').addEventListener('click', clearUploadPreview);
+
+  document.querySelectorAll('#panel-theme input, #panel-theme select').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      if(el.id === 'inputDashBgImageUpload') return;
+
+      dashTheme.bgColor1 = document.getElementById('inputDashBgColor1').value;
+      dashTheme.gradColor1 = document.getElementById('inputDashGradColor1').value;
+      dashTheme.gradColor2 = document.getElementById('inputDashGradColor2').value;
+      dashTheme.gradAngle = parseInt(document.getElementById('inputDashGradAngle').value);
+      dashTheme.bgImageUrl = document.getElementById('inputDashBgImageUrl').value;
+      dashTheme.bgPosition = document.getElementById('inputDashBgPosition').value;
+      dashTheme.navTextColor = document.getElementById('inputDashNavTextColor').value;
+      dashTheme.primaryText = document.getElementById('inputDashPrimaryText').value;
+      dashTheme.secondaryText = document.getElementById('inputDashSecondaryText').value;
+      dashTheme.tertiaryText = document.getElementById('inputDashTertiaryText').value;
+      dashTheme.panelColor = document.getElementById('inputDashPanelColor').value;
+      dashTheme.panelOpacity = parseFloat(document.getElementById('inputDashPanelOpacity').value);
+      dashTheme.panelBorder = document.getElementById('inputDashPanelBorder').value;
+      dashTheme.borderOpacity = parseFloat(document.getElementById('inputDashBorderOpacity').value);
+      dashTheme.accent1 = document.getElementById('inputDashAccent1').value;
+      dashTheme.accent2 = document.getElementById('inputDashAccent2').value;
+      dashTheme.blurStrength = parseInt(document.getElementById('inputDashBlur').value);
+      dashTheme.glowIntensity = parseFloat(document.getElementById('inputDashGlowIntensity').value);
+      dashTheme.cornerRadius = parseInt(document.getElementById('inputDashCornerRadius').value);
+      dashTheme.sidebarOpacity = parseFloat(document.getElementById('inputDashSidebarOpacity').value);
+      dashTheme.sidebarGlow = document.getElementById('toggleDashSidebarGlow').checked;
+      dashTheme.transitionSpeed = document.getElementById('inputDashTransitionSpeed').value;
+
+      document.getElementById('valDashGradAngle').textContent = dashTheme.gradAngle + '°';
+      document.getElementById('valDashPanelOpacity').textContent = (dashTheme.panelOpacity * 100).toFixed(0) + '%';
+      document.getElementById('valDashBorderOpacity').textContent = (dashTheme.borderOpacity * 100).toFixed(1) + '%';
+      document.getElementById('valDashBlur').textContent = dashTheme.blurStrength + 'px';
+      document.getElementById('valDashGlowIntensity').textContent = (dashTheme.glowIntensity * 100).toFixed(0) + '%';
+      document.getElementById('valDashCornerRadius').textContent = dashTheme.cornerRadius + 'px';
+      document.getElementById('valDashSidebarOpacity').textContent = (dashTheme.sidebarOpacity * 100).toFixed(0) + '%';
+
+      applyDashTheme();
+      saveDashTheme();
+    });
+  });
+
+  document.querySelectorAll('[data-dash-choice]').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      dashTheme[card.dataset.dashChoice] = card.dataset.value;
+      applyDashTheme();
+      saveDashTheme();
+      showToast('Background style updated ✓');
+    });
+  });
+
+  document.getElementById('btnResetDashTheme').addEventListener('click', ()=>{
+    dashTheme = { ...DEFAULT_DASH_THEME };
+    populateDashThemeForm();
+    applyDashTheme();
+    saveDashTheme();
+    showToast('Dashboard theme reset ✓');
+  });
+
+  // ============================================
+  // CLIP GALLERY (Twitch Helix API — Client ID entered locally, never hardcoded)
+  // ============================================
+  const LS_GALLERY_CLIENT_ID_KEY = 'fallenoneart_clipforwarder_gallery_clientid';
+  const LS_GALLERY_TOKEN_KEY = 'fallenoneart_clipforwarder_gallery_token'; // { accessToken, obtainedAt, expiresIn, login, userId }
+  const LS_GALLERY_PREFS_KEY = 'fallenoneart_clipforwarder_gallery_prefs'; // { fromISO, toISO, autoRefreshMs }
+  const LS_GALLERY_CLIPS_KEY = 'fallenoneart_clipforwarder_gallery_clips'; // array of clip objects, deduped by id
+  const LS_GALLERY_OAUTH_STATE_KEY = 'fallenoneart_clipforwarder_gallery_oauth_state';
+  const MAX_STORED_CLIPS = 400;
+  const HELIX_PAGE_SIZE = 100;
+
+  const gEls = {
+    clientId: document.getElementById('twitchClientId'),
+    redirectHint: document.getElementById('galleryRedirectUri'),
+    connectBtn: document.getElementById('galleryConnectBtn'),
+    disconnectBtn: document.getElementById('galleryDisconnectBtn'),
+    tokenPill: document.getElementById('galleryTokenPill'),
+    tokenPillText: document.getElementById('galleryTokenPillText'),
+    statusLed: document.getElementById('galleryStatusLed'),
+    statusText: document.getElementById('galleryStatusText'),
+    from: document.getElementById('galleryFrom'),
+    to: document.getElementById('galleryTo'),
+    autoRefresh: document.getElementById('galleryAutoRefresh'),
+    loadBtn: document.getElementById('galleryLoadBtn'),
+    refreshBtn: document.getElementById('galleryRefreshBtn'),
+    clearBtn: document.getElementById('galleryClearBtn'),
+    lastChecked: document.getElementById('galleryLastChecked'),
+    grid: document.getElementById('galleryGrid'),
+    emptyState: document.getElementById('galleryEmptyState'),
+    navBadge: document.getElementById('navBadgeGallery'),
+    statTotal: document.getElementById('galleryStatTotal'),
+    statNew: document.getElementById('galleryStatNew'),
+    statClippers: document.getElementById('galleryStatClippers'),
+    loadMoreBar: document.getElementById('galleryLoadMoreBar'),
+    loadMoreBtn: document.getElementById('galleryLoadMoreBtn'),
+  };
+
+  let galleryToken = null; // { accessToken, obtainedAt, expiresIn, login, userId }
+  let galleryClips = []; // stored clip records
+  let gallerySeenIds = new Set();
+  let galleryNewCount = 0;
+  let galleryAutoTimer = null;
+  let galleryBroadcasterId = null;
+  let galleryBroadcasterLogin = null;
+  let galleryCursor = null;
+  let galleryLastRangeKey = null;
+
+  gEls.redirectHint.textContent = location.origin + location.pathname;
+
+  function defaultGalleryFromTo(){
+    const to = new Date();
+    const from = new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return { fromISO: toLocalInputValue(from), toISO: toLocalInputValue(to) };
+  }
+  function toLocalInputValue(d){
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function loadGalleryClientId(){
+    try{ return localStorage.getItem(LS_GALLERY_CLIENT_ID_KEY) || ''; }catch(e){ return ''; }
+  }
+  function saveGalleryClientId(id){
+    try{ if(id) localStorage.setItem(LS_GALLERY_CLIENT_ID_KEY, id); else localStorage.removeItem(LS_GALLERY_CLIENT_ID_KEY); }catch(e){}
+  }
+
+  function loadGalleryToken(){
+    try{ const raw = localStorage.getItem(LS_GALLERY_TOKEN_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
+  }
+  function saveGalleryToken(tok){
+    try{ if(tok) localStorage.setItem(LS_GALLERY_TOKEN_KEY, JSON.stringify(tok)); else localStorage.removeItem(LS_GALLERY_TOKEN_KEY); }catch(e){}
+  }
+  function tokenIsExpired(tok){
+    if(!tok || !tok.accessToken) return true;
+    const ageSec = (Date.now() - tok.obtainedAt) / 1000;
+    return ageSec >= (tok.expiresIn - 60); // treat as expired 60s early
+  }
+
+  function loadGalleryPrefs(){
+    try{
+      const raw = localStorage.getItem(LS_GALLERY_PREFS_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+  function saveGalleryPrefs(){
+    try{
+      localStorage.setItem(LS_GALLERY_PREFS_KEY, JSON.stringify({
+        fromISO: gEls.from.value, toISO: gEls.to.value, autoRefreshMs: gEls.autoRefresh.value
+      }));
+    }catch(e){}
+  }
+
+  function loadGalleryClips(){
+    try{
+      const raw = localStorage.getItem(LS_GALLERY_CLIPS_KEY);
+      galleryClips = raw ? JSON.parse(raw) : [];
+    }catch(e){ galleryClips = []; }
+    gallerySeenIds = new Set(galleryClips.map(c => c.id));
+  }
+  function saveGalleryClips(){
+    try{ localStorage.setItem(LS_GALLERY_CLIPS_KEY, JSON.stringify(galleryClips.slice(0, MAX_STORED_CLIPS))); }
+    catch(e){}
+  }
+
+  function setGalleryStatus(state, text){
+    gEls.statusLed.classList.remove('on', 'connecting');
+    if(state === 'on') gEls.statusLed.classList.add('on');
+    else if(state === 'connecting') gEls.statusLed.classList.add('connecting');
+    gEls.statusText.innerHTML = text;
+    gEls.tokenPill.classList.toggle('on', state === 'on');
+    gEls.tokenPillText.textContent = state === 'on' ? (galleryToken && galleryToken.login ? '@' + galleryToken.login : 'Connected') : 'Not connected';
+  }
+
+  function updateGalleryButtons(){
+    const connected = !!(galleryToken && !tokenIsExpired(galleryToken));
+    const hasClientId = !!gEls.clientId.value.trim();
+    gEls.connectBtn.classList.toggle('hidden', connected);
+    gEls.disconnectBtn.classList.toggle('hidden', !connected);
+    gEls.connectBtn.disabled = !hasClientId;
+    gEls.loadBtn.disabled = !connected;
+    gEls.refreshBtn.disabled = !connected;
+  }
+
+  function galleryRandomState(){
+    const arr = new Uint32Array(4);
+    crypto.getRandomValues(arr);
+    return Array.from(arr).map(n => n.toString(16)).join('');
+  }
+
+  function startTwitchLogin(){
+    const clientId = gEls.clientId.value.trim();
+    if(!clientId){
+      showToast('Paste your Twitch Client ID first', 'warn');
+      return;
+    }
+    saveGalleryClientId(clientId);
+    const redirectUri = location.origin + location.pathname;
+    const state = galleryRandomState();
+    try{ sessionStorage.setItem(LS_GALLERY_OAUTH_STATE_KEY, state); }catch(e){}
+    const authUrl = 'https://id.twitch.tv/oauth2/authorize'
+      + '?client_id=' + encodeURIComponent(clientId)
+      + '&redirect_uri=' + encodeURIComponent(redirectUri)
+      + '&response_type=token'
+      + '&scope='
+      + '&state=' + encodeURIComponent(state);
+    logLine('Redirecting to Twitch for login…', 'info');
+    window.location.href = authUrl;
+  }
+
+  async function validateAndStoreToken(accessToken){
+    try{
+      const res = await fetch('https://id.twitch.tv/oauth2/validate', {
+        headers: { Authorization: 'OAuth ' + accessToken }
+      });
+      if(!res.ok) throw new Error('Token validation failed (' + res.status + ')');
+      const data = await res.json();
+      galleryToken = {
+        accessToken,
+        obtainedAt: Date.now(),
+        expiresIn: data.expires_in || 14400,
+        login: data.login || '',
+        userId: data.user_id || ''
+      };
+      saveGalleryToken(galleryToken);
+      setGalleryStatus('on', '<strong>Connected</strong> to Twitch as <strong>@' + (data.login || 'unknown') + '</strong>.');
+      updateGalleryButtons();
+      logLine('Twitch account connected (@' + (data.login || 'unknown') + ').', 'ok');
+      showToast('Twitch connected ✓');
+    }catch(err){
+      logLine('Twitch token validation failed: ' + err.message, 'err');
+      showToast('Twitch login failed', 'err');
+      galleryToken = null;
+      saveGalleryToken(null);
+      setGalleryStatus('off', 'Not connected to Twitch yet.');
+      updateGalleryButtons();
+    }
+  }
+
+  function handleOAuthRedirectIfPresent(){
+    if(!location.hash || location.hash.length < 2) return;
+    const hashParams = new URLSearchParams(location.hash.slice(1));
+    const accessToken = hashParams.get('access_token');
+    const state = hashParams.get('state');
+    const error = hashParams.get('error_description');
+    if(error){
+      logLine('Twitch login error: ' + error, 'err');
+      showToast('Twitch login failed', 'err');
+      history.replaceState(null, '', location.pathname + location.search);
+      return;
+    }
+    if(!accessToken) return;
+    let expectedState = null;
+    try{ expectedState = sessionStorage.getItem(LS_GALLERY_OAUTH_STATE_KEY); }catch(e){}
+    history.replaceState(null, '', location.pathname + location.search); // strip token from the URL immediately
+    if(expectedState && state && expectedState !== state){
+      logLine('Twitch login state mismatch — ignoring token for safety.', 'err');
+      showToast('Twitch login failed (state mismatch)', 'err');
+      return;
+    }
+    try{ sessionStorage.removeItem(LS_GALLERY_OAUTH_STATE_KEY); }catch(e){}
+    setGalleryStatus('connecting', 'Verifying Twitch login…');
+    validateAndStoreToken(accessToken);
+  }
+
+  function disconnectTwitch(){
+    galleryToken = null;
+    saveGalleryToken(null);
+    setGalleryStatus('off', 'Not connected to Twitch yet.');
+    updateGalleryButtons();
+    logLine('Disconnected Twitch account from Clip Gallery.', 'warn');
+    showToast('Twitch disconnected');
+  }
+
+  async function helixFetch(path, params){
+    if(!galleryToken || tokenIsExpired(galleryToken)) throw new Error('Not connected to Twitch (or token expired) — reconnect.');
+    const clientId = gEls.clientId.value.trim();
+    const url = new URL('https://api.twitch.tv/helix/' + path);
+    Object.entries(params || {}).forEach(([k, v]) => {
+      if(v === undefined || v === null || v === '') return;
+      if(Array.isArray(v)) v.forEach(item => url.searchParams.append(k, item));
+      else url.searchParams.append(k, v);
+    });
+    const res = await fetch(url.toString(), {
+      headers: {
+        'Client-Id': clientId,
+        'Authorization': 'Bearer ' + galleryToken.accessToken
+      }
+    });
+    if(res.status === 401){
+      throw new Error('Twitch rejected the token (401) — try reconnecting your Twitch account.');
+    }
+    if(!res.ok){
+      const body = await res.text().catch(()=> '');
+      throw new Error('Twitch API error ' + res.status + (body ? (': ' + body.slice(0,180)) : ''));
+    }
+    return res.json();
+  }
+
+  async function resolveBroadcasterId(){
+    const channelLogin = (els.channelName.value || '').trim().toLowerCase();
+    if(!channelLogin) throw new Error('Set a Streamer Channel Name in Settings first.');
+    if(galleryBroadcasterId && galleryBroadcasterLogin === channelLogin) return galleryBroadcasterId;
+    const data = await helixFetch('users', { login: channelLogin });
+    const user = data.data && data.data[0];
+    if(!user) throw new Error('Could not find a Twitch channel named "' + channelLogin + '".');
+    galleryBroadcasterId = user.id;
+    galleryBroadcasterLogin = channelLogin;
+    return galleryBroadcasterId;
+  }
+
+  function galleryRangeKey(){
+    return (gEls.from.value || '') + '|' + (gEls.to.value || '');
+  }
+
+  async function loadClipsForRange(reset){
+    try{
+      gEls.loadBtn.disabled = true;
+      gEls.refreshBtn.disabled = true;
+      const broadcasterId = await resolveBroadcasterId();
+
+      if(reset){
+        galleryCursor = null;
+        galleryLastRangeKey = galleryRangeKey();
+      }
+
+      const fromVal = gEls.from.value ? new Date(gEls.from.value).toISOString() : undefined;
+      const toVal = gEls.to.value ? new Date(gEls.to.value).toISOString() : undefined;
+
+      const params = {
+        broadcaster_id: broadcasterId,
+        first: HELIX_PAGE_SIZE,
+        started_at: fromVal,
+        ended_at: toVal,
+        after: galleryCursor || undefined
+      };
+
+      const data = await helixFetch('clips', params);
+      const clips = data.data || [];
+      galleryCursor = data.pagination && data.pagination.cursor ? data.pagination.cursor : null;
+      gEls.loadMoreBar.classList.toggle('hidden', !galleryCursor);
+
+      mergeClips(clips);
+      renderGallery();
+      saveGalleryClips();
+      gEls.lastChecked.textContent = 'Last checked ' + new Date().toLocaleTimeString();
+      logLine('Loaded ' + clips.length + ' clip(s) from Twitch for the selected range.', 'ok');
+      showToast(clips.length ? ('Loaded ' + clips.length + ' clip(s)') : 'No clips found in that range');
+    }catch(err){
+      logLine('Clip Gallery load failed: ' + err.message, 'err');
+      showToast('Could not load clips', 'err');
+    }finally{
+      updateGalleryButtons();
+    }
+  }
+
+  async function refreshNewClips(){
+    if(!galleryToken || tokenIsExpired(galleryToken)) return;
+    try{
+      const broadcasterId = await resolveBroadcasterId();
+      const data = await helixFetch('clips', { broadcaster_id: broadcasterId, first: HELIX_PAGE_SIZE });
+      const clips = data.data || [];
+      const beforeCount = gallerySeenIds.size;
+      mergeClips(clips);
+      const addedCount = gallerySeenIds.size - beforeCount;
+      if(addedCount > 0){
+        renderGallery();
+        saveGalleryClips();
+        showToast(addedCount + ' new clip' + (addedCount === 1 ? '' : 's') + ' detected ✓');
+        logLine(addedCount + ' new clip(s) found via auto-refresh.', 'ok');
+      }
+      gEls.lastChecked.textContent = 'Last checked ' + new Date().toLocaleTimeString();
+    }catch(err){
+      logLine('Auto-refresh check failed: ' + err.message, 'warn');
+    }
+  }
+
+  function mergeClips(clips){
+    let addedNew = false;
+    clips.forEach(clip => {
+      if(gallerySeenIds.has(clip.id)) return;
+      gallerySeenIds.add(clip.id);
+      galleryClips.unshift({
+        id: clip.id,
+        url: clip.url,
+        title: clip.title,
+        creator_name: clip.creator_name,
+        broadcaster_name: clip.broadcaster_name,
+        thumbnail_url: clip.thumbnail_url,
+        duration: clip.duration,
+        view_count: clip.view_count,
+        created_at: clip.created_at,
+        _foundAt: Date.now()
+      });
+      galleryNewCount += 1;
+      addedNew = true;
+    });
+    if(addedNew){
+      galleryClips.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      if(galleryClips.length > MAX_STORED_CLIPS) galleryClips = galleryClips.slice(0, MAX_STORED_CLIPS);
+    }
+  }
+
+  function formatDuration(sec){
+    if(!sec && sec !== 0) return '';
+    const s = Math.round(sec);
+    const m = Math.floor(s / 60);
+    const r = s % 60;
+    return m > 0 ? (m + ':' + String(r).padStart(2,'0')) : (s + 's');
+  }
+
+  function renderGallery(){
+    gEls.grid.innerHTML = '';
+    if(!galleryClips.length){
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.id = 'galleryEmptyState';
+      empty.innerHTML = '<div class="ring">◎</div><p>No clips loaded yet. Paste a Client ID, connect your Twitch account, then load a date range to pull in clips from your channel.</p>';
+      gEls.grid.appendChild(empty);
+    }else{
+      const recentCutoff = Date.now() - (10 * 60 * 1000);
+      galleryClips.forEach(clip => {
+        const card = document.createElement('div');
+        card.className = 'gallery-card';
+
+        const thumbWrap = document.createElement('div');
+        thumbWrap.className = 'gallery-thumb-wrap';
+        const img = document.createElement('img');
+        img.loading = 'lazy';
+        img.alt = clip.title || 'Clip thumbnail';
+        img.src = clip.thumbnail_url || '';
+        img.onerror = () => { img.style.display = 'none'; };
+        thumbWrap.appendChild(img);
+        if(clip.duration){
+          const dur = document.createElement('span');
+          dur.className = 'gallery-dur';
+          dur.textContent = formatDuration(clip.duration);
+          thumbWrap.appendChild(dur);
+        }
+        if(clip._foundAt && clip._foundAt >= recentCutoff){
+          const badge = document.createElement('span');
+          badge.className = 'gallery-new';
+          badge.textContent = 'NEW';
+          thumbWrap.appendChild(badge);
+        }
+        card.appendChild(thumbWrap);
+
+        const body = document.createElement('div');
+        body.className = 'gallery-body';
+
+        const title = document.createElement('div');
+        title.className = 'gallery-title';
+        title.textContent = clip.title || 'Untitled clip';
+        body.appendChild(title);
+
+        const meta = document.createElement('div');
+        meta.className = 'gallery-meta';
+        const creator = document.createElement('span');
+        creator.className = 'creator';
+        creator.textContent = 'Clipped by ' + (clip.creator_name || 'someone');
+        meta.appendChild(creator);
+        if(clip.created_at){
+          const sep = document.createElement('span');
+          sep.className = 'dot-sep';
+          sep.textContent = '•';
+          meta.appendChild(sep);
+          const when = document.createElement('span');
+          when.textContent = new Date(clip.created_at).toLocaleDateString();
+          meta.appendChild(when);
+        }
+        body.appendChild(meta);
+
+        if(typeof clip.view_count === 'number'){
+          const stats = document.createElement('div');
+          stats.className = 'gallery-stats';
+          stats.innerHTML = '<span>' + clip.view_count.toLocaleString() + ' views</span>';
+          body.appendChild(stats);
+        }
+
+        const link = document.createElement('a');
+        link.className = 'gallery-link';
+        link.href = clip.url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = '▶ Watch Clip';
+        body.appendChild(link);
+
+        card.appendChild(body);
+        gEls.grid.appendChild(card);
+      });
+    }
+
+    gEls.statTotal.textContent = String(galleryClips.length);
+    gEls.statNew.textContent = String(galleryNewCount);
+    gEls.statClippers.textContent = String(new Set(galleryClips.map(c => (c.creator_name || '').toLowerCase()).filter(Boolean)).size);
+    gEls.navBadge.textContent = String(galleryClips.length);
+  }
+
+  function clearGallery(){
+    galleryClips = [];
+    gallerySeenIds = new Set();
+    galleryNewCount = 0;
+    galleryCursor = null;
+    saveGalleryClips();
+    renderGallery();
+    gEls.loadMoreBar.classList.add('hidden');
+    showToast('Gallery cleared');
+    logLine('Clip Gallery cleared locally (nothing deleted on Twitch).', 'info');
+  }
+
+  function stopGalleryAutoRefresh(){
+    if(galleryAutoTimer){ clearInterval(galleryAutoTimer); galleryAutoTimer = null; }
+  }
+  function startGalleryAutoRefresh(){
+    stopGalleryAutoRefresh();
+    const ms = parseInt(gEls.autoRefresh.value, 10);
+    if(!ms || !galleryToken) return;
+    galleryAutoTimer = setInterval(refreshNewClips, ms);
+  }
+
+  function onTabChanged(tab){
+    if(tab === 'gallery'){
+      startGalleryAutoRefresh();
+    }else{
+      stopGalleryAutoRefresh();
+    }
+  }
+
+  gEls.clientId.addEventListener('change', () => {
+    saveGalleryClientId(gEls.clientId.value.trim());
+    updateGalleryButtons();
+  });
+  gEls.connectBtn.addEventListener('click', startTwitchLogin);
+  gEls.disconnectBtn.addEventListener('click', disconnectTwitch);
+  gEls.loadBtn.addEventListener('click', () => loadClipsForRange(true));
+  gEls.loadMoreBtn.addEventListener('click', () => loadClipsForRange(false));
+  gEls.refreshBtn.addEventListener('click', refreshNewClips);
+  gEls.clearBtn.addEventListener('click', clearGallery);
+  gEls.from.addEventListener('change', saveGalleryPrefs);
+  gEls.to.addEventListener('change', saveGalleryPrefs);
+  gEls.autoRefresh.addEventListener('change', () => {
+    saveGalleryPrefs();
+    const activeTab = document.querySelector('.nav-btn.active');
+    if(activeTab && activeTab.dataset.tab === 'gallery') startGalleryAutoRefresh();
+  });
+
+  function initClipGallery(){
+    gEls.clientId.value = loadGalleryClientId();
+    const prefs = loadGalleryPrefs();
+    const defaults = defaultGalleryFromTo();
+    gEls.from.value = (prefs && prefs.fromISO) || defaults.fromISO;
+    gEls.to.value = (prefs && prefs.toISO) || defaults.toISO;
+    if(prefs && prefs.autoRefreshMs) gEls.autoRefresh.value = prefs.autoRefreshMs;
+
+    loadGalleryClips();
+    galleryToken = loadGalleryToken();
+
+    handleOAuthRedirectIfPresent();
+
+    if(galleryToken && !tokenIsExpired(galleryToken)){
+      setGalleryStatus('on', '<strong>Connected</strong> to Twitch as <strong>@' + (galleryToken.login || 'unknown') + '</strong>.');
+    } else if(galleryToken && tokenIsExpired(galleryToken)){
+      galleryToken = null;
+      saveGalleryToken(null);
+      setGalleryStatus('off', 'Your Twitch login expired — reconnect to keep loading clips.');
+    } else {
+      setGalleryStatus('off', 'Not connected to Twitch yet.');
+    }
+
+    renderGallery();
+    updateGalleryButtons();
+  }
+
+  // ============================================
+  // CONFIG EXPORT / IMPORT (JSON backup & restore)
+  // ============================================
+  function gatherFullConfigBundle(){
+    persistSettings();
+    return {
+      __fallenoneart_export__: true,
+      app: 'clip-forwarder',
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      settings,
+      savedActionName: getSavedActionName(),
+      dashTheme,
+      wallpaperHistory,
+      galleryClientId: gEls.clientId.value.trim()
+      // Twitch login token is intentionally never exported — reconnect Twitch after importing.
+    };
+  }
+
+  function downloadConfigBundle(){
+    try{
+      const bundle = gatherFullConfigBundle();
+      const blob = new Blob([JSON.stringify(bundle, null, 2)], { type:'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+      a.href = url;
+      a.download = `fallenoneart-clip-forwarder-config-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast('Config downloaded ✓');
+    }catch(e){
+      console.error('Config export failed:', e);
+      showToast('Could not export config — check the console for details.', 'err');
+    }
+  }
+
+  function isPlainObject(val){ return !!val && typeof val === 'object' && !Array.isArray(val); }
+
+  function validateImportedBundle(data){
+    if(!isPlainObject(data)) throw new Error('That file does not contain a valid config object.');
+    if('settings' in data && !isPlainObject(data.settings)) throw new Error('The "settings" section in that file is not valid.');
+    if('dashTheme' in data && !isPlainObject(data.dashTheme)) throw new Error('The "dashTheme" section in that file is not valid.');
+    if('wallpaperHistory' in data && !Array.isArray(data.wallpaperHistory)) throw new Error('The "wallpaperHistory" section in that file is not valid.');
+    if('galleryClientId' in data && typeof data.galleryClientId !== 'string') throw new Error('The "galleryClientId" value in that file is not valid.');
+    if(!('settings' in data) && !('dashTheme' in data) && !('wallpaperHistory' in data) && !('savedActionName' in data) && !('galleryClientId' in data)){
+      throw new Error('That file does not contain any recognizable Clip Forwarder config data.');
+    }
+    return true;
+  }
+
+  function applyImportedBundle(data){
+    if(isPlainObject(data.settings)) settings = { ...DEFAULT_SETTINGS, ...data.settings };
+    if(isPlainObject(data.dashTheme)) dashTheme = { ...DEFAULT_DASH_THEME, ...data.dashTheme };
+    if(Array.isArray(data.wallpaperHistory)) wallpaperHistory = data.wallpaperHistory;
+    if(typeof data.savedActionName === 'string' && data.savedActionName) setSavedActionName(data.savedActionName);
+    if(typeof data.galleryClientId === 'string'){ saveGalleryClientId(data.galleryClientId); gEls.clientId.value = data.galleryClientId; }
+
+    try{ localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(settings)); }catch(e){}
+    saveDashTheme();
+    saveWallpaperHistory();
+
+    populateSettingsForm();
+    populateDashThemeForm();
+    applyDashTheme();
+    renderWallpaperHistory();
+    updateGalleryButtons();
+  }
+
+  function handleImportConfigFile(file){
+    if(!file) return;
+    if(file.type && file.type !== 'application/json' && !file.name.toLowerCase().endsWith('.json')){
+      showToast('Please choose a .json config file.', 'warn');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (evt)=>{
+      let parsed;
+      try{ parsed = JSON.parse(evt.target.result); }
+      catch(err){ showToast('That file is not valid JSON — import cancelled.', 'err'); return; }
+      try{
+        validateImportedBundle(parsed);
+        applyImportedBundle(parsed);
+        showToast('Config imported ✓');
+        logLine('Config imported from file.', 'ok');
+      }catch(err){
+        console.error('Config import validation failed:', err);
+        showToast(err.message || 'That config file looks corrupted — import cancelled.', 'err');
+      }
+    };
+    reader.onerror = ()=> showToast('Could not read that file.', 'err');
+    reader.readAsText(file);
+  }
+
+  document.getElementById('btnExportConfig').addEventListener('click', downloadConfigBundle);
+  document.getElementById('btnImportConfigTrigger').addEventListener('click', ()=> document.getElementById('inputImportConfig').click());
+  document.getElementById('inputImportConfig').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    handleImportConfigFile(file);
+    e.target.value = '';
+  });
+
+  // ============================================
+  // INIT
+  // ============================================
+  loadSettings();
+  populateSettingsForm();
+  loadDashTheme();
+  loadWallpaperHistory();
+  populateDashThemeForm();
+  applyDashTheme();
+  initClipGallery();
+  updateSaveBarVisibility('connection');
+  logLine('Command deck ready. Open Connection and connect to Streamer.bot.', 'info');
+})();
+</script>
+</body>
+</html>
