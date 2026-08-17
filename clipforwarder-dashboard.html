@@ -373,6 +373,31 @@
   .config-io-row{ display:flex; gap:12px; flex-wrap:wrap; }
   .hidden{ display:none !important; }
 
+  /* ===== Config JSON fallback modal (for environments that block file downloads, e.g. OBS Browser Source) ===== */
+  .config-json-overlay{
+    position:fixed; inset:0; background:rgba(5,4,10,0.75); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+    display:flex; align-items:center; justify-content:center; z-index:2000; padding:24px;
+  }
+  .config-json-panel{
+    width:100%; max-width:640px; max-height:85vh; display:flex; flex-direction:column; gap:14px;
+    background:linear-gradient(135deg, rgba(30,25,50,0.97), rgba(20,17,32,0.99));
+    border:1.5px solid rgba(125,232,200,0.35); border-radius:var(--dash-corner-radius);
+    box-shadow:0 20px 60px rgba(0,0,0,0.6), var(--glow-primary); padding:22px;
+  }
+  .config-json-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .config-json-head h3{ font-family:var(--font-display); font-size:15px; letter-spacing:1.2px; margin:0 0 6px; color:var(--accent-primary); }
+  .config-json-head p{ margin:0; font-size:11.5px; color:var(--text-secondary); line-height:1.6; max-width:480px; }
+  .config-json-close{
+    background:transparent; border:1.5px solid var(--border-medium); color:var(--text-secondary); border-radius:8px;
+    width:32px; height:32px; flex:0 0 auto; cursor:pointer; font-size:14px; line-height:1;
+  }
+  .config-json-close:hover{ border-color:var(--accent-secondary); color:var(--accent-secondary); }
+  #configJsonTextarea{
+    width:100%; flex:1; min-height:260px; resize:vertical; background:rgba(5,7,13,0.6); border:1px solid var(--border-medium);
+    border-radius:10px; color:var(--text-primary); font-family:var(--font-mono); font-size:11.5px; line-height:1.6; padding:12px 14px;
+  }
+  .config-json-actions{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+
   .svg-icon{ display:inline-block; width:1em; height:1em; vertical-align:-0.15em; fill:currentColor; overflow:hidden; }
   button.icon-btn{ font-size:18px; }
 
@@ -445,17 +470,30 @@
   .gallery-toolbar .field{ flex:1 1 180px; }
   .gallery-range-row{ display:flex; gap:12px; flex-wrap:wrap; }
   .gallery-range-row .field{ flex:1 1 220px; }
-  .gallery-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:16px; }
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+    gap:16px;
+    width:100%;
+    box-sizing:border-box;
+  }
+  @media (max-width:700px){
+    .gallery-grid{ grid-template-columns:repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap:12px; }
+  }
+  @media (max-width:460px){
+    .gallery-grid{ grid-template-columns:1fr; }
+  }
   .gallery-card{
     position:relative; background:var(--bg-panel-elevated); border:1px solid var(--border-medium); border-radius:var(--dash-corner-radius);
     overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.3); animation:cardIn .35s cubic-bezier(.2,.8,.2,1); display:flex; flex-direction:column;
+    min-width:0;
   }
   .gallery-thumb-wrap{ position:relative; aspect-ratio:16/9; background:rgba(5,7,13,0.6); overflow:hidden; }
   .gallery-thumb-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
   .gallery-thumb-wrap .gallery-dur{ position:absolute; bottom:6px; right:6px; font-size:9.5px; background:rgba(10,9,21,0.8); color:var(--text-primary); padding:2px 6px; border-radius:5px; letter-spacing:.5px; }
   .gallery-thumb-wrap .gallery-new{ position:absolute; top:6px; left:6px; font-size:8.5px; letter-spacing:1px; color:var(--bg-deep); background:linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); font-weight:700; padding:3px 7px; border-radius:5px; box-shadow:0 0 10px rgba(125,232,200,0.5); }
   .gallery-body{ padding:12px 14px 14px; display:flex; flex-direction:column; gap:6px; flex:1; }
-  .gallery-title{ font-size:12px; font-weight:600; color:var(--text-primary); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .gallery-title{ font-size:12px; font-weight:600; color:var(--text-primary); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word; }
   .gallery-meta{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:10.5px; color:var(--text-tertiary); }
   .gallery-connect-hint > div + div{ margin-top:6px; }
   .gallery-meta .creator{ color:var(--accent-primary); font-weight:600; }
@@ -729,12 +767,32 @@
         <label>Config File</label>
         <div class="config-io-row">
           <button type="button" class="primary-btn" id="btnExportConfig">Download Config</button>
+          <button type="button" class="ghost-btn" id="btnCopyConfigJson">Copy Config JSON</button>
           <button type="button" class="ghost-btn" id="btnImportConfigTrigger">Upload Config</button>
           <input type="file" id="inputImportConfig" accept="application/json,.json" class="hidden">
         </div>
         <div class="hint">Importing overrides your current settings on this device immediately. Your Twitch login token is never included in the export — you'll need to reconnect Twitch on the device you import to.</div>
+        <div class="hint"><strong>Inside OBS?</strong> Browser Sources usually block file downloads. Use <code>Copy Config JSON</code> instead — it copies the config text so you can paste it into any text editor and save it as a <code>.json</code> file yourself. This works the same whether the dashboard is open in OBS or a normal browser tab.</div>
       </div>
     </section>
+
+    <!-- CONFIG JSON FALLBACK MODAL (works in OBS Browser Sources where downloads are blocked) -->
+    <div class="config-json-overlay hidden" id="configJsonOverlay">
+      <div class="config-json-panel">
+        <div class="config-json-head">
+          <div>
+            <h3>Config JSON</h3>
+            <p>Select all and copy this text, then paste it into a new file and save it with a <code>.json</code> extension — this works even where automatic downloads are blocked (like inside an OBS Browser Source).</p>
+          </div>
+          <button type="button" class="config-json-close" id="configJsonClose" title="Close">✕</button>
+        </div>
+        <textarea id="configJsonTextarea" readonly spellcheck="false"></textarea>
+        <div class="config-json-actions">
+          <button type="button" class="primary-btn" id="configJsonCopyBtn">Copy to Clipboard</button>
+          <span class="apphint" id="configJsonCopyStatus"></span>
+        </div>
+      </div>
+    </div>
 
     <!-- DASHBOARD THEME -->
     <section class="panel" id="panel-theme">
@@ -2475,10 +2533,53 @@
     };
   }
 
+  // OBS Browser Sources inject a global `window.obsstudio` object — this is the standard way to detect
+  // that the page is running inside OBS rather than a normal browser tab.
+  const isInOBS = typeof window.obsstudio !== 'undefined';
+
+  const configJsonOverlay = document.getElementById('configJsonOverlay');
+  const configJsonTextarea = document.getElementById('configJsonTextarea');
+  const configJsonCopyStatus = document.getElementById('configJsonCopyStatus');
+
+  function openConfigJsonModal(jsonText){
+    configJsonTextarea.value = jsonText;
+    configJsonCopyStatus.textContent = '';
+    configJsonOverlay.classList.remove('hidden');
+    setTimeout(()=>{ configJsonTextarea.focus(); configJsonTextarea.select(); }, 50);
+  }
+  function closeConfigJsonModal(){
+    configJsonOverlay.classList.add('hidden');
+  }
+  document.getElementById('configJsonClose').addEventListener('click', closeConfigJsonModal);
+  configJsonOverlay.addEventListener('click', (e)=>{ if(e.target === configJsonOverlay) closeConfigJsonModal(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && !configJsonOverlay.classList.contains('hidden')) closeConfigJsonModal(); });
+
+  document.getElementById('configJsonCopyBtn').addEventListener('click', async ()=>{
+    configJsonTextarea.select();
+    try{
+      await navigator.clipboard.writeText(configJsonTextarea.value);
+      configJsonCopyStatus.textContent = 'Copied ✓';
+      showToast('Config JSON copied ✓');
+    }catch(err){
+      configJsonCopyStatus.textContent = 'Copy blocked — text is selected, use Ctrl/Cmd+C.';
+    }
+  });
+
   function downloadConfigBundle(){
     try{
       const bundle = gatherFullConfigBundle();
-      const blob = new Blob([JSON.stringify(bundle, null, 2)], { type:'application/json' });
+      const jsonText = JSON.stringify(bundle, null, 2);
+
+      // OBS Browser Sources generally block/ignore triggered file downloads (no save dialog, no download
+      // manager), so skip straight to the copyable fallback instead of silently doing nothing.
+      if (isInOBS){
+        logLine('Running inside an OBS Browser Source — file downloads are usually blocked there. Showing copyable JSON instead.', 'warn');
+        showToast('OBS detected — copy the JSON below to save it', 'warn');
+        openConfigJsonModal(jsonText);
+        return;
+      }
+
+      const blob = new Blob([jsonText], { type:'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
@@ -2489,9 +2590,30 @@
       a.remove();
       URL.revokeObjectURL(url);
       showToast('Config downloaded ✓');
+      logLine('Config exported as a downloaded .json file.', 'ok');
     }catch(e){
       console.error('Config export failed:', e);
       showToast('Could not export config — check the console for details.', 'err');
+    }
+  }
+
+  async function copyConfigJson(){
+    try{
+      const bundle = gatherFullConfigBundle();
+      const jsonText = JSON.stringify(bundle, null, 2);
+      try{
+        await navigator.clipboard.writeText(jsonText);
+        showToast('Config JSON copied to clipboard ✓');
+        logLine('Config JSON copied to clipboard.', 'ok');
+      }catch(clipErr){
+        // Clipboard API can be blocked in some embedded browsers (including some OBS builds) —
+        // fall back to the modal so the text can still be selected and copied manually.
+        openConfigJsonModal(jsonText);
+        showToast('Clipboard blocked — text is ready to select & copy', 'warn');
+      }
+    }catch(e){
+      console.error('Config copy failed:', e);
+      showToast('Could not prepare config JSON — check the console for details.', 'err');
     }
   }
 
@@ -2553,6 +2675,7 @@
   }
 
   document.getElementById('btnExportConfig').addEventListener('click', downloadConfigBundle);
+  document.getElementById('btnCopyConfigJson').addEventListener('click', copyConfigJson);
   document.getElementById('btnImportConfigTrigger').addEventListener('click', ()=> document.getElementById('inputImportConfig').click());
   document.getElementById('inputImportConfig').addEventListener('change', (e)=>{
     const file = e.target.files[0];
@@ -2571,6 +2694,7 @@
   applyDashTheme();
   initClipGallery();
   updateSaveBarVisibility('connection');
+  if (isInOBS) logLine('Detected OBS Browser Source — use "Copy Config JSON" in Settings instead of "Download Config".', 'info');
   logLine('Command deck ready. Open Connection and connect to Streamer.bot.', 'info');
 })();
 </script>
