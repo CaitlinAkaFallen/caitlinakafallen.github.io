@@ -43,17 +43,27 @@
       .mt-10{ margin-top:10px; }
       .mb-14{ margin-bottom:14px; }
       .flex-2-minw{ flex:2; min-width:220px; }
-      html,body{
-        margin:0;
-        padding:0;
-        background:var(--bg-deep);
-        color:var(--text-primary);
-        font-family:var(--font-mono);
-        min-height:100vh;
-        font-weight:400;
-        letter-spacing:0.5px;
+        html, body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg-deep);
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        min-height: 100vh;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+        
+
+        /* Hide scrollbar for IE and older Edge */
+        -ms-overflow-style: none; 
       }
 
+      /* Hide scrollbar for Chrome, Safari, and newer Edge */
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar {
+        display: none;
+      }
+      
       body{
         background:
           radial-gradient(ellipse at 15% -20%, rgba(125,232,200,0.15), transparent 50%),
@@ -810,6 +820,7 @@
       <button type="button" class="nav-btn" data-tab="activity"><span class="num">06</span><span>Activity &amp; Viewers</span></button>
       <button type="button" class="nav-btn" data-tab="theme"><span class="num">07</span><span>Dashboard Theme</span></button>
       <button type="button" class="nav-btn" data-tab="setup"><span class="num">08</span><span>Setup</span></button>
+      <button type="button" class="nav-btn" data-tab="settings"><span class="num">09</span><span>Settings</span></button>
   </nav>
 
   <div class="main">
@@ -1403,6 +1414,39 @@
         Rewards move through three stages per viewer: <b>unlocked</b> (level reached) → <b>claimed</b> (reserved via <code>$claim</code>) → <b>redeemed</b> (marked used via <code>$redeem</code>). <code>$redeem</code> will auto-claim on the fly if a viewer calls it without claiming first, so it always works as a one-step shortcut too. <code>$wallet</code> just reads a viewer's own claimed-but-unredeemed levels back to them — it never changes any state.<br><br>
         <code>$refund {username}</code> is restricted to the broadcaster and moderators — the bot reads the sender's IRC <code>badges</code> tag (requires the <code>twitch.tv/tags</code> capability, already requested on connect) to check for <code>broadcaster</code> or <code>moderator</code> before allowing it. It only reverses the most recent <b>redeem</b> (back to claimed) — it never touches a <code>$claim</code> by itself.
       </div>
+    </div>
+
+    <div class="panel" id="panel-settings">
+      <h2>Settings</h2>
+      <div class="sub">Back up or restore this whole dashboard's configuration as a single JSON file — pick your own filename for both.</div>
+
+      <div class="section-divider"><h3>Export Configuration</h3><div class="sub">Bundles every saved setting (connection, curve, XP rates, rewards, chat messages, card display, dashboard theme, viewer data, emote caches) into one JSON file you choose the name for.</div></div>
+      <div class="field">
+        <label for="settingsExportFilename">File name</label>
+        <div class="input-group">
+          <input type="text" id="settingsExportFilename" value="fallenoneart-levelup-config">
+          <span class="swatch-label">.json</span>
+        </div>
+        <div class="hint">Saved locally to your downloads folder — nothing is sent anywhere.</div>
+      </div>
+      <div class="action-bar">
+        <button class="primary-btn" id="settingsExportBtn">Download Config JSON</button>
+      </div>
+
+      <div class="section-divider"><h3>Import Configuration</h3><div class="sub">Loads a previously exported JSON file back in and overwrites the matching settings here. Existing settings not present in the file are left untouched.</div></div>
+      <div class="field full-row">
+        <input type="file" id="settingsImportFile" accept="application/json,.json" class="hidden">
+        <div class="upload-zone" id="settingsUploadZone">
+          <div class="upload-icon">▲</div>
+          <div class="upload-text">Drag a config .json here or click to browse</div>
+          <div class="upload-subtext">Only .json files exported from this dashboard</div>
+        </div>
+        <div class="hint" id="settingsImportStatus"></div>
+      </div>
+      <div class="action-bar">
+        <button class="ghost-btn danger" id="settingsWipeBtn">Erase All Local Data</button>
+      </div>
+      <div class="hint full-row">Importing reloads the page once it's done so every tab picks up the restored values. "Erase All Local Data" clears everything this dashboard has saved on this browser/machine — use it before importing a fresh config on a new PC, or to fully reset.</div>
     </div>
 
   </div>
@@ -3389,6 +3433,118 @@ loadDashTheme();
 loadWallpaperHistory();
 populateDashThemeForm();
 applyDashTheme();
+
+/* ============================================================
+   SETTINGS TAB — export/import the whole dashboard config as a
+   single JSON file, with a user-chosen filename in both
+   directions. Bundles every localStorage key this dashboard
+   uses (connection/bot config, curve, XP rates, rewards, chat
+   messages, card display, dashboard theme + wallpaper history,
+   viewer records, and cached emote data) into one object.
+   ============================================================ */
+const SETTINGS_CONFIG_KEYS = [
+  LS_DISPLAY, LS_REWARDS, LS_USERS, LS_CURVE, LS_XPRATES,
+  LS_CHAT_CFG, LS_BOT_CFG, LS_DASH_THEME_KEY, LS_WALLPAPER_HISTORY_KEY,
+  LS_TWITCH_API_CFG, LS_EMOTE_CHANNELS, LS_GLOBAL_EMOTES, LS_SUB_EMOTES
+];
+
+function sanitizeConfigFilename(name){
+  const trimmed = (name || "").trim().replace(/\.json$/i, "");
+  const cleaned = trimmed.replace(/[\\/:*?"<>|]/g, "-");
+  return cleaned || "fallenoneart-levelup-config";
+}
+
+document.getElementById("settingsExportBtn").onclick = () => {
+  const bundle = {
+    __fallenoneart_levelup_config: true,
+    exportedAt: new Date().toISOString(),
+    data: {}
+  };
+  SETTINGS_CONFIG_KEYS.forEach(key => {
+    const raw = localStorage.getItem(key);
+    if (raw !== null){
+      try{ bundle.data[key] = JSON.parse(raw); }catch(e){ bundle.data[key] = raw; }
+    }
+  });
+  const filename = sanitizeConfigFilename(document.getElementById("settingsExportFilename").value) + ".json";
+  const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast(`Downloaded ${filename}`);
+};
+
+function setSettingsImportStatus(msg, isError){
+  const el = document.getElementById("settingsImportStatus");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.style.color = isError ? "var(--accent-tertiary)" : "var(--accent-primary)";
+}
+
+function applyImportedConfig(bundle){
+  const data = (bundle && bundle.data) ? bundle.data : bundle;
+  if (!data || typeof data !== "object") throw new Error("That file doesn't look like a valid config export.");
+  let count = 0;
+  SETTINGS_CONFIG_KEYS.forEach(key => {
+    if (Object.prototype.hasOwnProperty.call(data, key)){
+      localStorage.setItem(key, JSON.stringify(data[key]));
+      count++;
+    }
+  });
+  if (!count) throw new Error("That file didn't contain any recognized settings.");
+  return count;
+}
+
+function handleSettingsImportFile(file){
+  if (!file){ return; }
+  if (!/\.json$/i.test(file.name) && file.type !== "application/json"){
+    setSettingsImportStatus("Please choose a .json file.", true);
+    showToast("Please choose a .json file.");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try{
+      const parsed = JSON.parse(evt.target.result);
+      const count = applyImportedConfig(parsed);
+      setSettingsImportStatus(`Imported ${count} setting group(s) from ${file.name} — reloading…`, false);
+      showToast(`Config imported ✓ (${count} groups) — reloading`);
+      setTimeout(() => location.reload(), 900);
+    }catch(err){
+      setSettingsImportStatus(err.message || "Couldn't read that file.", true);
+      showToast(err.message || "Couldn't read that file.");
+    }
+  };
+  reader.onerror = () => { setSettingsImportStatus("Couldn't read that file.", true); };
+  reader.readAsText(file);
+}
+
+const settingsUploadZone = document.getElementById("settingsUploadZone");
+const settingsImportFile = document.getElementById("settingsImportFile");
+if (settingsUploadZone && settingsImportFile){
+  settingsUploadZone.addEventListener("click", () => settingsImportFile.click());
+  settingsImportFile.addEventListener("change", (e) => handleSettingsImportFile(e.target.files[0]));
+  settingsUploadZone.addEventListener("dragover", (e) => { e.preventDefault(); settingsUploadZone.classList.add("drag-over"); });
+  settingsUploadZone.addEventListener("dragleave", () => settingsUploadZone.classList.remove("drag-over"));
+  settingsUploadZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    settingsUploadZone.classList.remove("drag-over");
+    const file = e.dataTransfer.files[0];
+    if (file) handleSettingsImportFile(file);
+  });
+}
+
+document.getElementById("settingsWipeBtn").onclick = () => {
+  if (!confirm("This erases ALL locally saved Level Up settings, rewards, viewers, and cached emotes on this browser. This can't be undone (unless you have an exported JSON backup). Continue?")) return;
+  SETTINGS_CONFIG_KEYS.forEach(key => localStorage.removeItem(key));
+  showToast("All local data erased — reloading…");
+  setTimeout(() => location.reload(), 700);
+};
 </script>
 </body>
 </html>
