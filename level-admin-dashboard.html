@@ -3437,10 +3437,19 @@ applyDashTheme();
 /* ============================================================
    SETTINGS TAB — export/import the whole dashboard config as a
    single JSON file, with a user-chosen filename in both
-   directions. Bundles every localStorage key this dashboard
-   uses (connection/bot config, curve, XP rates, rewards, chat
-   messages, card display, dashboard theme + wallpaper history,
-   viewer records, and cached emote data) into one object.
+   directions.
+
+   FIX (Aug 2026): the download button was wired correctly, but
+   nothing surfaced an error if the download silently failed to
+   fire — which happens if this page is ever loaded inside a
+   sandboxed <iframe> (needs sandbox="... allow-downloads") or
+   an Electron window/webview without download handling wired up
+   in the main process. Now:
+     - every failure path logs to console AND toasts, instead of
+       failing silently
+     - if the anchor-click download doesn't actually trigger a
+       download (heuristically detected), we fall back to opening
+       the JSON in a new tab so you can still save it manually
    ============================================================ */
 const SETTINGS_CONFIG_KEYS = [
   LS_DISPLAY, LS_REWARDS, LS_USERS, LS_CURVE, LS_XPRATES,
@@ -3454,7 +3463,7 @@ function sanitizeConfigFilename(name){
   return cleaned || "fallenoneart-levelup-config";
 }
 
-document.getElementById("settingsExportBtn").onclick = () => {
+function buildConfigBundle(){
   const bundle = {
     __fallenoneart_levelup_config: true,
     exportedAt: new Date().toISOString(),
@@ -3466,18 +3475,81 @@ document.getElementById("settingsExportBtn").onclick = () => {
       try{ bundle.data[key] = JSON.parse(raw); }catch(e){ bundle.data[key] = raw; }
     }
   });
-  const filename = sanitizeConfigFilename(document.getElementById("settingsExportFilename").value) + ".json";
-  const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast(`Downloaded ${filename}`);
-};
+  return bundle;
+}
+
+/** Tries the normal Blob + <a download> click. Returns true if the
+ *  browser/Electron host appeared to accept it, false if we should
+ *  fall back to opening the JSON in a new tab instead. */
+function triggerJsonDownload(json, filename){
+  try{
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // revoke slightly later — revoking immediately can race the
+    // download in some Electron/Chromium builds
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    return true;
+  }catch(err){
+    console.error("[settings export] Blob/anchor download failed:", err);
+    return false;
+  }
+}
+
+/** Fallback for sandboxed iframes / restrictive Electron hosts where the
+ *  anchor-click download silently does nothing: opens the JSON in a new
+ *  tab/window so the person can still save it with Ctrl+S / right-click. */
+function fallbackOpenJsonInNewTab(json, filename){
+  try{
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, "_blank");
+    if (!win){
+      throw new Error("Popup blocked");
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    showToast(`Download was blocked — opened ${filename} in a new tab. Use Ctrl+S / right-click → Save As to save it.`);
+    return true;
+  }catch(err){
+    console.error("[settings export] Fallback tab-open also failed:", err);
+    return false;
+  }
+}
+
+function exportSettingsConfig(){
+  try{
+    const bundle = buildConfigBundle();
+    const nameInput = document.getElementById("settingsExportFilename");
+    const filename = sanitizeConfigFilename(nameInput ? nameInput.value : "") + ".json";
+    const json = JSON.stringify(bundle, null, 2);
+
+    const ok = triggerJsonDownload(json, filename);
+    if (ok){
+      showToast(`Downloaded ${filename}`);
+    } else {
+      const fbOk = fallbackOpenJsonInNewTab(json, filename);
+      if (!fbOk){
+        showToast("Couldn't trigger a download here — check the browser console for details.");
+      }
+    }
+  }catch(err){
+    console.error("[settings export] Unexpected error:", err);
+    showToast(err.message || "Export failed — check the console for details.");
+  }
+}
+
+const settingsExportBtn = document.getElementById("settingsExportBtn");
+if (settingsExportBtn){
+  settingsExportBtn.onclick = exportSettingsConfig;
+} else {
+  console.error('[settings export] #settingsExportBtn not found in the DOM — the button on the page must have a different id.');
+}
 
 function setSettingsImportStatus(msg, isError){
   const el = document.getElementById("settingsImportStatus");
@@ -3516,11 +3588,15 @@ function handleSettingsImportFile(file){
       showToast(`Config imported ✓ (${count} groups) — reloading`);
       setTimeout(() => location.reload(), 900);
     }catch(err){
+      console.error("[settings import] Parse/apply failed:", err);
       setSettingsImportStatus(err.message || "Couldn't read that file.", true);
       showToast(err.message || "Couldn't read that file.");
     }
   };
-  reader.onerror = () => { setSettingsImportStatus("Couldn't read that file.", true); };
+  reader.onerror = () => {
+    console.error("[settings import] FileReader error:", reader.error);
+    setSettingsImportStatus("Couldn't read that file.", true);
+  };
   reader.readAsText(file);
 }
 
@@ -3537,14 +3613,21 @@ if (settingsUploadZone && settingsImportFile){
     const file = e.dataTransfer.files[0];
     if (file) handleSettingsImportFile(file);
   });
+} else {
+  console.error("[settings import] #settingsUploadZone or #settingsImportFile not found in the DOM.");
 }
 
-document.getElementById("settingsWipeBtn").onclick = () => {
-  if (!confirm("This erases ALL locally saved Level Up settings, rewards, viewers, and cached emotes on this browser. This can't be undone (unless you have an exported JSON backup). Continue?")) return;
-  SETTINGS_CONFIG_KEYS.forEach(key => localStorage.removeItem(key));
-  showToast("All local data erased — reloading…");
-  setTimeout(() => location.reload(), 700);
-};
+const settingsWipeBtn = document.getElementById("settingsWipeBtn");
+if (settingsWipeBtn){
+  settingsWipeBtn.onclick = () => {
+    if (!confirm("This erases ALL locally saved Level Up settings, rewards, viewers, and cached emotes on this browser. This can't be undone (unless you have an exported JSON backup). Continue?")) return;
+    SETTINGS_CONFIG_KEYS.forEach(key => localStorage.removeItem(key));
+    showToast("All local data erased — reloading…");
+    setTimeout(() => location.reload(), 700);
+  };
+} else {
+  console.error('[settings export] #settingsWipeBtn not found in the DOM.');
+}
 </script>
 </body>
 </html>
