@@ -43,6 +43,14 @@
       .mt-10{ margin-top:10px; }
       .mb-14{ margin-bottom:14px; }
       .flex-2-minw{ flex:2; min-width:220px; }
+      .code-preview{
+        white-space:pre-wrap;
+        background:rgba(0,0,0,0.35);
+        border:1px solid rgba(255,255,255,0.1);
+        border-radius:8px;
+        padding:10px;
+        font-size:11px;
+      }
         html, body {
         margin: 0;
         padding: 0;
@@ -988,7 +996,7 @@
 
     <div class="panel" id="panel-display">
       <h2>Card Display</h2>
-      <div class="sub">Changes push instantly to <code>levelup-card.html</code> via BroadcastChannel — no refresh needed on the same machine.</div>
+      <div class="sub">Changes push instantly to <code>levelup-card.html</code> via BroadcastChannel (same-machine tabs) <b>and</b> via the Streamer.bot relay (real OBS Browser Source) — no refresh needed either way.</div>
 
       <div class="field">
         <label>Layout</label>
@@ -1070,7 +1078,7 @@
       </div>
       <div class="action-bar">
         <button class="ghost-btn" id="randomizePreviewBtn">Randomize Preview Data</button>
-        <button class="primary-btn" id="openPreviewWindowBtn">Open Live Card in New Window</button>
+        <button class="primary-btn" id="openPreviewWindowBtn">Save and Push to Overlay</button>
       </div>
       <div class="hint full-row">The mock card above updates instantly as you change Layout, Style, Colors, and Elements — it's local to this dashboard and never plays sound. "Open Live Card" opens your real OBS Browser URL in a new tab so you can see the actual overlay update too.</div>
     </div>
@@ -1408,6 +1416,26 @@
         For real grants to persist across Streamer.bot restarts too, add a small action <code>LVL_GrantXP</code> that reads <code>user</code>/<code>eventName</code>/<code>quantity</code> via <code>CPH.TryGetArg</code>, stores running totals in a global var like <code>lvl_xp_{user}</code> (guard first read with a <code>GetGlobalVar</code> null-check), then re-broadcasts the raw event. This mirrors your <code>sw_inv_</code> / <code>wheel_inv_</code> pattern.
       </div>
 
+      <div class="section-divider"><h3>Streamer.bot Wiring (Admin → Card settings push)</h3></div>
+      <div class="field full-row hint">
+        The Admin Dashboard (running as its own Electron app) and the Card Overlay (running inside OBS's Browser Source) are two completely separate browser processes — they never share <code>localStorage</code> or <code>BroadcastChannel</code>, even though both eventually load a page from <code>caitlinscreativespace.xyz</code>. The one thing both sides already connect to independently is this same local Streamer.bot WebSocket, so that's what carries settings pushes (Card Display, Levels &amp; Rewards, and Testing &amp; Grants) across that gap.<br><br>
+        Add one more Streamer.bot action called exactly <code>LVL_ConfigPush</code> with this C# code:
+        <pre class="code-preview">using System;
+
+        public class CPHInline
+        {
+            public bool Execute()
+            {
+                string kind = args.ContainsKey("cfgKind") ? args["cfgKind"].ToString() : "";
+                string payload = args.ContainsKey("cfgPayload") ? args["cfgPayload"].ToString() : "";
+                CPH.WebsocketBroadcastJson(new { source = "levelup_config", kind = kind, payload = payload });
+                return true;
+            }
+        }</pre>
+        No trigger is needed on this action — it's only ever invoked over the WebSocket API (via <code>DoAction</code>) whenever you change something on the Card Display or Levels &amp; Rewards tabs, or use Test/Grant on the Testing tab. It just re-broadcasts whatever the dashboard sends it, tagged <code>source:"levelup_config"</code>, so the card overlay picks it up and updates itself immediately — no OBS refresh needed.<br><br>
+        Once the action exists in Streamer.bot (any trigger type is fine, e.g. a disabled/unused Command — it only ever gets called by name over the WebSocket API), everything else is automatic: this dashboard already sends the push on every relevant save.
+      </div>
+
       <div class="section-divider"><h3>Chat Commands ($claim / $redeem / $wallet / $refund)</h3></div>
       <div class="field full-row hint">
         These no longer go through Streamer.bot. Connect your bot account's Twitch IRC credentials on the <b>Connection</b> tab, and this dashboard listens for <code>$claim</code>/<code>$redeem</code>/<code>$wallet</code>/<code>$refund</code> and posts the reply itself. Keep this tab open on your streaming PC so it stays connected during stream.<br><br>
@@ -1538,6 +1566,7 @@ document.getElementById("saveCurveBtn").onclick = () => {
   const growth = Number(document.getElementById("curveGrowth").value) || 1.15;
   save(LS_CURVE, { base, growth });
   bc && bc.postMessage({ type:"curve_update", base, growth });
+  pushConfigToCard("curve", { base, growth });
   showToast("Curve saved");
 };
 refreshCurveInputs();
@@ -1569,6 +1598,7 @@ function renderXpRates(){
       rates[key][field] = field === "perUnit" ? el.checked : (Number(el.value) || 0);
       save(LS_XPRATES, rates);
       bc && bc.postMessage({ type:"xprates_update", rates });
+      pushConfigToCard("xprates", rates);
     };
   });
 }
@@ -1607,6 +1637,7 @@ function renderRewards(){
       const rewards = load(LS_REWARDS, []).filter(r => r.level !== lvl);
       save(LS_REWARDS, rewards);
       bc && bc.postMessage({ type:"rewards_update", rewards });
+      pushConfigToCard("rewards", rewards);
       renderRewards();
     };
   });
@@ -1639,6 +1670,7 @@ function handleRewardFieldEdit(input){
   }
   save(LS_REWARDS, rewards);
   bc && bc.postMessage({ type:"rewards_update", rewards });
+  pushConfigToCard("rewards", rewards);
   renderRewards();
   showToast("Milestone updated");
 }
@@ -2056,6 +2088,7 @@ document.getElementById("addRewardBtn").onclick = () => {
   rewards.push({ level, badge, title, message });
   save(LS_REWARDS, rewards);
   bc && bc.postMessage({ type:"rewards_update", rewards });
+  pushConfigToCard("rewards", rewards);
   document.getElementById("newLevel").value = "";
   document.getElementById("newBadge").value = "";
   document.querySelectorAll("#emoteGroups .emote-chip").forEach(c => c.classList.remove("selected"));
@@ -2082,9 +2115,12 @@ function defaultDisplayCfg(){
 function loadDisplayCfg(){
   return { ...defaultDisplayCfg(), ...load(LS_DISPLAY, {}) };
 }
+let displayPushTimer = null;
 function saveDisplayCfg(d){
   save(LS_DISPLAY, d);
   bc && bc.postMessage({ type:"display_update", ...d });
+  clearTimeout(displayPushTimer);
+  displayPushTimer = setTimeout(() => pushConfigToCard("display", d), 150);
 }
 function hexToRgbString(hex){
   const h = (hex||"#7de8c8").replace("#","");
@@ -2210,9 +2246,21 @@ document.getElementById("randomizePreviewBtn").onclick = () => {
   const dot = document.getElementById("previewLiveDot");
   if (dot){ dot.classList.remove("pulse"); void dot.offsetWidth; dot.classList.add("pulse"); }
 };
+// Loads from the same https://caitlinscreativespace.xyz origin as this
+// dashboard (see main.js), so it shares localStorage/BroadcastChannel with
+// it just like any two tabs on the same site — no extra bridging needed.
+// Reuses/focuses the same popup instead of spawning a new one every click.
+let overlayPreviewWindow = null;
 document.getElementById("openPreviewWindowBtn").onclick = () => {
   const url = document.getElementById("obsUrlField").value;
-  if (url) window.open(url, "_blank", "noopener");
+  if (!url){ showToast("Set the OBS Browser URL first (Connection tab)."); return; }
+  if (overlayPreviewWindow && !overlayPreviewWindow.closed){
+    overlayPreviewWindow.location.href = url;
+    overlayPreviewWindow.focus();
+  } else {
+    overlayPreviewWindow = window.open(url, "levelupOverlayPreview", "noopener");
+    if (!overlayPreviewWindow) showToast("Popup blocked — allow popups for this dashboard and try again.");
+  }
 };
 refreshDisplayToggles();
 
@@ -2895,6 +2943,7 @@ document.getElementById("testBtn").onclick = () => {
   const user = document.getElementById("grantUser").value.trim() || "TestViewer";
   const data = buildEventPayload(user);
   bc && bc.postMessage({ type:"test_event", data });
+  pushConfigToCard("test_event", data);
   showToast("Test event sent to card");
 };
 document.getElementById("grantBtn").onclick = () => {
@@ -2915,6 +2964,7 @@ document.getElementById("grantBtn").onclick = () => {
   save(LS_USERS, users);
   bc && bc.postMessage({ type:"user_update", user: key, data: rec });
   bc && bc.postMessage({ type:"live_event", data });
+  pushConfigToCard("live_event", data);
   renderUsers();
   renderRewardStatus();
   showToast("XP granted" + (data.leveledUp ? " — milestones up to Level " + data.level + " unlocked" : ""));
@@ -3004,6 +3054,34 @@ function sbStatusUpdate(text, ok){
   if (dotMini) dotMini.className = "dot-led " + (ok ? "on" : "off");
   if (textMini) textMini.textContent = "SB: " + text;
 }
+
+/* ============================================================
+   REMOTE CONFIG PUSH (to the card overlay, over Streamer.bot)
+   ------------------------------------------------------------
+   This dashboard (Electron) and the card overlay (OBS Browser
+   Source) are separate browser processes — BroadcastChannel and
+   localStorage never cross that gap. The one thing both sides
+   DO independently connect to is this Streamer.bot WebSocket
+   (sbWs, below), so config changes get relayed through a small
+   Streamer.bot action called "LVL_ConfigPush" (set-up steps are
+   on the Setup tab). That action just re-broadcasts whatever we
+   send it, tagged source:"levelup_config", which every
+   subscribed client — including the real card in OBS — picks up
+   instantly and applies. kind is one of:
+     "display" | "rewards" | "xprates" | "curve" | "test_event" | "live_event"
+   ============================================================ */
+function pushConfigToCard(kind, payload){
+  if (!sbWs || sbWs.readyState !== WebSocket.OPEN) return;
+  try{
+    sbWs.send(JSON.stringify({
+      request: "DoAction",
+      action: { name: "LVL_ConfigPush" },
+      args: { cfgKind: kind, cfgPayload: JSON.stringify(payload) },
+      id: "cfgpush_" + Date.now()
+    }));
+  }catch(e){ /* Streamer.bot not connected yet — the next successful save will retry */ }
+}
+
 try{
   sbWs = new WebSocket("ws://127.0.0.1:8080/");
   sbWs.onopen = () => {
