@@ -30,6 +30,35 @@
 
   #stage{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; perspective: 1400px; }
 
+  /* ================= PREVIEW-ONLY TOP BAR =================
+     Only ever shown when this page is opened with ?preview=1 (i.e. from
+     the admin dashboard's "Open Level Up Card (local)" preview window).
+     A real OBS Browser Source never sends ?preview=1, so it never gets
+     this bar and never loses its transparent background — this markup
+     and its background-color are 100% invisible to OBS. */
+  #previewTopBar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; gap:10px;
+    padding:10px 14px;
+    background: linear-gradient(180deg, rgba(10,9,21,0.92), rgba(10,9,21,0.75));
+    border-bottom:1px solid var(--glass-border);
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    font-family:'Share Tech Mono', monospace;
+  }
+  #previewTopBar.hidden{ display:none; }
+  #previewTopBar .ptb-label{ font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--teal); flex:0 0 auto; opacity:.9; }
+  #previewTopBar input{
+    flex:1; min-width:0; background:rgba(255,255,255,0.06); border:1px solid var(--glass-border);
+    border-radius:6px; color:#f4f2ff; font-family:'Share Tech Mono', monospace; font-size:12px; padding:6px 8px;
+  }
+  #previewTopBar button{
+    flex:0 0 auto; background:linear-gradient(135deg, var(--teal), var(--purple)); border:none; border-radius:6px;
+    color:#0a0915; font-weight:700; font-size:11px; letter-spacing:.5px; padding:7px 12px; cursor:pointer;
+  }
+  #previewTopBar button.copied{ filter:brightness(1.15); }
+  /* keep cards from being covered by the bar while previewing */
+  body.showcase-bg #stage{ top:44px; }
+
   /* ================= LAYOUT: HORIZONTAL (default) =================
      Layout/style live on each .card element (not #stage) so a
      viewer's personal preference can override the global default
@@ -154,6 +183,11 @@
 </style>
 </head>
 <body>
+<div id="previewTopBar" class="hidden">
+  <span class="ptb-label">OBS Browser Source URL</span>
+  <input type="text" id="previewUrlField" readonly>
+  <button type="button" id="previewCopyBtn">Copy</button>
+</div>
 <div id="stage"></div>
 
 <script>
@@ -168,7 +202,44 @@
    - Streamer.bot WS = real live Twitch events -> XP grants
    ============================================================ */
 const params = new URLSearchParams(window.location.search);
-if (params.get("preview") === "1") document.body.classList.add("showcase-bg");
+if (params.get("preview") === "1") {
+  document.body.classList.add("showcase-bg");
+  initPreviewTopBar();
+}
+
+/* The real OBS Browser Source should always point at the hosted URL
+   (this same file, served from caitlinscreativespace.xyz), NOT at
+   localhost:17651 — the local server only exists so the admin app and
+   this local preview window share one origin. This must match the
+   OBS Browser URL field on the admin dashboard's Connection tab. */
+function initPreviewTopBar(){
+  const bar = document.getElementById("previewTopBar");
+  const field = document.getElementById("previewUrlField");
+  const btn = document.getElementById("previewCopyBtn");
+  if (!bar || !field || !btn) return;
+
+  const obsUrl = "https://caitlinscreativespace.xyz/levelup-card.html";
+  field.value = obsUrl;
+  bar.classList.remove("hidden");
+
+  btn.addEventListener("click", () => {
+    const done = () => {
+      const orig = btn.textContent;
+      btn.textContent = "Copied \u2713";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove("copied"); }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(obsUrl).then(done).catch(() => {
+        field.select();
+        try{ document.execCommand("copy"); done(); }catch(e){ /* ignore */ }
+      });
+    } else {
+      field.select();
+      try{ document.execCommand("copy"); done(); }catch(e){ /* ignore */ }
+    }
+  });
+}
 
 const LS_DISPLAY = "fallenoneart_levelup_display";   // { layout, style, accentPrimary, accentSecondary, glowIntensity, cornerRadius, showAvatar, showBadge, showXp, showProgress }
 const LS_REWARDS = "fallenoneart_levelup_rewards";   // [{level, title, badge, message}]
@@ -333,39 +404,70 @@ window.addEventListener("storage", (e) => {
 });
 
 /* ============================================================
-   STREAMER.BOT WEBSOCKET (live Twitch events)
+   REMOTE CONFIG PUSH (from the admin dashboard, over Streamer.bot)
+   ------------------------------------------------------------
+   BroadcastChannel/localStorage only sync tabs on the SAME origin
+   in the SAME browser. That's never true for this card: it runs
+   inside OBS's Browser Source (its own Chromium instance) loading
+   this page from caitlinscreativespace.xyz, while the admin
+   dashboard runs as its own separate Electron app. Neither
+   localStorage nor BroadcastChannel ever crosses that gap.
+   
+   The one thing that DOES cross it: the shared Streamer.bot
+   WebSocket server, since both apps independently connect to
+   ws://127.0.0.1:8080/ on the same PC. The admin dashboard now
+   fires a "LVL_ConfigPush" Streamer.bot action whenever a setting
+   changes; that action re-broadcasts the data tagged
+   source:"levelup_config", which every subscribed client
+   (including this card) receives. applyRemoteConfig() below
+   writes that payload into THIS page's own localStorage (its own
+   copy, since storage still isn't literally shared) and re-applies
+   it immediately — no OBS refresh needed.
+   ============================================================ */
+function applyRemoteConfig(msg){
+  const kind = msg && msg.kind;
+  if (!kind) return;
+  let payload;
+  try{ payload = JSON.parse(msg.payload); }catch(e){ return; }
+
+  if (kind === "display"){
+    localStorage.setItem(LS_DISPLAY, JSON.stringify(payload));
+    applyDisplay(loadDisplay());
+  } else if (kind === "rewards"){
+    localStorage.setItem(LS_REWARDS, JSON.stringify(payload));
+  } else if (kind === "xprates"){
+    localStorage.setItem(LS_XPRATES, JSON.stringify(payload));
+  } else if (kind === "curve"){
+    localStorage.setItem(LS_CURVE, JSON.stringify(payload));
+  } else if (kind === "test_event" || kind === "live_event"){
+    enqueue(payload);
+  }
+}
+
+/* ============================================================
+   STREAMER.BOT WEBSOCKET (live Twitch events + remote config push)
    ============================================================ */
 let ws = null;
 let connectedForReal = false;
-// FIX: OBS browser sources never auto-refresh, so if the WebSocket to
-// Streamer.bot ever drops or fails on first load (Streamer.bot not up yet,
-// a restart, the PC waking from sleep, etc.), the card used to die silently
-// forever — no error handling, no retry. This wraps the connection in a
-// function that reconnects with a short delay any time it closes or errors,
-// so a dropped connection recovers on its own instead of needing a manual
-// "Refresh" in OBS.
 function connectStreamerBot(){
   ws = new WebSocket(`ws://${params.get("address") || "localhost"}:${params.get("port") || "8080"}/`);
   ws.onopen = () => { ws.send(JSON.stringify({ request:"Subscribe", events:{ general:["Custom"] }, id:"LevelUp" })); };
-  // Streamer.bot's WebSocketBroadcastJson is global — every action that
-  // calls it (LevelUp, iPhoneCallTrigger, anything else) lands on this same
-  // socket. Without a check here, any unrelated broadcast got rendered as a
-  // fake "level up" card with +0 XP and stale/garbage numbers. Only enqueue
-  // payloads explicitly tagged source:"levelup" by the C# LevelUp action.
   ws.onmessage = (event) => {
-    const response = JSON.parse(event.data);
-    if (response && response.data && response.data.source === "levelup") {
+    let response;
+    try{ response = JSON.parse(event.data); }catch(e){ return; }
+    if (!response || !response.data) return;
+    const d = response.data;
+    if (d.source === "levelup") {
       connectedForReal = true; stopDemo();
-      enqueue(response.data);
+      enqueue(d);
+    } else if (d.source === "levelup_config") {
+      applyRemoteConfig(d);
     }
   };
   ws.onerror = () => {};
   ws.onclose = () => { setTimeout(connectStreamerBot, 3000); };
 }
 connectStreamerBot();
-// Demo/sample cards only run when explicitly requested via ?demo=1 in the
-// browser source URL. They no longer auto-start just because the
-// Streamer.bot WebSocket hasn't connected yet within 2.5s.
 if (params.get("demo") === "1") {
   setTimeout(() => { if (!connectedForReal) startDemo(); }, 2500);
 }
@@ -383,8 +485,6 @@ function escapeHtml(str){ const d = document.createElement("div"); d.textContent
 
 async function showCard(data){
   const tier = tierColors(data.level || 1);
-  // custom accent colors from the admin's Colors & Glow section win over the
-  // level-tier auto colors; leave either field blank there to fall back to tiers.
   const accent = currentDisplay.accentPrimary || tier[0];
   const accent2 = currentDisplay.accentSecondary || tier[1];
   const users = loadUsers();
@@ -485,6 +585,35 @@ function spawnSparks(card){
     requestAnimationFrame(() => s.classList.add("animate"));
     setTimeout(() => s.remove(), 1000);
   }
+}
+// ============================================================
+// PREVIEW POPUP BRIDGE (postMessage) — lets the admin dashboard's
+// "Save and Push to Overlay" button push config + a test event into
+// this page even though it's on a different origin (GitHub Pages)
+// than the admin app. Cross-origin postMessage works where
+// localStorage/BroadcastChannel can't.
+// ============================================================
+window.addEventListener("message", (event) => {
+  const msg = event.data;
+  if (!msg || msg.source !== "levelup_popup") return;
+  if (msg.type === "display_update"){
+    localStorage.setItem(LS_DISPLAY, JSON.stringify(msg.payload));
+    applyDisplay(loadDisplay());
+  } else if (msg.type === "rewards_update"){
+    localStorage.setItem(LS_REWARDS, JSON.stringify(msg.payload));
+  } else if (msg.type === "xprates_update"){
+    localStorage.setItem(LS_XPRATES, JSON.stringify(msg.payload));
+  } else if (msg.type === "curve_update"){
+    localStorage.setItem(LS_CURVE, JSON.stringify(msg.payload));
+  } else if (msg.type === "test_event" || msg.type === "live_event"){
+    enqueue(msg.payload);
+  }
+});
+
+// Tell the opener (the admin dashboard) we're loaded and listening.
+// Sent with "*" since we can't know the admin app's origin (Electron/file://).
+if (window.opener){
+  try{ window.opener.postMessage({ source:"levelup_popup", type:"popup_ready" }, "*"); }catch(e){ /* ignore */ }
 }
 
 /* ---------- demo loop (opt-in only via ?demo=1) ---------- */
