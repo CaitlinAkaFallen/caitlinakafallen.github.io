@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FallenOneArt — Music Player Control Dashboard v2.6.4</title>
+    <title>FallenOneArt — Music Player Control Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
@@ -28,7 +28,7 @@
     <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
     <style>
 
-      :root{
+:root{
         --accent-primary:#7de8c8;
         --accent-secondary:#c8a2ff;
         --accent-tertiary:#ff6b9d;
@@ -64,17 +64,25 @@
       *{box-sizing:border-box;}
       /* utility class to replace inline margin-top styles */
       .mt-10{ margin-top:10px; }
-      html,body{
-        margin:0;
-        padding:0;
-        background:var(--bg-deep);
-        color:var(--text-primary);
-        font-family:var(--font-mono);
-        min-height:100vh;
-        font-weight:400;
-        letter-spacing:0.5px;
-      }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    
+    /* Hide scrollbar for IE, Edge and Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+}
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;
+}
       body{
         background:
           radial-gradient(ellipse at 15% -20%, rgba(125,232,200,0.15), transparent 50%),
@@ -183,16 +191,7 @@
         overflow-y:auto; 
         background:linear-gradient(180deg, transparent, rgba(125,232,200,0.02));
       }
-      @supports (scrollbar-width: thin) {
-        .main{
-          scrollbar-width:thin;
-          scrollbar-color:transparent transparent;
-        }
-      }
-      .main::-webkit-scrollbar{width:8px;}
-      .main::-webkit-scrollbar-track{background:transparent;}
-      .main::-webkit-scrollbar-thumb{background:transparent; border-radius:4px;}
-      .main::-webkit-scrollbar-thumb:hover{background:transparent;}
+      .main::-webkit-scrollbar{display:none;}
 
       .panel{ display:none; max-width:660px; }
       .panel.active{ display:block; animation:fadein-adv .4s cubic-bezier(0.4,0,0.2,1); }
@@ -706,25 +705,8 @@
         overflow-y: auto;
       }
 
-      @supports (scrollbar-width: thin) {
-        .preview-col {
-          scrollbar-width: thin;
-          scrollbar-color: transparent transparent;
-        }
-      }
-
       .preview-col::-webkit-scrollbar {
-        width: 8px;
-      }
-      .preview-col::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      .preview-col::-webkit-scrollbar-thumb {
-        background: transparent; 
-        border-radius: 4px;
-      }
-      .preview-col::-webkit-scrollbar-thumb:hover {
-        background: transparent;
+        display: none;
       }
 
       .preview-col h3 { 
@@ -1271,6 +1253,9 @@
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
         border: 1px solid rgba(93, 226, 212, 0.3);
       }
+      .select-options::-webkit-scrollbar{
+        display: none;
+      }
 
       .select-option {
         padding: 12px 14px;
@@ -1340,6 +1325,9 @@
         margin-top:12px;
         max-height:320px;
         overflow-y:auto;
+      }
+      .search-results-list::-webkit-scrollbar{
+        display: none;
       }
       .search-result-row{
         display:flex;
@@ -1439,6 +1427,9 @@
         margin-top:12px;
         max-height:420px;
         overflow-y:auto;
+      }
+      .playlist-grid::-webkit-scrollbar{
+        display: none;
       }
       .playlist-card{
         position:relative;
@@ -3082,6 +3073,26 @@ const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_ME_URL = 'https://api.spotify.com/v1/me';
 const SPOTIFY_SCOPES = 'user-read-currently-playing user-read-playback-state user-modify-playback-state user-read-private user-read-recently-played user-library-read user-library-modify';
+
+// ============================================
+// PRODUCTION DOMAIN OVERRIDE
+// Electron serves this dashboard from http://127.0.0.1:17650,
+// but the Spotify app + OBS browser source are registered
+// against the live domain. So instead of trusting
+// window.location.origin blindly, we detect local/Electron
+// contexts and force the production domain in that case.
+// ============================================
+const PRODUCTION_ORIGIN = 'https://caitlinscreativespace.xyz';
+
+function getEffectiveOrigin(){
+  const origin = window.location.origin;
+  const isLocalOrFile =
+    !origin ||
+    origin === 'null' ||
+    origin.startsWith('file://') ||
+    /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(origin);
+  return isLocalOrFile ? PRODUCTION_ORIGIN : origin;
+}
 
 const DEFAULT_CONFIG = {
   layoutMode:'compact',accentPrimary:'#7de8c8',accentSecondary:'#c8a2ff',timeColor:'#7de8c8',titleColor:'#f3f1f8',artistColor:'#a39fb5',albumColor:'#a39fb5',
@@ -5450,7 +5461,7 @@ function readFormIntoConfig(){
 
 function pushLivePreview(){const frame = document.getElementById('previewFrame');if(frame.contentWindow) frame.contentWindow.postMessage({ type:'config-update', config }, '*')}
 
-function getOBSUrl(){return window.location.origin + '/music-player.html'}
+function getOBSUrl(){return getEffectiveOrigin() + '/music-player.html'}
 
 document.querySelectorAll('#panel-layout input, #panel-layout select, #panel-appearance input, #panel-appearance select, #panel-metadata input, #panel-metadata select, #panel-behavior input, #panel-behavior select').forEach(el=>{
   el.addEventListener('input', ()=>{readFormIntoConfig();updateRangeLabels();pushLivePreview()});
@@ -5466,7 +5477,7 @@ function showToast(msg){const t = document.getElementById('toast');t.textContent
 function base64UrlEncode(buffer){return btoa(String.fromCharCode(...new Uint8Array(buffer))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 async function generateCodeChallenge(verifier){const data = new TextEncoder().encode(verifier);const digest = await crypto.subtle.digest('SHA-256', data);return base64UrlEncode(digest)}
 function generateCodeVerifier(length=64){const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';const randomValues = crypto.getRandomValues(new Uint8Array(length));let result = '';randomValues.forEach(v=> result += chars[v % chars.length]);return result}
-function getRedirectUri(){return window.location.origin + '/music-player-dashboard.html'}
+function getRedirectUri(){return getEffectiveOrigin() + '/music-player-dashboard.html'}
 function saveClientId(){const clientId = document.getElementById('inputClientId').value.trim();if(clientId) localStorage.setItem(LS_CLIENT_ID_KEY, clientId)}
 function restoreClientId(){const saved = localStorage.getItem(LS_CLIENT_ID_KEY);if(saved) document.getElementById('inputClientId').value = saved}
 function getAuth(){try{ return JSON.parse(localStorage.getItem(LS_AUTH_KEY) || 'null'); }catch(e){ return null; }}
@@ -6626,5 +6637,6 @@ async function handleRedirectIfPresent(){const url = new URL(window.location.hre
   updateSaveBarVisibility('connection');
 })();
 </script>
+
 </body>
 </html>
