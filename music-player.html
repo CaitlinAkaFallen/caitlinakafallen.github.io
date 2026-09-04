@@ -1980,6 +1980,31 @@ const SPOTIFY_NOW_PLAYING_URL = 'https://api.spotify.com/v1/me/player/currently-
 const TOKEN_REFRESH_BUFFER_MS = 60000;
 const MIN_POLL_SECONDS = 3;
 
+// ============================================
+// NEW: WEBSOCKET RELAY (receives config pushes from the real
+// Electron dashboard, which is a separate Chromium process from
+// this OBS Browser Source and can't reach it via BroadcastChannel).
+// ============================================
+const WS_RELAY_PORT = 17650;
+let relayWs = null;
+function connectRelay(){
+  try{
+    relayWs = new WebSocket(`ws://127.0.0.1:${WS_RELAY_PORT}`);
+    relayWs.onmessage = (evt) => {
+      try{
+        const msg = JSON.parse(evt.data);
+        if (msg && msg.type === 'config-update'){
+          currentConfig = { ...DEFAULT_CONFIG, ...msg.config };
+          applyConfig(currentConfig);
+        }
+      }catch(e){}
+    };
+    relayWs.onclose = () => { relayWs = null; setTimeout(connectRelay, 3000); };
+    relayWs.onerror = () => {};
+  }catch(e){ setTimeout(connectRelay, 3000); }
+}
+connectRelay();
+
 const FONT_PAIRINGS = {
   signature:{ display:"'Orbitron', sans-serif", mono:"'Share Tech Mono', monospace" },
   modern:{ display:"'Poppins', sans-serif", mono:"'Poppins', sans-serif" },
@@ -2038,8 +2063,6 @@ function updateVinylRotation(){
   const totalRotations = (elapsedMs / 1000) * rotationsPerSecond;
   vinylRotationDeg = (totalRotations * 360) % 360;
   
-  // Targets both the CD-style vinyl surface AND the Full Vinyl disc,
-  // keeping overlays (metadata, tonearm, eq bars) strictly stationary.
   const vinylEls = document.querySelectorAll('#vinylSurface, #fvVinylDisc');
   vinylEls.forEach(el => el.style.setProperty('--vinyl-rotation', vinylRotationDeg + 'deg'));
 }
@@ -2064,7 +2087,6 @@ function tick() {
   
   if (playbackState.isPlaying && currentMs >= playbackState.durationMs) { 
     playbackState.isPlaying = false; 
-    // Add a 2.5-second delay to let Spotify transition to the next track
     setTimeout(pollNowPlaying, 2500); 
   }
 }
@@ -2113,8 +2135,6 @@ function applyConfig(cfg){
   LAYOUT_IDS.forEach(({mode, id})=> document.getElementById(id).classList.toggle('hidden', cfg.layoutMode !== mode));
 
   const card = document.getElementById('playerCard');
-  // Full Vinyl is always frameless by design, regardless of the
-  // Container Background toggle — matches Stacked's own-layering rule.
   const showBg = cfg.showContainerBackground !== false && cfg.layoutMode !== 'fullvinyl';
   card.style.background = showBg ? '' : 'transparent';
   card.style.border = showBg ? '' : 'none';
@@ -2262,7 +2282,7 @@ function renderTrack(data){
 
   if(isNewTrack){
     document.querySelectorAll('.art-wrap-square, .minimal-art-wrap, .stacked-art-wrap, .spectrum-art-wrap').forEach(retriggerRevealAnimation);
-    vinylStartTime = 0; // Reset vinyl rotation for new track
+    vinylStartTime = 0;
     lastTrackId = item.id;
   }
 
@@ -2290,12 +2310,6 @@ async function pollNowPlaying(){
   }catch(e){ showIdle('CONNECTION ERROR'); }
 }
 
-// Spotify's currently-playing endpoint can briefly report nothing
-// playing (204, or a response with no item) for a single poll right
-// as one track ends and the next begins. Reacting to that instantly
-// caused the overlay to flash to the idle state and back on every
-// track change. Requiring a couple of consecutive empty polls before
-// actually switching to idle rides out that gap.
 function handleEmptyPoll(){
   emptyPollStreak++;
   if(emptyPollStreak >= IDLE_CONFIRM_STREAK){
