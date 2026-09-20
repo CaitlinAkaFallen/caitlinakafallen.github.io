@@ -940,16 +940,6 @@ html,body{
   overflow: hidden;
 }
 
-/* The reveal-animation retrigger (on new track) targets .art-wrap-square
-   elements. In every other layout that class wraps ONLY the album art
-   image, so retriggering the animation only replays the art's own
-   fade/roll-in. Square used to size/position .art-wrap-square as the
-   whole 320x320 card — with the title, artist, and progress bar nested
-   INSIDE it — so retriggering the animation blanked and replayed the
-   entire card, not just the art. Now .square-art-frame owns the box and
-   clipping, and .art-wrap-square is just an absolutely-positioned layer
-   inside it holding the image, matching the pattern every other layout
-   already uses. */
 #layoutSquare .art-wrap-square {
   position: absolute;
   inset: 0;
@@ -1022,7 +1012,7 @@ html,body{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  text-shadow: none; /* No shadow */
+  text-shadow: none;
 }
 
 .vinyl-title .scroll-inner{ display:inline-block; white-space:nowrap; }
@@ -1052,7 +1042,7 @@ html,body{
   background:radial-gradient(circle at 30% 30%, #1a1620, #0f0d15);
   box-shadow:inset -6px -6px 16px rgba(0,0,0,0.4), inset 2px 2px 8px rgba(255,255,255,0.05), 0 0 48px rgba(125,232,200,calc(var(--glow-intensity) * 0.3));
   overflow:hidden;
-  transform:rotate(var(--vinyl-rotation)); /* Applies rotation ONLY to the art and grooves */
+  transform:rotate(var(--vinyl-rotation));
   transition:none;
   will-change: transform;
 }
@@ -1113,7 +1103,6 @@ html,body{
   box-shadow:inset -1px -1px 3px rgba(0,0,0,0.7), 0 0 6px rgba(125,232,200,0.4);
 }
 
-/* EQ Container - Decoupled from rotation, positioned dead center */
 .vinyl-eq-container{
   position:absolute;
   inset:0;
@@ -1139,7 +1128,7 @@ html,body{
   height:15%;
   animation:eq-bounce 0.9s ease-in-out infinite;
   will-change:height;
-  box-shadow: none; /* No shadow */
+  box-shadow: none;
   opacity:1;
 }
 
@@ -1150,7 +1139,6 @@ html,body{
 
 .vinyl-eq-bars.paused .bar{ animation-play-state:paused; height:12%; }
 
-/* Vinyl metadata overlay - Decoupled from rotation, overlays the vinyl surface */
 .vinyl-metadata-overlay{
   position:absolute;
   inset:0;
@@ -1195,7 +1183,7 @@ html,body{
   font-size:calc(11px * var(--text-scale));
   font-weight:700;
   color:#ffffff;
-  text-shadow: none; /* No shadow */
+  text-shadow: none;
 }
 
 .vinyl-artist{
@@ -1226,24 +1214,11 @@ html,body{
   text-transform:uppercase;
   color:var(--accent-primary);
   font-weight:700;
-  text-shadow: none; /* No shadow */
+  text-shadow: none;
 }
 
 /* ============================================================
    FULL VINYL LAYOUT — Frameless, realistic turntable
-   No card container ever, regardless of the Container Background
-   toggle (enforced again below at the .player-card rule so it
-   can never flash a frame). Progress bar is fully replaced by
-   the equalizer bar row beneath the title/artist text.
-
-   Realism notes:
-   - The vinyl body + label rotate together (a real label is
-     glued to the disc and spins with it).
-   - The glossy reflective sheen is a SEPARATE, non-rotating
-     layer sitting above the disc — reflections don't spin with
-     a record, they shift with the viewer/light instead.
-   - A smooth ungrooved "runout" ring sits between the grooves
-     and the label, matching real pressed vinyl.
    ============================================================ */
 .layout-fullvinyl{
   display:flex;
@@ -1264,7 +1239,6 @@ html,body{
   flex:0 0 auto;
 }
 
-/* Soft grounding shadow beneath the disc for depth */
 .fv-turntable-wrap::before{
   content:'';
   position:absolute;
@@ -1278,8 +1252,6 @@ html,body{
   z-index:0;
 }
 
-/* The rotating disc itself. Sits slightly left/down within the
-   wrap so the tonearm pivot has room in the top-right corner. */
 .fv-vinyl-disc{
   position:absolute;
   left:6px;
@@ -1297,8 +1269,6 @@ html,body{
   z-index:1;
 }
 
-/* Outer smooth rim (real pressings have a narrow flat lip before
-   the grooves start) */
 .fv-vinyl-disc::before{
   content:'';
   position:absolute;
@@ -1310,9 +1280,6 @@ html,body{
   pointer-events:none;
 }
 
-/* Fine concentric grooves — tighter pitch, alternating light/dark
-   hairlines for a real pressed-vinyl look. Faded out toward the
-   center (runout + label) and right at the outer rim via mask. */
 .fv-vinyl-disc::after{
   content:'';
   position:absolute;
@@ -1334,10 +1301,6 @@ html,body{
   pointer-events:none;
 }
 
-/* Static, non-rotating glossy reflection. Lives in the wrap, not
-   inside the spinning disc, so the highlight stays put while the
-   record spins underneath it — matches how light behaves on a
-   real glossy vinyl surface. */
 .fv-vinyl-gloss{
   position:absolute;
   left:6px;
@@ -1356,8 +1319,6 @@ html,body{
   z-index:2;
 }
 
-/* Smooth ungrooved runout ring, just outside the label — plain
-   dark plastic with no groove texture, as on a real record. */
 .fv-vinyl-runout{
   position:absolute;
   top:50%;
@@ -1371,9 +1332,6 @@ html,body{
   z-index:1;
 }
 
-/* Label at the center of the disc, holds the album artwork.
-   Styled like a printed paper label: matte ring border, subtle
-   drop shadow, slightly recessed look. Rotates with the disc. */
 .fv-vinyl-label{
   position:absolute;
   top:50%;
@@ -1396,7 +1354,6 @@ html,body{
   object-fit:cover;
   display:block;
 }
-/* Spindle hole, drawn above the artwork so it always reads clearly */
 .fv-vinyl-spindle{
   position:absolute;
   top:50%;
@@ -1410,10 +1367,6 @@ html,body{
   z-index:3;
 }
 
-/* Tonearm — rendered as SVG for clean, precise geometry.
-   Pivot anchored in the top-right corner of the wrap, resting
-   the headshell/needle down onto the groove field of the disc
-   (never on the label — a real needle tracks the grooves). */
 .fv-tonearm-svg{
   position:absolute;
   inset:0;
@@ -1424,7 +1377,6 @@ html,body{
   overflow:visible;
 }
 
-/* Title / artist beneath the turntable */
 .fv-meta{
   display:flex;
   flex-direction:column;
@@ -1463,9 +1415,6 @@ html,body{
 }
 .fv-artist.italic{ font-style:italic; }
 
-/* Progress row — replaces the progress bar entirely for this
-   layout. Elapsed / remaining timestamps flank a row of
-   equalizer bars that pulse in place of a scrubber track. */
 .fv-progress-row{
   display:flex;
   align-items:center;
@@ -1523,11 +1472,6 @@ html,body{
   height:12%;
 }
 
-/* Hard rule: Full Vinyl is ALWAYS frameless. This is enforced in
-   CSS directly (not just via JS toggling inline styles) so there
-   is never a flash of the card background/border/HUD corners
-   before the config script runs, and it can't be re-enabled by
-   the Container Background toggle. */
 .player-card:has(#layoutFullVinyl:not(.hidden)){
   background:transparent !important;
   border:none !important;
@@ -1838,7 +1782,7 @@ html,body{
           </div>
         </div>
 
-        <!-- ✨ MOVED HERE: Metadata rotates WITH vinyl surface -->
+        <!-- Metadata rotates WITH vinyl surface -->
         <div class="vinyl-metadata-overlay">
           <div class="vinyl-bottom-section">
             <div class="vinyl-side-left">
@@ -1870,11 +1814,7 @@ html,body{
   </div>
 </div>
 
-      <!-- FULL VINYL LAYOUT — Frameless realistic turntable.
-           No metadata pill container, no progress bar container:
-           title/artist sit directly beneath the disc, and the
-           equalizer bar row (flanked by elapsed/remaining time)
-           stands in for the progress bar entirely. -->
+      <!-- FULL VINYL LAYOUT — Frameless realistic turntable. -->
       <div class="layout-fullvinyl hidden" id="layoutFullVinyl">
         <div class="fv-turntable-wrap">
           <!-- Rotating body: groove field + runout ring + label all
@@ -1970,7 +1910,7 @@ html,body{
 
   </div>
 </div>
-
+<script src="relay-auth.js"></script>
 <script>
 const LS_CONFIG_KEY = 'fallenoneart_music_player_config';
 const LS_AUTH_KEY = 'fallenoneart_spotify_auth';
@@ -1981,9 +1921,27 @@ const TOKEN_REFRESH_BUFFER_MS = 60000;
 const MIN_POLL_SECONDS = 3;
 
 // ============================================
-// NEW: WEBSOCKET RELAY (receives config pushes from the real
+// WEBSOCKET RELAY (receives config pushes from the real
 // Electron dashboard, which is a separate Chromium process from
 // this OBS Browser Source and can't reach it via BroadcastChannel).
+//
+// FIX: previously a relay push only updated `currentConfig` in
+// memory and re-rendered — it was never written to localStorage.
+// That's harmless as long as this page keeps running, but OBS
+// Browser Sources routinely get torn down and reloaded (scene
+// switches, "Refresh browser when scene becomes active", and
+// especially "Shutdown source when not visible" destroying the
+// whole CEF process whenever the source is hidden/occluded).
+// On every one of those reloads, loadConfig() runs again and
+// reads THIS process's own localStorage — which, without the
+// write below, still held whatever was there before the last
+// relay push (often nothing, i.e. DEFAULT_CONFIG). That's why a
+// layout change could show correctly in the Live Preview iframe
+// and in a regular browser tab, yet never "stick" in OBS: OBS
+// kept reloading back to a stale/default config that predated
+// the change. Persisting every relay push to localStorage here
+// means the next reload — whenever it happens — picks up the
+// last config this instance actually received, not a stale one.
 // ============================================
 const WS_RELAY_PORT = 17650;
 let relayWs = null;
@@ -1996,6 +1954,11 @@ function connectRelay(){
         if (msg && msg.type === 'config-update'){
           currentConfig = { ...DEFAULT_CONFIG, ...msg.config };
           applyConfig(currentConfig);
+          // Persist so a future reload of THIS process (scene switch,
+          // "shutdown when not visible", manual refresh, etc.) starts
+          // from the last known-good config instead of falling back
+          // to whatever was here before (often just DEFAULT_CONFIG).
+          try{ localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(currentConfig)); }catch(e){}
         }
       }catch(e){}
     };
