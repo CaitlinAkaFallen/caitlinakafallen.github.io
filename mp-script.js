@@ -35,6 +35,19 @@ function connectRelay(){
   try{
     relayWs = new WebSocket(`ws://127.0.0.1:${WS_RELAY_PORT}`);
     relayWs.onopen = () => { if (relayReconnectTimer) { clearTimeout(relayReconnectTimer); relayReconnectTimer = null; } };
+    // An overlay (OBS / another browser) asks for the current state when it connects.
+    // Reply with the latest config plus a fresh access token (never the refresh token).
+    relayWs.onmessage = async (evt) => {
+      try{
+        const msg = JSON.parse(evt.data);
+        if(msg && msg.type === 'request-state'){
+          await getValidAccessToken(); // refresh first if it is about to expire
+          pushAuthToRelay();
+          readFormIntoConfig();
+          relaySend({ type:'config-update', config });
+        }
+      }catch(e){}
+    };
     relayWs.onclose = () => { relayWs = null; relayReconnectTimer = setTimeout(connectRelay, 3000); };
     relayWs.onerror = () => {};
   }catch(e){ relayReconnectTimer = setTimeout(connectRelay, 3000); }
@@ -44,6 +57,16 @@ function relaySend(payload){
   if (relayWs && relayWs.readyState === WebSocket.OPEN){
     try{ relayWs.send(JSON.stringify(payload)); }catch(e){}
   }
+}
+
+// Sends ONLY the short-lived access token + its expiry to connected overlays
+// (OBS runs in a separate process and can't read this page's localStorage).
+// The refresh token never leaves the dashboard.
+function pushAuthToRelay(){
+  try{
+    const a = JSON.parse(localStorage.getItem(LS_AUTH_KEY) || 'null');
+    if(a && a.accessToken) relaySend({ type:'auth-update', auth:{ accessToken:a.accessToken, expiresAt:a.expiresAt } });
+  }catch(e){}
 }
 
 // ============================================
@@ -212,12 +235,23 @@ document.getElementById('btnToggleClientId').addEventListener('click', ()=>{
   }
 });
 
+// Returns the REAL current origin — used for the OBS Browser Source URL so
+// that when the dashboard runs inside Electron on http://127.0.0.1:17650
+// the generated URL points at the local server, not the production domain.
+// (getEffectiveOrigin is kept for Spotify auth only, which always needs the
+// production domain because that is what is registered in the Spotify app.)
+function getActualOrigin(){
+  const o = window.location.origin;
+  // file:// and 'null' origins (rare edge cases) fall back to production
+  if(!o || o === 'null' || o.startsWith('file://')) return PRODUCTION_ORIGIN;
+  return o;
+}
+
 function buildOverlayUrlWithConfig(){
-  const effectiveOrigin = getEffectiveOrigin();
-  readFormIntoConfig(); // ensure config is current
+  readFormIntoConfig(); // ensure config is current before encoding
   const configJson = JSON.stringify(config);
   const base64Cfg = btoa(unescape(encodeURIComponent(configJson)));
-  return `${effectiveOrigin}/music-player.html?cfg=${base64Cfg}`;
+  return `${getActualOrigin()}/app/music-player.html?cfg=${base64Cfg}`;
 }
 
 
@@ -2421,7 +2455,48 @@ function readFormIntoConfig(){
 
 function pushLivePreview(){const frame = document.getElementById('previewFrame');if(frame.contentWindow) frame.contentWindow.postMessage({ type:'config-update', config }, '*')}
 
-function getOBSUrl(){return getEffectiveOrigin() + '/music-player.html'}
+// Plain URL without config — used as a base reference only.
+// For the copy-to-clipboard OBS URL always use buildOverlayUrlWithConfig() instead.
+function getOBSUrl(){ return getActualOrigin() + '/app/music-player.html'; }
+
+// ── OBS Source URL display (Settings tab) ─────────────────────────────────────
+// Builds the full URL (with encoded config) and populates the read-only display
+// field and character-count badge in the Settings panel.
+function updateOBSSourceUrlDisplay(){
+  const el   = document.getElementById('obsSourceUrlDisplay');
+  const cnt  = document.getElementById('obsSourceUrlCharCount');
+  const warn = document.getElementById('obsSourceUrlTokenWarn');
+  if(!el) return;
+  const url = buildOverlayUrlWithConfig();
+  el.textContent = url;
+  if(cnt)  cnt.textContent  = url.length + ' characters';
+  // Show a token-in-URL warning when the URL is long (config contains auth)
+  if(warn) warn.style.display = url.length > 800 ? 'block' : 'none';
+}
+
+// Copy button in the Settings panel
+(function wireOBSCopyBtn(){
+  const btn = document.getElementById('btnCopyOBSSource');
+  if(!btn) return;
+  btn.addEventListener('click', async ()=>{
+    const url = buildOverlayUrlWithConfig();
+    try{
+      await navigator.clipboard.writeText(url);
+    }catch(e){
+      // Fallback for Electron / non-secure contexts
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(()=>{ btn.textContent = orig; }, 2200);
+  });
+})();
 
 document.querySelectorAll('#panel-layout input, #panel-layout select, #panel-appearance input, #panel-appearance select, #panel-metadata input, #panel-metadata select, #panel-behavior input, #panel-behavior select').forEach(el=>{
   el.addEventListener('input', ()=>{readFormIntoConfig();updateRangeLabels();pushLivePreview()});
@@ -2430,7 +2505,16 @@ document.querySelectorAll('#panel-layout input, #panel-layout select, #panel-app
 document.querySelectorAll('.choice-card').forEach(card=>{card.addEventListener('click', ()=>{if(card.dataset.choice){config[card.dataset.choice] = card.dataset.value;updateChoiceCards();pushLivePreview()}})});
 
 document.getElementById('btnResetDefaults').addEventListener('click', ()=>{config = { ...DEFAULT_CONFIG };populateForm();syncCustomSelects();pushLivePreview();showToast('Reset to defaults ✓')});
-document.getElementById('btnSave').addEventListener('click', ()=>{readFormIntoConfig();localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(config));saveDashTheme();if(bc) bc.postMessage({ type:'config-update', config });relaySend({ type:'config-update', config });pushLivePreview();showToast('Saved & pushed to overlay ✓')});
+document.getElementById('btnSave').addEventListener('click', ()=>{
+  readFormIntoConfig();
+  localStorage.setItem(LS_CONFIG_KEY, JSON.stringify(config));
+  saveDashTheme();
+  if(bc) bc.postMessage({ type:'config-update', config });
+  relaySend({ type:'config-update', config });
+  pushLivePreview();
+  updateOBSSourceUrlDisplay(); // keep Settings tab URL in sync after every save
+  showToast('Saved & pushed to overlay ✓');
+});
 
 function showToast(msg){const t = document.getElementById('toast');t.textContent = msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'), 2400)}
 
@@ -2441,7 +2525,7 @@ function getRedirectUri(){return getEffectiveOrigin() + '/music-player-dashboard
 function saveClientId(){const clientId = document.getElementById('inputClientId').value.trim();if(clientId) localStorage.setItem(LS_CLIENT_ID_KEY, clientId)}
 function restoreClientId(){const saved = localStorage.getItem(LS_CLIENT_ID_KEY);if(saved) document.getElementById('inputClientId').value = saved}
 function getAuth(){try{ return JSON.parse(localStorage.getItem(LS_AUTH_KEY) || 'null'); }catch(e){ return null; }}
-function saveAuth(auth){ localStorage.setItem(LS_AUTH_KEY, JSON.stringify(auth)); }
+function saveAuth(auth){ localStorage.setItem(LS_AUTH_KEY, JSON.stringify(auth)); pushAuthToRelay(); }
 async function startSpotifyLogin(){const clientId = document.getElementById('inputClientId').value.trim();if(!clientId){ alert('Enter your Spotify Client ID first.'); return; }saveClientId();const verifier = generateCodeVerifier();localStorage.setItem(LS_PKCE_KEY, verifier);const challenge = await generateCodeChallenge(verifier);const params = new URLSearchParams({client_id: clientId,response_type: 'code',redirect_uri: getRedirectUri(),code_challenge_method: 'S256',code_challenge: challenge,scope: SPOTIFY_SCOPES});window.location.href = `${SPOTIFY_AUTH_URL}?${params.toString()}`}
 async function exchangeCodeForToken(code){const verifier = localStorage.getItem(LS_PKCE_KEY);const clientId = localStorage.getItem(LS_CLIENT_ID_KEY) || document.getElementById('inputClientId').value.trim();const body = new URLSearchParams({client_id: clientId,grant_type: 'authorization_code',code,redirect_uri: getRedirectUri(),code_verifier: verifier});const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST',headers:{ 'Content-Type':'application/x-www-form-urlencoded' },body});if(!res.ok){ throw new Error('Token exchange failed: ' + res.status); }const data = await res.json();const auth = {clientId,redirectUri: getRedirectUri(),accessToken: data.access_token,refreshToken: data.refresh_token,expiresAt: Date.now() + (data.expires_in * 1000)};saveAuth(auth);localStorage.removeItem(LS_PKCE_KEY);return auth}
 async function refreshAccessToken(auth){const body = new URLSearchParams({client_id: auth.clientId,grant_type: 'refresh_token',refresh_token: auth.refreshToken});const res = await fetch(SPOTIFY_TOKEN_URL, {method:'POST',headers:{ 'Content-Type':'application/x-www-form-urlencoded' },body});if(!res.ok) throw new Error('Refresh failed: ' + res.status);const data = await res.json();const updated = { ...auth, accessToken:data.access_token,refreshToken:data.refresh_token || auth.refreshToken,expiresAt: Date.now() + (data.expires_in*1000) };saveAuth(updated);return updated}
@@ -3584,7 +3668,8 @@ document.addEventListener('keydown', (e)=>{
 });
 
 async function handleRedirectIfPresent(){const url = new URL(window.location.href);const code = url.searchParams.get('code');const error = url.searchParams.get('error');if(error){showToast('Spotify login cancelled.');history.replaceState({}, '', window.location.pathname);return}if(code){try{await exchangeCodeForToken(code);showToast('Connected to Spotify ✓')}catch(e){showToast('Could not complete Spotify login.')}history.replaceState({}, '', window.location.pathname)}}
-(async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);document.getElementById('inputRedirectUri').value = getRedirectUri();document.getElementById('inputOBSURL').value = getOBSUrl();const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();loadWallpaperHistory();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();loadSelectedDeviceId();loadDiscordConfig();loadAvatarUrlHistory();loadAvatarUploadHistory();populateDiscordForm();loadHotkeysEnabled();loadCustomKeybinds();document.getElementById('toggleHotkeysEnabled').checked = hotkeysEnabled;renderKeybindTable();loadTwitchConfig();populateTwitchForm();loadSongRequestConfig();populateSongRequestForm();loadChatCommandsConfig();populateChatCommandsForm();autoConnectTwitchBotIfSaved();
+(async function init(){loadConfig();populateForm();initCustomSelects();syncCustomSelects();restoreClientId();document.getElementById('inputClientId').addEventListener('change', saveClientId);document.getElementById('inputClientId').addEventListener('blur', saveClientId);const previewFrame = document.getElementById('previewFrame');previewFrame.addEventListener('load', pushLivePreview);if (previewFrame.contentDocument?.readyState === 'complete') pushLivePreview();await handleRedirectIfPresent();await refreshConnectionStatus();loadDashTheme();loadWallpaperHistory();populateDashThemeForm();applyDashTheme();loadPreviewOpacity();applyPreviewOpacity();loadSelectedDeviceId();loadDiscordConfig();loadAvatarUrlHistory();loadAvatarUploadHistory();populateDiscordForm();loadHotkeysEnabled();loadCustomKeybinds();document.getElementById('toggleHotkeysEnabled').checked = hotkeysEnabled;renderKeybindTable();loadTwitchConfig();populateTwitchForm();loadSongRequestConfig();populateSongRequestForm();loadChatCommandsConfig();populateChatCommandsForm();autoConnectTwitchBotIfSaved();
+  updateOBSSourceUrlDisplay();
   setInterval(fetchAndUpdateQueue, 2000);
   setInterval(updateQueuePlayPauseIcon, 3000);
   setInterval(fetchDevices, 15000);
