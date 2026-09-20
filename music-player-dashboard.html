@@ -1635,27 +1635,7 @@ body::-webkit-scrollbar {
         <div class="hint">Get this from <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a> → Create app<br>Redirect URI to register: <span id="hintRedirectUri" class="redirect-uri-hint">—</span></div>
       </div>
 
-      <!-- Hidden on purpose: the visible Redirect URI field was replaced by the
-           hint above, but mp-script.js's init() still does
-           document.getElementById('inputRedirectUri').value = getRedirectUri();
-           — without this element that line throws and aborts the rest of init()
-           (dashboard theme, hotkeys, Twitch config, etc. would silently stop
-           loading). Safe to delete this input once that line is removed from
-           mp-script.js. -->
-      <input type="hidden" id="inputRedirectUri">
 
-      <div class="field">
-        <label for="inputOBSURL">OBS Browser Source URL</label>
-        <div class="input-group">
-          <input type="text" id="inputOBSURL" readonly>
-          <button type="button" class="icon-btn" id="btnCopyOBSURL" title="Copy URL">
-            <svg class="svg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-            </svg>
-          </button>
-        </div>
-        <div class="hint">Paste this into OBS's Browser Source URL field. Your current layout, colors, and behavior settings are baked directly into this URL — same idea as the Game Box Art overlay — so OBS keeps showing them correctly even though it runs in a separate browser process that can't see this dashboard's live pushes. After you change settings on the Layout &amp; Shapes, Appearance, Metadata, or Behavior tabs, click <strong>Save &amp; Push to Overlay</strong>, copy this URL again, and paste it into OBS (or right-click the source → Refresh cache of current page).</div>
-      </div>
 
       <div class="action-bar">
         <button type="button" class="primary-btn" id="btnConnect">Connect Spotify</button>
@@ -2404,6 +2384,39 @@ body::-webkit-scrollbar {
       <p class="sub">Discord notifications, Twitch chat notifications, song requests, playback controls, documentation, config backup, and keyboard hotkeys all live here.</p>
 
       <div class="section-divider">
+        <h3>OBS Browser Source URL</h3>
+        <div class="sub">Paste this into OBS's Browser Source URL field. After you change settings here, click <strong>Save &amp; Push to Overlay</strong>, copy the URL again, and paste it into OBS (or right-click the source → Refresh cache of current page).</div>
+      </div>
+
+      <div class="field">
+        <div id="obsSourceUrlDisplay" style="
+          display:block;
+          width:100%;
+          padding:10px 14px;
+          background:rgba(0,0,0,0.35);
+          border:1px solid var(--border-soft);
+          border-radius:var(--dash-corner-radius);
+          color:var(--accent-primary);
+          font-family:var(--font-mono);
+          font-size:11px;
+          line-height:1.5;
+          word-break:break-all;
+          white-space:pre-wrap;
+          min-height:42px;
+          margin-bottom:8px;
+          cursor:default;
+          user-select:all;
+        ">—</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="primary-btn" id="btnCopyOBSSource" style="flex-shrink:0;">Copy</button>
+          <span class="hint" id="obsSourceUrlCharCount" style="margin:0;">0 characters</span>
+        </div>
+        <div class="hint" id="obsSourceUrlTokenWarn" style="display:none;margin-top:8px;color:var(--accent-tertiary);">
+          ⚠ This URL contains your OAuth token in plain text. Don't share it or post it publicly.
+        </div>
+      </div>
+
+      <div class="section-divider">
         <h3>Documentation</h3>
       </div>
 
@@ -2910,29 +2923,16 @@ body::-webkit-scrollbar {
 
 <script src="mp-script.js"></script>
 <script>
-  // Wires up the OBS Browser Source URL field added to the Connection tab.
-  // Deliberately kept out of mp-script.js — everything here just calls
-  // functions/elements that file already defines (buildOverlayUrlWithConfig,
-  // getRedirectUri, btnSave, config, showToast).
+  // Populate the Redirect URI hint in the Connection tab once mp-script.js
+  // has loaded (getRedirectUri is defined there).
   (function(){
-    function refreshObsUrl(){
-      var obsInput = document.getElementById('inputOBSURL');
-      if (obsInput && typeof buildOverlayUrlWithConfig === 'function') {
-        obsInput.value = buildOverlayUrlWithConfig();
-      }
-    }
-    refreshObsUrl();
-
     var hintEl = document.getElementById('hintRedirectUri');
     if (hintEl && typeof getRedirectUri === 'function') {
       hintEl.textContent = getRedirectUri();
     }
-
-    // Keep the OBS URL current with whatever was just saved & pushed,
-    // so re-copying it into OBS after a settings change actually carries
-    // the new settings.
-    var saveBtn = document.getElementById('btnSave');
-    if (saveBtn) saveBtn.addEventListener('click', refreshObsUrl);
+    // The OBS Browser Source URL display in the Settings tab is fully managed
+    // by updateOBSSourceUrlDisplay() in mp-script.js — called on init and
+    // after every Save. Nothing extra needed here.
   })();
 </script>
 
