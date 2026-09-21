@@ -235,25 +235,27 @@ document.getElementById('btnToggleClientId').addEventListener('click', ()=>{
   }
 });
 
-// Returns the REAL current origin — used for the OBS Browser Source URL so
-// that when the dashboard runs inside Electron on http://127.0.0.1:17650
-// the generated URL points at the local server, not the production domain.
-// (getEffectiveOrigin is kept for Spotify auth only, which always needs the
-// production domain because that is what is registered in the Spotify app.)
-function getActualOrigin(){
-  const o = window.location.origin;
-  // file:// and 'null' origins (rare edge cases) fall back to production
-  if(!o || o === 'null' || o.startsWith('file://')) return PRODUCTION_ORIGIN;
-  return o;
+const ELECTRON_ORIGIN = 'http://127.0.0.1:17650';
+
+function isElectronDashboard(){
+  return window.location.origin === ELECTRON_ORIGIN;
+}
+
+// Overlay links only ever target the Electron server or the deployed website.
+// This prevents a Live Server address such as http://127.0.0.1:5500 from being
+// copied into OBS, where relay-auth.js and the local relay do not exist.
+function getOverlayBaseUrl(){
+  return isElectronDashboard()
+    ? ELECTRON_ORIGIN + '/app/music-player.html'
+    : PRODUCTION_ORIGIN + '/music-player.html';
 }
 
 function buildOverlayUrlWithConfig(){
-  readFormIntoConfig(); // ensure config is current before encoding
+  readFormIntoConfig();
   const configJson = JSON.stringify(config);
   const base64Cfg = btoa(unescape(encodeURIComponent(configJson)));
-  return `${getActualOrigin()}/app/music-player.html?cfg=${base64Cfg}`;
+  return `${getOverlayBaseUrl()}?cfg=${base64Cfg}`;
 }
-
 
 // ==========================================
 // SPOTIFY CURRENT TRACK FETCHER
@@ -2457,7 +2459,7 @@ function pushLivePreview(){const frame = document.getElementById('previewFrame')
 
 // Plain URL without config — used as a base reference only.
 // For the copy-to-clipboard OBS URL always use buildOverlayUrlWithConfig() instead.
-function getOBSUrl(){ return getActualOrigin() + '/app/music-player.html'; }
+function getOBSUrl(){ return getOverlayBaseUrl(); }
 
 // ── OBS Source URL display (Settings tab) ─────────────────────────────────────
 // Builds the full URL (with encoded config) and populates the read-only display
