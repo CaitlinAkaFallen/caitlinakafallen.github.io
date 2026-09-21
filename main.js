@@ -5,6 +5,7 @@ const fs = require('fs');
 const WebSocket = require('ws');
 
 const PORT = 17650;
+const APP_URL_PREFIX = '/app/';
 const DASHBOARD_FILE = 'music-player-dashboard.html';
 const DASHBOARD_URL = `http://127.0.0.1:${PORT}/${DASHBOARD_FILE}`;
 const SPLASH_FILE = 'boot-musicplayer.html';
@@ -91,9 +92,10 @@ function createServer() {
     server = http.createServer((req, res) => {
       let reqPath = decodeURIComponent(req.url.split('?')[0]);
       if (reqPath === '/') reqPath = `/${DASHBOARD_FILE}`;
-      // Allow URLs that include the /app/ folder prefix (e.g. /app/music-player.html),
-      // since the server root is already the app/ folder. Both URL styles resolve to the same file.
-      if (reqPath.startsWith('/app/')) reqPath = reqPath.slice(4);
+      // The Electron overlay uses /app/music-player.html while the files are
+      // physically rooted in app/. Keep this explicit so the local overlay URL
+      // is http://127.0.0.1:17650/app/music-player.html.
+      if (reqPath.startsWith(APP_URL_PREFIX)) reqPath = '/' + reqPath.slice(APP_URL_PREFIX.length);
       const filePath = path.join(root, reqPath);
 
       if (!filePath.startsWith(root)) {
