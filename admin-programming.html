@@ -1,183 +1,247 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | Caitlin's Programming</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | Caitlin's Programming</title>
+  <meta name="description" content="Manage announcements and release notes for Caitlin's Programming.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#06061a">
 
-    <!-- Open Graph Meta Tags (Social Discovery) -->
-    <meta property="og:title" content="Programming & Automation | Caitlin's Creative Space">
-    <meta property="og:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
-    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
-    <meta property="og:url" content="https://caitlinscreativespace.xyz/programming.html">
-    <meta property="og:type" content="website">
+  <!-- Icons & fonts -->
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="coding.css">
+  <link rel="stylesheet" href="admin-coding.css">
 
-    <!-- Twitter / X Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Programming & Automation - Caitlin's Creative Space">
-    <meta name="twitter:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
-    <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
-
-    <!-- Icons and Styles -->
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="admin-coding.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Apply saved theme before first paint (no flash) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      try {
+        var t = localStorage.getItem('ccs-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        d.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
 </head>
 
-<body class="admin-page">
-    <!-- Loading State -->
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="loading-spinner"></div>
-    </div>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
-    <!-- Header -->
-    <header class="site-header">
-        <div class="header-content">
-            <h1>Coding Admin Panel</h1>
-            <p>Manage announcements and project updates live.</p>
-        </div>
-    </header>
+  <!-- Decorative layers -->
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <div class="aurora" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+    <span class="grid-overlay"></span>
+  </div>
 
-    <!-- Horizontal Navigation Bar -->
-    <nav id="horizontal-nav" class="horizontal-nav">
-        <ul class="nav-list">
-            <li>
-                <a id="nav-mainpage" href="main-page.html">
-                    <i class="fas fa-home"></i><span>Main Page</span>
-                </a>
-            </li>
-            <li>
-                <a id="nav-csharp" href="import-to-Streamerbot.html" class="nav-item">
-                    <img src="images/csharp.png" alt="C#" width="24" class="nav-icon">
-                </a>
-            </li>
-            <li>
-                <a id="nav-json" href="json-projects.html" class="nav-item">
-                    <img src="images/json.png" alt="JSON" width="24" class="nav-icon">
-                </a>
-            </li>
-            <li>
-                <a id="nav-coding" href="programming.html" class="active">
-                    <i class="fas fa-code"></i><span>Programming</span>
-                </a>
-            </li>
-            <li>
-                <a id="nav-art" href="viewer-art.html" class="nav-item">
-                    <i class="fas fa-paint-brush"></i><span>Gallery</span>
-                </a>
-            </li>
-            <li>
-                <a id="nav-conventions" href="viewers-convention.html" class="nav-item">
-                    <i class="fas fa-users"></i><span>Conventions</span>
-                </a>
-            </li>
-            <li>
-                <a id="nav-streaming" href="schedule.html" class="nav-item">
-                    <i class="fas fa-video"></i><span>Content</span>
-                </a>
-            </li>
-            <li>
-                <a id="nav-about" href="about.html" class="nav-item">
-                    <i class="fas fa-user"></i><span>About</span>
-                </a>
-            </li>
-            <li>
-                <a id="nav-contact" href="contact.html" class="nav-item">
-                    <i class="fas fa-envelope"></i><span>Contact</span>
-                </a>
-            </li>
+  <div class="loading-overlay" id="loading-overlay" aria-hidden="true">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- ============ Navigation ============ -->
+  <header class="nav" id="site-nav">
+    <div class="nav-inner">
+      <nav aria-label="Primary">
+        <ul class="nav-links" id="nav-links">
+          <li><a id="nav-mainpage" href="main-page.html" data-cmd="Main Page" data-icon="fa-house"><i class="fa-solid fa-house"></i><span>Main Page</span></a></li>
+          <li><a id="nav-csharp" href="import-to-streamerbot.html" data-cmd="C# Scripts" data-icon="fa-hashtag"><img src="images/csharp.png" alt="" width="20" height="20"><span>C#</span></a></li>
+          <li><a id="nav-json" href="json-projects.html" data-cmd="JSON Projects" data-icon="fa-brackets-curly"><img src="images/json.png" alt="" width="20" height="20"><span>JSON</span></a></li>
+          <li><a id="nav-coding" href="programming.html" data-cmd="Programming" data-icon="fa-code"><i class="fa-solid fa-code"></i><span>Programming</span></a></li>
+          <li><a id="nav-streaming" href="schedule.html" data-cmd="Content & Schedule" data-icon="fa-video"><i class="fa-solid fa-video"></i><span>Content</span></a></li>
+          <li><a id="nav-contact" href="contact.html" data-cmd="Contact" data-icon="fa-envelope"><i class="fa-solid fa-envelope"></i><span>Contact</span></a></li>
+          <li><a id="nav-admin" href="admin-programming.html" aria-current="page" data-cmd="Admin Programming" data-icon="fa-lock"><i class="fa-solid fa-lock"></i><span>Admin</span></a></li>
         </ul>
-    </nav>
+      </nav>
 
-    <main class="content-wrapper">
-        <section class="announcements-section">
-            <h2>Announcements Manager</h2>
-
-            <!-- Toggle Buttons -->
-            <div class="announcement-toggle" style="text-align:center; margin-bottom:20px;">
-                <button id="normal-announcements-btn" class="active-toggle">Normal</button>
-                <button id="release-announcements-btn">Releases</button>
-            </div>
-
-            <!-- Announcement Form -->
-            <div class="announcement-form-container">
-                <form id="announcement-form">
-                    <div class="form-group">
-                        <label for="announcement-title">Title</label>
-                        <input type="text" id="announcement-title" name="title" placeholder="Enter title" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="announcement-link">Project Link</label>
-                        <input type="url" id="announcement-link" name="link" placeholder="https://caitlinscreativespace.xyz/project">
-                    </div>
-
-                    <div class="form-group release-only" style="display:none;">
-                        <label for="announcement-version">Version</label>
-                        <input type="text" id="announcement-version" name="version" placeholder="e.g., 1.0.0">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="announcement-notes">Notes</label>
-                        <textarea id="announcement-notes" name="notes" placeholder="Details..." rows="4"></textarea>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" id="add-announcement-btn">Add Announcement</button>
-                        <button type="button" id="edit-announcement-btn" class="hidden">Update</button>
-                        <button type="button" id="delete-announcement" class="btn secondary danger hidden">Delete Selected</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Announcement Lists -->
-            <div class="announcement-list-container">
-                <div class="normal-announcements-container">
-                    <h3>Normal Announcements</h3>
-                    <ul id="normal-announcements-list" class="announcement-list" aria-live="polite"></ul>
-                </div>
-
-                <div class="release-announcements-container">
-                    <h3>Release Announcements</h3>
-                    <ul id="release-announcements-list" class="announcement-list" aria-live="polite"></ul>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="site-footer">
-        <div class="footer-content">
-            <p>&copy; 2026 Caitlin's Creative Space | All Rights Reserved</p>
-            <div class="footer-links">
-                <a href="#" id="open-privacy">Privacy Policy</a>
-                <a href="#" id="open-tos">Terms of Service</a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Modals -->
-    <div id="tos-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Terms of Service</h2>
-            <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
-            <!-- Content shortened for brevity -->
-            <p><strong>Last updated: March 2026</strong></p>
-        </div>
+      <div class="nav-actions">
+        <button class="cmd-trigger" id="open-palette" type="button" aria-label="Open command menu">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Quick jump</span>
+          <kbd>Ctrl K</kbd>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle light and dark theme" aria-pressed="false">
+          <i class="fa-solid fa-moon icon-moon"></i>
+          <i class="fa-solid fa-sun icon-sun"></i>
+        </button>
+        <button class="icon-btn nav-burger" id="nav-burger" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-links">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
     </div>
+  </header>
 
-    <div id="privacy-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Privacy Policy</h2>
-            <p>This policy describes how we handle information obtained about visitors to caitlinscreativespace.xyz.</p>
-            <p><strong>Last updated: March 2026</strong></p>
+  <main id="main-content">
+    <!-- ============ Hero ============ -->
+    <section class="hero container hero-admin" aria-labelledby="hero-title">
+      <span class="eyebrow"><span class="pulse-dot"></span> Admin panel</span>
+      <h1 id="hero-title"><span class="grad-text">Admin</span></h1>
+      <p class="lead">Manage announcements and project updates live.</p>
+
+      <div class="stats">
+        <div class="stat spot">
+          <span class="stat-icon"><i class="fa-solid fa-bullhorn"></i></span>
+          <div><strong id="stat-total">0</strong><span>Announcements</span></div>
         </div>
-    </div>
+        <div class="stat spot">
+          <span class="stat-icon"><i class="fa-solid fa-rocket"></i></span>
+          <div><strong id="stat-release">0</strong><span>Releases</span></div>
+        </div>
+        <div class="stat spot">
+          <span class="stat-icon"><i class="fa-solid fa-tag"></i></span>
+          <div><strong id="stat-version">—</strong><span>Latest version</span></div>
+        </div>
+        <div class="stat spot">
+          <span class="stat-icon"><i class="fa-solid fa-clock"></i></span>
+          <div><strong id="stat-sync">—</strong><span>Last synced</span></div>
+        </div>
+      </div>
+    </section>
 
-    <!-- Scripts -->
-    <script src="admin-coding.js"></script>
-    <script src="annoucements.js"></script>
+    <!-- ============ Manager ============ -->
+    <section class="container section" id="manager" aria-labelledby="manager-title">
+      <div class="admin-grid">
+
+        <!-- Editor -->
+        <div class="panel editor" id="editor">
+          <div class="panel-head">
+            <div>
+              <h2 id="editor-title">New announcement</h2>
+              <p class="panel-sub" id="editor-sub">Posts to the Normal tab.</p>
+            </div>
+          </div>
+
+          <form id="announcement-form" novalidate>
+            <div class="field">
+              <label for="announcement-title">Title</label>
+              <input type="text" id="announcement-title" name="title" placeholder="Enter title" autocomplete="off" required>
+            </div>
+
+            <div class="field">
+              <label for="announcement-link">Project link</label>
+              <input type="url" id="announcement-link" name="link" placeholder="https://caitlinscreativespace.xyz/project" autocomplete="off">
+            </div>
+
+            <div class="field release-only" hidden>
+              <label for="announcement-version">Version</label>
+              <input type="text" id="announcement-version" name="version" placeholder="e.g., 1.0.0" autocomplete="off">
+            </div>
+
+            <div class="field">
+              <label for="announcement-notes">Notes</label>
+              <textarea id="announcement-notes" name="notes" placeholder="Details…" rows="5"></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="submit-btn"><i class="fa-solid fa-plus"></i> <span>Add announcement</span></button>
+              <button type="button" class="btn btn-ghost" id="cancel-btn" hidden><i class="fa-solid fa-xmark"></i> Cancel</button>
+              <button type="button" class="btn btn-danger" id="delete-btn" hidden><i class="fa-regular fa-trash-can"></i> Delete</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- List -->
+        <div class="panel" id="announcements">
+          <div class="panel-head">
+            <div>
+              <h2 id="announcement-heading">Normal Announcements</h2>
+              <p class="panel-sub" id="ann-status" aria-live="polite">Loading…</p>
+            </div>
+            <div class="panel-tools">
+              <span class="live-pill" id="live-pill" title="Server connection"><span class="pulse-dot"></span><span id="live-text">Connecting</span></span>
+              <button class="icon-btn" id="ann-refresh" type="button" aria-label="Reload from server" title="Reload from server (R)">
+                <i class="fa-solid fa-rotate"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <div class="seg" id="ann-seg" data-active="normal" role="tablist" aria-label="Announcement type">
+              <span class="seg-thumb" aria-hidden="true"></span>
+              <button id="normal-announcements-btn" class="active-toggle" type="button" role="tab" aria-selected="true" aria-controls="announcement-list" data-tab="normal">
+                <i class="fa-solid fa-bullhorn"></i> Normal <span class="count" id="count-normal">0</span>
+              </button>
+              <button id="release-announcements-btn" type="button" role="tab" aria-selected="false" aria-controls="announcement-list" data-tab="release">
+                <i class="fa-solid fa-rocket"></i> Releases <span class="count" id="count-release">0</span>
+              </button>
+            </div>
+
+            <div class="search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input id="ann-search" type="search" placeholder="Search title, version or notes…" autocomplete="off" aria-label="Search announcements">
+              <button class="search-clear" id="ann-clear" type="button" aria-label="Clear search" hidden><i class="fa-solid fa-xmark"></i></button>
+              <kbd class="search-kbd" aria-hidden="true">/</kbd>
+            </div>
+          </div>
+
+          <ul id="announcement-list" class="announcement-list" role="tabpanel" aria-live="polite"></ul>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ Footer ============ -->
+  <footer class="site-footer">
+    <div class="footer-content container">
+      <p>&copy;<span id="year">2026</span> Caitlin's Creative Space | All Rights Reserved</p>
+      <div class="footer-links">
+        <a href="#" id="open-privacy">Privacy Policy</a>
+        <a href="#" id="open-tos">Terms of Service</a>
+        <span class="footer-hint"><kbd>Ctrl K</kbd> quick jump · <kbd>/</kbd> search · <kbd>1</kbd> <kbd>2</kbd> tabs · <kbd>N</kbd> new</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ Terms of Service ============ -->
+  <div id="tos-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="tos-title" aria-hidden="true">
+    <div class="modal-content" tabindex="-1">
+      <button class="close" type="button" aria-label="Close">&times;</button>
+      <h2 id="tos-title">Terms of Service</h2>
+      <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
+      <p><strong>Last updated: March 2026</strong></p>
+    </div>
+  </div>
+
+  <!-- ============ Privacy Policy ============ -->
+  <div id="privacy-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="privacy-title" aria-hidden="true">
+    <div class="modal-content" tabindex="-1">
+      <button class="close" type="button" aria-label="Close">&times;</button>
+      <h2 id="privacy-title">Privacy Policy</h2>
+      <p>This policy describes how we handle information obtained about visitors to caitlinscreativespace.xyz.</p>
+      <p><strong>Last updated: March 2026</strong></p>
+    </div>
+  </div>
+
+  <!-- ============ Command palette ============ -->
+  <div id="palette" class="modal palette-modal" role="dialog" aria-modal="true" aria-label="Quick jump" aria-hidden="true">
+    <div class="palette" tabindex="-1">
+      <div class="palette-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="palette-input" type="text" placeholder="Jump to a page or run an action…" autocomplete="off" spellcheck="false"
+          role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list">
+        <kbd>Esc</kbd>
+      </div>
+      <ul id="palette-list" class="palette-list" role="listbox" aria-label="Commands"></ul>
+      <div class="palette-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>Enter</kbd> select</span></div>
+    </div>
+  </div>
+
+  <!-- Toasts & back-to-top -->
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  <button class="to-top" id="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+  <script src="admin-coding.js"></script>
 </body>
+
 </html>
