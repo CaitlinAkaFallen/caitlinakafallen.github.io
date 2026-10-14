@@ -1,196 +1,326 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Caitlin's Programming</title>
-      <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
-      <meta property="og:title" content="Programming & Automation | Caitlin's Creative Space">
-      <meta property="og:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
-      <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
-      <meta property="og:url" content="https://caitlinscreativespace.xyz/programming.html">
-      <meta property="og:type" content="website">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caitlin's Programming</title>
+  <meta name="description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
+  <meta name="theme-color" content="#06061a">
 
-      <!-- Twitter / X Card -->
-      <meta name="twitter:card" content="summary_large_image">
-      <meta name="twitter:title" content="Programming & Automation - Caitlin's Creative Space">
-      <meta name="twitter:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
-      <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
+  <!-- Open Graph (Facebook, Discord, LinkedIn, Instagram) -->
+  <meta property="og:title" content="Programming & Automation | Caitlin's Creative Space">
+  <meta property="og:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
+  <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
+  <meta property="og:url" content="https://caitlinscreativespace.xyz/programming.html">
+  <meta property="og:type" content="website">
 
-      <!-- Instagram / General Redirects -->
-      <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
-      <meta property="og:url" content="https://caitlinscreativespace.xyz/programming.html">
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Programming & Automation - Caitlin's Creative Space">
+  <meta name="twitter:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools.">
+  <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-programming.jpg">
 
-      <!-- Icons and Styles -->
-      <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
-      <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet"/>
-      <link rel="stylesheet" href="coding.css">
-  </head>
+  <!-- Icons & fonts -->
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="coding.css">
 
-  <body>
-      <div class="loading-overlay" id="loading-overlay">
-          <div class="loading-spinner"></div>
-      </div>
+  <!-- Apply saved theme before first paint (no flash) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      try {
+        var t = localStorage.getItem('ccs-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        d.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+</head>
 
-      <header class="site-header">
-          <div class="header-content">
-              <h1>Coding</h1>
-              <p>Explore various programming languages and projects.</p>
-          </div>
-      </header>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
-      <!-- Horizontal Navigation Bar -->
-        <nav id="horizontal-nav" class="horizontal-nav">
-          <ul class="nav-list">
-            <li>
-              <a id="nav-mainpage" href="main-page.html">
-                <i class="fas fa-home"></i><span>Main Page</span>
-              </a>
-            </li>
-            <li>
-              <a id="nav-csharp" href="import-to-streamerbot.html" class="nav-item">
-                <img src="images/csharp.png" alt="C# Icon" width="24" class="nav-icon">
-              </a>
-            </li>
-            <li>
-              <a id="nav-json" href="json-projects.html" class="nav-item">
-              <img src="images/json.png" alt="JSON Icon" width="24" class="nav-icon">
-              </a>
-            </li>
-            <li>
-              <a id="nav-streamerbot" href="https://streamer.bot/" class="nav-item">
-                <img src="images/streamer-bot.png" alt="Streamer.Bot" width="24" class="nav-icon">
-              </a>
-            </li>
-            <li>
-              <a id="nav-vscode" href="https://code.visualstudio.com/download" class="nav-item">
-                <img src="images/vscode.png" alt="VS Code" width="24" class="nav-icon">
-              </a>
-            </li>
-            	<li>
-                  <a id="nav-coding" href="admin-programming.html">
-                    <i class="fas fa-lock"></i><span>Programming</span>
-                  </a>
-                </li>
-            <li>
-              <a id="nav-streaming" href="schedule.html" class="nav-item">
-                <i class="fas fa-video"></i><span>Content</span>
-              </a>
-            </li>
-            <li>
-              <a id="nav-contact" href="contact.html" class="nav-item">
-                <i class="fas fa-envelope"></i><span>Contact</span>
-              </a>
-            </li>
-
-          </ul>
-    </nav>
-  <div class="announcement-toggle">
-      <section class="announcements-section">
-          <div class="announcement-toggle-buttons">
-              <button id="normal-announcements-btn" class="active-toggle">Normal Announcements</button>
-              <button id="release-announcements-btn">Release Announcements</button>
-          </div>
-
-          <div class="announcement-list-container">
-              <h3 id="announcement-heading">Normal Announcements</h3>
-              <ul id="announcement-list" class="announcement-list" aria-live="polite">
-                  <!-- Announcements will load here -->
-              </ul>
-          </div>
-      </section>
+  <!-- Decorative layers -->
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <div class="aurora" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+    <span class="grid-overlay"></span>
   </div>
 
-    <footer class="site-footer">
-      <div class="footer-content">
-          <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
-          <div class="footer-links">
-              <a href="#" id="open-privacy">Privacy Policy</a>
-              <a href="#" id="open-tos">Terms of Service</a>
+  <div class="loading-overlay" id="loading-overlay" aria-hidden="true">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- ============ Navigation ============ -->
+  <header class="nav" id="site-nav">
+    <div class="nav-inner">
+      <a class="brand" href="main-page.html" aria-label="Caitlin's Creative Space – Main page">
+        <span class="brand-mark"><i class="fa-solid fa-code"></i></span>
+        <span class="brand-text">Caitlin<span class="brand-dim">'s Programming</span></span>
+      </a>
+
+      <nav aria-label="Primary">
+        <ul class="nav-links" id="nav-links">
+          <li><a id="nav-mainpage" href="main-page.html" data-cmd="Main Page" data-icon="fa-house"><i class="fa-solid fa-house"></i><span>Main Page</span></a></li>
+          <li><a id="nav-csharp" href="import-to-streamerbot.html" data-cmd="C# Scripts" data-icon="fa-hashtag"><img src="images/csharp.png" alt="" width="20" height="20"><span>C#</span></a></li>
+          <li><a id="nav-json" href="json-projects.html" data-cmd="JSON Projects" data-icon="fa-brackets-curly"><img src="images/json.png" alt="" width="20" height="20"><span>JSON</span></a></li>
+          <li><a id="nav-streaming" href="schedule.html" data-cmd="Content & Schedule" data-icon="fa-video"><i class="fa-solid fa-video"></i><span>Content</span></a></li>
+          <li><a id="nav-contact" href="contact.html" data-cmd="Contact" data-icon="fa-envelope"><i class="fa-solid fa-envelope"></i><span>Contact</span></a></li>
+          <li><a id="nav-coding" href="admin-programming.html" data-cmd="Admin Programming" data-icon="fa-lock"><i class="fa-solid fa-lock"></i><span>Admin</span></a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="cmd-trigger" id="open-palette" type="button" aria-label="Open command menu">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Quick jump</span>
+          <kbd>Ctrl K</kbd>
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle light and dark theme" aria-pressed="false">
+          <i class="fa-solid fa-moon icon-moon"></i>
+          <i class="fa-solid fa-sun icon-sun"></i>
+        </button>
+        <button class="icon-btn nav-burger" id="nav-burger" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-links">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- ============ Hero ============ -->
+    <section class="hero container" aria-labelledby="hero-title">
+      <span class="eyebrow" data-reveal><span class="pulse-dot"></span> Programming hub</span>
+      <h1 id="hero-title" data-reveal><span class="grad-text">Coding</span></h1>
+      <p class="lead" data-reveal>Explore various programming languages and projects.</p>
+      <p class="rotator-line" data-reveal>Building <span class="rotator" id="rotator">custom web experiences</span></p>
+
+      <div class="hero-actions" data-reveal>
+        <a class="btn btn-primary" href="#announcements"><i class="fa-solid fa-bullhorn"></i> Latest announcements</a>
+        <button class="btn btn-ghost" type="button" id="hero-palette"><i class="fa-solid fa-bolt"></i> Quick jump</button>
+      </div>
+
+      <div class="stats" data-reveal>
+        <div class="stat spot">
+          <span class="stat-icon"><i class="fa-solid fa-bullhorn"></i></span>
+          <div><strong id="stat-total">0</strong><span>Announcements</span></div>
+        </div>
+        <div class="stat spot">
+          <span class="stat-icon"><i class="fa-solid fa-rocket"></i></span>
+          <div><strong id="stat-release">0</strong><span>Releases</span></div>
+        </div>
+        <div class="stat spot">
+          <span class="stat-icon"><i class="fa-solid fa-tag"></i></span>
+          <div><strong id="stat-version">—</strong><span>Latest version</span></div>
+        </div>
+        <div class="stat spot">
+          <span class="stat-icon"><i class="fa-solid fa-clock"></i></span>
+          <div><strong id="stat-sync">—</strong><span>Last synced</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Tools ============ -->
+    <section class="container section" aria-labelledby="tools-title">
+      <div class="section-head" data-reveal>
+        <h2 id="tools-title">Tools &amp; resources</h2>
+        <p>Jump straight into the stack behind the projects.</p>
+      </div>
+      <div class="tools">
+        <a class="tool spot" href="import-to-streamerbot.html" data-cmd="C# Scripts for Streamer.bot" data-icon="fa-hashtag" data-reveal>
+          <span class="tool-icon"><img src="images/csharp.png" alt="" width="28" height="28"></span>
+          <span class="tool-body"><strong>C# Scripts</strong><small>Import-ready actions for Streamer.bot</small></span>
+          <i class="fa-solid fa-arrow-right tool-arrow"></i>
+        </a>
+        <a class="tool spot" href="json-projects.html" data-cmd="JSON Projects" data-icon="fa-brackets-curly" data-reveal>
+          <span class="tool-icon"><img src="images/json.png" alt="" width="28" height="28"></span>
+          <span class="tool-body"><strong>JSON Projects</strong><small>Configs, overlays and data files</small></span>
+          <i class="fa-solid fa-arrow-right tool-arrow"></i>
+        </a>
+        <a class="tool spot" href="https://streamer.bot/" target="_blank" rel="noopener noreferrer" data-cmd="Streamer.bot (official site)" data-icon="fa-robot" data-reveal>
+          <span class="tool-icon"><img src="images/streamer-bot.png" alt="" width="28" height="28"></span>
+          <span class="tool-body"><strong>Streamer.bot</strong><small>Official site <i class="fa-solid fa-arrow-up-right-from-square"></i></small></span>
+          <i class="fa-solid fa-arrow-right tool-arrow"></i>
+        </a>
+        <a class="tool spot" href="https://code.visualstudio.com/download" target="_blank" rel="noopener noreferrer" data-cmd="Download VS Code" data-icon="fa-download" data-reveal>
+          <span class="tool-icon"><img src="images/vscode.png" alt="" width="28" height="28"></span>
+          <span class="tool-body"><strong>VS Code</strong><small>Download the editor <i class="fa-solid fa-arrow-up-right-from-square"></i></small></span>
+          <i class="fa-solid fa-arrow-right tool-arrow"></i>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============ Announcements ============ -->
+    <section class="container section" id="announcements" aria-labelledby="announcement-heading">
+      <div class="panel" data-reveal>
+        <div class="panel-head">
+          <div>
+            <h2 id="announcement-heading">Normal Announcements</h2>
+            <p class="panel-sub" id="ann-status" aria-live="polite">Loading…</p>
           </div>
+          <div class="panel-tools">
+            <span class="live-pill" id="live-pill" title="Auto-refresh status"><span class="pulse-dot"></span><span id="live-text">Live</span></span>
+            <button class="icon-btn" id="ann-auto" type="button" aria-pressed="true" aria-label="Pause auto-refresh" title="Pause / resume auto-refresh">
+              <i class="fa-solid fa-pause"></i>
+            </button>
+            <button class="icon-btn" id="ann-refresh" type="button" aria-label="Refresh announcements" title="Refresh (R)">
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="seg" id="ann-seg" data-active="normal" role="tablist" aria-label="Announcement type">
+            <span class="seg-thumb" aria-hidden="true"></span>
+            <button id="normal-announcements-btn" class="active-toggle" type="button" role="tab" aria-selected="true" aria-controls="announcement-list" data-tab="normal">
+              <i class="fa-solid fa-bullhorn"></i> Normal <span class="count" id="count-normal">0</span>
+            </button>
+            <button id="release-announcements-btn" type="button" role="tab" aria-selected="false" aria-controls="announcement-list" data-tab="release">
+              <i class="fa-solid fa-rocket"></i> Releases <span class="count" id="count-release">0</span>
+            </button>
+          </div>
+
+          <div class="search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="ann-search" type="search" placeholder="Search title, version or notes…" autocomplete="off" aria-label="Search announcements">
+            <button class="search-clear" id="ann-clear" type="button" aria-label="Clear search" hidden><i class="fa-solid fa-xmark"></i></button>
+            <kbd class="search-kbd" aria-hidden="true">/</kbd>
+          </div>
+
+          <label class="select">
+            <span class="sr-only">Sort announcements</span>
+            <i class="fa-solid fa-arrow-down-wide-short"></i>
+            <select id="ann-sort">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="az">A – Z</option>
+            </select>
+          </label>
+        </div>
+
+        <ul id="announcement-list" class="announcement-list" role="tabpanel" aria-live="polite">
+          <!-- Announcements load here -->
+        </ul>
       </div>
-    </footer>
+    </section>
+  </main>
 
-  <!-- Terms of Service Glassy Modal -->
-  <div id="tos-modal" class="modal">
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <h2>Terms of Service</h2>
-          <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
-
-          <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
-
-          <h3>Changes to Terms</h3>
-          <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
-
-          <h3>Use of Website</h3>
-          <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
-          <ul>
-              <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
-              <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
-              <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
-          </ul>
-
-          <h3>Intellectual Property</h3>
-          <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
-
-          <h3>Links to Other Websites</h3>
-          <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
-
-          <h3>Disclaimer</h3>
-          <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
-
-          <h3>Governing Law</h3>
-          <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
-
-          <p><strong>Effective Date: August 13, 2025</strong></p>
+  <!-- ============ Footer ============ -->
+  <footer class="site-footer">
+    <div class="footer-content container">
+      <p>&copy;<span id="year">2026</span> Caitlin's Creative Space | All Rights Reserved</p>
+      <div class="footer-links">
+        <a href="#" id="open-privacy">Privacy Policy</a>
+        <a href="#" id="open-tos">Terms of Service</a>
+        <span class="footer-hint"><kbd>Ctrl K</kbd> quick jump · <kbd>/</kbd> search · <kbd>1</kbd> <kbd>2</kbd> tabs</span>
       </div>
+    </div>
+  </footer>
+
+  <!-- ============ Terms of Service ============ -->
+  <div id="tos-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="tos-title" aria-hidden="true">
+    <div class="modal-content" tabindex="-1">
+      <button class="close" type="button" aria-label="Close">&times;</button>
+      <h2 id="tos-title">Terms of Service</h2>
+      <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
+
+      <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
+
+      <h3>Changes to Terms</h3>
+      <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
+
+      <h3>Use of Website</h3>
+      <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
+      <ul>
+        <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
+        <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
+        <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
+      </ul>
+
+      <h3>Intellectual Property</h3>
+      <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
+
+      <h3>Links to Other Websites</h3>
+      <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+
+      <h3>Disclaimer</h3>
+      <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
+
+      <h3>Governing Law</h3>
+      <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
+
+      <p><strong>Effective Date: August 13, 2025</strong></p>
+    </div>
   </div>
 
-  <!-- Privacy Policy Glassy Modal -->
-  <div id="privacy-modal" class="modal">
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <h2>Privacy Policy</h2>
+  <!-- ============ Privacy Policy ============ -->
+  <div id="privacy-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="privacy-title" aria-hidden="true">
+    <div class="modal-content" tabindex="-1">
+      <button class="close" type="button" aria-label="Close">&times;</button>
+      <h2 id="privacy-title">Privacy Policy</h2>
 
-          <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
+      <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
 
-          <h3>Information We Collect</h3>
-          <p>We collect information about you directly from you and automatically through your use of our Website.</p>
-          <h4>Information We Collect Directly From You:</h4>
-          <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
-          <h4>Information We Collect Automatically:</h4>
-          <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
+      <h3>Information We Collect</h3>
+      <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+      <h4>Information We Collect Directly From You:</h4>
+      <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+      <h4>Information We Collect Automatically:</h4>
+      <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
 
-          <h3>How We Use Your Information</h3>
-          <ul>
-              <li>Provide and maintain our Website and its features.</li>
-              <li>Improve our Website and develop new features.</li>
-              <li>Communicate with you about services and updates.</li>
-              <li>Analyze how users interact with our Website.</li>
-          </ul>
+      <h3>How We Use Your Information</h3>
+      <ul>
+        <li>Provide and maintain our Website and its features.</li>
+        <li>Improve our Website and develop new features.</li>
+        <li>Communicate with you about services and updates.</li>
+        <li>Analyze how users interact with our Website.</li>
+      </ul>
 
-          <h3>Disclosure of Your Information</h3>
-          <ul>
-              <li>With your consent.</li>
-              <li>To comply with legal obligations.</li>
-              <li>To protect our rights and property.</li>
-          </ul>
+      <h3>Disclosure of Your Information</h3>
+      <ul>
+        <li>With your consent.</li>
+        <li>To comply with legal obligations.</li>
+        <li>To protect our rights and property.</li>
+      </ul>
 
-          <h3>Data Security</h3>
-          <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
+      <h3>Data Security</h3>
+      <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
 
-          <h3>Changes to This Policy</h3>
-          <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
+      <h3>Changes to This Policy</h3>
+      <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
 
-          <p><strong>Last updated: August 13, 2025</strong></p>
-      </div>
+      <p><strong>Last updated: August 13, 2025</strong></p>
+    </div>
   </div>
 
+  <!-- ============ Command palette ============ -->
+  <div id="palette" class="modal palette-modal" role="dialog" aria-modal="true" aria-label="Quick jump" aria-hidden="true">
+    <div class="palette" tabindex="-1">
+      <div class="palette-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="palette-input" type="text" placeholder="Jump to a page or run an action…" autocomplete="off" spellcheck="false"
+          role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list">
+        <kbd>Esc</kbd>
+      </div>
+      <ul id="palette-list" class="palette-list" role="listbox" aria-label="Commands"></ul>
+      <div class="palette-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>Enter</kbd> select</span></div>
+    </div>
+  </div>
 
+  <!-- Toasts & back-to-top -->
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  <button class="to-top" id="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
 
-      <script src="coding.js"></script>
+  <script src="coding.js"></script>
+</body>
 
-  </body>
+</html>
