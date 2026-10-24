@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OBS Widget Downloads | Caitlin's Creative Space</title>
+<meta name="description" content="Custom automation and tools for your stream." />
+<meta property="og:title" content="OBS Widget Downloads | Caitlin's Creative Space" />
+<meta property="og:description" content="Custom automation and tools for your stream." />
+<meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-obswidgets.jpg" />
+<meta property="og:url" content="https://caitlinscreativespace.xyz/json-projects.html" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="OBS Widget Downloads | Caitlin's Creative Space" />
+<meta name="twitter:description" content="Custom automation and tools for your stream." />
+<meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-obswidgets.jpg" />
+
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<style>
+  :root {
+    --cyan: #32f2f8;
+    --cyan-2: #04eeff;
+    --magenta: #be2edd;
+    --violet: #490eee;
+    --ink: #f1f0fb;
+    --muted: #a7a4c7;
+    --glass: rgba(255, 255, 255, 0.045);
+    --glass-strong: rgba(14, 10, 30, 0.72);
+    --line: rgba(255, 255, 255, 0.1);
+    --radius: 20px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+    --top: 70px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(145deg, #0f0c29, #302b63 55%, #24243e);
+    background-attachment: fixed;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: -20%; z-index: -2; pointer-events: none;
+    background:
+      radial-gradient(40% 35% at 12% 18%, rgba(50, 242, 248, .14), transparent 60%),
+      radial-gradient(35% 30% at 88% 14%, rgba(190, 46, 221, .22), transparent 60%),
+      radial-gradient(45% 40% at 60% 95%, rgba(73, 14, 238, .22), transparent 60%);
+    filter: blur(40px);
+    animation: drift 24s ease-in-out infinite alternate;
+  }
+  @keyframes drift { to { transform: translate3d(3%, -2%, 0) scale(1.05); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes scan { from { background-position: 0 0; } to { background-position: 0 40px; } }
+  @keyframes ping {
+    0% { box-shadow: 0 0 0 0 rgba(50,242,248,.6); }
+    70% { box-shadow: 0 0 0 8px rgba(50,242,248,0); }
+    100% { box-shadow: 0 0 0 0 rgba(50,242,248,0); }
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--top);
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 0 16px;
+    background: var(--glass-strong);
+    backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; white-space: nowrap; }
+  .brand .logo {
+    width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--magenta), var(--cyan)); box-shadow: 0 6px 18px rgba(50,242,248,.3);
+    font-family: "Orbitron", sans-serif; font-weight: 800; font-size: .9rem; color: #0a0816;
+  }
+  .brand .name { font-family: "Orbitron", sans-serif; font-weight: 800; font-size: .92rem; letter-spacing: .04em; }
+  .brand .name em { font-style: normal; color: var(--cyan); }
+  .nav-scroll { min-width: 0; overflow-x: auto; scrollbar-width: none; mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); }
+  .nav-scroll::-webkit-scrollbar { display: none; }
+  .nav { display: flex; gap: 4px; padding: 5px; width: max-content; margin: 0 auto; border-radius: 999px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+  .nav a {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 999px;
+    color: var(--muted); text-decoration: none; font-size: .86rem; font-weight: 600; white-space: nowrap;
+    transition: color .25s, background .25s, transform .25s var(--ease);
+  }
+  .nav a i { font-size: 16px; width: 18px; text-align: center; }
+  .nav a:hover { color: #fff; background: rgba(255,255,255,.08); transform: translateY(-1px); }
+  .nav a[aria-current="page"] { color: #fff; background: linear-gradient(135deg, rgba(190,46,221,.55), rgba(50,242,248,.3)); box-shadow: 0 0 18px rgba(190,46,221,.3); }
+
+  /* ---------- Hero ---------- */
+  main { max-width: 1100px; margin: 0 auto; padding: calc(var(--top) + 22px) 16px 40px; }
+  .hero {
+    position: relative; overflow: hidden; border-radius: 28px; text-align: center;
+    padding: 64px 24px 56px; min-height: 340px; display: grid; place-items: center;
+    background: radial-gradient(circle at center, #1e0b36 0%, #0a0a0a 100%);
+    border: 1px solid rgba(50,242,248,.35);
+    box-shadow: 0 30px 60px rgba(0,0,0,.5), inset 0 0 60px rgba(50,242,248,.06);
+    animation: rise .8s var(--ease) both;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(50,242,248,.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(50,242,248,.12) 1px, transparent 1px);
+    background-size: 40px 40px;
+    -webkit-mask-image: radial-gradient(circle, black 30%, transparent 85%);
+    mask-image: radial-gradient(circle, black 30%, transparent 85%);
+    animation: scan 6s linear infinite;
+  }
+  .hero::after {
+    content: ""; position: absolute; width: 120%; height: 120%; left: -10%; top: -10%; z-index: 0; pointer-events: none;
+    background: radial-gradient(circle at center, rgba(190,46,221,.28) 0%, transparent 60%);
+    filter: blur(40px);
+  }
+  .hero-inner { position: relative; z-index: 1; }
+  .eyebrow { font-family: "Fira Code", monospace; font-size: .76rem; letter-spacing: .3em; text-transform: uppercase; color: var(--cyan); }
+  .hero h1 {
+    margin: 12px 0 0; font-family: "Orbitron", sans-serif; font-weight: 900; text-transform: uppercase;
+    font-size: clamp(2.2rem, 6.5vw, 4rem); line-height: 1.05; letter-spacing: 2px;
+    background: linear-gradient(to bottom, #fff 20%, var(--cyan) 55%, var(--magenta) 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(50,242,248,.6)) drop-shadow(0 0 30px rgba(190,46,221,.45));
+  }
+  .hero .sub {
+    margin: 16px 0 0; text-transform: uppercase; letter-spacing: 5px; font-size: .82rem; font-weight: 600; color: #fff;
+    text-shadow: 0 0 8px rgba(255,255,255,.4);
+  }
+  .banner-line { width: 160px; height: 3px; margin: 22px auto 0; background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent); box-shadow: 0 0 15px var(--cyan); border-radius: 3px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 24px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; font-size: .82rem; font-weight: 600;
+    background: rgba(0,0,0,.45); border: 1px solid rgba(50,242,248,.3); color: #d9fbff; backdrop-filter: blur(8px);
+  }
+  .chip .d { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); animation: ping 2s infinite; }
+
+  /* ---------- Section picker (dropdown) ---------- */
+  .picker { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 34px; }
+  .picker label { font-family: "Fira Code", monospace; font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+  .select-wrap { position: relative; width: min(360px, 100%); }
+  #jsonSections {
+    width: 100%; appearance: none; -webkit-appearance: none; cursor: pointer;
+    padding: 14px 46px 14px 18px; border-radius: 14px; font: inherit; font-size: 1rem; font-weight: 600; color: #fff;
+    background: rgba(18, 14, 32, .75); border: 1px solid rgba(50,242,248,.45);
+    box-shadow: 0 10px 28px rgba(0,0,0,.35); backdrop-filter: blur(12px);
+    transition: border-color .25s, box-shadow .25s;
+  }
+  #jsonSections option { background: #161230; color: #fff; }
+  #jsonSections:hover, #jsonSections:focus {
+    border-color: var(--magenta); outline: none;
+    box-shadow: 0 0 0 4px rgba(190,46,221,.15), 0 10px 28px rgba(0,0,0,.35);
+  }
+  .select-wrap .chev {
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%); pointer-events: none;
+    font-size: 15px; color: var(--cyan); transition: transform .3s var(--ease);
+  }
+  .select-wrap:focus-within .chev { transform: translateY(-50%) rotate(180deg); }
+
+  /* ---------- Panels ---------- */
+  .panel { margin-top: 26px; }
+  .panel.active { animation: rise .5s var(--ease); }
+  .panel-title { font-family: "Orbitron", sans-serif; font-size: 1.35rem; letter-spacing: .04em; margin: 0 0 6px; color: var(--cyan); text-shadow: 0 0 10px rgba(50,242,248,.4); text-align: center; }
+  .panel-sub { margin: 0 0 22px; color: var(--muted); text-align: center; }
+
+  .glass { background: var(--glass); border: 1px solid var(--line); border-radius: var(--radius); backdrop-filter: blur(14px) saturate(150%); -webkit-backdrop-filter: blur(14px) saturate(150%); box-shadow: 0 14px 40px rgba(0,0,0,.25); }
+
+  /* Steps */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .step {
+    position: relative; display: grid; grid-template-columns: 52px 1fr; gap: 16px; align-items: start;
+    padding: 18px 20px; border-radius: 18px;
+    background: linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.015));
+    border: 1px solid var(--line); transition: transform .3s var(--ease), border-color .3s;
+  }
+  .step:hover { transform: translateX(4px); border-color: rgba(50,242,248,.4); }
+  .step-num {
+    width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center;
+    font-family: "Orbitron", sans-serif; font-weight: 800; font-size: 1.15rem; color: #0a0816;
+    background: linear-gradient(135deg, var(--cyan), var(--magenta)); box-shadow: 0 0 20px rgba(50,242,248,.35);
+  }
+  .step h3 { margin: 2px 0 6px; font-size: 1rem; color: #fff; }
+  .step p { margin: 0; color: #d6d4ec; line-height: 1.6; }
+  .step a { color: var(--cyan); text-decoration: none; border-bottom: 1px solid rgba(50,242,248,.4); }
+  .step a:hover { color: #fff; border-color: #fff; }
+  .step a i { font-size: 12px; margin-left: 4px; }
+
+  .video-card { margin-top: 22px; padding: 16px; border-radius: 20px; overflow: hidden; }
+  .video-card video { width: 100%; display: block; border-radius: 14px; background: #000; border: 1px solid var(--line); }
+  .video-caption { margin: 12px 4px 4px; color: var(--muted); font-size: .9rem; text-align: center; }
+
+  /* Widgets */
+  .widgets { display: grid; grid-template-columns: minmax(0, 420px); justify-content: center; gap: 18px; }
+  .widget {
+    position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 26px; border-radius: 20px; overflow: hidden;
+    background: linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.015));
+    border: 1px solid var(--line); transition: transform .35s var(--ease), border-color .35s, box-shadow .35s;
+  }
+  .widget::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: linear-gradient(90deg, var(--magenta), var(--cyan)); }
+  .widget:hover { transform: translateY(-5px); border-color: rgba(190,46,221,.5); box-shadow: 0 18px 44px rgba(190,46,221,.15); }
+  .w-ico {
+    width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center;
+    background: rgba(50,242,248,.1); border: 1px solid rgba(50,242,248,.3); color: var(--cyan);
+  }
+  .w-ico i { font-size: 24px; }
+  .widget h3 { margin: 0; font-size: 1.15rem; color: #fff; }
+  .widget p { margin: 0; color: #d6d4ec; font-size: .94rem; line-height: 1.6; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .tag {
+    font-family: "Fira Code", monospace; font-size: .72rem; padding: 4px 9px; border-radius: 8px;
+    color: var(--cyan); background: rgba(50,242,248,.08); border: 1px solid rgba(50,242,248,.25);
+  }
+  .file { font-family: "Fira Code", monospace; font-size: .76rem; color: var(--muted); word-break: break-all; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px; margin-top: 6px;
+    padding: 13px 22px; border: 0; border-radius: 12px; cursor: pointer; font: inherit; font-size: .95rem; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, var(--violet), var(--magenta)); box-shadow: 0 10px 26px rgba(190,46,221,.3);
+    transition: transform .25s var(--ease), box-shadow .25s, filter .25s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(190,46,221,.45); filter: brightness(1.08); }
+  .btn:active { transform: translateY(0); }
+  .btn.done { background: linear-gradient(135deg, #0fb67a, var(--cyan)); color: #03150f; }
+  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: 48px; padding: 22px 24px; border-radius: 22px; text-align: center;
+    background: var(--glass-strong); border: 1px solid var(--line);
+    backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+  .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; color: #cfcde6; font-size: .88rem; }
+  .footer-inner p { margin: 0; }
+  .footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+  .footer-links a { color: var(--cyan); text-decoration: none; transition: color .25s, text-shadow .25s; }
+  .footer-links a:hover { color: #fff; text-shadow: 0 0 8px rgba(50,242,248,.6); }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); z-index: 300;
+    padding: 11px 18px; border-radius: 12px; font-size: .9rem; color: #fff;
+    background: rgba(12,10,22,.94); border: 1px solid rgba(50,242,248,.5); box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    opacity: 0; pointer-events: none; transition: opacity .3s, transform .35s var(--ease);
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1000px) {
+    .brand .name { display: none; }
+    .nav a span { display: none; }
+    .nav a { padding: 9px 11px; }
+  }
+  @media (max-width: 640px) {
+    :root { --top: 118px; }
+    .topbar { grid-template-columns: 1fr; grid-template-rows: auto auto; height: auto; padding: 10px 14px 8px; row-gap: 8px; }
+    .brand { justify-self: center; }
+    .nav-scroll { grid-row: 2; }
+    .nav { margin: 0; }
+    .nav a span { display: inline; }
+    .hero { min-height: 280px; padding: 44px 18px 40px; }
+    .step { grid-template-columns: 44px 1fr; padding: 16px; }
+    .step-num { width: 44px; height: 44px; font-size: 1rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== Top bar ========== -->
+<header class="topbar">
+  <a class="brand" href="index.html" aria-label="Caitlin's Creative Space home">
+    <span class="logo">CS</span>
+    <span class="name">Caitlin's <em>Space</em></span>
+  </a>
+  <div class="nav-scroll">
+    <nav class="nav" aria-label="Site navigation">
+      <a href="index.html" data-page="index.html"><i class="fa-solid fa-door-open" aria-hidden="true"></i><span>Welcome</span></a>
+      <a href="photography.html" data-page="photography.html"><i class="fa-solid fa-camera" aria-hidden="true"></i><span>Photography</span></a>
+      <a href="programming.html" data-page="programming.html" aria-current="page"><i class="fa-solid fa-code" aria-hidden="true"></i><span>Programming</span></a>
+      <a href="viewer-art.html" data-page="viewer-art.html"><i class="fa-solid fa-paintbrush" aria-hidden="true"></i><span>Gallery</span></a>
+      <a href="viewers-convention.html" data-page="viewers-convention.html"><i class="fa-solid fa-users" aria-hidden="true"></i><span>Conventions</span></a>
+      <a href="schedule.html" data-page="schedule.html"><i class="fa-solid fa-video" aria-hidden="true"></i><span>Content</span></a>
+      <a href="about.html" data-page="about.html"><i class="fa-solid fa-user" aria-hidden="true"></i><span>About</span></a>
+      <a href="contact.html" data-page="contact.html"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span>Contact</span></a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ========== Hero ========== -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-inner">
+      <div class="eyebrow">Stream tools</div>
+      <h1 id="hero-title">OBS Widget Downloads</h1>
+      <p class="sub">Enhance your stream with custom JSON configurations</p>
+      <div class="banner-line" aria-hidden="true"></div>
+      <div class="stats">
+        <span class="chip"><span class="d"></span>3 widgets</span>
+        <span class="chip">Works with Source Copy</span>
+        <span class="chip">Built for OBS</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Section picker ========== -->
+  <div class="picker">
+    <label for="jsonSections">Choose a section</label>
+    <div class="select-wrap">
+      <select id="jsonSections" aria-label="Choose a JSON section">
+        <option value="instructions">Instructions</option>
+        <option value="dnd">DND</option>
+        <option value="photo-border">Photo Border</option>
+        <option value="photo-widget">Photo Widget</option>
+      </select>
+      <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
+    </div>
+  </div>
+
+  <!-- ========== Instructions ========== -->
+  <section id="instructions" class="panel active">
+    <h2 class="panel-title">Installation</h2>
+    <p class="panel-sub">Four steps to get any widget running in OBS.</p>
+
+    <ol class="steps">
+      <li class="step glass">
+        <span class="step-num">1</span>
+        <div>
+          <h3>Get the Source Copy plugin</h3>
+          <p>Visit the <a href="https://obsproject.com/forum/resources/source-copy.1261/" target="_blank" rel="noopener">OBS plugin page<i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a> and download it.</p>
+        </div>
+      </li>
+      <li class="step glass">
+        <span class="step-num">2</span>
+        <div>
+          <h3>Close OBS</h3>
+          <p>Close OBS completely before installing the plugin.</p>
+        </div>
+      </li>
+      <li class="step glass">
+        <span class="step-num">3</span>
+        <div>
+          <h3>Install the plugin</h3>
+          <p>Follow the installation steps on the plugin page.</p>
+        </div>
+      </li>
+      <li class="step glass">
+        <span class="step-num">4</span>
+        <div>
+          <h3>Restart OBS and import</h3>
+          <p>Restart OBS, then import the widget JSON you downloaded.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="video-card glass">
+      <video controls autoplay loop muted playsinline>
+        <source src="videos/obs-installation-guide.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <p class="video-caption">Visual guide: how to import widgets into OBS</p>
+    </div>
+  </section>
+
+  <!-- ========== DND ========== -->
+  <section id="dnd" class="panel" hidden>
+    <h2 class="panel-title">DND Widget</h2>
+    <p class="panel-sub">Download the JSON and install Source Copy to use it in OBS.</p>
+    <div class="widgets">
+      <article class="widget glass">
+        <span class="w-ico"><i class="fa-solid fa-dice-d20" aria-hidden="true"></i></span>
+        <h3>DND Widget</h3>
+        <p>A widget for Dungeons &amp; Dragons themed stream overlays.</p>
+        <div class="meta-row"><span class="tag">JSON</span><span class="tag">OBS</span></div>
+        <span class="file">DND Widget.json</span>
+        <button class="btn" type="button" data-download="DND Widget.json" data-label="DND Widget">
+          <i class="fa-solid fa-download" aria-hidden="true"></i>Download
+        </button>
+      </article>
+    </div>
+  </section>
+
+  <!-- ========== Photo Border ========== -->
+  <section id="photo-border" class="panel" hidden>
+    <h2 class="panel-title">Photo Booth Border</h2>
+    <p class="panel-sub">Download the JSON and install Source Copy to use it in OBS.</p>
+    <div class="widgets">
+      <article class="widget glass">
+        <span class="w-ico"><i class="fa-solid fa-vector-square" aria-hidden="true"></i></span>
+        <h3>Photo Booth Border</h3>
+        <p>A decorative border for photo booth moments on stream.</p>
+        <div class="meta-row"><span class="tag">JSON</span><span class="tag">OBS</span></div>
+        <span class="file">Photo Booth Border.json</span>
+        <button class="btn" type="button" data-download="Photo Booth Border.json" data-label="Photo Booth Border">
+          <i class="fa-solid fa-download" aria-hidden="true"></i>Download
+        </button>
+      </article>
+    </div>
+  </section>
+
+  <!-- ========== Photo Widget ========== -->
+  <section id="photo-widget" class="panel" hidden>
+    <h2 class="panel-title">Photo Booth Widget</h2>
+    <p class="panel-sub">Download the JSON and install Source Copy to use it in OBS.</p>
+    <div class="widgets">
+      <article class="widget glass">
+        <span class="w-ico"><i class="fa-solid fa-camera-retro" aria-hidden="true"></i></span>
+        <h3>Photo Booth Widget</h3>
+        <p>The main photo booth widget for your scene.</p>
+        <div class="meta-row"><span class="tag">JSON</span><span class="tag">OBS</span></div>
+        <span class="file">Photo Booth Widget.json</span>
+        <button class="btn" type="button" data-download="Photo Booth Widget.json" data-label="Photo Booth Widget">
+          <i class="fa-solid fa-download" aria-hidden="true"></i>Download
+        </button>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <p>&copy; 2026 Caitlin's Creative Space | All Rights Reserved</p>
+    <div class="footer-links">
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms-of-service.html">Terms of Service</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const SECTIONS = ["instructions", "dnd", "photo-border", "photo-widget"];
+  const select = document.getElementById("jsonSections");
+
+  /* ---------- Toast ---------- */
+  let toastTimer;
+  function toast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+  }
+
+  /* ---------- Show one section (dropdown drives this) ---------- */
+  function showSection(id, { updateHash = true } = {}) {
+    if (!SECTIONS.includes(id)) id = "instructions";
+    SECTIONS.forEach(s => {
+      const panel = document.getElementById(s);
+      const on = s === id;
+      panel.hidden = !on;
+      panel.classList.toggle("active", on);
+    });
+    select.value = id;
+    if (updateHash) history.replaceState(null, "", "#" + id);
+  }
+
+  select.addEventListener("change", () => showSection(select.value));
+
+  // Open the section named in the URL hash, e.g. json-projects.html#dnd
+  const fromHash = location.hash.slice(1);
+  showSection(SECTIONS.includes(fromHash) ? fromHash : "instructions", { updateHash: false });
+
+  /* ---------- Widget download (unchanged behavior) ---------- */
+  function downloadWidget(widgetName, jsonFileName) {
+    // Note: the filePath inside the JSON is for OBS internal reference,
+    // but the browser saves the actual file to the user's Downloads folder.
+    const jsonContent = {
+      widgetName: widgetName,
+      filePath: "C:\\Users\\caitl\\OneDrive\\Desktop\\Coding\\OBS Profile\\" + jsonFileName
+    };
+    const blob = new Blob([JSON.stringify(jsonContent, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = jsonFileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  document.querySelectorAll("[data-download]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const file = btn.dataset.download;
+      downloadWidget(file, file);
+      const original = btn.innerHTML;
+      btn.classList.add("done");
+      btn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>Downloaded';
+      toast(`Saved ${btn.dataset.label}`);
+      setTimeout(() => {
+        btn.classList.remove("done");
+        btn.innerHTML = original;
+      }, 1800);
+    });
+  });
+
+  /* ---------- Reveal ---------- */
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.animation = "rise .6s cubic-bezier(.2,.7,.2,1) both";
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: .12 });
+    document.querySelectorAll(".widget, .step, .video-card").forEach(el => { el.style.opacity = "0"; io.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>
