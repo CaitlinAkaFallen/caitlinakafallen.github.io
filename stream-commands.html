@@ -1,1005 +1,815 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stream Commands | Caitlin's Creative Space</title>
-    
-    <meta property="og:title" content="Stream Commands | Caitlin's Creative Space" />
-    <meta property="og:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools." />
-    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-stream-commands.jpg" />
-    <meta property="og:url" content="https://caitlinscreativespace.xyz/stream-commands.html" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stream Commands | Caitlin's Creative Space</title>
 
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;900&family=Fira+Code&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="stream-commands.css" />
+<meta property="og:title" content="Stream Commands | Caitlin's Creative Space" />
+<meta property="og:description" content="Custom web development, C# Streamer.bot scripts, and interactive tools." />
+<meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-stream-commands.jpg" />
+<meta property="og:url" content="https://caitlinscreativespace.xyz/stream-commands.html" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #07060d;
+    --violet: #9146ff;
+    --magenta: #be2edd;
+    --cyan: #00a8ff;
+    --aqua: #4ae4e9;
+    --teal: #00ffcc;
+    --pink: #ff66cc;
+    --ink: #eef0ff;
+    --muted: #a9a6c4;
+    --glass: rgba(255, 255, 255, 0.055);
+    --glass-strong: rgba(18, 14, 32, 0.6);
+    --line: rgba(255, 255, 255, 0.1);
+    --radius: 18px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: -20%; z-index: -2;
+    background:
+      radial-gradient(40% 35% at 12% 18%, rgba(0, 255, 204, .18), transparent 60%),
+      radial-gradient(35% 30% at 88% 12%, rgba(145, 70, 255, .34), transparent 60%),
+      radial-gradient(45% 40% at 62% 92%, rgba(0, 168, 255, .22), transparent 60%);
+    filter: blur(40px);
+    animation: drift 24s ease-in-out infinite alternate;
+  }
+  body::after {
+    content: "";
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  }
+  @keyframes drift { to { transform: translate3d(3%, -2%, 0) scale(1.05); } }
+
+  /* ---------- Floating nav ---------- */
+  .nav {
+    position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+    z-index: 100; display: flex; gap: 4px; padding: 6px;
+    max-width: calc(100% - 24px); overflow-x: auto; scrollbar-width: none;
+    border-radius: 999px;
+    background: var(--glass-strong);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid var(--line);
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a {
+    position: relative; width: 44px; height: 44px; flex-shrink: 0;
+    display: grid; place-items: center; border-radius: 50%;
+    color: var(--muted); text-decoration: none;
+    transition: color .25s, background .25s, transform .25s var(--ease);
+  }
+  .nav a:hover { color: #fff; background: rgba(255,255,255,.08); transform: translateY(-2px); }
+  .nav a[data-social="twitch"]:hover { color: #9147ff; }
+  .nav a[data-social="youtube"]:hover { color: #ff3b3b; }
+  .nav a[data-social="kick"]:hover { color: #53fc18; }
+  .nav .live-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #ff2a2a; box-shadow: 0 0 8px #ff2a2a;
+    display: none; animation: ping 1.6s infinite;
+  }
+  .nav .live-dot.on { display: block; }
+  @keyframes ping {
+    0% { box-shadow: 0 0 0 0 rgba(255,42,42,.7); }
+    70% { box-shadow: 0 0 0 9px rgba(255,42,42,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,42,42,0); }
+  }
+  .ico { width: 20px; height: 20px; display: block; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; max-width: 1100px; margin: 96px auto 0;
+    padding: 56px 24px 46px; border-radius: 24px; overflow: hidden;
+    text-align: center;
+    background: #120e20 url("images/guitar.jpg") center / cover no-repeat;
+    border: 1px solid var(--line);
+    box-shadow: 0 30px 60px rgba(0,0,0,.45);
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(7,6,13,.3) 0%, rgba(7,6,13,.88) 100%);
+  }
+  .hero > * { position: relative; }
+  .eyebrow {
+    font-family: "Fira Code", monospace; font-size: .78rem;
+    letter-spacing: .3em; text-transform: uppercase; color: var(--teal);
+  }
+  .hero h1 {
+    font-family: "Orbitron", sans-serif; font-weight: 800;
+    font-size: clamp(2.1rem, 6vw, 3.4rem); letter-spacing: .04em;
+    margin: 10px 0 12px;
+    background: linear-gradient(60deg, #9146ff, #00ffcc 60%, #00a8ff);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p.lede { color: #d8d4f2; max-width: 620px; margin: 0 auto; line-height: 1.6; }
+  .hero-stats {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 24px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px; border-radius: 999px; font-size: .88rem;
+    background: rgba(0,0,0,.45); border: 1px solid var(--line);
+    backdrop-filter: blur(8px);
+  }
+  .pill.live { border-color: rgba(255,60,60,.6); color: #ffd6d6; box-shadow: 0 0 18px rgba(255,40,40,.35); }
+  .pill .dot { width: 9px; height: 9px; border-radius: 50%; background: #666; }
+  .pill.live .dot { background: #ff3b3b; box-shadow: 0 0 10px #ff3b3b; animation: ping 1.6s infinite; }
+  .pill b { font-family: "Orbitron", sans-serif; color: #fff; }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar {
+    max-width: 1100px; margin: 30px auto 0; padding: 14px;
+    border-radius: var(--radius);
+    background: var(--glass-strong);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid var(--line);
+    box-shadow: 0 14px 40px rgba(0,0,0,.35);
+    display: grid; gap: 12px;
+  }
+  .search-row { display: flex; gap: 8px; align-items: center; }
+  .search {
+    position: relative; display: flex; align-items: center; flex: 1; min-width: 0;
+  }
+  .tool-btn {
+    flex-shrink: 0; padding: 12px 14px; border-radius: 12px; font: inherit; font-size: .84rem; font-weight: 600;
+    color: var(--muted); background: rgba(255,255,255,.04); border: 1px solid var(--line); cursor: pointer;
+    transition: color .2s, background .2s, border-color .2s;
+  }
+  .tool-btn:hover { color: #fff; border-color: rgba(0,255,204,.45); background: rgba(255,255,255,.08); }
+  @media (max-width: 560px) {
+    .search-row { flex-wrap: wrap; }
+    .search { flex-basis: 100%; }
+    .tool-btn { flex: 1; }
+  }
+  .search input {
+    width: 100%; padding: 13px 110px 13px 44px; border-radius: 12px;
+    border: 1px solid var(--line); background: rgba(255,255,255,.05);
+    color: #fff; font: inherit; font-size: .98rem; outline: none;
+    transition: border-color .25s, box-shadow .25s;
+  }
+  .search input::placeholder { color: rgba(255,255,255,.4); }
+  .search input:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(0,255,204,.12); }
+  .search .s-icon { position: absolute; left: 16px; width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
+  .search kbd {
+    position: absolute; right: 12px;
+    font-family: "Fira Code", monospace; font-size: .75rem; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px;
+  }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .filters .label {
+    font-size: .72rem; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--muted); margin-right: 4px; min-width: 56px; text-align: left;
+  }
+  .chip-btn {
+    padding: 7px 13px; border-radius: 999px; font: inherit; font-size: .84rem; font-weight: 600;
+    color: var(--muted); background: rgba(255,255,255,.04);
+    border: 1px solid var(--line); cursor: pointer;
+    transition: color .2s, background .2s, border-color .2s, box-shadow .2s, transform .2s var(--ease);
+  }
+  .chip-btn:hover { color: #fff; transform: translateY(-1px); }
+  .chip-btn[aria-pressed="true"] {
+    color: #fff;
+    background: linear-gradient(135deg, rgba(145,70,255,.55), rgba(0,255,204,.25));
+    border-color: rgba(0,255,204,.45);
+    box-shadow: 0 0 18px rgba(145,70,255,.3);
+  }
+  .chip-btn:focus-visible, .chip-cmd:focus-visible, .nav a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--teal); outline-offset: 2px;
+  }
+  .result-count { color: var(--muted); font-size: .85rem; text-align: left; }
+  .result-count b { color: #fff; }
+
+  /* ---------- Categories & cards ---------- */
+  main { max-width: 1100px; margin: 0 auto; padding: 26px 16px 130px; }
+  .cat { margin-bottom: 26px; }
+  .cat-head {
+    width: 100%; display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; border-radius: 14px; cursor: pointer;
+    background: var(--glass); border: 1px solid var(--line);
+    color: #fff; font: inherit; text-align: left;
+    transition: background .25s, border-color .25s;
+  }
+  .cat-head:hover { background: rgba(255,255,255,.08); border-color: rgba(0,255,204,.3); }
+  .cat-head .emo { font-size: 1.3rem; }
+  .cat-head h2 {
+    margin: 0; font-family: "Orbitron", sans-serif; font-size: 1.02rem;
+    letter-spacing: .05em; text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0,255,204,.25);
+  }
+  .cat-head .count {
+    margin-left: auto; font-family: "Fira Code", monospace; font-size: .78rem;
+    color: var(--muted); padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line);
+  }
+  .cat-head .chev { width: 16px; height: 16px; color: var(--muted); transition: transform .3s var(--ease); }
+  .cat.collapsed .chev { transform: rotate(-90deg); }
+  .cat-body {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px; padding-top: 14px;
+  }
+  .cat.collapsed .cat-body { display: none; }
+
+  .card {
+    position: relative; padding: 18px; border-radius: 16px;
+    background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+    border: 1px solid var(--line);
+    backdrop-filter: blur(10px);
+    transition: transform .35s var(--ease), border-color .35s, box-shadow .35s;
+    animation: rise .45s var(--ease) both;
+  }
+  .card:hover { transform: translateY(-4px); border-color: rgba(0,255,204,.4); box-shadow: 0 14px 36px rgba(0,255,204,.08); }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .card h3 { margin: 0; font-size: 1.02rem; color: #fff; }
+  .access {
+    flex-shrink: 0; font-size: .66rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: 4px 8px; border-radius: 999px; border: 1px solid; white-space: nowrap;
+  }
+  .access.everyone { color: #9fe8ff; border-color: rgba(0,168,255,.45); background: rgba(0,168,255,.1); }
+  .access.follower { color: #bfffe8; border-color: rgba(0,255,204,.4); background: rgba(0,255,204,.08); }
+  .access.sub { color: #d6b8ff; border-color: rgba(145,70,255,.55); background: rgba(145,70,255,.14); }
+  .access.vip { color: #ffb8e6; border-color: rgba(255,102,204,.5); background: rgba(255,102,204,.1); }
+  .access.mod { color: #ffd38a; border-color: rgba(255,170,60,.55); background: rgba(255,170,60,.1); }
+  .desc { margin: 8px 0 12px; color: #cfcbe6; font-size: .9rem; line-height: 1.5; }
+  .desc .note { color: var(--muted); font-style: italic; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip-cmd {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 11px; border-radius: 9px; cursor: pointer;
+    font: inherit; color: var(--teal);
+    background: rgba(0,255,204,.08); border: 1px solid rgba(0,255,204,.25);
+    transition: background .2s, color .2s, box-shadow .2s, transform .2s var(--ease);
+  }
+  .chip-cmd code { font-family: "Fira Code", monospace; font-size: .92rem; }
+  .chip-cmd small { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .chip-cmd:hover { background: var(--teal); color: #03150f; box-shadow: 0 0 16px rgba(0,255,204,.5); transform: translateY(-1px); }
+  .chip-cmd:hover small { color: #03150f; }
+  .chip-cmd.copied { background: var(--aqua); color: #03150f; }
+
+  .empty {
+    display: none; text-align: center; padding: 60px 20px; color: var(--muted);
+    border: 1px dashed var(--line); border-radius: var(--radius);
+  }
+  .empty.show { display: block; }
+  .empty h3 { color: #fff; margin: 0 0 6px; font-family: "Orbitron", sans-serif; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 96px; transform: translate(-50%, 20px);
+    padding: 11px 18px; border-radius: 12px; z-index: 300;
+    background: rgba(12,10,22,.92); border: 1px solid rgba(0,255,204,.45);
+    color: #fff; font-size: .9rem; opacity: 0; pointer-events: none;
+    transition: opacity .3s, transform .35s var(--ease);
+    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast code { font-family: "Fira Code", monospace; color: var(--teal); }
+
+  /* ---------- Footer ---------- */
+  .site-footer {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 90;
+    padding: 12px 16px; text-align: center;
+    background: rgba(12,10,22,.6);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border-top: 1px solid var(--line);
+    font-size: .8rem; color: #cfcfcf;
+  }
+  .site-footer .links { display: flex; justify-content: center; gap: 22px; margin-top: 6px; flex-wrap: wrap; }
+  .site-footer button {
+    background: none; border: 0; color: var(--muted); font: inherit; cursor: pointer; padding: 0;
+    transition: color .2s, text-shadow .2s;
+  }
+  .site-footer button:hover { color: var(--teal); text-shadow: 0 0 8px rgba(0,255,204,.6); }
+
+  /* ---------- Dialogs ---------- */
+  dialog {
+    width: min(92vw, 720px); max-height: 80vh; padding: 0; border: 0; border-radius: 18px;
+    background: rgba(18,14,32,.92); color: #e8e6f5;
+    backdrop-filter: blur(14px) saturate(150%);
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  }
+  dialog::backdrop { background: rgba(0,0,0,.6); backdrop-filter: blur(6px); }
+  .dlg-head {
+    position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 22px; background: rgba(18,14,32,.96); border-bottom: 1px solid var(--line);
+  }
+  .dlg-head h2 { margin: 0; font-family: "Orbitron", sans-serif; font-size: 1.1rem; color: #fff; }
+  .dlg-close {
+    background: none; border: 1px solid var(--line); color: #ccc; width: 34px; height: 34px;
+    border-radius: 50%; font-size: 1.1rem; cursor: pointer;
+  }
+  .dlg-close:hover { color: var(--teal); border-color: var(--teal); }
+  .dlg-body { padding: 18px 24px 26px; overflow-y: auto; max-height: calc(80vh - 70px); line-height: 1.6; font-size: .92rem; }
+  .dlg-body h3 { color: var(--teal); font-size: 1rem; margin: 20px 0 6px; }
+  .dlg-body ul { padding-left: 20px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 760px) {
+    .hero { margin-top: 84px; }
+    .search input { padding-right: 16px; }
+    .search kbd { display: none; }
+    .filters .label { width: 100%; }
+    .cat-body { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .nav a { width: 40px; height: 40px; }
+    .toolbar { border-radius: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
 </head>
 <body>
-    <header
-      style="
-        background-image: url(&quot;images/guitar.jpg&quot;);
-        background-size: cover;
-        background-position: center;
-        height: 300px;
-        border-radius: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      "
-    >
-      <div
-        style="text-align: center; color: rgb(253, 244, 113); padding-top: 0"
-      >
-        <h2>Stream Commands</h2>
-        <h5
-          style="
-            text-shadow:
-              -2px -2px 0 #000,
-              2px -2px 0 #000,
-              -2px 2px 0 #000,
-              2px 2px 0 #000;
-          "
-        >
-          Get your chat commands here by clicking on them to copy to paste in
-          the Twitch and YouTube chat!
-        </h5>
-      </div>
-    </header>
 
-    <nav id="horizontal-nav" class="horizontal-nav">
-        <ul class="nav-list">
-            <li><a href="schedule.html" class="nav-link home-link" title="Schedule"><i class="fa fa-calendar"></i></a></li>
-            <li>
-                <a href="twitch.html" class="nav-link twitch-link" title="Twitch">
-                    <i class="fab fa-twitch"></i>
-                    <span id="live-indicator">LIVE</span>
-                </a>
-            </li>
-            <li><a href="youtube.html" class="nav-link youtube-link" title="YouTube"><i class="fab fa-youtube"></i></a></li>
-        </ul>
+<nav class="nav" aria-label="Site navigation">
+  <a href="schedule.html" title="Schedule" aria-label="Schedule">
+    <i class="fas fa-calendar-alt"></i>
+  </a>
+  <a href="twitch.html" data-social="twitch" title="Twitch" aria-label="Twitch">
+    <i class="fab fa-twitch"></i>
+    <span class="live-dot" id="nav-live-dot"></span>
+  </a>
+  <a href="youtube.html" data-social="youtube" title="YouTube" aria-label="YouTube">
+    <i class="fab fa-youtube"></i>
+  </a>
+</nav>
 
-    
-      <div class="category-filter-container">
-        <label for="categorySelect">Filter by Category:</label>
-        <select id="categorySelect" onchange="filterCommands()">
-          <option value="all">All Categories</option>
-          <option value="General Commands">General</option>
-          <option value="Fun and Interaction">Fun</option>
-          <option value="Game and Score Tracking">Game</option>
-          <option value="Moderation and Utility">Moderation</option>
-          <option value="Music and Entertainment">Music</option>
-          <option value="Special Features">Special</option>
-          <option value="Moderator Commands">Moderator</option>
-          <option value="VIP Commands">VIP</option>
-          <option value="Subscriber Commands">Subscriber</option>
-          <option value="Follower Commands">Follower</option>
-        </select>
-      </div>
-    </nav>
+<header class="hero">
+  <div class="eyebrow">Chat Command Library</div>
+  <h1>Stream Commands</h1>
+  <p class="lede">Click any command to copy it, then paste it into Twitch & YouTube chat.</p>
+  <div class="hero-stats">
+    <div class="pill"><b id="stat-total">0</b>&nbsp;commands</div>
+    <div class="pill"><b id="stat-cats">0</b>&nbsp;categories</div>
+    <div class="pill" id="live-pill"><span class="dot"></span><span id="live-text">Checking status…</span></div>
+  </div>
+</header>
 
+<div class="toolbar" role="search">
+  <div class="search-row">
+  <div class="search">
+    <svg class="s-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <input id="search" type="search" placeholder="Search commands, descriptions…" aria-label="Search commands" autocomplete="off" />
+    <kbd>/</kbd>
+  </div>
+    <button class="tool-btn" id="expand-all" type="button">Expand all</button>
+    <button class="tool-btn" id="collapse-all" type="button">Collapse all</button>
+  </div>
+  <div class="filters" id="cat-filters" role="group" aria-label="Filter by category"><span class="label">Category</span></div>
+  <div class="filters" id="access-filters" role="group" aria-label="Filter by who can use it"><span class="label">Who can use</span></div>
+  <div class="result-count" id="result-count" aria-live="polite"></div>
+</div>
 
-    <div class="controls-container">
-        <div class="search-bar-container">
-            <input type="text" id="commandSearch" placeholder="Search commands..." oninput="searchCommands()">
-            <i class="fa fa-search search-icon"></i>
+<main>
+  <div id="sections"></div>
+  <div class="empty" id="empty">
+    <h3>No commands match</h3>
+    <p>Try a different search or reset the filters.</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div>&copy; 2025 Caitlin's Creative Space · All Rights Reserved</div>
+  <div class="links">
+    <button id="open-privacy" type="button">Privacy Policy</button>
+    <button id="open-tos" type="button">Terms of Service</button>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Terms of Service -->
+<dialog id="tos-modal" aria-labelledby="tos-title">
+  <div class="dlg-head">
+    <h2 id="tos-title">Terms of Service</h2>
+    <button class="dlg-close" data-close aria-label="Close">&times;</button>
+  </div>
+  <div class="dlg-body">
+    <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
+    <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
+    <h3>Changes to Terms</h3>
+    <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
+    <h3>Use of Website</h3>
+    <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
+    <ul>
+      <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
+      <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
+      <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
+    </ul>
+    <h3>Intellectual Property</h3>
+    <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
+    <h3>Links to Other Websites</h3>
+    <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+    <h3>Disclaimer</h3>
+    <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
+    <h3>Governing Law</h3>
+    <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
+    <p><strong>Effective Date: August 13, 2025</strong></p>
+  </div>
+</dialog>
+
+<!-- Privacy Policy -->
+<dialog id="privacy-modal" aria-labelledby="privacy-title">
+  <div class="dlg-head">
+    <h2 id="privacy-title">Privacy Policy</h2>
+    <button class="dlg-close" data-close aria-label="Close">&times;</button>
+  </div>
+  <div class="dlg-body">
+    <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
+    <h3>Information We Collect</h3>
+    <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+    <p><strong>Information We Collect Directly From You:</strong> We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+    <p><strong>Information We Collect Automatically:</strong> We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
+    <h3>How We Use Your Information</h3>
+    <ul>
+      <li>Provide and maintain our Website and its features.</li>
+      <li>Improve our Website and develop new features.</li>
+      <li>Communicate with you about services and updates.</li>
+      <li>Analyze how users interact with our Website.</li>
+    </ul>
+    <h3>Disclosure of Your Information</h3>
+    <ul>
+      <li>With your consent.</li>
+      <li>To comply with legal obligations.</li>
+      <li>To protect our rights and property.</li>
+    </ul>
+    <h3>Data Security</h3>
+    <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
+    <h3>Changes to This Policy</h3>
+    <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
+    <p><strong>Last updated: August 13, 2025</strong></p>
+  </div>
+</dialog>
+
+<script>
+(() => {
+  "use strict";
+
+  /* =========================================================
+     CONFIG — paste your Twitch credentials here.
+     Tokens in public JS can be seen by anyone; rotate yours
+     and consider a small server proxy for production.
+     ========================================================= */
+ const CONFIG = {
+    channel: "fallenoneart",
+    twitchClientId: "gp762nuuoqcoxypju8c569th9wz7q5",
+    twitchToken: "0s89vmye9hk95jiifrpion53n6cy9",
+    liveCheckMs: 60_000
+  };
+  /* ---------- Categories ---------- */
+  const CATS = [
+    { id: "fun",     name: "Fun & Interaction",   emo: "🎲" },
+    { id: "stats",   name: "Stats & Percentages", emo: "📊" },
+    { id: "profile", name: "Profile & Info",      emo: "🪪" },
+    { id: "bounty",  name: "Bounty",              emo: "🎯" },
+    { id: "quotes",  name: "Quotes",              emo: "💬" },
+    { id: "counters",name: "Counters",            emo: "🔢" },
+    { id: "quiz",    name: "Quiz & Games",        emo: "🧠" },
+    { id: "stream",  name: "Stream Tools",        emo: "🎬" },
+    { id: "music",   name: "Music",               emo: "🎵" },
+    { id: "clips",   name: "Clips & Highlights",  emo: "✂️" },
+    { id: "mod",     name: "Moderator Tools",     emo: "🛡️" }
+  ];
+
+  const ACCESS = {
+    everyone: { label: "Everyone" },
+    follower: { label: "Followers" },
+    sub:      { label: "Subscribers" },
+    vip:      { label: "VIPs" },
+    mod:      { label: "Mods" }
+  };
+
+  /* ---------- Commands (edit here) ----------
+     cmds: [text to copy, optional short label]
+     note: optional hint shown after the description          */
+  const C = (cat, title, cmds, desc, access = "everyone", note) =>
+    ({ cat, title, cmds: cmds.map(x => Array.isArray(x) ? x : [x]), desc, access, note });
+
+  const COMMANDS = [
+    /* Fun & Interaction */
+    C("fun", "Battle", ["!battle"], "Choose a target for battle."),
+    C("fun", "Bonk", ["!bonk"], "Bonk someone playfully."),
+    C("fun", "Chaos", ["!chaos"], "Unleash chaos in chat."),
+    C("fun", "Dork", ["!dork"], "Send a playful insult."),
+    C("fun", "Dungeon", ["!dungeon"], "Enter the dungeon."),
+    C("fun", "Fart", ["!fart"], "Trigger a funny fart sound."),
+    C("fun", "Hugs", ["!hugs"], "Give someone a virtual hug.", "everyone", "@ someone"),
+    C("fun", "Dad Jokes", ["!dadjokes"], "Tell a dad joke."),
+    C("fun", "Dunno", ["!donno"], "Express uncertainty."),
+    C("fun", "Umbrella", ["!umbrella"], "Bring an umbrella."),
+    C("fun", "Tarot Card", ["!tarot"], "Draw a tarot card."),
+    C("fun", "Duel", ["!duel"], "Challenge another viewer to a duel."),
+    C("fun", "Summon", ["!summon"], "Summon command."),
+    C("fun", "Troll", ["!troll"], "Troll a viewer."),
+    C("fun", "Flirt", ["!flirt"], "Bot be flirting."),
+    C("fun", "Gribbish", ["!gribbish"], "Words are hard."),
+    C("fun", "Identify", ["!identify"], "Find out if you are human or bot."),
+    C("fun", "Mugshot", ["!mugshot", ["!ms", "short"]], "Display a mugshot of a viewer."),
+    C("fun", "Elements", ["!elements"], "Display elemental powers."),
+    C("fun", "Coin Flip", ["!coinflips"], "Flip a coin and show the result against other viewers."),
+    C("fun", "Workout", ["!workout"], "Make the streamer exercise."),
+    C("fun", "Roast", ["!roast"], "Send a playful roast.", "vip"),
+    C("fun", "Cheer", ["!cheer"], "Cheer for the streamer.", "vip"),
+
+    /* Stats */
+    C("stats", "420 Percentage", ["!420"], "How high are you when you're stoned?"),
+    C("stats", "Hungry Gremlin", ["!HG"], "How much of Hungry Gremlin are you?"),
+    C("stats", "Worm Percentage", ["!worm"], "Display your worm percentage."),
+    C("stats", "Yeet Percentage", ["!yeet"], "Display your yeet percentage."),
+
+    /* Profile & Info */
+    C("profile", "Account Age", ["!accountage"], "Displays your account age."),
+    C("profile", "Birthday", ["!birthday"], "Displays birthday details."),
+    C("profile", "Set Birthday", ["!setbirthday"], "Set your birthday.", "everyone", "Use MM/DD"),
+    C("profile", "Reset Birthday", ["!resetbirthday"], "Reset birthday info.", "mod", "Mods only"),
+    C("profile", "ADHD Info", ["!adhd"], "Shows ADHD info."),
+    C("profile", "Throne Wishlist", ["!throne"], "My Throne wishlist."),
+    C("profile", "No Spoiler", ["!nospoiler"], "Avoid spoilers."),
+    C("profile", "Follow Age", ["!followage"], "Display how long you've followed.", "follower"),
+    C("profile", "Socials", ["!social"], "Show social links.", "follower"),
+    C("profile", "Latest Stream", ["!latest"], "Show latest stream info.", "follower"),
+    C("profile", "Sub Tier", ["!subtier"], "Display subscriber tier.", "sub"),
+    C("profile", "Loyalty Points", ["!loyalty"], "Check loyalty points.", "sub"),
+    C("profile", "Emotes List", ["!emotes"], "List available emotes.", "sub"),
+    C("profile", "Sub Emote", ["!subemote"], "Use subscriber emotes.", "sub"),
+
+    /* Bounty */
+    C("bounty", "Bounty", ["!bounty"], "Display the current bounty for a viewer."),
+    C("bounty", "Bounty Upgrades", [["!buy", "buy"], ["!upgrades", "list"]], "Upgrades for the bounty command."),
+    C("bounty", "Bounty Credits", ["!credit"], "Check your bounty credits."),
+
+    /* Quotes */
+    C("quotes", "Quote of the Day", ["$qotd"], "Randomly select a quote."),
+    C("quotes", "Add Quote", ["$add qotd"], "Add a new quote."),
+    C("quotes", "Edit Quote", ["$edit qotd"], "Edit an existing quote."),
+    C("quotes", "Delete Quote", ["$delete qotd"], "Remove a quote."),
+
+    /* Counters */
+    C("counters", "Deaths", [["!deaths", "show"], ["!death+", "add"], ["!death-", "remove"], ["!resedeaths", "reset"]], "Track your death count."),
+    C("counters", "Wins", [["!wins+", "add"], ["!wins-", "remove"], ["!resetwins", "reset"]], "Track wins."),
+    C("counters", "Kills", [["!kills+", "add"], ["!kills-", "remove"], ["!resetkills", "reset"]], "Track kills."),
+    C("counters", "Losses", [["!loss+", "add"], ["!loss-", "remove"], ["!resetlosses", "reset"]], "Track losses."),
+    C("counters", "Burps", [["!burp+", "add"], ["!burp-", "remove"], ["!resetburps", "reset"]], "Track burps."),
+    C("counters", "Farts", [["!fart+", "add"], ["!fart-", "remove"], ["!resetfarts", "reset"]], "Track farts."),
+    C("counters", "Cuss Count", [["!cuss+", "add"], ["!cuss-", "lower"], ["!resetcuss", "reset"]], "Track cuss words."),
+    C("counters", "Yawns", [["!resetyawn", "reset"]], "Reset the yawn counter."),
+
+    /* Quiz & Games */
+    C("quiz", "Start Quiz", [["!quiz", "start"], ["!startquiz", "alt"]], "Begin a quiz session."),
+    C("quiz", "Answer Quiz", [["!answerquiz", "answer"], ["!answer", "alt"]], "Submit your quiz answer."),
+    C("quiz", "Stop Quiz", ["!stopquiz"], "End the quiz session."),
+    C("quiz", "Leaderboard", ["!leaderboard"], "Show the quiz leaderboard."),
+    C("quiz", "D&D", ["!dnd"], "Start Dungeons & Dragons.", "everyone", "Choose a class"),
+    C("quiz", "Hogwarts Mode", ["!hogwarts"], "Enter Hogwarts mode."),
+
+    /* Stream Tools */
+    C("stream", "Lurk", ["!lurk"], "Enter lurk mode."),
+    C("stream", "Unlurk", ["!unlurk"], "Exit lurk mode."),
+    C("stream", "Digital Clock", [["!DC", "show"], ["Clock", "alt"]], "Display the current time."),
+    C("stream", "Green Screen", [["!GSON", "on"], ["!GSOFF", "off"]], "Turn the green screen on or off."),
+    C("stream", "Elgato Lighting", [["!elgatoOn", "on"], ["!elgatoOff", "off"]], "Activate or deactivate Elgato lighting."),
+    C("stream", "Game Tags", ["!gametags"], "Show game tags."),
+    C("stream", "Personal Record", ["!pr"], "Show PR information."),
+    C("stream", "Hide Heart Rate", ["!hidehr"], "Hide heart rate."),
+    C("stream", "Raid", [["raid", "no !"]], "Initiate a raid."),
+
+    /* Music */
+    C("music", "Music Controls", [["!play", "play"], ["!pause", "pause"], ["!skip", "skip"]], "Control the music player."),
+
+    /* Clips & Highlights */
+    C("clips", "Clip", ["$clip"], "Clip a moment from the stream."),
+    C("clips", "Highlight", ["!highlight"], "Highlight a moment.", "vip"),
+
+    /* Moderator Tools */
+    C("mod", "Ban", ["/ban"], "Ban a user.", "mod"),
+    C("mod", "Timeout", ["/timeout"], "Timeout a user.", "mod"),
+    C("mod", "Clear Chat", ["/clear"], "Clear the chat.", "mod"),
+    C("mod", "Slow Mode", ["/slowmode"], "Toggle slow mode.", "mod"),
+    C("mod", "Raid (Mod)", ["/raid"], "Initiate a raid.", "mod"),
+    C("mod", "Shout Out", ["!so"], "Shout out a user.", "mod"),
+    C("mod", "Grounded", ["!grounded"], "Ground the user for 69 seconds.", "mod")
+  ];
+
+  /* ---------- Helpers ---------- */
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const CHEVRON = `<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  const state = { cat: "all", access: "all", q: "", collapsed: new Set() };
+
+  /* ---------- Filters UI ---------- */
+  function buildFilters() {
+    const catWrap = $("#cat-filters");
+    const accWrap = $("#access-filters");
+    const pill = (group, value, label) =>
+      `<button class="chip-btn" type="button" data-group="${group}" data-value="${value}" aria-pressed="${value === (group === "cat" ? state.cat : state.access)}">${esc(label)}</button>`;
+
+    catWrap.insertAdjacentHTML("beforeend", pill("cat", "all", "All") + CATS.map(c => pill("cat", c.id, `${c.emo} ${c.name}`)).join(""));
+    accWrap.insertAdjacentHTML("beforeend", pill("access", "all", "Anyone") + Object.entries(ACCESS).map(([k, v]) => pill("access", k, v.label)).join(""));
+
+    document.querySelectorAll(".chip-btn").forEach(btn => btn.addEventListener("click", () => {
+      const g = btn.dataset.group, v = btn.dataset.value;
+      if (g === "cat") state.cat = v; else state.access = v;
+      document.querySelectorAll(`.chip-btn[data-group="${g}"]`).forEach(b =>
+        b.setAttribute("aria-pressed", String(b.dataset.value === v)));
+      render();
+    }));
+  }
+
+  /* ---------- Render ---------- */
+  function matches(cmd) {
+    if (state.cat !== "all" && cmd.cat !== state.cat) return false;
+    if (state.access !== "all" && cmd.access !== state.access) return false;
+    if (!state.q) return true;
+    const hay = [cmd.title, cmd.desc, cmd.note || "", ...cmd.cmds.map(c => c[0])].join(" ").toLowerCase();
+    return state.q.split(/\s+/).every(term => hay.includes(term));
+  }
+
+  function cardHTML(cmd, i) {
+    const chips = cmd.cmds.map(([text, label]) =>
+      `<button class="chip-cmd" type="button" data-copy="${esc(text)}" title="Copy ${esc(text)}">
+         <code>${esc(text)}</code>${label ? `<small>${esc(label)}</small>` : ""}
+       </button>`).join("");
+    return `
+      <article class="card" style="animation-delay:${Math.min(i * 30, 300)}ms">
+        <div class="card-top">
+          <h3>${esc(cmd.title)}</h3>
+          <span class="access ${cmd.access}">${ACCESS[cmd.access].label}</span>
         </div>
-    </div>
+        <p class="desc">${esc(cmd.desc)}${cmd.note ? ` <span class="note">(${esc(cmd.note)})</span>` : ""}</p>
+        <div class="chips">${chips}</div>
+      </article>`;
+  }
 
-    <div class="command-sections" id="commandsContainer">
-      <div class="command-section" data-category="General Commands">
-        <div class="section-header">
-          <h2>General Commands</h2>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="section-content">
-          <ul>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">420 Percentage</h3>
-              <span class="command-text" onclick="copyText(this)">!420</span>
-              <span class="command-description"
-                >How high are you when your stoned</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Account Age</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!accountage</span
-              >
-              <span class="command-description">Displays your account age</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Hungry Gremlin</h3>
-              <span class="command-text" onclick="copyText(this)">!HG</span>
-              <span class="command-description"
-                >How Much of Hungry Gremlin are you!</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">ADHD Info</h3>
-              <span class="command-text" onclick="copyText(this)">!adhd</span>
-              <span class="command-description">Shows ADHD info</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Birthday</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!birthday</span
-              >
-              <span class="command-description">Displays birthday details</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Set Birthday</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!setbirthday (Use MM/DD)</span
-              >
-              <span class="command-description">Set your birthday</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Reset Birthday</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!resetbirthday (Mods only)</span
-              >
-              <span class="command-description"
-                >Reset birthday info (mods only)</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Lurk</h3>
-              <span class="command-text" onclick="copyText(this)">!lurk</span>
-              <span class="command-description">Enter lurk mode</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Unlurk</h3>
-              <span class="command-text" onclick="copyText(this)">!unlurk</span>
-              <span class="command-description">Exit lurk mode</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Summon</h3>
-              <span class="command-text" onclick="copyText(this)">!summon</span>
-              <span class="command-description">Summon command</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Troll</h3>
-              <span class="command-text" onclick="copyText(this)">!troll</span>
-              <span class="command-description">Troll a viewer</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">No Spoiler</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!nospoiler</span
-              >
-              <span class="command-description">Avoid spoilers</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Throne Wishlist</h3>
-              <span class="command-text" onclick="copyText(this)">!throne</span>
-              <span class="command-description">My Throne Wishlist</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Gribbish</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!gribbish</span
-              >
-              <span class="command-description">Words are Hard</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Mugshot</h3>
-              <div class="command-group">
-                <span class="command-text" onclick="copyText(this)"
-                  >!mugshot</span
-                >
-                <span class="command-text" onclick="copyText(this)">!ms</span>
-                <span class="command-description"
-                  >Display a mugshot of a viewer</span
-                >
-              </div>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Duel</h3>
-              <span class="command-text" onclick="copyText(this)">!duel</span>
-              <span class="command-description"
-                >Challenge another viewer to a duel</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Elements</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!elements</span
-              >
-              <span class="command-description">Display elemental powers</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Digital Clock</h3>
-              <div class="command-group">
-                <span class="command-text" onclick="copyText(this)">!DC</span>
-                <span class="command-text" onclick="copyText(this)">Clock</span>
-                <span class="command-description"
-                  >Display the current time</span
-                >
-              </div>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Flirt</h3>
-              <span class="command-text" onclick="copyText(this)">!flirt</span>
-              <span class="command-description">Bot be Flirting</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Green Screen On</h3>
-              <span class="command-text" onclick="copyText(this)">!GSON</span>
-              <span class="command-description">Green Screen on</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Green Screen Off</h3>
-              <span class="command-text" onclick="copyText(this)">!GSOFF</span>
-              <span class="command-description">Green Screen off</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Identify</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!identify</span
-              >
-              <span class="command-description">If you are Human or Bot</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Coin Flip</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!coinflips</span
-              >
-              <span class="command-description"
-                >Flip a coin and display the result against other viewers</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Worm Percentage</h3>
-              <span class="command-text" onclick="copyText(this)">!worm</span>
-              <span class="command-description"
-                >Display your worm Percentage</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Yeet Percentage</h3>
-              <span class="command-text" onclick="copyText(this)">!yeet</span>
-              <span class="command-description"
-                >Display your Yeet percentage</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Bounty</h3>
-              <span class="command-text" onclick="copyText(this)">!bounty</span>
-              <span class="command-description"
-                >Display the current bounty for a viewer</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Bounty Upgrades</h3>
-              <div class="command-group">
-                <span class="command-text" onclick="copyText(this)">!buy</span>
-                <span class="command-text" onclick="copyText(this)"
-                  >!upgrades</span
-                >
-                <span class="command-description">for the bounty command</span>
-              </div>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Bounty Credits</h3>
-              <span class="command-text" onclick="copyText(this)">!credit</span>
-              <span class="command-description">Check your bounty credits</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Workout</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!workout</span
-              >
-              <span class="command-description"
-                >Make the streamer exercise
-              </span>
-            </li>
-          </ul>
-        </div>
-      </div>
+  function render() {
+    const wrap = $("#sections");
+    let shown = 0, sectionsShown = 0, idx = 0;
+    const html = CATS.map(cat => {
+      const items = COMMANDS.filter(c => c.cat === cat.id && matches(c));
+      if (!items.length) return "";
+      sectionsShown++;
+      shown += items.length;
+      const collapsed = state.collapsed.has(cat.id);
+      return `
+        <section class="cat ${collapsed ? "collapsed" : ""}" data-cat="${cat.id}">
+          <button class="cat-head" type="button" aria-expanded="${!collapsed}">
+            <span class="emo">${cat.emo}</span>
+            <h2>${esc(cat.name)}</h2>
+            <span class="count">${items.length}</span>
+            ${CHEVRON}
+          </button>
+          <div class="cat-body">${items.map(c => cardHTML(c, idx++)).join("")}</div>
+        </section>`;
+    }).join("");
 
-      <div class="command-section" data-category="Fun and Interaction">
-        <div class="section-header">
-          <h2>Fun and Interaction</h2>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="section-content">
-          <ul>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Battle</h3>
-              <span class="command-text" onclick="copyText(this)">!battle</span>
-              <span class="command-description"
-                >Choose a target for battle.</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Bonk</h3>
-              <span class="command-text" onclick="copyText(this)">!bonk</span>
-              <span class="command-description">Bonk someone playfully</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Clip</h3>
-              <span class="command-text" onclick="copyText(this)">$clip</span>
-              <span class="command-description"
-                >Clip a moment from the stream</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Chaos</h3>
-              <span class="command-text" onclick="copyText(this)">!chaos</span>
-              <span class="command-description">Unleash chaos in chat</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Dork</h3>
-              <span class="command-text" onclick="copyText(this)">!dork</span>
-              <span class="command-description">Send a playful insult</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Dungeon</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!dungeon</span
-              >
-              <span class="command-description">Enter the dungeon</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Fart</h3>
-              <span class="command-text" onclick="copyText(this)">!fart</span>
-              <span class="command-description"
-                >Trigger a funny fart sound</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Hugs</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!hugs (@ someone)</span
-              >
-              <span class="command-description"
-                >Give someone a virtual hug</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Dad Jokes</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!dadjokes</span
-              >
-              <span class="command-description">Tell a dad joke</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Dunno</h3>
-              <span class="command-text" onclick="copyText(this)">!donno</span>
-              <span class="command-description">Express uncertainty</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Umbrella</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!umbrella</span
-              >
-              <span class="command-description">Bring an umbrella</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Add Quote</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >$add qotd</span
-              >
-              <span class="command-description">Add a new quote</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Delete Quote</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >$delete qotd</span
-              >
-              <span class="command-description">Remove a quote</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Quote of the Day</h3>
-              <span class="command-text" onclick="copyText(this)">$qotd</span>
-              <span class="command-description">Randomly select a quote</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Edit Quote</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >$edit qotd</span
-              >
-              <span class="command-description">Edit an existing quote</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Tarot Card</h3>
-              <span class="command-text" onclick="copyText(this)">!tarot</span>
-              <span class="command-description">Draw a tarot card</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+    wrap.innerHTML = html;
+    $("#empty").classList.toggle("show", shown === 0);
+    $("#result-count").innerHTML = `Showing <b>${shown}</b> of <b>${COMMANDS.length}</b> commands`;
+    $("#stat-total").textContent = COMMANDS.reduce((n, c) => n + c.cmds.length, 0);
+    $("#stat-cats").textContent = CATS.length;
+    return sectionsShown;
+  }
 
-      <div class="command-section" data-category="Game and Score Tracking">
-        <div class="section-header">
-          <h2>Game and Score Tracking</h2>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="section-content">
-          <ul>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Death Count</h3>
-              <span class="command-text" onclick="copyText(this)">!deaths</span>
-              <span class="command-description">Display death count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Remove Death</h3>
-              <span class="command-text" onclick="copyText(this)">!death-</span>
-              <span class="command-description">Subtract a death</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Add Death</h3>
-              <span class="command-text" onclick="copyText(this)">!death+</span>
-              <span class="command-description">Add a death</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Reset Deaths</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!resedeaths</span
-              >
-              <span class="command-description">Reset death count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Add Win</h3>
-              <span class="command-text" onclick="copyText(this)">!wins+</span>
-              <span class="command-description">Increase win count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Remove Win</h3>
-              <span class="command-text" onclick="copyText(this)">!wins-</span>
-              <span class="command-description">Decrease win count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Reset Wins</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!resetwins</span
-              >
-              <span class="command-description">Reset wins</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Add Burp</h3>
-              <span class="command-text" onclick="copyText(this)">!burp+</span>
-              <span class="command-description">Increase burp count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Remove Burp</h3>
-              <span class="command-text" onclick="copyText(this)">!burp-</span>
-              <span class="command-description">Decrease burp count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Reset Burps</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!resetburps</span
-              >
-              <span class="command-description">Reset burp count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Add Kill</h3>
-              <span class="command-text" onclick="copyText(this)">!kills+</span>
-              <span class="command-description">Increase kill count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Remove Kill</h3>
-              <span class="command-text" onclick="copyText(this)">!kills-</span>
-              <span class="command-description">Decrease kill count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Reset Kills</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!resetkills</span
-              >
-              <span class="command-description">Reset kill count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Add Loss</h3>
-              <span class="command-text" onclick="copyText(this)">!loss+</span>
-              <span class="command-description">Increase loss count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Remove Loss</h3>
-              <span class="command-text" onclick="copyText(this)">!loss-</span>
-              <span class="command-description">Decrease loss count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Reset Losses</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!resetlosses</span
-              >
-              <span class="command-description">Reset loss count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Add Fart</h3>
-              <span class="command-text" onclick="copyText(this)">!fart+</span>
-              <span class="command-description">Increase fart count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Remove Fart</h3>
-              <span class="command-text" onclick="copyText(this)">!fart-</span>
-              <span class="command-description">Decrease fart count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Reset Farts</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!resetfarts</span
-              >
-              <span class="command-description">Reset fart count</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+  /* ---------- Interactions ---------- */
+  $("#sections").addEventListener("click", async e => {
+    const head = e.target.closest(".cat-head");
+    if (head) {
+      const sec = head.closest(".cat");
+      const id = sec.dataset.cat;
+      const nowCollapsed = !sec.classList.contains("collapsed");
+      sec.classList.toggle("collapsed", nowCollapsed);
+      head.setAttribute("aria-expanded", String(!nowCollapsed));
+      nowCollapsed ? state.collapsed.add(id) : state.collapsed.delete(id);
+      return;
+    }
+    const chip = e.target.closest(".chip-cmd");
+    if (chip) {
+      const text = chip.dataset.copy;
+      const ok = await copy(text);
+      chip.classList.add("copied");
+      setTimeout(() => chip.classList.remove("copied"), 700);
+      toast(ok ? `Copied <code>${esc(text)}</code>` : "Copy failed — select the text manually");
+    }
+  });
 
-      <div class="command-section" data-category="Moderation and Utility">
-        <div class="section-header">
-          <h2>Moderation and Utility</h2>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="section-content">
-          <ul>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Remove Cuss</h3>
-              <span class="command-text" onclick="copyText(this)">!cuss-</span>
-              <span class="command-description">Lower cuss count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Add Cuss</h3>
-              <span class="command-text" onclick="copyText(this)">!cuss+</span>
-              <span class="command-description">Increase cuss count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Reset Cuss</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!resetcuss</span
-              >
-              <span class="command-description">Reset cuss count</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Reset Yawn</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!resetyawn</span
-              >
-              <span class="command-description">Reset yawn counter</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Sub Tier</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!subtier</span
-              >
-              <span class="command-description">Display subscriber tier</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Raid</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >raid (no "!")</span
-              >
-              <span class="command-description">Initiate a raid</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Hide Heart Rate</h3>
-              <span class="command-text" onclick="copyText(this)">!hidehr</span>
-              <span class="command-description">Hide Heart Rate</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+  async function copy(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand("copy");
+      ta.remove();
+      return ok;
+    }
+  }
 
-      <div class="command-section" data-category="Music and Entertainment">
-        <div class="section-header">
-          <h2>Music and Entertainment</h2>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="section-content">
-          <ul>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Play</h3>
-              <span class="command-text" onclick="copyText(this)">!play</span>
-              <span class="command-description">Play the current track</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Pause</h3>
-              <span class="command-text" onclick="copyText(this)">!pause</span>
-              <span class="command-description">Pause the music</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Skip Track</h3>
-              <span class="command-text" onclick="copyText(this)">!skip</span>
-              <span class="command-description">Skip to the next song</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+  let toastTimer;
+  function toast(html) {
+    const t = $("#toast");
+    t.innerHTML = html;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 1600);
+  }
 
-      <div class="command-section" data-category="Special Features">
-        <div class="section-header">
-          <h2>Special Features</h2>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="section-content">
-          <ul>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Game Tags</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!gametags</span
-              >
-              <span class="command-description">Show game tags</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Elgato On</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!elgatoOn</span
-              >
-              <span class="command-description">Activate Elgato lighting</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Elgato Off</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!elgatoOff</span
-              >
-              <span class="command-description"
-                >Deactivate Elgato lighting</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Personal Record</h3>
-              <span class="command-text" onclick="copyText(this)">!pr</span>
-              <span class="command-description">Show PR information</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Hogwarts Mode</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!hogwarts</span
-              >
-              <span class="command-description">Enter Hogwarts mode</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Dungeons &amp; Dragons</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!dnd (Choose a class)</span
-              >
-              <span class="command-description"
-                >Start Dungeons and Dragons</span
-              >
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Start Quiz</h3>
-              <div class="command-group">
-                <span class="command-text" onclick="copyText(this)">!quiz</span>
-                <span class="command-text" onclick="copyText(this)"
-                  >!startquiz</span
-                >
-                <span class="command-description">Begin a quiz session</span>
-              </div>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Answer Quiz</h3>
-              <div class="command-group">
-                <span class="command-text" onclick="copyText(this)"
-                  >!answerquiz</span
-                >
-                <span class="command-text" onclick="copyText(this)"
-                  >!answer</span
-                >
-                <span class="command-description">Submit your quiz answer</span>
-              </div>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Stop Quiz</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!stopquiz</span
-              >
-              <span class="command-description">End the quiz session</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Leaderboard</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!leaderboard</span
-              >
-              <span class="command-description">Show quiz leaderboard</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+  const search = $("#search");
+  search.addEventListener("input", () => {
+    state.q = search.value.trim().toLowerCase();
+    state.collapsed.clear(); // typing expands matching sections
+    render();
+  });
 
-      <div class="command-section" data-category="Moderator Commands">
-        <div class="section-header">
-          <h2>Moderator Commands</h2>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="section-content">
-          <ul>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Ban</h3>
-              <span class="command-text" onclick="copyText(this)">/ban</span>
-              <span class="command-description">Ban a user</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Timeout</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >/timeout</span
-              >
-              <span class="command-description">Timeout a user</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Clear Chat</h3>
-              <span class="command-text" onclick="copyText(this)">/clear</span>
-              <span class="command-description">Clear the chat</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Slow Mode</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >/slowmode</span
-              >
-              <span class="command-description">Toggle slow mode</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Raid</h3>
-              <span class="command-text" onclick="copyText(this)">/raid</span>
-              <span class="command-description">Initiate a raid</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Shout Out</h3>
-              <span class="command-text" onclick="copyText(this)">!so</span>
-              <span class="command-description">Shout out a user</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Grounded</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!grounded</span
-              >
-              <span class="command-description"
-                >Grounding the user for 69 seconds</span
-              >
-            </li>
-          </ul>
-        </div>
-      </div>
+  $("#expand-all").addEventListener("click", () => { state.collapsed.clear(); render(); });
+  $("#collapse-all").addEventListener("click", () => {
+    CATS.forEach(c => state.collapsed.add(c.id));
+    render();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "/" && document.activeElement !== search && !e.target.matches("input, textarea")) {
+      e.preventDefault(); search.focus();
+    }
+    if (e.key === "Escape" && document.activeElement === search && search.value) {
+      search.value = ""; state.q = ""; render();
+    }
+  });
 
-      <div class="command-section" data-category="VIP Commands">
-        <div class="section-header">
-          <h2>VIP Commands</h2>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="section-content">
-          <ul>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Highlight</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!highlight</span
-              >
-              <span class="command-description">Highlight a moment</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Roast</h3>
-              <span class="command-text" onclick="copyText(this)">!roast</span>
-              <span class="command-description">Send a playful roast</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Cheer</h3>
-              <span class="command-text" onclick="copyText(this)">!cheer</span>
-              <span class="command-description">Cheer for the streamer</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+  /* ---------- Dialogs ---------- */
+  const tos = $("#tos-modal"), priv = $("#privacy-modal");
+  $("#open-tos").addEventListener("click", () => tos.showModal());
+  $("#open-privacy").addEventListener("click", () => priv.showModal());
+  document.querySelectorAll("dialog").forEach(d => {
+    d.querySelector("[data-close]").addEventListener("click", () => d.close());
+    d.addEventListener("click", e => { if (e.target === d) d.close(); });
+  });
 
-      <div class="command-section" data-category="Subscriber Commands">
-        <div class="section-header">
-          <h2>Subscriber Commands</h2>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="section-content">
-          <ul>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Sub Emote</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!subemote</span
-              >
-              <span class="command-description">Use subscriber emotes</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Loyalty Points</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!loyalty</span
-              >
-              <span class="command-description">Check loyalty points</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Emotes List</h3>
-              <span class="command-text" onclick="copyText(this)">!emotes</span>
-              <span class="command-description">List available emotes</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+  /* ---------- Twitch live status ---------- */
+  const TWITCH = "https://api.twitch.tv/helix/";
+  async function twitchGet(path) {
+    const r = await fetch(TWITCH + path, {
+      headers: { "Client-ID": CONFIG.twitchClientId, "Authorization": "Bearer " + CONFIG.twitchToken }
+    });
+    if (!r.ok) throw new Error("Twitch " + r.status);
+    return r.json();
+  }
+  async function checkLive() {
+    const pill = $("#live-pill"), text = $("#live-text"), dot = $("#nav-live-dot");
+    try {
+      const u = await twitchGet(`users?login=${encodeURIComponent(CONFIG.channel)}`);
+      const id = u.data?.[0]?.id;
+      if (!id) throw new Error("user not found");
+      const s = await twitchGet(`streams?user_id=${id}`);
+      const live = !!s.data?.length;
+      pill.classList.toggle("live", live);
+      dot.classList.toggle("on", live);
+      text.textContent = live ? "LIVE NOW" : "Offline";
+    } catch (err) {
+      console.warn("Live check failed (check CONFIG credentials):", err);
+      pill.classList.remove("live");
+      dot.classList.remove("on");
+      text.textContent = "Status unavailable";
+    }
+  }
 
-      <div class="command-section" data-category="Follower Commands">
-        <div class="section-header">
-          <h2>Follower Commands</h2>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="section-content">
-          <ul>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Follow Age</h3>
-              <span class="command-text" onclick="copyText(this)"
-                >!followage</span
-              >
-              <span class="command-description">Display follow duration</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Socials</h3>
-              <span class="command-text" onclick="copyText(this)">!social</span>
-              <span class="command-description">Show social links</span>
-            </li>
-            <li class="command-item">
-              <h3 class="command-subgroup-title">Latest Stream</h3>
-              <span class="command-text" onclick="copyText(this)">!latest</span>
-              <span class="command-description">Show latest stream info</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-       <footer class="site-footer">
-      <div class="footer-content">
-        <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
-        <div class="footer-links">
-          <a href="#" id="open-privacy">Privacy Policy</a>
-          <a href="#" id="open-tos">Terms of Service</a>
-        </div>
-      </div>
-    </footer>
-
-    <!-- Terms of Service Glassy Modal -->
-    <div id="tos-modal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Terms of Service</h2>
-        <p>
-          Welcome to Caitlin's Creative Space. By accessing or using our
-          website, you agree to the following terms...
-        </p>
-
-        <p>
-          By accessing or using the Website, you acknowledge that you have read,
-          understood, and agree to be bound by these Terms, as well as our
-          Privacy Policy. If you do not agree to these Terms, you may not use
-          the Website.
-        </p>
-
-        <h3>Changes to Terms</h3>
-        <p>
-          We reserve the right to modify or replace these Terms at any time. If
-          a revision is material, we will provide at least 30 days' notice prior
-          to any new terms taking effect. By continuing to access or use our
-          Website after any revisions become effective, you agree to be bound by
-          the revised terms.
-        </p>
-
-        <h3>Use of Website</h3>
-        <p>
-          You agree to use the Website only for lawful purposes and in a way
-          that does not infringe the rights of, restrict or inhibit anyone
-          else's use and enjoyment of the Website.
-        </p>
-        <ul>
-          <li>
-            Do not use the Website in any way that causes, or may cause, damage
-            to the Website or impairment of the availability or accessibility of
-            the Website.
-          </li>
-          <li>
-            Do not conduct any systematic or automated data collection
-            activities on or in relation to our Website without our express
-            written consent.
-          </li>
-          <li>
-            Do not use the Website to transmit or send unsolicited commercial
-            communications.
-          </li>
-        </ul>
-
-        <h3>Intellectual Property</h3>
-        <p>
-          The Website and its original content, features, and functionality are
-          and will remain the exclusive property of Caitlin's Programming and
-          its licensors. The Website is protected by copyright, trademark, and
-          other laws.
-        </p>
-
-        <h3>Links to Other Websites</h3>
-        <p>
-          Our Website may contain links to third-party websites or services that
-          are not owned or controlled by Caitlin's Programming. We have no
-          control over and assume no responsibility for the content, privacy
-          policies, or practices of any third-party websites or services.
-        </p>
-
-        <h3>Disclaimer</h3>
-        <p>
-          Your use of the Website is at your sole risk. The Website is provided
-          on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the
-          Website will be uninterrupted, secure, or error-free.
-        </p>
-
-        <h3>Governing Law</h3>
-        <p>
-          These Terms shall be governed and construed in accordance with the
-          laws of California, United States, without regard to its conflict of
-          law provisions.
-        </p>
-
-        <p><strong>Effective Date: August 13, 2025</strong></p>
-      </div>
-    </div>
-
-    <!-- Privacy Policy Glassy Modal -->
-    <div id="privacy-modal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Privacy Policy</h2>
-
-        <p>
-          This Privacy Policy describes how Caitlin's Programming collects,
-          uses, and discloses information that we obtain about visitors to our
-          website (caitlinsprogramming.com).
-        </p>
-
-        <h3>Information We Collect</h3>
-        <p>
-          We collect information about you directly from you and automatically
-          through your use of our Website.
-        </p>
-        <h4>Information We Collect Directly From You:</h4>
-        <p>
-          We may collect information you provide directly to us when you
-          interact with our Website, such as when you submit feedback, register
-          for an account, or contact us for support.
-        </p>
-        <h4>Information We Collect Automatically:</h4>
-        <p>
-          We automatically collect information about your use of our Website
-          through cookies, web beacons, and other technologies. This includes
-          your IP address, browser type, OS, pages viewed, links clicked, and
-          the time/date of your visit.
-        </p>
-
-        <h3>How We Use Your Information</h3>
-        <ul>
-          <li>Provide and maintain our Website and its features.</li>
-          <li>Improve our Website and develop new features.</li>
-          <li>Communicate with you about services and updates.</li>
-          <li>Analyze how users interact with our Website.</li>
-        </ul>
-
-        <h3>Disclosure of Your Information</h3>
-        <ul>
-          <li>With your consent.</li>
-          <li>To comply with legal obligations.</li>
-          <li>To protect our rights and property.</li>
-        </ul>
-
-        <h3>Data Security</h3>
-        <p>
-          We have implemented reasonable measures to protect information from
-          loss, misuse, unauthorized access, disclosure, alteration, and
-          destruction.
-        </p>
-
-        <h3>Changes to This Policy</h3>
-        <p>
-          We may update this Privacy Policy from time to time. We will notify
-          you by posting the new policy on this page.
-        </p>
-
-        <p><strong>Last updated: August 13, 2025</strong></p>
-      </div>
-    </div>
-
-
-    <script src="stream-commands.js"></script>
-  </body>
+  /* ---------- Init ---------- */
+  buildFilters();
+  render();
+  checkLive();
+  setInterval(checkLive, CONFIG.liveCheckMs);
+})();
+</script>
+</body>
 </html>
