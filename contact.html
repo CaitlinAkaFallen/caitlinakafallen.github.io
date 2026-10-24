@@ -1,274 +1,1154 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Contact and Socials</title>
-        <script src="https://kit.fontawesome.com/abc123def456.js" crossorigin="anonymous"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
-        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-        <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-        <link rel="stylesheet" href="contact.css">
-        
-    </head>
-    <body>
-  <!-- Horizontal Navigation Bar -->
-<nav id="horizontal-nav" class="horizontal-nav">
-  <ul class="nav-list">
-    <li>
-      <a id="nav-mainpage" href="main-page.html">
-        <i class="fas fa-home"></i><span>Main Page</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-art" href="viewer-art.html">
-        <i class="fas fa-paint-brush"></i><span>Gallery</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-conventions" href="viewers-convention.html">
-        <i class="fas fa-users"></i><span>Conventions</span>
-      </a>
-    </li>
-    <li>
-        <a id="nav-photography" href="photography.html">
-            <i class="fas fa-camera"></i><span>Photography</span>
-        </a>
-    </li>
-    <li>
-      <a id="nav-coding" href="programming.html">
-        <i class="fas fa-code"></i><span>Programming</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-streaming" href="schedule.html">
-        <i class="fas fa-video"></i><span>Content</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-about-me" href="about.html">
-        <i class="fas fa-user"></i><span>About</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-contact" href="contact.html">
-        <i class="fas fa-envelope"></i><span>Contact</span>
-      </a>
-    </li>
-  </ul>
-</nav>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0912">
+  <title>Contact and Socials | Caitlin's Creative Space</title>
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
 
-    <section id="contact">
-        <h2>Contact Me</h2>
-        <ul>
-            <li>Have questions, comments, or project inquiries?</li>
-            <li>DM me on my Social Media, and I'll get back to you as soon as possible. I look forward to hearing from you!</li>
-        </ul>
-    </section>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+  <script>document.documentElement.classList.add("js");</script>
+  <style>
+    /* =========================================================
+   Caitlin's Creative Space: Contact
+   Same glass system as the About page. The memorable moment is the
+   short conversation in the hero; the cards answer the cursor.
+   ========================================================= */
 
-    <section id="contacts">
-        <div id="social-content" class="tab-content active-tab">
-            <header>
-                <h3>Social Media</h3>
-            </header>
-            <div id="social-sidebar" class="socials">
-                <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener noreferrer" class="social-link">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
-                <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link">
-                    <i class="fa-brands fa-bluesky"></i>
-                </a>
-                <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" rel="noopener noreferrer" class="social-link">
-                    <i class="fa-brands fa-patreon"></i>
-                </a>
-                <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener noreferrer" class="social-link">
-                    <i class="fa-brands fa-github"></i>
-                </a>
-            </div>
+:root {
+  --ink: #0a0912;
+  --glass: rgba(255, 255, 255, 0.055);
+  --glass-strong: rgba(255, 255, 255, 0.095);
+  --line: rgba(255, 255, 255, 0.12);
+  --text: #f1eefb;
+  --muted: #b7b0cc;
+  --violet: #c2a2fc;
+  --violet-deep: #6e18f8;
+  --teal: #4fd6ee;
+  --pink: #f472b6;
+  --butter: #fdf471;
+
+  --font-display: "Unbounded", Georgia, "Times New Roman", serif;
+  --font-body: "Manrope", "Poppins", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+
+  --radius-lg: 28px;
+  --radius-md: 20px;
+  --radius-pill: 999px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+html.modal-open { overflow: hidden; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--ink);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fine film grain */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: none;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+
+.skip-link {
+  position: fixed;
+  top: -60px; left: 16px;
+  z-index: 3000;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--butter);
+  color: #000;
+  font-weight: 700;
+  transition: top 0.2s var(--ease);
+}
+.skip-link:focus { top: 14px; }
+
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   Ambient background
+   ========================================================= */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(42vmax 42vmax at 10% 6%, rgba(110, 24, 248, 0.3), transparent 60%),
+    radial-gradient(38vmax 38vmax at 94% 24%, rgba(79, 214, 238, 0.2), transparent 60%),
+    radial-gradient(46vmax 46vmax at 58% 110%, rgba(244, 114, 182, 0.13), transparent 60%),
+    radial-gradient(40vmax 40vmax at 40% 105%, rgba(194, 162, 252, 0.14), transparent 60%);
+  animation: drift 30s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(-2%, 3%, 0) scale(1.08); }
+}
+
+/* =========================================================
+   Navigation dock
+   ========================================================= */
+.horizontal-nav {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  max-width: calc(100% - 24px);
+  padding: 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(18, 16, 29, 0.62);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.horizontal-nav::-webkit-scrollbar { display: none; }
+
+.nav-list {
+  position: relative;
+  list-style: none;
+  display: flex;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+}
+.nav-list li { display: flex; }
+
+.nav-list .nav-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  border-radius: var(--radius-pill);
+  background: var(--glass-strong);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s var(--ease), width 0.35s var(--ease), opacity 0.2s var(--ease);
+}
+.nav-list .nav-pill.show { opacity: 1; }
+
+.nav-list a {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--muted);
+  transition: color 0.25s var(--ease);
+}
+.nav-list a i { font-size: 15px; }
+.nav-list a:hover { color: var(--text); }
+
+.nav-list a[aria-current="page"] {
+  color: #0a0912;
+  background: linear-gradient(135deg, var(--teal), var(--violet));
+  box-shadow: 0 4px 18px rgba(79, 214, 238, 0.32);
+}
+
+/* =========================================================
+   Layout
+   ========================================================= */
+main {
+  width: min(1120px, 100% - 40px);
+  margin: 0 auto;
+  padding: 140px 0 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 96px;
+}
+
+/* =========================================================
+   Hero
+   ========================================================= */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr minmax(300px, 460px);
+  gap: clamp(32px, 6vw, 88px);
+  align-items: center;
+}
+
+.intro { max-width: 560px; }
+
+.intro h1 {
+  margin: 0 0 24px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 6.2vw, 4.7rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.lede {
+  margin: 0 0 34px;
+  max-width: 44ch;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 26px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease);
+}
+
+.btn-primary {
+  color: #fff;
+  background: linear-gradient(135deg, #7c3aed, var(--violet-deep));
+  box-shadow: 0 10px 30px rgba(110, 24, 248, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 38px rgba(110, 24, 248, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.btn-ghost {
+  color: var(--text);
+  background: var(--glass);
+  border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.btn-ghost:hover { background: var(--glass-strong); transform: translateY(-2px); }
+
+/* Page-load sequence for the headline block */
+.intro > * {
+  opacity: 0;
+  animation: rise 0.95s var(--ease) forwards;
+  animation-delay: calc(var(--i, 0) * 90ms + 80ms);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   Conversation (the memorable moment)
+   ========================================================= */
+.chat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(22px, 3vw, 34px);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(90% 70% at 100% 0%, rgba(110, 24, 248, 0.26), transparent 65%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.03));
+  box-shadow: inset 0 0 0 1px var(--line), 0 30px 70px rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  min-height: 300px;
+  justify-content: center;
+}
+
+.bubble {
+  max-width: 88%;
+  padding: 16px 20px;
+  border-radius: 22px;
+}
+.bubble p { margin: 0; font-size: 16px; line-height: 1.55; }
+
+.bubble.visitor {
+  align-self: flex-end;
+  border-bottom-right-radius: 6px;
+  background: var(--glass-strong);
+  box-shadow: inset 0 0 0 1px var(--line);
+  animation: pop 0.6s var(--ease) 0.5s both;
+}
+
+.reply-row { display: grid; }
+.reply-row > * { grid-area: 1 / 1; }
+
+.reply {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  animation: pop 0.7s var(--ease) 3s both;
+}
+
+.avatar {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--teal), 0 0 18px rgba(79, 214, 238, 0.4);
+}
+
+.bubble.mine {
+  border-bottom-left-radius: 6px;
+  color: #fff;
+  background: linear-gradient(135deg, #7c3aed, var(--violet-deep));
+  box-shadow: 0 10px 28px rgba(110, 24, 248, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Typing indicator, then replaced by the reply */
+.typing {
+  align-self: end;
+  justify-self: start;
+  margin-left: 50px;
+  display: inline-flex;
+  gap: 5px;
+  padding: 15px 18px;
+  border-radius: 22px;
+  border-bottom-left-radius: 6px;
+  background: var(--glass-strong);
+  box-shadow: inset 0 0 0 1px var(--line);
+  animation: typing-life 1.7s linear 1.3s both;
+}
+.typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: dot 0.9s ease-in-out infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.15s; }
+.typing span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes pop {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes typing-life {
+  0%   { opacity: 0; transform: translateY(10px); visibility: visible; }
+  12%  { opacity: 1; transform: none; }
+  88%  { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@keyframes dot {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%      { transform: translateY(-4px); opacity: 1; }
+}
+
+/* =========================================================
+   Link groups
+   ========================================================= */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.4rem, 2.8vw, 2rem);
+  letter-spacing: -0.03em;
+}
+
+.section-head p { margin: 0; font-size: 14px; color: var(--muted); }
+
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+.cards-3 { grid-template-columns: repeat(3, 1fr); }
+.cards li { display: flex; }
+
+.js .cards li {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  transition-delay: calc(var(--n, 0) * 60ms);
+}
+.js .cards li.in { opacity: 1; transform: none; }
+
+.card {
+  --mx: 50%;
+  --my: 50%;
+  --accent: var(--teal);
+  --accent-rgb: 79, 214, 238;
+  position: relative;
+  flex: 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
+  box-shadow: inset 0 0 0 1px var(--line), 0 10px 30px rgba(0, 0, 0, 0.25);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    340px circle at var(--mx) var(--my),
+    rgba(var(--accent-rgb), 0.2),
+    rgba(var(--accent-rgb), 0.06) 45%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+  pointer-events: none;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: radial-gradient(
+    240px circle at var(--mx) var(--my),
+    rgba(var(--accent-rgb), 0.95),
+    transparent 65%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+  pointer-events: none;
+}
+
+.card:hover,
+.card:focus-within {
+  transform: translateY(-4px);
+  box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.22), 0 22px 44px rgba(0, 0, 0, 0.4);
+}
+.card:hover::before,
+.card:focus-within::before,
+.card:hover::after,
+.card:focus-within::after { opacity: 1; }
+
+.card-link {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 76px 22px 22px;
+  min-height: 96px;
+}
+
+.badge {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  font-size: 24px;
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.14);
+  box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.3);
+  transition: transform 0.4s var(--ease), background 0.3s var(--ease);
+}
+.card:hover .badge { transform: rotate(-6deg) scale(1.08); background: rgba(var(--accent-rgb), 0.22); }
+
+.kick-mark {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  color: #0a0912;
+  background: var(--accent);
+}
+
+.card-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.card-text strong { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+.card-text small {
+  font-size: 14px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.go {
+  position: absolute;
+  right: 66px;
+  top: 50%;
+  font-size: 13px;
+  color: var(--muted);
+  transform: translate(-6px, -50%);
+  opacity: 0;
+  transition: transform 0.35s var(--ease), opacity 0.25s var(--ease), color 0.25s var(--ease);
+}
+.card:hover .go,
+.card-link:focus-visible .go { opacity: 1; transform: translate(0, -50%); color: var(--accent); }
+
+.copy {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: var(--muted);
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color 0.25s var(--ease), background 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.copy:hover { color: var(--text); background: var(--glass-strong); border-color: rgba(var(--accent-rgb), 0.6); }
+.copy.done { color: #0a0912; background: var(--accent); border-color: var(--accent); }
+
+.cards-3 .card-link { padding-right: 74px; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 3000;
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  background: rgba(18, 16, 29, 0.9);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--line);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translate(-50%, 14px);
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* =========================================================
+   Footer
+   ========================================================= */
+.site-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 26px clamp(20px, 5vw, 48px) calc(26px + env(safe-area-inset-bottom, 0px));
+  background: rgba(18, 16, 29, 0.6);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.copyright { margin: 0; font-size: 13px; }
+
+.footer-links { display: flex; gap: 8px; }
+
+.link-btn {
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: color 0.25s var(--ease), background 0.25s var(--ease);
+}
+.link-btn:hover { color: var(--text); background: var(--glass-strong); }
+
+/* =========================================================
+   Legal dialogs
+   ========================================================= */
+.modal {
+  width: min(720px, calc(100% - 32px));
+  max-height: min(82vh, 760px);
+  padding: 0;
+  color: var(--text);
+  background: rgba(18, 16, 29, 0.88);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.modal::backdrop {
+  background: rgba(5, 4, 10, 0.62);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.modal[open] { animation: dialog-in 0.4s var(--ease); }
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+.modal-content {
+  position: relative;
+  max-height: min(82vh, 760px);
+  overflow-y: auto;
+  padding: 34px clamp(22px, 4vw, 40px) 36px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(79, 214, 238, 0.5) transparent;
+}
+
+.modal-content h2 {
+  margin: 0 0 18px;
+  padding-right: 48px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  letter-spacing: -0.03em;
+}
+.modal-content h3 { margin: 28px 0 8px; font-size: 17px; }
+.modal-content h4 { margin: 18px 0 6px; font-size: 15px; color: var(--violet); }
+.modal-content p,
+.modal-content li { font-size: 15px; line-height: 1.7; color: var(--muted); }
+.modal-content p { margin: 0 0 12px; }
+.modal-content strong { color: var(--text); }
+.modal-content ul { margin: 0 0 12px; padding-left: 20px; }
+
+.close {
+  position: sticky;
+  top: 0;
+  float: right;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  margin: -8px -8px 0 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text);
+  background: var(--glass-strong);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+}
+.close:hover { background: var(--teal); color: #0a0912; }
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .intro { max-width: none; }
+  .cards-3 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  main { padding-top: 112px; gap: 72px; }
+  .hero { text-align: center; }
+  .lede { margin-inline: auto; }
+  .actions { justify-content: center; }
+
+  .nav-list a { padding: 10px 13px; }
+  .nav-list a:not([aria-current="page"]) span { display: none; }
+
+  .site-footer { flex-direction: column; text-align: center; }
+}
+
+@media (max-width: 600px) {
+  .cards { grid-template-columns: 1fr; }
+  .bubble { max-width: 94%; }
+}
+
+/* =========================================================
+   Reduced motion
+   ========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .aurora { animation: none; }
+  .intro > *,
+  .bubble.visitor,
+  .reply { opacity: 1; animation: none; }
+  .typing { display: none; }
+  .js .cards li { opacity: 1; transform: none; transition: none; }
+  .card,
+  .btn,
+  .badge,
+  .go,
+  .nav-list .nav-pill { transition: none; }
+  .modal[open] { animation: none; }
+}
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#contact">Skip to content</a>
+
+  <div class="aurora" aria-hidden="true"></div>
+
+  <!-- Floating navigation dock -->
+  <nav id="horizontal-nav" class="horizontal-nav" aria-label="Main">
+    <ul class="nav-list">
+      <li class="nav-pill" aria-hidden="true"></li>
+      <li><a id="nav-mainpage" href="main-page.html"><i class="fas fa-home" aria-hidden="true"></i><span>Main Page</span></a></li>
+      <li><a id="nav-art" href="viewer-art.html"><i class="fas fa-paint-brush" aria-hidden="true"></i><span>Gallery</span></a></li>
+      <li><a id="nav-conventions" href="viewers-convention.html"><i class="fas fa-users" aria-hidden="true"></i><span>Conventions</span></a></li>
+      <li><a id="nav-photography" href="photography.html"><i class="fas fa-camera" aria-hidden="true"></i><span>Photography</span></a></li>
+      <li><a id="nav-coding" href="programming.html"><i class="fas fa-code" aria-hidden="true"></i><span>Programming</span></a></li>
+      <li><a id="nav-streaming" href="schedule.html"><i class="fas fa-video" aria-hidden="true"></i><span>Content</span></a></li>
+      <li><a id="nav-about-me" href="about.html"><i class="fas fa-user" aria-hidden="true"></i><span>About</span></a></li>
+      <li><a id="nav-contact" href="contact.html" aria-current="page"><i class="fas fa-envelope" aria-hidden="true"></i><span>Contact</span></a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <!-- Hero: headline + a short conversation -->
+    <section id="contact" class="hero">
+      <div class="intro">
+        <h1 style="--i:0">Contact me</h1>
+        <p class="lede" style="--i:1">Pick a platform below and send me a message. Copy a link with one tap if you'd rather paste it somewhere.</p>
+        <div class="actions" style="--i:2">
+          <a class="btn btn-primary" href="#social"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Find my socials</a>
+          <a class="btn btn-ghost" href="#streaming">Watch me live</a>
+        </div>
+      </div>
+
+      <div class="chat" aria-label="How to reach me">
+        <div class="bubble visitor">
+          <p>Have questions, comments, or project inquiries?</p>
         </div>
 
-        <div id="streaming-content" class="tab-content">
-            <header>
-                <h3>Streaming Platforms</h3>
-            </header>
-            <div class="streaming-platforms">
-                <a href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer" class="social-link">
-                <i class="fa-brands fa-twitch"></i>
-                </a>
-                <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener noreferrer" class="social-link">
-                    <i class="fa-brands fa-youtube"></i>
-                </a>
-                <a href="https://kick.com/caitlinakafallen" target="_blank" rel="noopener noreferrer" class="social-link kick-link">
-                    <i class="fa-brands fa-kickstarter-k"></i>
-                </a> 
+        <div class="reply-row">
+          <div class="typing" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="reply">
+            <img class="avatar" src="images/me.jpg" alt="" width="40" height="40">
+            <div class="bubble mine">
+              <p>DM me on my social media, and I'll get back to you as soon as possible. I look forward to hearing from you!</p>
             </div>
+          </div>
         </div>
+      </div>
     </section>
 
-        <script>
-       document.addEventListener('DOMContentLoaded', function() {
-            /* ===== REMOVE .HTML FROM URL ===== */
-            (function hideHtmlInURL() {
-                const pathname = window.location.pathname;
-                if (pathname.endsWith(".html")) {
-                    // Replace URL in browser without reloading the page
-                    window.history.replaceState({}, "", pathname.replace(".html", ""));
-                }
-            })();
-          const tabButtons = document.querySelectorAll('.tab-button');
-          const tabContents = document.querySelectorAll('.tab-content');
+    <!-- Social media -->
+    <section id="social" class="group" aria-labelledby="social-title">
+      <div class="section-head">
+        <h2 id="social-title">Social media</h2>
+        <p>Best places to send a DM.</p>
+      </div>
 
-          tabButtons.forEach(button => {
-              button.addEventListener('click', () => {
-                  const tab = button.getAttribute('data-tab');
+      <ul class="cards">
+        <li style="--n:0">
+          <div class="card" style="--accent:#e4569b; --accent-rgb:228,86,155">
+            <a class="card-link" href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener noreferrer">
+              <span class="badge"><i class="fa-brands fa-instagram" aria-hidden="true"></i></span>
+              <span class="card-text"><strong>Instagram</strong><small>@caitlinakafallen</small></span>
+              <i class="fa-solid fa-arrow-up-right-from-square go" aria-hidden="true"></i>
+            </a>
+            <button class="copy" type="button" data-copy="https://www.instagram.com/caitlinakafallen/" data-name="Instagram" aria-label="Copy Instagram link"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+          </div>
+        </li>
 
-                  tabButtons.forEach(btn => btn.classList.remove('active'));
-                  tabContents.forEach(content => content.classList.remove('active-tab'));
+        <li style="--n:1">
+          <div class="card" style="--accent:#4aa8ff; --accent-rgb:74,168,255">
+            <a class="card-link" href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener noreferrer">
+              <span class="badge"><i class="fa-brands fa-bluesky" aria-hidden="true"></i></span>
+              <span class="card-text"><strong>Bluesky</strong><small>@caitlinakfallen.bsky.social</small></span>
+              <i class="fa-solid fa-arrow-up-right-from-square go" aria-hidden="true"></i>
+            </a>
+            <button class="copy" type="button" data-copy="https://bsky.app/profile/caitlinakfallen.bsky.social" data-name="Bluesky" aria-label="Copy Bluesky link"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+          </div>
+        </li>
 
-                  button.classList.add('active');
-                  document.getElementById(`${tab}-content`).classList.add('active-tab');
-              });
-          });
-          // =========================
-        // MODAL LOGIC
-        // =========================
-        const tosModal = document.getElementById('tos-modal');
-        const privacyModal = document.getElementById('privacy-modal');
-        const openTos = document.getElementById('open-tos');
-        const openPrivacy = document.getElementById('open-privacy');
-        const closeButtons = document.querySelectorAll('.modal .close');
+        <li style="--n:2">
+          <div class="card" style="--accent:#ff6b74; --accent-rgb:255,107,116">
+            <a class="card-link" href="https://www.patreon.com/c/FallenOneArt" target="_blank" rel="noopener noreferrer">
+              <span class="badge"><i class="fa-brands fa-patreon" aria-hidden="true"></i></span>
+              <span class="card-text"><strong>Patreon</strong><small>FallenOneArt</small></span>
+              <i class="fa-solid fa-arrow-up-right-from-square go" aria-hidden="true"></i>
+            </a>
+            <button class="copy" type="button" data-copy="https://www.patreon.com/c/FallenOneArt" data-name="Patreon" aria-label="Copy Patreon link"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+          </div>
+        </li>
 
-        function openModal(modal) {
-            if (modal) modal.classList.add('show');
-        }
+        <li style="--n:3">
+          <div class="card" style="--accent:#e6edf3; --accent-rgb:230,237,243">
+            <a class="card-link" href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener noreferrer">
+              <span class="badge"><i class="fa-brands fa-github" aria-hidden="true"></i></span>
+              <span class="card-text"><strong>GitHub</strong><small>CaitlinAkaFallen</small></span>
+              <i class="fa-solid fa-arrow-up-right-from-square go" aria-hidden="true"></i>
+            </a>
+            <button class="copy" type="button" data-copy="https://github.com/CaitlinAkaFallen" data-name="GitHub" aria-label="Copy GitHub link"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+          </div>
+        </li>
+      </ul>
+    </section>
 
-        function closeModal(modal) {
-            if (modal) modal.classList.remove('show');
-        }
+    <!-- Streaming platforms -->
+    <section id="streaming" class="group" aria-labelledby="streaming-title">
+      <div class="section-head">
+        <h2 id="streaming-title">Streaming platforms</h2>
+        <p>Catch a stream live.</p>
+      </div>
 
-        if (openTos) {
-            openTos.addEventListener('click', e => {
-                e.preventDefault();
-                openModal(tosModal);
-            });
-        }
+      <ul class="cards cards-3">
+        <li style="--n:4">
+          <div class="card" style="--accent:#a970ff; --accent-rgb:169,112,255">
+            <a class="card-link" href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer">
+              <span class="badge"><i class="fa-brands fa-twitch" aria-hidden="true"></i></span>
+              <span class="card-text"><strong>Twitch</strong><small>fallenoneart</small></span>
+              <i class="fa-solid fa-arrow-up-right-from-square go" aria-hidden="true"></i>
+            </a>
+            <button class="copy" type="button" data-copy="https://www.twitch.tv/fallenoneart" data-name="Twitch" aria-label="Copy Twitch link"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+          </div>
+        </li>
 
-        if (openPrivacy) {
-            openPrivacy.addEventListener('click', e => {
-                e.preventDefault();
-                openModal(privacyModal);
-            });
-        }
+        <li style="--n:5">
+          <div class="card" style="--accent:#ff4d4d; --accent-rgb:255,77,77">
+            <a class="card-link" href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener noreferrer">
+              <span class="badge"><i class="fa-brands fa-youtube" aria-hidden="true"></i></span>
+              <span class="card-text"><strong>YouTube</strong><small>@caitlinakafallen</small></span>
+              <i class="fa-solid fa-arrow-up-right-from-square go" aria-hidden="true"></i>
+            </a>
+            <button class="copy" type="button" data-copy="https://www.youtube.com/@caitlinakafallen" data-name="YouTube" aria-label="Copy YouTube link"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+          </div>
+        </li>
 
-        closeButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const modal = btn.closest('.modal');
-                closeModal(modal);
-            });
-        });
+        <li style="--n:6">
+          <div class="card" style="--accent:#53fc18; --accent-rgb:83,252,24">
+            <a class="card-link" href="https://kick.com/caitlinakafallen" target="_blank" rel="noopener noreferrer">
+              <span class="badge"><span class="kick-mark" aria-hidden="true">K</span></span>
+              <span class="card-text"><strong>Kick</strong><small>caitlinakafallen</small></span>
+              <i class="fa-solid fa-arrow-up-right-from-square go" aria-hidden="true"></i>
+            </a>
+            <button class="copy" type="button" data-copy="https://kick.com/caitlinakafallen" data-name="Kick" aria-label="Copy Kick link"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </main>
 
-        window.addEventListener('click', e => {
-            if (e.target.classList.contains('modal')) {
-                closeModal(e.target);
-            }
-        });
+  <footer class="site-footer">
+    <p class="copyright">&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
+    <div class="footer-links">
+      <button type="button" class="link-btn" id="open-privacy">Privacy Policy</button>
+      <button type="button" class="link-btn" id="open-tos">Terms of Service</button>
+    </div>
+  </footer>
 
-        window.addEventListener('keydown', e => {
-            if (e.key === 'Escape') {
-                closeModal(tosModal);
-                closeModal(privacyModal);
-            }
-        });
+  <!-- Copy confirmation -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Terms of Service -->
+  <dialog id="tos-modal" class="modal" aria-labelledby="tos-title">
+    <div class="modal-content">
+      <button type="button" class="close" aria-label="Close terms of service">&times;</button>
+      <h2 id="tos-title">Terms of Service</h2>
+      <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
+
+      <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
+
+      <h3>Changes to Terms</h3>
+      <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
+
+      <h3>Use of Website</h3>
+      <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
+      <ul>
+        <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
+        <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
+        <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
+      </ul>
+
+      <h3>Intellectual Property</h3>
+      <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
+
+      <h3>Links to Other Websites</h3>
+      <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+
+      <h3>Disclaimer</h3>
+      <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
+
+      <h3>Governing Law</h3>
+      <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
+
+      <p><strong>Effective Date: August 13, 2025</strong></p>
+    </div>
+  </dialog>
+
+  <!-- Privacy Policy -->
+  <dialog id="privacy-modal" class="modal" aria-labelledby="privacy-title">
+    <div class="modal-content">
+      <button type="button" class="close" aria-label="Close privacy policy">&times;</button>
+      <h2 id="privacy-title">Privacy Policy</h2>
+
+      <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
+
+      <h3>Information We Collect</h3>
+      <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+      <h4>Information We Collect Directly From You:</h4>
+      <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+      <h4>Information We Collect Automatically:</h4>
+      <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
+
+      <h3>How We Use Your Information</h3>
+      <ul>
+        <li>Provide and maintain our Website and its features.</li>
+        <li>Improve our Website and develop new features.</li>
+        <li>Communicate with you about services and updates.</li>
+        <li>Analyze how users interact with our Website.</li>
+      </ul>
+
+      <h3>Disclosure of Your Information</h3>
+      <ul>
+        <li>With your consent.</li>
+        <li>To comply with legal obligations.</li>
+        <li>To protect our rights and property.</li>
+      </ul>
+
+      <h3>Data Security</h3>
+      <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
+
+      <h3>Changes to This Policy</h3>
+      <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
+
+      <p><strong>Last updated: August 13, 2025</strong></p>
+    </div>
+  </dialog>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const finePointer = window.matchMedia("(pointer: fine)").matches;
+
+  /* ===== REMOVE .HTML FROM URL (http/https only) ===== */
+  (function hideHtmlInURL() {
+    try {
+      if (!/^https?:$/.test(window.location.protocol)) return;
+      const pathname = window.location.pathname;
+      if (pathname.endsWith(".html")) {
+        window.history.replaceState({}, "", pathname.replace(/\.html$/, "") + window.location.search + window.location.hash);
+      }
+    } catch (err) {
+      /* cosmetic only */
+    }
+  })();
+
+  /* ===== NAV: keep the active page in view on small screens ===== */
+  const nav = document.getElementById("horizontal-nav");
+  const navList = nav && nav.querySelector(".nav-list");
+  const current = nav && nav.querySelector('[aria-current="page"]');
+  if (nav && current) {
+    nav.scrollLeft = Math.max(0, current.offsetLeft - nav.clientWidth / 2 + current.offsetWidth / 2);
+  }
+
+  /* ===== NAV: sliding hover pill ===== */
+  const pill = navList && navList.querySelector(".nav-pill");
+  if (pill && finePointer) {
+    const links = Array.from(navList.querySelectorAll("a"));
+
+    function moveTo(link) {
+      const li = link.parentElement;
+      pill.style.width = li.offsetWidth + "px";
+      pill.style.transform = "translateX(" + li.offsetLeft + "px)";
+      pill.classList.add("show");
+    }
+
+    links.forEach((link) => {
+      link.addEventListener("mouseenter", () => moveTo(link));
+      link.addEventListener("focus", () => moveTo(link));
+    });
+    navList.addEventListener("mouseleave", () => pill.classList.remove("show"));
+    navList.addEventListener("focusout", (e) => {
+      if (!navList.contains(e.relatedTarget)) pill.classList.remove("show");
+    });
+  }
+
+  /* ===== CARDS: cursor-following spotlight ===== */
+  if (finePointer) {
+    document.querySelectorAll(".card").forEach((card) => {
+      card.addEventListener("pointermove", (e) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--mx", e.clientX - rect.left + "px");
+        card.style.setProperty("--my", e.clientY - rect.top + "px");
       });
+    });
+  }
 
-        </script>
+  /* ===== CARDS: staggered reveal on scroll ===== */
+  const items = document.querySelectorAll(".cards li");
+  if (items.length) {
+    if (reduceMotion || !("IntersectionObserver" in window)) {
+      items.forEach((li) => li.classList.add("in"));
+    } else {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("in");
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15, rootMargin: "0px 0px -6% 0px" }
+      );
+      items.forEach((li) => io.observe(li));
+    }
+  }
 
+  /* ===== COPY LINK BUTTONS ===== */
+  const toast = document.getElementById("toast");
+  let toastTimer = null;
 
-       <footer class="site-footer">
-        <div class="footer-content">
-            <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
-            <div class="footer-links">
-                <a href="#" id="open-privacy">Privacy Policy</a>
-                <a href="#" id="open-tos">Terms of Service</a>
-            </div>
-        </div>
-    </footer>
+  function showToast(message) {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+  }
 
-        <!-- Terms of Service Glassy Modal -->
-    <div id="tos-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Terms of Service</h2>
-            <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
+  function legacyCopy(text) {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+    document.body.removeChild(area);
+    return ok;
+  }
 
-            <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        /* fall through to legacy copy */
+      }
+    }
+    return legacyCopy(text);
+  }
 
-            <h3>Changes to Terms</h3>
-            <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
+  document.querySelectorAll(".copy").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const ok = await copyText(btn.dataset.copy);
+      if (ok) {
+        const icon = btn.querySelector("i");
+        btn.classList.add("done");
+        if (icon) icon.className = "fa-solid fa-check";
+        showToast(btn.dataset.name + " link copied");
+        setTimeout(() => {
+          btn.classList.remove("done");
+          if (icon) icon.className = "fa-regular fa-copy";
+        }, 1800);
+      } else {
+        showToast("Couldn't copy. Open the link and copy it from the address bar.");
+      }
+    });
+  });
 
-            <h3>Use of Website</h3>
-            <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
-            <ul>
-                <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
-                <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
-                <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
-            </ul>
+  /* ===== LEGAL DIALOGS ===== */
+  const tosModal = document.getElementById("tos-modal");
+  const privacyModal = document.getElementById("privacy-modal");
+  const root = document.documentElement;
 
-            <h3>Intellectual Property</h3>
-            <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
+  function openModal(modal) {
+    if (!modal) return;
+    if (typeof modal.showModal === "function") {
+      modal.showModal();
+      root.classList.add("modal-open");
+      const content = modal.querySelector(".modal-content");
+      if (content) content.scrollTop = 0;
+    }
+  }
 
-            <h3>Links to Other Websites</h3>
-            <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+  function bindDialog(modal, opener) {
+    if (!modal) return;
+    if (opener) opener.addEventListener("click", () => openModal(modal));
 
-            <h3>Disclaimer</h3>
-            <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
+    const closeBtn = modal.querySelector(".close");
+    if (closeBtn) closeBtn.addEventListener("click", () => modal.close());
 
-            <h3>Governing Law</h3>
-            <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
+    // Click on the dimmed backdrop closes the dialog
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.close();
+    });
 
-            <p><strong>Effective Date: August 13, 2025</strong></p>
-        </div>
-    </div>
+    modal.addEventListener("close", () => {
+      if (!document.querySelector("dialog[open]")) root.classList.remove("modal-open");
+    });
+  }
 
-    <!-- Privacy Policy Glassy Modal -->
-    <div id="privacy-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Privacy Policy</h2>
-
-            <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
-
-            <h3>Information We Collect</h3>
-            <p>We collect information about you directly from you and automatically through your use of our Website.</p>
-            <h4>Information We Collect Directly From You:</h4>
-            <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
-            <h4>Information We Collect Automatically:</h4>
-            <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
-
-            <h3>How We Use Your Information</h3>
-            <ul>
-                <li>Provide and maintain our Website and its features.</li>
-                <li>Improve our Website and develop new features.</li>
-                <li>Communicate with you about services and updates.</li>
-                <li>Analyze how users interact with our Website.</li>
-            </ul>
-
-            <h3>Disclosure of Your Information</h3>
-            <ul>
-                <li>With your consent.</li>
-                <li>To comply with legal obligations.</li>
-                <li>To protect our rights and property.</li>
-            </ul>
-
-            <h3>Data Security</h3>
-            <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
-
-            <h3>Changes to This Policy</h3>
-            <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
-
-            <p><strong>Last updated: August 13, 2025</strong></p>
-        </div>
-    </div>
-
-    </body>
+  bindDialog(tosModal, document.getElementById("open-tos"));
+  bindDialog(privacyModal, document.getElementById("open-privacy"));
+});
+  </script>
+</body>
 </html>
