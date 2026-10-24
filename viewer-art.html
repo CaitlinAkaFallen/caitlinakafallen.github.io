@@ -1,1160 +1,1144 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Caitlins's Gallery</title>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
-        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-        <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-        <style>
-
-             /* =========================
-            Global Styles
-            ========================= */
-            body {
-            font-family: "Poppins", Arial, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #000000);
-            overflow-x: hidden;
-            color: #fff;
-            }
-            
-            /* main container */
-            .container {
-            max-width:1200px;
-            margin: 0 auto;
-            padding: calc(var(--glass-padding) * 2);
-            width:100%;
-            transition: all var(--transition);
-            }
-
-            /* =========================
-            Navigation Bar
-            ========================= */
-            .horizontal-nav {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            overflow-x: auto;
-            scrollbar-width: none;
-            }
-
-            .horizontal-nav::-webkit-scrollbar { display: none; }
-
-            /* Nav List */
-            .nav-list {
-            list-style: none;
-            display: flex;
-            gap: 15px;
-            padding: 0;
-            margin: 0;
-            }
-
-            .nav-list li { display: flex; align-items: center; }
-
-            /* Nav Links */
-            .nav-list a {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            padding: 10px 16px;
-            border-radius: 12px;
-            font-size: 15px;
-            transition: all 0.3s ease-in-out;
-            color: #f0f0f0;
-            }
-
-            .nav-list a i {
-            margin-right: 8px;
-            font-size: 20px;
-            color: #f0f0f0;
-            transition: color 0.3s ease;
-            }
-
-            /* Gradient text & icon hover */
-            .nav-list a:hover {
-            -webkit-text-fill-color: transparent;
-            background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
-            background-clip: text;
-            box-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
-            }
-
-            .nav-list a:hover i {
-            color: #32f2f8;
-            }
-
-            /* App Icons (Procreate, Photoshop, etc.) */
-            .nav-list img {
-            width: 28px;
-            height: 28px;
-            object-fit: contain;
-            border-radius: 6px;
-            transition: transform 0.3s ease;
-            }
-
-            .nav-list img:hover {
-            transform: scale(1.1);
-            }
-
-            /* =========================
-            Social Icons (Right Side)
-            ========================= */
-            .socials {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-right: 30px; /* Increased margin to move icons further left */
-            }
-
-
-            .social-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            font-size: 18px;
-            color: #bbb;
-            text-decoration: none;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
-            }
-
-            .social-link:hover {
-            transform: translateY(-6px) scale(1.06);
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
-            }
-
-            /* Brand Hover Colors — clean, no glow */
-            .socials .social-link:nth-child(1):hover { color: #f96854; } /* Patreon */
-            .socials .social-link:nth-child(2):hover { color: #E4405F; } /* Instagram */
-            .socials .social-link:nth-child(3):hover { color: #0285FF; } /* Bluesky */
-            .socials .social-link:nth-child(4):hover { color: #fafbfc; } /* GitHub */
-                    /* ---------- CONTENT / GLASS SECTIONS ---------- */
-                        #content{ width:100%; padding: 12px; }
-                        .container .container-inner{
-                        background: var(--card-bg);
-                        border-radius: var(--glass-radius);
-                        padding: 18px;
-                        border: 1px solid var(--glass-border);
-                        -webkit-backdrop-filter: blur(8px) saturate(140%);
-                        backdrop-filter: blur(8px) saturate(140%);
-                        box-shadow: var(--glass-shadow);
-                        }
-
-                        /* welcome card */
-                        #welcome{
-                        background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.42));
-                        background: var(--card-bg);
-                        border-radius: 14px;
-                        padding: 34px;
-                        max-width:900px;
-                        margin: 28px auto;
-                        text-align:center;
-                        border: 1px solid var(--glass-border);
-                        -webkit-backdrop-filter: blur(6px);
-                        backdrop-filter: blur(6px);
-                        box-shadow: 0 18px 40px rgba(2,6,10,0.08);
-                        }
-
-                        /* welcome heading gradient + stroke */
-                        #welcome h1 {
-                        display: inline-block;
-                        font-size: 3rem;
-                        font-weight: bold;
-                        background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
-                        -webkit-background-clip: text;
-                        background-clip: text;
-                        -webkit-text-fill-color: transparent; /* makes gradient visible */
-                        -webkit-text-stroke: 2px #130f40; /* stroke outline */
-                        text-align: center;
-                        }
-
-
-                        /* use gradient fill on H1 with subtle outline */
-                        #welcome h1.grad-stroke,
-                        #welcome h1 span {
-                        background: linear-gradient(90deg, #8be9d6 0%, #7b5cff 60%, #ffd36b 100%);
-                        -webkit-background-clip:text;
-                        background-clip: text;
-                        -webkit-text-fill-color:transparent;
-                        -webkit-text-stroke: 1.2px rgba(0,0,0,0.12);
-                        letter-spacing: -0.02em;
-                        }
-
-                        /* welcome paragraph */
-                        #welcome p {
-                        margin-top: 12px;
-                        font-size: clamp(0.95rem, 1.6vw, 1.1rem);
-                        max-width: 78ch;
-                        margin-left: auto;
-                        margin-right: auto;
-
-                        /* gradient stroke effect */
-                        display: inline-block;
-                        background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
-                        -webkit-background-clip:text;
-                        background-clip: text;
-                        color: transparent;
-                        -webkit-text-stroke: 1px transparent;
-                        }
-
-
-                        /* ---------- IMAGES & GRIDS ---------- */
-                        .grid, .grid2 {
-                        display:grid;
-                        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                        gap:18px;
-                        align-items:center;
-                        padding: 8px 0;
-                        }
-
-                        .image-item{
-                        border-radius:12px;
-                        overflow:hidden;
-                        transition: transform var(--transition), box-shadow var(--transition);
-                        border:1px solid rgba(255,255,255,0.04);
-                        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-                        }
-
-                        .image-item img{
-                        display:block;
-                        width:100%;
-                        height:auto;
-                        object-fit:cover;
-                        transition: transform var(--transition);
-                        }
-
-                        .image-item:hover{
-                        transform: translateY(-6px);
-                        box-shadow: 0 12px 34px rgba(2,6,10,0.12);
-                        }
-
-                        .image-item img:hover{
-                        transform: scale(1.04);
-                        }
-
-                        /* captions */
-                        .caption{
-                        position:absolute;
-                        bottom:10px;
-                        left:10px;
-                        background: rgba(0,0,0,0.45);
-                        color:#fff;
-                        padding:6px 10px;
-                        border-radius:8px;
-                        font-size:0.85rem;
-                        backdrop-filter: blur(4px);
-                        }
-            /* Announcement Sections (Glassy Look) */
-            .privacy-policy-section,
-            .terms-of-service-section {
-                background: rgba(0, 0, 0, 0.75); /* dark glassy base */
-                -webkit-backdrop-filter: blur(12px) saturate(160%);
-                backdrop-filter: blur(12px) saturate(160%);
-                padding: 25px 30px;
-                border-radius: 12px;
-                box-shadow: 0 0 20px rgba(0, 255, 255, 0.15); /* subtle glow */
-                color: #eaeaea;
-                font-family: 'Segoe UI', sans-serif;
-                line-height: 1.6;
-                transition: background 0.3s ease;
-            }
-
-            /* Headings inside sections */
-            .privacy-policy-section h2,
-            .terms-of-service-section h2,
-            .privacy-policy-section h3,
-            .terms-of-service-section h3,
-            .privacy-policy-section h4,
-            .terms-of-service-section h4 {
-                color: #00bfff;
-                margin-top: 20px;
-                font-weight: 600;
-            }
-
-            /* Lists */
-            .privacy-policy-section ul,
-            .terms-of-service-section ul {
-                padding-left: 20px;
-            }
-
-            .privacy-policy-section ul li,
-            .terms-of-service-section ul li {
-                margin-bottom: 10px;
-            }
-            /* =========================
-            Neon Text for Terms & Privacy Modals (Subtle Glow)
-            ========================= */
-            #tos-modal h2,
-            #privacy-modal h2 {
-                color: #00ffff; /* Neon Cyan */
-                text-shadow: 
-                    0 0 2px #00ffff,
-                    0 0 5px #00ffff,
-                    0 0 10px #00ffff;
-                font-weight: 700;
-                margin-bottom: 15px;
-            }
-
-            #tos-modal h3,
-            #privacy-modal h3 {
-                color: #ff00ff; /* Neon Magenta */
-                text-shadow: 
-                    0 0 1px #ff00ff,
-                    0 0 3px #ff00ff,
-                    0 0 6px #ff00ff;
-                font-weight: 600;
-                margin-top: 25px;
-                margin-bottom: 8px;
-            }
-
-            #privacy-modal h4 {
-                color: #00ff00; /* Neon Green */
-                text-shadow: 
-                    0 0 1px #00ff00,
-                    0 0 2px #00ff00,
-                    0 0 4px #00ff00;
-                font-weight: 600;
-                margin-top: 18px;
-                margin-bottom: 6px;
-            }
-
-            /* Optional: Neon effect on strong text inside modals */
-            #tos-modal p strong,
-            #privacy-modal p strong {
-                color: #fffc00; /* Neon Yellow */
-                text-shadow: 
-                    0 0 1px #fffc00,
-                    0 0 3px #fffc00,
-                    0 0 6px #fffc00;
-            }
-
-            /* Optional subtle hover glow for links inside modals */
-            #tos-modal a:hover,
-            #privacy-modal a:hover {
-                color: #ff0099;
-                text-shadow: 0 0 4px #ff0099, 0 0 8px #ff0099;
-            }
-
-            /* =========================
-            Sleek Glassy Footer (Refined)
-            ========================= */
-            .site-footer {
-                background: rgba(20, 20, 20, 0.164);
-                -webkit-backdrop-filter: blur(14px) saturate(160%);
-                backdrop-filter: blur(14px) saturate(160%);
-                border-top: 1px solid rgba(255, 255, 255, 0.15);
-                color: #eaeaea;
-                font-weight: 500;
-                text-align: center;
-                padding: 8px 10px;
-                position: fixed;
-                bottom: 0; /* always visible */
-                left: 0;
-                right: 0;
-                width: 100%;
-                max-height: 115px;
-                box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.35);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                transition: background 0.4s ease;
-                z-index: 9999;
-                border-radius: 12px 12px 0 0;
-            }
-
-            .site-footer:hover {
-                background: rgba(30, 30, 30, 0.7); /* optional hover effect */
-            }
-
-
-            /* Footer Container */
-            .footer-content {
-                width: 100%;
-                max-width: 550px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-direction: column; /* stacked for better mobile layout */
-                gap: 6px;
-                margin: 0 auto;
-                position: relative;
-                font-size: 0.9rem;
-                color: #ccc;
-            }
-
-            .footer-content p {
-                margin: 0;
-                font-weight: 300;
-                font-size: 12px;
-                color: #cfcfcf;
-                opacity: 0.85;
-            }
-
-            .footer-links {
-                display: flex;
-                gap: 20px;
-                flex-wrap: wrap;
-            }
-
-            .footer-links a {
-                color: var(--secondary-color, #ccc);
-                text-decoration: none;
-                transition: color 0.3s ease, text-shadow 0.3s ease;
-            }
-
-            .footer-links a:hover {
-                color: var(--accent-color, #54eec7);
-                text-shadow: 0 0 8px rgba(84, 238, 199, 0.6);
-            }
-
-            /* --- Responsive Design for Footer --- */
-            @media (max-width: 768px) {
-                .footer-content {
-                    flex-direction: column;
-                    text-align: center;
-                    gap: 15px;
-                }
-            }
-
-
-            /* Landscape-only fixes for mobile devices */
-            @media screen and (max-width: 768px) and (orientation: landscape) {
-            body {
-                overflow-x: hidden; /* Prevent sideways scroll in landscape */
-            }
-
-            /* Header adjustments for landscape (to save vertical space) */
-            .site-header {
-                padding: 20px 10px;
-            }
-            .site-header h1 {
-                font-size: clamp(1.4rem, 4vw, 2rem);
-            }
-            .site-header p {
-                font-size: clamp(0.75rem, 3vw, 0.9rem);
-            }
-
-            /* Fix for the announcement cards in landscape */
-            .announcement-list-container,
-            .announcement-card {
-                /* Make the card slightly wider to fill the screen, but not exceed it */
-                max-width: 95%;
-            }
-
-            /* This is the key fix for the long text notes */
-            .announcement-details span {
-                word-wrap: break-word;
-                overflow-wrap: break-word;
-            }
-            }
-            /* =========================
-            Glassy Modal Styles
-            ========================= */
-            .modal {
-                display: none; /* hidden by default */
-                position: fixed;
-                z-index: 10000;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                overflow: auto; /* fallback scroll */
-                background-color: rgba(0,0,0,0.6); /* semi-transparent backdrop */
-                backdrop-filter: blur(6px);
-                transition: opacity 0.3s ease;
-            }
-
-            .modal.show {
-                display: block;
-                opacity: 1;
-            }
-
-            .modal-content {
-                background: rgba(30,30,30,0.8); /* glassy */
-                -webkit-backdrop-filter: blur(10px) saturate(150%);
-                backdrop-filter: blur(10px) saturate(150%);
-                margin: 50px auto;
-                padding: 20px 25px;
-                border-radius: 15px;
-                width: 90%;
-                max-width: 700px;
-                max-height: 80vh; /* limit vertical height */
-                overflow-y: auto; /* scroll for long content */
-                box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-                transition: transform 0.3s ease, opacity 0.3s ease;
-            }
-            
-            /* CORRECTED: Solid Teal/Cyan Color with Dark Stroke for ALL Modal Headings */
-            .modal-content h2,
-            .modal-content h3 {
-                /* Use the accent color for a solid fill, as seen in the image */
-                color: var(--accent) !important; 
-                
-                /* Remove gradient properties that override solid color */
-                background: none !important;
-                -webkit-background-clip: unset !important;
-                background-clip: unset !important;
-                -webkit-text-fill-color: var(--accent) !important;
-                
-                /* Keep the subtle dark stroke/outline for definition and depth */
-                -webkit-text-stroke: 1.6px rgba(0,0,0,0.18);
-                text-shadow: 0 4px 12px rgba(11,12,14,0.3);
-                
-                /* Font and Spacing */
-                font-weight: 700;
-                line-height: 1.2;
-            }
-
-            /* Specific styling for the Main Title (Terms of Service) */
-            .modal-content h2 {
-                font-size: 2.5rem; 
-                text-align: center; 
-                margin: 0 auto 15px auto;
-                width: fit-content;
-            }
-
-            /* Styling for Sub-Headings (Changes to Terms, Use of Website, etc.) */
-            .modal-content h3 {
-                font-size: 1.6rem; 
-                margin-top: 30px;
-                margin-bottom: 8px;
-            }
-
-            /* Text and List Styling (Keep these as they make the body text look correct) */
-            .modal-content p, 
-            .modal-content ul {
-                color: var(--text); 
-                font-size: 0.95rem;
-                line-height: 1.6;
-            }
-
-            .modal-content ul {
-                list-style: disc; 
-                padding-left: 35px; 
-                margin-top: 5px;
-                margin-bottom: 15px;
-            }
-
-            .modal-content ul li {
-                margin-bottom: 5px; 
-            }        
-            .modal-content::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            .modal-content::-webkit-scrollbar-thumb {
-                background-color: rgba(84,238,199,0.6);
-                border-radius: 4px;
-            }
-
-            .modal-content:hover {
-                cursor: grab;
-            }
-
-            /* Close button */
-            .modal-content .close {
-                color: #ccc;
-                float: right;
-                font-size: 28px;
-                font-weight: bold;
-                cursor: pointer;
-            }
-
-            .modal-content .close:hover {
-                color: #37f1f1;
-            }
-
-            /* Optional smooth scroll on hover */
-            .modal-content:hover {
-                scroll-behavior: smooth;
-            }
-
-            /* ---------- UTILITIES ---------- */
-            /* small rounded avatar */
-            .avatar {
-            width:36px; height:36px;
-            border-radius:50%;
-            overflow:hidden;
-            display:inline-block;
-            border:1px solid rgba(255,255,255,0.06);
-            }
-
-            /* small rounded button */
-            .btn {
-            display:inline-flex;
-            align-items:center;
-            gap:8px;
-            padding:8px 12px;
-            border-radius:10px;
-            border:1px solid rgba(255,255,255,0.05);
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            cursor:pointer;
-            transition:transform var(--transition), box-shadow var(--transition);
-            text-decoration:none;
-            }
-
-            /* subtle focus ring for accessibility */
-            :focus { outline: none; box-shadow: 0 0 0 4px rgba(123,92,255,0.09); border-radius:8px; }
-
-            /* ---------- RESPONSIVE ---------- */
-            @media (max-width: 980px){
-            .navbar { padding: 10px; width: calc(100% - 28px); }
-            .socials { display:flex; gap:8px; }
-            .navbar ul { gap: 6px; }
-            .footer-content { flex-direction:column; text-align:center; gap:12px; }
-            }
-
-            @media (max-width: 720px){
-            .container { padding: 12px; }
-            .navbar{ top:8px; border-radius:12px; }
-            .navbar ul { gap: 4px; }
-            .navbar li { padding: 6px 8px; font-size: 14px; }
-            .social-link { width:36px; height:36px; font-size:16px; }
-            #welcome { padding: 22px; margin: 18px 6px; }
-            .grid, .grid2 { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-            }
-
-            /* very small phones */
-            @media (max-width:420px){
-            .navbar { padding:8px; }
-            .navbar ul { gap:3px; }
-            .navbar img { width:22px; height:22px; }
-            .navbar li span { display:none; } /* hide text on very small screens - keeps UI tidy */
-            }
-
-
-            .force-grad{
-            background: linear-gradient(45deg,var(--accent),var(--accent-2));
-            -webkit-background-clip: text;
-            background-clip: text; /* Standard property for compatibility */
-            -webkit-text-fill-color: transparent;
-            -webkit-text-stroke: 1.4px rgba(0,0,0,0.16);
-            text-shadow: 0 6px 20px rgba(0,0,0,0.12);
-            }
-
-            /* ---------- small accessibility tweak: reduce motion if user prefers ---------- */
-            @media (prefers-reduced-motion: reduce){
-            * { transition: none !important; animation: none !important; transform: none !important; }
-            }
-
-        </style>
-    </head>
-
-    <body>
-      <nav id="horizontal-nav" class="horizontal-nav">
-  <ul class="nav-list">
-    <li>
-      <a href="main-page.html" class="home-icon">
-       <i class="fas fa-home"></i><span>Main Page</span>
-      </a>
-    </li>
-    <li onclick="switchCategory('welcome')">
-      <a><i class="fas fa-smile-beam"></i><span>Welcome</span></a>
-    </li>
-    <li onclick="window.location.href='customer-view.html'">
-      <a><i class="fas fa-chalkboard-teacher"></i><span>Customer View</span></a>
-    </li>
-    <li onclick="switchCategory('procreate')">
-      <img src="images/procreate.png" alt="Procreate Icon">
-    </li>
-    <li onclick="switchCategory('photoshop')">
-      <img src="images/photoshop.png" alt="Photoshop Icon">
-    </li>
-    <li onclick="switchCategory('indesign')">
-      <img src="images/indesign.png" alt="InDesign Icon">
-    </li>
-    <li onclick="switchCategory('illustrator')">
-      <img src="images/illustrator.png" alt="Illustrator Icon">
-    </li>
-  </ul>
-
-  <div class="socials">
-
-    <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" rel="noopener noreferrer" class="social-link">
-      <i class="fa-brands fa-patreon"></i>
-    </a>
-    <a href="https://www.instagram.com/caitlinakafallen" target="_blank" rel="noopener noreferrer" class="social-link">
-      <i class="fa-brands fa-instagram"></i>
-    </a>
-    <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link">
-      <i class="fa-brands fa-bluesky"></i>
-    </a>
-    <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener noreferrer" class="social-link">
-      <i class="fa-brands fa-github"></i>
-    </a>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caitlin's Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+
+  <style>
+    /* =========================
+       Tokens
+    ========================= */
+    :root {
+      --bg: #07070c;
+      --text: #f1f2f8;
+      --muted: #9a9db3;
+      --c1: #be2edd;
+      --c2: #00a8ff;
+      --c3: #F79F1F;
+      --grad: linear-gradient(60deg, var(--c1), var(--c2), var(--c3));
+      --glass: rgba(255, 255, 255, 0.045);
+      --glass-strong: rgba(255, 255, 255, 0.09);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --ease: cubic-bezier(.22, .9, .3, 1);
+      --display: "Syne", "Inter", system-ui, sans-serif;
+      --body: "Inter", system-ui, Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+    html:has(dialog[open]) { overflow: hidden; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: var(--body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :focus-visible { outline: 2px solid var(--c2); outline-offset: 3px; border-radius: 8px; }
+
+    button { font: inherit; color: inherit; cursor: pointer; }
+
+    /* =========================
+       Living background
+    ========================= */
+    .bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+    .bg i {
+      position: absolute; border-radius: 50%; filter: blur(120px); opacity: .34; will-change: transform;
+    }
+    .bg i:nth-child(1) { width: 50vw; height: 50vw; background: var(--c1); top: -18vw; left: -14vw; animation: d1 30s ease-in-out infinite alternate; }
+    .bg i:nth-child(2) { width: 46vw; height: 46vw; background: var(--c2); top: 20vh; right: -18vw; animation: d2 36s ease-in-out infinite alternate; }
+    .bg i:nth-child(3) { width: 34vw; height: 34vw; background: var(--c3); bottom: -16vw; left: 24vw; opacity: .2; animation: d3 42s ease-in-out infinite alternate; }
+    @keyframes d1 { to { transform: translate(12vw, 10vw) scale(1.12); } }
+    @keyframes d2 { to { transform: translate(-10vw, -8vw) scale(1.1); } }
+    @keyframes d3 { to { transform: translate(-14vw, -6vw) scale(.88); } }
+
+    .grain {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .05; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    .cursor-glow {
+      position: fixed; top: 0; left: 0; width: 640px; height: 640px; margin: -320px 0 0 -320px;
+      z-index: 0; pointer-events: none; opacity: 0; transition: opacity .6s;
+      background: radial-gradient(circle, rgba(0, 168, 255, .13), rgba(190, 46, 221, .07) 40%, transparent 70%);
+    }
+    .cursor-glow.on { opacity: 1; }
+
+    /* =========================
+       Navigation
+    ========================= */
+    .horizontal-nav {
+      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 1000; max-width: calc(100vw - 20px);
+      padding: 6px;
+      background: rgba(12, 13, 20, .64);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .45);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .horizontal-nav::-webkit-scrollbar { display: none; }
+
+    .nav-track { position: relative; min-width: max-content; }
+    .nav-list { list-style: none; display: flex; gap: 2px; margin: 0; padding: 0; position: relative; }
+
+    .nav-pill {
+      position: absolute; top: 0; left: 0; height: 100%; width: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(190, 46, 221, .3), rgba(0, 168, 255, .3));
+      border: 1px solid rgba(255, 255, 255, .14);
+      transition: transform .45s var(--ease), width .45s var(--ease);
+      pointer-events: none;
+    }
+
+    .nav-item {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 15px;
+      border: 0; border-radius: 999px; background: transparent;
+      color: var(--muted); font-size: 14px; font-weight: 500; white-space: nowrap;
+      text-decoration: none;
+      transition: color .25s;
+    }
+    .nav-item i { font-size: 15px; }
+    .nav-item img { width: 22px; height: 22px; object-fit: contain; border-radius: 6px; }
+    .nav-item:hover, .nav-item.active { color: #fff; }
+
+    .socials-float {
+      position: fixed; top: 14px; right: 18px; z-index: 1000;
+      display: none; gap: 2px; padding: 6px;
+      background: rgba(12, 13, 20, .64);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+    }
+    @media (min-width: 1280px) { .socials-float { display: flex; } }
+
+    .social-link {
+      display: inline-grid; place-items: center;
+      width: 38px; height: 38px; border-radius: 50%;
+      color: #b7bacb; text-decoration: none; font-size: 17px;
+      transition: color .25s, background .25s, transform .3s var(--ease);
+    }
+    .social-link:hover { background: var(--glass-strong); transform: translateY(-3px); }
+    .social-link.patreon:hover { color: #f96854; }
+    .social-link.instagram:hover { color: #E4405F; }
+    .social-link.bluesky:hover { color: #0285FF; }
+    .social-link.github:hover { color: #fafbfc; }
+
+    /* =========================
+       App shell
+    ========================= */
+    .app {
+      position: relative; z-index: 1;
+      flex: 1;
+      width: min(1240px, calc(100% - 40px));
+      margin: 0 auto;
+      padding-top: 118px;
+    }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(22px); } }
+
+    .grad-text {
+      background: var(--grad);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent; -webkit-text-fill-color: transparent;
+      padding-bottom: .08em;
+    }
+
+    /* =========================
+       Welcome
+    ========================= */
+    .hero {
+      display: grid; grid-template-columns: 1.1fr .9fr; gap: 64px; align-items: center;
+    }
+
+    .hero-title {
+      font-family: var(--display); font-weight: 800;
+      font-size: clamp(2.8rem, 6.6vw, 5.7rem);
+      line-height: .98; letter-spacing: -0.03em;
+      margin: 0 0 26px; max-width: 11ch;
+    }
+
+    .lede {
+      margin: 0; max-width: 52ch;
+      font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.65; color: #d9dcee;
+    }
+
+    .note {
+      position: relative; margin-top: 30px; max-width: 58ch;
+      padding: 20px 24px 20px 28px;
+      background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px;
+      -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    }
+    .note::before {
+      content: ""; position: absolute; left: 0; top: 18px; bottom: 18px; width: 3px; border-radius: 3px; background: var(--grad);
+    }
+    .note p { margin: 0; font-size: .96rem; line-height: 1.65; color: var(--muted); }
+    .note p + p { margin-top: 12px; }
+
+    .featured { position: relative; margin: 0; justify-self: center; width: min(100%, 430px); }
+    .featured::before {
+      content: ""; position: absolute; inset: 22px -22px -22px 22px; border-radius: 32px;
+      background: var(--grad); opacity: .4; filter: blur(34px);
+    }
+    .frame {
+      position: relative; aspect-ratio: 4 / 5; border-radius: 30px; overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .16);
+      background: #10111a;
+      box-shadow: 0 40px 80px -28px rgba(0, 0, 0, .9);
+      transform: perspective(1000px) rotateX(var(--fy, 0deg)) rotateY(var(--fx, 0deg));
+      transition: transform .3s ease-out;
+      animation: rise .9s var(--ease) .1s backwards;
+    }
+    .f-img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      opacity: 0; transform: scale(1.06);
+      transition: opacity 1s ease, transform 6s ease-out;
+    }
+    .f-img.on { opacity: 1; transform: scale(1); }
+    .f-open { position: absolute; inset: 0; background: transparent; border: 0; cursor: zoom-in; z-index: 2; border-radius: inherit; }
+    .f-cap {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: none;
+      padding: 56px 22px 20px;
+      background: linear-gradient(transparent, rgba(5, 5, 10, .85));
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .f-cap #fTitle { font-family: var(--display); font-weight: 700; font-size: 1.2rem; }
+    .f-cap #fCat { font-size: .85rem; color: #c9cce0; }
+
+    /* Browse cards */
+    .bento {
+      display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 230px; gap: 18px;
+      margin-top: 96px;
+    }
+    .c-photoshop { grid-column: span 7; grid-row: span 2; }
+    .c-procreate { grid-column: span 5; }
+    .c-indesign { grid-column: span 5; }
+    .c-illustrator { grid-column: span 12; }
+
+    .cat-card {
+      position: relative; display: flex; align-items: flex-end; overflow: hidden; isolation: isolate;
+      border-radius: 28px; border: 1px solid var(--glass-border);
+      color: #fff; text-decoration: none;
+      box-shadow: 0 30px 60px -28px rgba(0, 0, 0, .9);
+      transition: border-color .3s, transform .4s var(--ease);
+      animation: rise .8s var(--ease) backwards;
+    }
+    .c-photoshop { animation-delay: .1s; }
+    .c-procreate { animation-delay: .18s; }
+    .c-indesign { animation-delay: .26s; }
+    .c-illustrator { animation-delay: .34s; }
+
+    .cat-card:hover { border-color: rgba(255, 255, 255, .3); transform: translateY(-4px); }
+
+    .cat-card .cover {
+      position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover;
+      transition: transform 1s var(--ease);
+    }
+    .cat-card:hover .cover { transform: scale(1.07); }
+    .cat-card .shade {
+      position: absolute; inset: 0; z-index: -1;
+      background: linear-gradient(180deg, rgba(5, 5, 10, .05) 20%, rgba(5, 5, 10, .88));
+    }
+
+    .cc-body { display: flex; align-items: center; gap: 14px; padding: 24px 26px; }
+    .app-ico {
+      width: 46px; height: 46px; display: grid; place-items: center; font-size: 20px; color: #fff; border-radius: 12px;
+      background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .18);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    }
+    .cc-text { display: flex; flex-direction: column; }
+    .cc-text strong { font-family: var(--display); font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; }
+    .cc-text small { color: #cdd0e2; font-size: .88rem; margin-top: 2px; }
+
+    .cc-go {
+      position: absolute; top: 20px; right: 20px;
+      width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%;
+      background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .2);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      transition: transform .4s var(--ease), background .3s;
+    }
+    .cat-card:hover .cc-go { transform: rotate(-45deg); background: var(--grad); }
+
+    /* =========================
+       Category view
+    ========================= */
+    .cat-head {
+      display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;
+      gap: 24px 40px; margin-bottom: 46px;
+    }
+    .cat-head h1 {
+      margin: 0 0 14px; font-family: var(--display); font-weight: 800;
+      font-size: clamp(2.8rem, 7.4vw, 5.4rem); line-height: 1; letter-spacing: -0.03em;
+    }
+    .blurb { margin: 0; max-width: 54ch; color: #c5c8dc; font-size: 1.08rem; line-height: 1.6; }
+
+    .cat-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
+    .count-chip {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 8px 16px; border-radius: 999px; font-size: .9rem; color: #dfe1f0;
+      background: var(--glass); border: 1px solid var(--glass-border);
+    }
+    .count-chip i { color: var(--c2); }
+
+    .seg {
+      display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 4px;
+      background: rgba(0, 0, 0, .32); border: 1px solid var(--glass-border); border-radius: 14px;
+    }
+    .seg button {
+      padding: 8px 14px; border: 0; border-radius: 10px; background: transparent;
+      color: var(--muted); font-size: .88rem; font-weight: 500; transition: color .2s, background .2s;
+    }
+    .seg button:hover { color: #fff; }
+    .seg button[aria-pressed="true"] {
+      color: #fff; background: linear-gradient(135deg, rgba(190, 46, 221, .32), rgba(0, 168, 255, .32));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+    }
+
+    .group + .group { margin-top: 64px; }
+    .group h2 {
+      margin: 0 0 22px; font-family: var(--display); font-weight: 700; font-size: 1.6rem; letter-spacing: -0.01em;
+    }
+
+    /* Masonry */
+    .masonry { column-width: 270px; column-gap: 18px; }
+
+    .tile {
+      --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 50%;
+      position: relative; display: block; width: 100%; margin: 0 0 18px; padding: 0;
+      min-height: 170px; overflow: hidden; break-inside: avoid;
+      border: 1px solid var(--glass-border); border-radius: 18px;
+      background: var(--glass);
+      box-shadow: 0 18px 40px -20px rgba(0, 0, 0, .8);
+      cursor: zoom-in; text-align: left;
+      transform: perspective(900px) rotateX(var(--ry)) rotateY(var(--rx)) translateY(var(--lift, 0px));
+      transition: transform .25s ease-out, box-shadow .3s, border-color .3s;
+      animation: rise .7s var(--ease) var(--d, 0ms) backwards;
+    }
+    .tile:hover, .tile:focus-visible {
+      --lift: -5px;
+      border-color: rgba(255, 255, 255, .26);
+      box-shadow: 0 32px 60px -20px rgba(0, 0, 0, .9), 0 0 44px -12px rgba(0, 168, 255, .4);
+    }
+
+    .tile::before {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, .07) 50%, transparent 80%);
+      background-size: 220% 100%; animation: shimmer 1.4s linear infinite;
+    }
+    .tile.loaded { min-height: 0; }
+    .tile.loaded::before { display: none; }
+    @keyframes shimmer { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+
+    .tile img { display: block; width: 100%; height: auto; opacity: 0; transition: opacity .6s, transform .9s var(--ease); }
+    .tile.loaded img { opacity: 1; }
+    .tile:hover img { transform: scale(1.04); }
+
+    .tile::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+      background: radial-gradient(360px circle at var(--mx) var(--my), rgba(255, 255, 255, .16), transparent 55%);
+    }
+    .tile:hover::after { opacity: 1; }
+
+    .cap {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 46px 16px 14px;
+      background: linear-gradient(transparent, rgba(5, 5, 10, .86));
+      opacity: 0; transform: translateY(12px);
+      transition: opacity .3s, transform .4s var(--ease);
+    }
+    .tile:hover .cap, .tile:focus-visible .cap { opacity: 1; transform: none; }
+    .cap-t { font-weight: 500; font-size: .95rem; }
+    .cap i { font-size: .85rem; color: #d3d6ea; }
+
+    .soon {
+      display: grid; place-items: center; align-content: center; gap: 10px; min-height: 220px;
+      margin: 0 0 18px; padding: 24px; text-align: center; break-inside: avoid;
+      color: var(--muted); font-size: .95rem;
+      border: 1.5px dashed rgba(255, 255, 255, .2); border-radius: 18px;
+    }
+    .soon i { font-size: 1.6rem; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+    /* =========================
+       Lightbox
+    ========================= */
+    #lightbox {
+      position: fixed; inset: 0; margin: 0; padding: 0; border: 0;
+      width: 100vw; height: 100dvh; max-width: none; max-height: none;
+      color: #fff; background: rgba(5, 6, 10, .9);
+      -webkit-backdrop-filter: blur(26px); backdrop-filter: blur(26px);
+    }
+    #lightbox[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; animation: lbIn .3s var(--ease); }
+    #lightbox::backdrop { background: transparent; }
+    @keyframes lbIn { from { opacity: 0; transform: scale(1.02); } }
+
+    .lb-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 20px; }
+    .lb-info { display: flex; flex-direction: column; min-width: 0; }
+    #lbTitle { font-family: var(--display); font-weight: 700; font-size: 1.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #lbCount { font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .lb-actions { display: flex; gap: 10px; }
+
+    .lb-btn, .lb-nav {
+      display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 50%;
+      color: #fff; text-decoration: none; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .14);
+      transition: background .25s, transform .3s var(--ease);
+    }
+    .lb-btn:hover, .lb-nav:hover { background: rgba(255, 255, 255, .18); }
+
+    .lb-stage {
+      position: relative; display: grid; place-items: center; overflow: hidden; min-height: 0;
+      touch-action: pan-y;
+    }
+    #lbImg {
+      max-width: min(94vw, 1600px); max-height: calc(100dvh - 200px);
+      object-fit: contain; border-radius: 10px; cursor: zoom-in; user-select: none;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
+      opacity: 0; transition: opacity .3s, transform .35s var(--ease);
+    }
+    .lb-stage.zoomed #lbImg { transform: scale(2.3); cursor: zoom-out; }
+
+    .lb-nav { position: absolute; top: 50%; margin-top: -26px; width: 52px; height: 52px; z-index: 2; }
+    .lb-nav.prev { left: 18px; }
+    .lb-nav.next { right: 18px; }
+    .lb-nav:hover { transform: scale(1.08); }
+    .lb-stage.single .lb-nav { display: none; }
+
+    .lb-strip {
+      display: flex; gap: 8px; justify-content: safe center; overflow-x: auto; padding: 12px 20px 18px;
+      scrollbar-width: none;
+    }
+    .lb-strip::-webkit-scrollbar { display: none; }
+    .lb-strip.single { display: none; }
+    .lb-strip button {
+      flex: none; width: 64px; height: 64px; padding: 0; overflow: hidden;
+      border: 2px solid transparent; border-radius: 12px; background: #11121a;
+      opacity: .55; transition: opacity .25s, border-color .25s, transform .3s var(--ease);
+    }
+    .lb-strip button:hover { opacity: .9; }
+    .lb-strip button.on { opacity: 1; border-color: var(--c2); transform: translateY(-3px); }
+    .lb-strip img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* =========================
+       Footer
+    ========================= */
+    .site-footer {
+      position: relative; z-index: 1;
+      margin-top: 110px; padding: 28px 24px;
+      background: rgba(12, 13, 20, .6);
+      -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%);
+      border-top: 1px solid var(--glass-border);
+    }
+    .footer-content {
+      max-width: 1240px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 18px 32px;
+    }
+    .footer-content p { margin: 0; font-size: .85rem; color: var(--muted); }
+    .footer-links { display: flex; gap: 22px; }
+    .footer-links button {
+      padding: 0; border: 0; background: none; font-size: .9rem; color: #c3c6d8;
+      transition: color .25s;
+    }
+    .footer-links button:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+    .footer-socials { display: flex; gap: 4px; }
+
+    /* =========================
+       Legal dialogs
+    ========================= */
+    dialog.legal {
+      width: min(700px, 92vw); max-height: 82vh; padding: 0; overflow-y: auto;
+      color: #e6e8f3; background: rgba(18, 19, 28, .92);
+      -webkit-backdrop-filter: blur(24px) saturate(150%); backdrop-filter: blur(24px) saturate(150%);
+      border: 1px solid var(--glass-border); border-radius: 22px;
+      box-shadow: 0 40px 90px rgba(0, 0, 0, .65);
+      scrollbar-width: thin; scrollbar-color: rgba(0, 168, 255, .6) transparent;
+    }
+    dialog.legal[open] { animation: lbIn .3s var(--ease); }
+    dialog.legal::backdrop { background: rgba(0, 0, 0, .6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+    .legal-inner { padding: 8px 32px 32px; }
+    .legal .close {
+      position: sticky; top: 14px; float: right; margin: 14px -12px 0 0;
+      width: 38px; height: 38px; display: grid; place-items: center; padding: 0;
+      font-size: 1.4rem; line-height: 1; color: #ccc;
+      background: rgba(255, 255, 255, .08); border: 1px solid var(--glass-border); border-radius: 50%;
+      transition: color .2s, background .2s;
+    }
+    .legal .close:hover { color: #fff; background: rgba(255, 255, 255, .16); }
+    .legal h2 { font-family: var(--display); font-weight: 800; font-size: 2.1rem; margin: 22px 0 14px; letter-spacing: -0.02em; }
+    .legal h3 { font-family: var(--display); font-weight: 700; font-size: 1.2rem; margin: 28px 0 8px; color: #8ed4ff; }
+    .legal h4 { font-size: 1rem; margin: 18px 0 6px; color: #e9c8f5; }
+    .legal p, .legal li { font-size: .95rem; line-height: 1.7; color: #c9ccdc; }
+    .legal ul { padding-left: 22px; margin: 6px 0 14px; }
+    .legal li { margin-bottom: 6px; }
+    .legal strong { color: #fff; }
+
+    /* =========================
+       Responsive
+    ========================= */
+    @media (max-width: 960px) {
+      .hero { grid-template-columns: 1fr; gap: 48px; }
+      .hero-title { max-width: none; }
+      .featured { width: min(100%, 360px); }
+      .bento { grid-auto-rows: 210px; }
+      .c-photoshop, .c-procreate, .c-indesign, .c-illustrator { grid-column: span 12; grid-row: span 1; }
+      .cat-meta { align-items: flex-start; }
+    }
+
+    @media (max-width: 640px) {
+      .app { width: calc(100% - 28px); padding-top: 100px; }
+      .nav-item:not(.active) span { display: none; }
+      .nav-item { padding: 9px 12px; }
+      .masonry { column-width: 150px; column-gap: 12px; }
+      .tile { margin-bottom: 12px; border-radius: 14px; }
+      .legal-inner { padding: 4px 20px 24px; }
+      .lb-nav { width: 44px; height: 44px; margin-top: -22px; }
+      .lb-nav.prev { left: 8px; }
+      .lb-nav.next { right: 8px; }
+      .footer-content { flex-direction: column; text-align: center; }
+    }
+
+    @media (hover: none) {
+      .cap { opacity: 1; transform: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+  <nav id="horizontal-nav" class="horizontal-nav" aria-label="Gallery navigation">
+    <div class="nav-track" id="navTrack">
+      <span class="nav-pill" id="navPill" aria-hidden="true"></span>
+      <ul class="nav-list">
+        <li><a class="nav-item" href="main-page.html"><i class="fas fa-home"></i><span>Main Page</span></a></li>
+        <li><button class="nav-item" type="button" data-cat="welcome"><i class="fas fa-smile-beam"></i><span>Welcome</span></button></li>
+        <li><a class="nav-item" href="customer-view.html"><i class="fas fa-chalkboard-teacher"></i><span>Customer View</span></a></li>
+        <li><button class="nav-item" type="button" data-cat="procreate"><i class="fa-solid fa-paintbrush"></i><span>Procreate</span></button></li>
+        <li><button class="nav-item" type="button" data-cat="photoshop"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Photoshop</span></button></li>
+        <li><button class="nav-item" type="button" data-cat="indesign"><i class="fa-solid fa-book-open"></i><span>InDesign</span></button></li>
+        <li><button class="nav-item" type="button" data-cat="illustrator"><i class="fa-solid fa-bezier-curve"></i><span>Illustrator</span></button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="socials-float" aria-label="Social links">
+    <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" rel="noopener noreferrer" class="social-link patreon" aria-label="Patreon"><i class="fa-brands fa-patreon"></i></a>
+    <a href="https://www.instagram.com/caitlinakafallen" target="_blank" rel="noopener noreferrer" class="social-link instagram" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+    <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link bluesky" aria-label="Bluesky"><i class="fa-brands fa-bluesky"></i></a>
+    <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener noreferrer" class="social-link github" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
   </div>
-</nav>
 
-            
-        <div id="content">
-    
-            <div id="containerContent" class="container">
+  <main id="app" class="app" tabindex="-1"></main>
 
-                <div id="innerContent"></div>
-           </div>
-           
-        </div>
-
-    </body>
-        <script>
-            // Data for each category's images
-            const categories = {
-            welcome: `
-            <section id="welcome"> 
-                <h1>Welcome to Caitlin's Art Brain</h1>
-                <p>Welcome to the creative space where imagination comes to life! Explore a collection of artwork, time-lapse videos, and creative processes from my art journey.</p>
-                <p>Before you dive in, please note that I am currently limited on certain products. However, I am constantly updating and expanding the collection, so be sure to check back for new additions!</p>
-                <p>If you have any questions or want to learn more about the creative process behind the artwork, feel free to explore and get in touch. I appreciate your support and love for creativity!</p>
-            </section>
-            `,
-            procreate: `
-                <h2>Procreate</h2>
-                <p>Check out my digital art creations, including character designs and illustrations.</p>
-                <div class="grid">
-                    <div class="image-item">
-                        <a href="Procreate/pangwippo.png" target="_blank">
-                            <img src="Procreate/pangwippo.png" alt="Procreate Art" />
-                        </a>
-                        <div class="caption">Pangwippo</div>
-                    </div>
-                    <div class="image-item">
-                        <a href="Procreate/hippotroll.png" target="_blank">
-                            <img src="Procreate/hippotroll.png" alt="Procreate Art" />
-                        </a>
-                        <div class="caption">HippoTroll</div>
-                    </div>
-                    <div class="image-item">
-                        <a href="Procreate/gangartroll.png" target="_blank">
-                            <img src="Procreate/gangartroll.png" alt="Procreate Art" />
-                        </a>
-                        <div class="caption">GangarTroll</div>
-                    </div>
-                    <div class="image-item">
-                        <a href="Procreate/Brookie.png" target="_blank">
-                            <img src="Procreate/Brookie.png" alt="Procreate Art" />
-                        </a>
-                        <div class="caption">Brookie</div>
-                    </div>
-                </div>
-            `,
-
-            photoshop: `
-                <h2>Photoshop</h2>
-                <p>Check out my digital art creations, including character designs and illustrations.</p>
-                <h2>Baldur's Gate 3</h2>
-                <div class="grid">
-                    <div class="image-item large">
-                        <a href="Photoshop/orin-11x17.jpg" target="_blank">
-                            <img src="Photoshop/orin-11x17.jpg" alt="Orin 11x17" />
-                        </a>
-                        <div class="caption">Orin 11x17</div>
-                    </div>
-                    <div class="image-item medium">
-                        <a href="Photoshop/orin-12x17.jpg" target="_blank">
-                            <img src="Photoshop/orin-12x17.jpg" alt="Orin 12x17" />
-                        </a>
-                        <div class="caption">Orin 12x17</div>
-                    </div>
-                    <div class="image-item large">
-                        <a href="Photoshop/orin-13x19.jpg" target="_blank">
-                            <img src="Photoshop/orin-13x19.jpg" alt="Orin 13x19" />
-                        </a>
-                        <div class="caption">Orin 13x19</div>
-                    </div>
-                    <div class="image-item large">
-                        <a href="Photoshop/orin-the-red.jpg" target="_blank">
-                            <img src="Photoshop/orin-the-red.jpg" alt="Orin The Red" class="full-hd" />
-                        </a>
-                        <div class="caption">Orin The Red</div>
-                    </div>
-                </div>
-
-                <h2>Resident Evil</h2>
-                <div class="grid2">
-                    <div class="image-item large">
-                        <a href="Photoshop/angry-lady-d.jpg" target="_blank">
-                            <img src="Photoshop/angry-lady-d.jpg" alt="Angry Lady D" />
-                        </a>
-                        <div class="caption">Angry Lady D</div>
-                    </div>
-                    <div class="image-item medium">
-                        <a href="Photoshop/bela-with-bugs.jpg" target="_blank">
-                            <img src="Photoshop/bela-with-bugs.jpg" alt="Bela and her bugs" />
-                        </a>
-                        <div class="caption">Bela and her bugs</div>
-                    </div>
-                    <div class="image-item large">
-                        <a href="Photoshop/donna-tundra.jpg" target="_blank">
-                            <img src="Photoshop/donna-tundra.jpg" alt="Donna and Tundra" />
-                        </a>
-                        <div class="caption">Donna and Tundra</div>
-                    </div>
-                    <div class="image-item large">
-                        <a href="Photoshop/heisenberg-mutated.jpg" target="_blank">
-                            <img src="Photoshop/heisenberg-mutated.jpg" alt="Heisenberg and his mutated self" class="full-hd" />
-                        </a>
-                        <div class="caption">Heisenberg and his mutated self</div>
-                    </div>
-                    <div class="image-item large">
-                        <a href="Photoshop/lady-d-mutated.jpg" target="_blank">
-                            <img src="Photoshop/lady-d-mutated.jpg" alt="Lady D and her mutated self" class="full-hd" />
-                        </a>
-                        <div class="caption">Lady D and her mutated self</div>
-                    </div>
-                </div>
-            `,
-
-            indesign: `
-                <h2>Indesign</h2>
-                <p>Check out my digital art creations, including character designs and illustrations.</p>
-                <div class="grid">
-                    <div class="image-item">
-                        <a href="Indesign/Broken.png" target="_blank">
-                            <img src="Indesign/Broken.png" alt="Indesign Art" />
-                        </a>
-                        <div class="caption">Mental Aware Month</div>
-                    </div>
-                    <div class="image-item">
-                        <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
-                            <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
-                        </a>
-                        <div class="caption">Indesign Project</div>
-                    </div>
-                    <div class="image-item">
-                        <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
-                            <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
-                        </a>
-                        <div class="caption">Indesign Project</div>
-                    </div>
-                    <div class="image-item">
-                        <a href="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" target="_blank">
-                            <img src="file:///C:/Users/caitl/OneDrive/Desktop/Photoshop/indesign.png" alt="Indesign Art" />
-                        </a>
-                        <div class="caption">Indesign Project</div>
-                    </div>
-                </div>
-            `,
-
-            illustrator: `
-                <h2>Illustrator</h2>
-                <p>Check out my digital art creations, including character designs and illustrations.</p>
-
-                <h2>Twitch/Kick/Trovo Panels</h2>
-                <div class="grid">
-                    <div class="image-item">
-                        <a href="Illustrator/about-me.png" target="_blank">
-                            <img src="Illustrator/about-me.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="image-item">
-                        <a href="Illustrator/donations.png" target="_blank">
-                            <img src="Illustrator/donations.png" alt="Illustrator Art" />
-                        </a>
-                    </div> 
-                    <div class="image-item">
-                        <a href="Illustrator/about-me.png" target="_blank">
-                            <img src="Illustrator/about-me.png" alt="Illustrator Art" />
-                        </a>
-                    </div> 
-                    <div class="image-item">
-                        <a href="Illustrator/about-me.png" target="_blank">
-                            <img src="Illustrator/about-me.png" alt="Illustrator Art" />
-                        </a>
-                    </div>          
-                    <div class="image-item">
-                        <a href="Illustrator/commands.png" target="_blank">
-                            <img src="Illustrator/commands.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="image-item">
-                        <a href="Illustrator/subscribe.png" target="_blank">
-                            <img src="Illustrator/subscribe.png" alt="Illustrator Art" />
-                        </a>
-                    </div> 
-                    <div class="image-item">
-                        <a href="Illustrator/social-media.png" target="_blank">
-                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
-                        </a>
-                    </div>   
-                    <div class="image-item">
-                        <a href="Illustrator/pc-specs.png" target="_blank">
-                            <img src="Illustrator/pc-specs.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="image-item">
-                        <a href="Illustrator/schedule.png" target="_blank">
-                            <img src="Illustrator/schedule.png" alt="Illustrator Art" />
-                        </a>
-                    </div>      
-                    <div class="image-item">
-                        <a href="Illustrator/chat-rules.png" target="_blank">
-                            <img src="Illustrator/chat-rules.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="image-item">
-                        <a href="Illustrator/social-media.png" target="_blank">
-                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="image-item">
-                        <a href="Illustrator/social-media.png" target="_blank">
-                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
-                        </a>
-                    </div>   
-                    <div class="image-item">
-                        <a href="Illustrator/social-media.png" target="_blank">
-                            <img src="Illustrator/social-media.png" alt="Illustrator Art" />
-                        </a>
-                    </div>    
-                </div>
-
-
-                <h2>Fun Designs</h2>
-                <div class="grids2">
-                    <div class="large-image-item">
-                        <a href="Illustrator/monsterdoodle.png" target="_blank">
-                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="large-image-item">
-                        <a href="Illustrator/google-doodle.png" target="_blank">
-                            <img src="Illustrator/google-doodle.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="large-image-item">
-                        <a href="Illustrator/monsterdoodle.png" target="_blank">
-                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="large-image-item">
-                        <a href="Illustrator/monsterdoodle.png" target="_blank">
-                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="large-image-item">
-                        <a href="Illustrator/monsterdoodle.png" target="_blank">
-                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="large-image-item">
-                        <a href="Illustrator/monsterdoodle.png" target="_blank">
-                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="large-image-item">
-                        <a href="Illustrator/monsterdoodle.png" target="_blank">
-                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                    <div class="large-image-item">
-                        <a href="Illustrator/monsterdoodle.png" target="_blank">
-                            <img src="Illustrator/monsterdoodle.png" alt="Illustrator Art" />
-                        </a>
-                    </div>
-                </div>
-
-            `,
-            };
-        
-               /* ===== REMOVE .HTML FROM URL ===== */
-            (function hideHtmlInURL() {
-                const pathname = window.location.pathname;
-                if (pathname.endsWith(".html")) {
-                    // Replace URL in browser without reloading the page
-                    window.history.replaceState({}, "", pathname.replace(".html", ""));
-                }
-            })(); 
-         // ===== Category Switching =====
-            function switchCategory(category) {
-                const contentDiv = document.getElementById("content");
-                contentDiv.innerHTML = categories[category] || "<p>Category not found.</p>";
-            }
-
-            // ===== Theme Handling =====
-            function applyTheme(theme) {
-                if (theme === "dark") {
-                    document.body.classList.add("dark");
-                    document.body.classList.remove("light");
-                } else {
-                    document.body.classList.add("light");
-                    document.body.classList.remove("dark");
-                }
-                localStorage.setItem("theme", theme);
-            }
-
-            function toggleTheme() {
-                const currentTheme = document.body.classList.contains("dark") ? "dark" : "light";
-                applyTheme(currentTheme === "dark" ? "light" : "dark");
-            }
-
-            document.addEventListener("DOMContentLoaded", () => {
-                // Get modal elements
-                const tosModal = document.getElementById("tos-modal");
-                const privacyModal = document.getElementById("privacy-modal");
-
-                // Get buttons/links that open modals
-                const openTOS = document.getElementById("open-tos");
-                const openPrivacy = document.getElementById("open-privacy");
-
-                // Get all close buttons inside modals
-                const closeButtons = document.querySelectorAll(".modal .close");
-
-                // Open TOS modal
-                openTOS?.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    tosModal.classList.add("show");
-                });
-
-                // Open Privacy modal
-                openPrivacy?.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    privacyModal.classList.add("show");
-                });
-
-                // Close modals when clicking X
-                closeButtons.forEach(btn => {
-                    btn.addEventListener("click", () => {
-                        btn.closest(".modal").classList.remove("show");
-                    });
-                });
-
-                // Close modals when clicking outside modal-content
-                [tosModal, privacyModal].forEach(modal => {
-                    modal.addEventListener("click", (e) => {
-                        if(e.target === modal) modal.classList.remove("show");
-                    });
-                });
-
-                // Close modal on Escape key
-                document.addEventListener("keydown", (e) => {
-                    if(e.key === "Escape") {
-                        [tosModal, privacyModal].forEach(modal => modal.classList.remove("show"));
-                    }
-                });
-            });
-            // ===== Initialize on Load =====
-            window.onload = function() {
-                switchCategory("welcome");
-
-                // Theme initialization
-                const savedTheme = localStorage.getItem("theme");
-                if (savedTheme) {
-                    applyTheme(savedTheme);
-                } else {
-                    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-                        applyTheme("dark");
-                    } else {
-                        applyTheme("light");
-                    }
-                }
-            };
-
-        </script>
-
-       <footer class="site-footer">
-      <div class="footer-content">
-          <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
-          <div class="footer-links">
-              <a href="#" id="open-privacy">Privacy Policy</a>
-              <a href="#" id="open-tos">Terms of Service</a>
-          </div>
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>&copy;2025 Caitlin's Creative Space | All Rights Reserved</p>
+      <div class="footer-links">
+        <button type="button" id="open-privacy">Privacy Policy</button>
+        <button type="button" id="open-tos">Terms of Service</button>
       </div>
+      <div class="footer-socials">
+        <a href="https://www.patreon.com/c/FallenOneArt" target="_blank" rel="noopener noreferrer" class="social-link patreon" aria-label="Patreon"><i class="fa-brands fa-patreon"></i></a>
+        <a href="https://www.instagram.com/caitlinakafallen" target="_blank" rel="noopener noreferrer" class="social-link instagram" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link bluesky" aria-label="Bluesky"><i class="fa-brands fa-bluesky"></i></a>
+        <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener noreferrer" class="social-link github" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+      </div>
+    </div>
   </footer>
 
-    <!-- Terms of Service Glassy Modal -->
-  <div id="tos-modal" class="modal">
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <h2>Terms of Service</h2>
-          <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
-
-          <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
-
-          <h3>Changes to Terms</h3>
-          <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
-
-          <h3>Use of Website</h3>
-          <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
-          <ul>
-              <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
-              <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
-              <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
-          </ul>
-
-          <h3>Intellectual Property</h3>
-          <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
-
-          <h3>Links to Other Websites</h3>
-          <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
-
-          <h3>Disclaimer</h3>
-          <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
-
-          <h3>Governing Law</h3>
-          <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
-
-          <p><strong>Effective Date: August 13, 2025</strong></p>
+  <!-- Lightbox -->
+  <dialog id="lightbox" aria-label="Artwork viewer">
+    <header class="lb-top">
+      <div class="lb-info">
+        <span id="lbTitle"></span>
+        <span id="lbCount"></span>
       </div>
-  </div>
-
-  <!-- Privacy Policy Glassy Modal -->
-  <div id="privacy-modal" class="modal">
-      <div class="modal-content">
-          <span class="close">&times;</span>
-          <h2>Privacy Policy</h2>
-
-          <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
-
-          <h3>Information We Collect</h3>
-          <p>We collect information about you directly from you and automatically through your use of our Website.</p>
-          <h4>Information We Collect Directly From You:</h4>
-          <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
-          <h4>Information We Collect Automatically:</h4>
-          <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
-
-          <h3>How We Use Your Information</h3>
-          <ul>
-              <li>Provide and maintain our Website and its features.</li>
-              <li>Improve our Website and develop new features.</li>
-              <li>Communicate with you about services and updates.</li>
-              <li>Analyze how users interact with our Website.</li>
-          </ul>
-
-          <h3>Disclosure of Your Information</h3>
-          <ul>
-              <li>With your consent.</li>
-              <li>To comply with legal obligations.</li>
-              <li>To protect our rights and property.</li>
-          </ul>
-
-          <h3>Data Security</h3>
-          <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
-
-          <h3>Changes to This Policy</h3>
-          <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
-
-          <p><strong>Last updated: August 13, 2025</strong></p>
+      <div class="lb-actions">
+        <a id="lbOpen" class="lb-btn" target="_blank" rel="noopener noreferrer" aria-label="Open original in a new tab"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        <button id="lbClose" class="lb-btn" type="button" aria-label="Close viewer"><i class="fa-solid fa-xmark"></i></button>
       </div>
-  </div>
+    </header>
+    <div class="lb-stage" id="lbStage">
+      <button class="lb-nav prev" id="lbPrev" type="button" aria-label="Previous artwork"><i class="fa-solid fa-chevron-left"></i></button>
+      <img id="lbImg" alt="" draggable="false">
+      <button class="lb-nav next" id="lbNext" type="button" aria-label="Next artwork"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="lb-strip" id="lbStrip"></div>
+  </dialog>
 
+  <!-- Terms of Service Modal -->
+  <dialog id="tos-modal" class="legal" aria-label="Terms of Service">
+    <div class="legal-inner">
+      <button class="close" type="button" aria-label="Close">&times;</button>
+      <h2>Terms of Service</h2>
+      <p>Welcome to Caitlin's Creative Space. By accessing or using our website, you agree to the following terms...</p>
+
+      <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree to these Terms, you may not use the Website.</p>
+
+      <h3>Changes to Terms</h3>
+      <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Website after any revisions become effective, you agree to be bound by the revised terms.</p>
+
+      <h3>Use of Website</h3>
+      <p>You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the Website.</p>
+      <ul>
+        <li>Do not use the Website in any way that causes, or may cause, damage to the Website or impairment of the availability or accessibility of the Website.</li>
+        <li>Do not conduct any systematic or automated data collection activities on or in relation to our Website without our express written consent.</li>
+        <li>Do not use the Website to transmit or send unsolicited commercial communications.</li>
+      </ul>
+
+      <h3>Intellectual Property</h3>
+      <p>The Website and its original content, features, and functionality are and will remain the exclusive property of Caitlin's Programming and its licensors. The Website is protected by copyright, trademark, and other laws.</p>
+
+      <h3>Links to Other Websites</h3>
+      <p>Our Website may contain links to third-party websites or services that are not owned or controlled by Caitlin's Programming. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+
+      <h3>Disclaimer</h3>
+      <p>Your use of the Website is at your sole risk. The Website is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the Website will be uninterrupted, secure, or error-free.</p>
+
+      <h3>Governing Law</h3>
+      <p>These Terms shall be governed and construed in accordance with the laws of California, United States, without regard to its conflict of law provisions.</p>
+
+      <p><strong>Effective Date: August 13, 2025</strong></p>
+    </div>
+  </dialog>
+
+  <!-- Privacy Policy Modal -->
+  <dialog id="privacy-modal" class="legal" aria-label="Privacy Policy">
+    <div class="legal-inner">
+      <button class="close" type="button" aria-label="Close">&times;</button>
+      <h2>Privacy Policy</h2>
+
+      <p>This Privacy Policy describes how Caitlin's Programming collects, uses, and discloses information that we obtain about visitors to our website (caitlinsprogramming.com).</p>
+
+      <h3>Information We Collect</h3>
+      <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+      <h4>Information We Collect Directly From You:</h4>
+      <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+      <h4>Information We Collect Automatically:</h4>
+      <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This includes your IP address, browser type, OS, pages viewed, links clicked, and the time/date of your visit.</p>
+
+      <h3>How We Use Your Information</h3>
+      <ul>
+        <li>Provide and maintain our Website and its features.</li>
+        <li>Improve our Website and develop new features.</li>
+        <li>Communicate with you about services and updates.</li>
+        <li>Analyze how users interact with our Website.</li>
+      </ul>
+
+      <h3>Disclosure of Your Information</h3>
+      <ul>
+        <li>With your consent.</li>
+        <li>To comply with legal obligations.</li>
+        <li>To protect our rights and property.</li>
+      </ul>
+
+      <h3>Data Security</h3>
+      <p>We have implemented reasonable measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, and destruction.</p>
+
+      <h3>Changes to This Policy</h3>
+      <p>We may update this Privacy Policy from time to time. We will notify you by posting the new policy on this page.</p>
+
+      <p><strong>Last updated: August 13, 2025</strong></p>
+    </div>
+  </dialog>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const $ = (s, el = document) => el.querySelector(s);
+      const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+      /* =========================
+         Gallery data — add or edit art here
+         src: image path   title: caption   group: optional section heading
+      ========================= */
+      const BLURB = "Check out my digital art creations, including character designs and illustrations.";
+
+      const CATS = {
+        procreate: {
+          title: "Procreate", icon: "fa-solid fa-paintbrush", groups: [],
+          items: [
+            { src: "Procreate/pangwippo.png", title: "Pangwippo" },
+            { src: "Procreate/hippotroll.png", title: "HippoTroll" },
+            { src: "Procreate/gangartroll.png", title: "GangarTroll" },
+            { src: "Procreate/Brookie.png", title: "Brookie" }
+          ]
+        },
+        photoshop: {
+          title: "Photoshop", icon: "fa-solid fa-wand-magic-sparkles",
+          groups: ["Baldur's Gate 3", "Resident Evil"],
+          items: [
+            { src: "Photoshop/orin-11x17.jpg", title: "Orin 11x17", group: "Baldur's Gate 3" },
+            { src: "Photoshop/orin-12x17.jpg", title: "Orin 12x17", group: "Baldur's Gate 3" },
+            { src: "Photoshop/orin-13x19.jpg", title: "Orin 13x19", group: "Baldur's Gate 3" },
+            { src: "Photoshop/orin-the-red.jpg", title: "Orin The Red", group: "Baldur's Gate 3" },
+            { src: "Photoshop/angry-lady-d.jpg", title: "Angry Lady D", group: "Resident Evil" },
+            { src: "Photoshop/bela-with-bugs.jpg", title: "Bela and her bugs", group: "Resident Evil" },
+            { src: "Photoshop/donna-tundra.jpg", title: "Donna and Tundra", group: "Resident Evil" },
+            { src: "Photoshop/heisenberg-mutated.jpg", title: "Heisenberg and his mutated self", group: "Resident Evil" },
+            { src: "Photoshop/lady-d-mutated.jpg", title: "Lady D and her mutated self", group: "Resident Evil" }
+          ]
+        },
+        indesign: {
+          title: "InDesign", icon: "fa-solid fa-book-open", groups: [],
+          items: [
+            { src: "Indesign/Broken.png", title: "Mental Aware Month" }
+            // Three entries used file:///C:/Users/... paths, which only load on your own PC.
+            // Add them back here with a site path, e.g. { src: "Indesign/your-file.png", title: "Indesign Project" }
+          ]
+        },
+        illustrator: {
+          title: "Illustrator", icon: "fa-solid fa-bezier-curve",
+          groups: ["Twitch/Kick/Trovo Panels", "Fun Designs"],
+          items: [
+            { src: "Illustrator/about-me.png", title: "About me", group: "Twitch/Kick/Trovo Panels" },
+            { src: "Illustrator/donations.png", title: "Donations", group: "Twitch/Kick/Trovo Panels" },
+            { src: "Illustrator/commands.png", title: "Commands", group: "Twitch/Kick/Trovo Panels" },
+            { src: "Illustrator/subscribe.png", title: "Subscribe", group: "Twitch/Kick/Trovo Panels" },
+            { src: "Illustrator/social-media.png", title: "Social media", group: "Twitch/Kick/Trovo Panels" },
+            { src: "Illustrator/pc-specs.png", title: "PC specs", group: "Twitch/Kick/Trovo Panels" },
+            { src: "Illustrator/schedule.png", title: "Schedule", group: "Twitch/Kick/Trovo Panels" },
+            { src: "Illustrator/chat-rules.png", title: "Chat rules", group: "Twitch/Kick/Trovo Panels" },
+            { src: "Illustrator/monsterdoodle.png", title: "Monster doodle", group: "Fun Designs" },
+            { src: "Illustrator/google-doodle.png", title: "Google doodle", group: "Fun Designs" }
+          ]
+        }
+      };
+
+      Object.entries(CATS).forEach(([key, c]) => c.items.forEach(it => { it.cat = key; }));
+      const ALL = Object.values(CATS).flatMap(c => c.items);
+      const live = c => c.items.filter(i => !i.failed);
+      const plural = n => `${n} ${n === 1 ? "piece" : "pieces"}`;
+
+      const app = $("#app");
+      let current = null;
+      let groupFilter = "all";
+      let viewItems = [];
+      let featTimer = null;
+
+      /* =========================
+         Navigation pill
+      ========================= */
+      const pill = $("#navPill"), track = $("#navTrack");
+      function placePill(el) {
+        if (!el) return;
+        const r = el.getBoundingClientRect(), t = track.getBoundingClientRect();
+        pill.style.width = r.width + "px";
+        pill.style.transform = `translateX(${r.left - t.left}px)`;
+      }
+      function markNav() {
+        $$(".nav-item[data-cat]").forEach(b => {
+          const on = b.dataset.cat === current;
+          b.classList.toggle("active", on);
+          if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+        });
+        const a = $(".nav-item.active");
+        placePill(a);
+        a?.scrollIntoView({ inline: "center", block: "nearest" });
+      }
+      $$(".nav-item").forEach(el => el.addEventListener("pointerenter", () => placePill(el)));
+      $(".nav-list").addEventListener("pointerleave", () => placePill($(".nav-item.active")));
+      $$(".nav-item[data-cat]").forEach(b => b.addEventListener("click", () => { location.hash = b.dataset.cat; }));
+      addEventListener("resize", () => placePill($(".nav-item.active")));
+      document.fonts?.ready.then(() => placePill($(".nav-item.active")));
+
+      /* =========================
+         Routing (#procreate, #photoshop, ...)
+      ========================= */
+      const routeFromHash = () => {
+        const k = location.hash.slice(1);
+        return CATS[k] ? k : "welcome";
+      };
+
+      function show(key, force) {
+        if (!force && key === current) return;
+        const swap = () => {
+          current = key;
+          groupFilter = "all";
+          clearInterval(featTimer);
+          if (key === "welcome") renderWelcome(); else renderCategory(key);
+          markNav();
+          scrollTo({ top: 0, behavior: "instant" });
+          document.title = key === "welcome" ? "Caitlin's Gallery" : `${CATS[key].title} | Caitlin's Gallery`;
+        };
+        if (document.startViewTransition && !reduce && !force) document.startViewTransition(swap);
+        else swap();
+      }
+      addEventListener("hashchange", () => show(routeFromHash()));
+
+      /* =========================
+         Welcome view
+      ========================= */
+      function renderWelcome() {
+        const order = ["photoshop", "procreate", "indesign", "illustrator"];
+        const cards = order.map(k => {
+          const c = CATS[k];
+          return `
+            <a class="cat-card c-${k}" href="#${k}">
+              <img class="cover" src="${c.items[0].src}" alt="" loading="lazy">
+              <span class="shade"></span>
+              <span class="cc-body">
+                <span class="app-ico" aria-hidden="true"><i class="${c.icon}"></i></span>
+                <span class="cc-text"><strong>${c.title}</strong><small>${plural(c.items.length)}</small></span>
+              </span>
+              <span class="cc-go"><i class="fa-solid fa-arrow-right"></i></span>
+            </a>`;
+        }).join("");
+
+        app.innerHTML = `
+          <section class="hero">
+            <div class="hero-copy">
+              <h1 class="hero-title grad-text">Welcome to Caitlin's Art Brain</h1>
+              <p class="lede">Welcome to the creative space where imagination comes to life! Explore a collection of artwork, time-lapse videos, and creative processes from my art journey.</p>
+              <div class="note">
+                <p>Before you dive in, please note that I am currently limited on certain products. However, I am constantly updating and expanding the collection, so be sure to check back for new additions!</p>
+                <p>If you have any questions or want to learn more about the creative process behind the artwork, feel free to explore and get in touch. I appreciate your support and love for creativity!</p>
+              </div>
+            </div>
+            <figure class="featured" id="featured">
+              <div class="frame" id="featFrame">
+                <img class="f-img on" alt="">
+                <img class="f-img" alt="">
+                <button type="button" class="f-open" aria-label="Open featured artwork"></button>
+                <figcaption class="f-cap"><span id="fTitle"></span><span id="fCat"></span></figcaption>
+              </div>
+            </figure>
+          </section>
+          <section class="bento" aria-label="Browse by software">${cards}</section>`;
+
+        initFeatured();
+      }
+
+      function initFeatured() {
+        const frame = $("#featFrame");
+        const imgs = $$(".f-img", frame);
+        const pool = ALL.slice().sort(() => Math.random() - .5);
+        let n = 0, front = 0, shown = null;
+
+        function next(tries = 0) {
+          const candidates = pool.filter(i => !i.failed);
+          if (!candidates.length || tries > pool.length) return;
+          const item = candidates[n++ % candidates.length];
+          if (item === shown && candidates.length > 1) return next(tries + 1);
+          const pre = new Image();
+          pre.onload = () => {
+            const back = imgs[1 - front];
+            back.src = item.src; back.alt = item.title;
+            back.classList.add("on"); imgs[front].classList.remove("on");
+            front = 1 - front; shown = item;
+            $("#fTitle").textContent = item.title;
+            $("#fCat").textContent = CATS[item.cat].title;
+          };
+          pre.onerror = () => { item.failed = true; next(tries + 1); };
+          pre.src = item.src;
+        }
+        next();
+        if (!reduce) featTimer = setInterval(next, 6500);
+
+        $(".f-open", frame).addEventListener("click", () => {
+          if (!shown) return;
+          const list = live(CATS[shown.cat]);
+          openLightbox(list, list.indexOf(shown));
+        });
+
+        if (finePointer && !reduce) {
+          frame.addEventListener("pointermove", e => {
+            const r = frame.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+            frame.style.setProperty("--fx", (x * 9).toFixed(2) + "deg");
+            frame.style.setProperty("--fy", (-y * 9).toFixed(2) + "deg");
+          });
+          frame.addEventListener("pointerleave", () => {
+            frame.style.setProperty("--fx", "0deg"); frame.style.setProperty("--fy", "0deg");
+          });
+        }
+      }
+
+      /* =========================
+         Category view
+      ========================= */
+      function renderCategory(key) {
+        const c = CATS[key];
+        const seg = c.groups.length > 1
+          ? `<div class="seg" id="seg" role="group" aria-label="Filter by collection">
+               <button type="button" data-g="all" aria-pressed="true">All</button>
+               ${c.groups.map((g, i) => `<button type="button" data-g="${i}" aria-pressed="false"></button>`).join("")}
+             </div>`
+          : "";
+
+        app.innerHTML = `
+          <section class="cat-head">
+            <div>
+              <h1 class="grad-text">${c.title}</h1>
+              <p class="blurb">${BLURB}</p>
+            </div>
+            <div class="cat-meta">
+              <span class="count-chip"><i class="fa-regular fa-images"></i><span id="catCount">${plural(live(c).length)}</span></span>
+              ${seg}
+            </div>
+          </section>
+          <div id="sections"></div>`;
+
+        if (seg) {
+          $$("#seg button[data-g]").forEach(b => {
+            if (b.dataset.g !== "all") b.textContent = c.groups[+b.dataset.g];
+            b.addEventListener("click", () => {
+              groupFilter = b.dataset.g === "all" ? "all" : c.groups[+b.dataset.g];
+              $$("#seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+              drawSections();
+            });
+          });
+        }
+        drawSections();
+      }
+
+      function drawSections() {
+        const c = CATS[current];
+        const box = $("#sections");
+        box.textContent = "";
+        viewItems = [];
+        const groups = c.groups.length ? c.groups : [null];
+        let idx = 0, lastMasonry = null;
+
+        groups.forEach(g => {
+          if (g && groupFilter !== "all" && g !== groupFilter) return;
+          const items = c.items.filter(i => (i.group || null) === g);
+          const sec = document.createElement("section");
+          sec.className = "group";
+          if (g) { const h = document.createElement("h2"); h.textContent = g; sec.append(h); }
+          const m = document.createElement("div");
+          m.className = "masonry";
+          items.forEach(it => { viewItems.push(it); m.append(buildTile(it, idx++)); });
+          sec.append(m); box.append(sec);
+          lastMasonry = m;
+        });
+
+        if (lastMasonry && c.items.length <= 4) {
+          const s = document.createElement("div");
+          s.className = "soon";
+          s.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>More coming soon</span>';
+          lastMasonry.append(s);
+        }
+      }
+
+      function buildTile(item, i) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "tile";
+        b.style.setProperty("--d", Math.min(i, 14) * 45 + "ms");
+        b.setAttribute("aria-label", `View ${item.title}`);
+
+        const img = new Image();
+        img.loading = "lazy"; img.decoding = "async"; img.alt = item.title;
+        img.addEventListener("load", () => b.classList.add("loaded"));
+        img.addEventListener("error", () => {
+          item.failed = true;
+          b.remove();
+          const el = $("#catCount");
+          if (el) el.textContent = plural(live(CATS[current]).length);
+        });
+        img.src = item.src;
+
+        const cap = document.createElement("span");
+        cap.className = "cap";
+        cap.innerHTML = '<span class="cap-t"></span><i class="fa-solid fa-expand"></i>';
+        $(".cap-t", cap).textContent = item.title;
+
+        b.append(img, cap);
+        b.addEventListener("click", () => {
+          const list = viewItems.filter(x => !x.failed);
+          openLightbox(list, list.indexOf(item));
+        });
+        return b;
+      }
+
+      /* Tile tilt + sheen */
+      if (finePointer && !reduce) {
+        app.addEventListener("pointermove", e => {
+          const t = e.target.closest?.(".tile");
+          if (!t) return;
+          const r = t.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+          t.style.setProperty("--rx", ((x - .5) * 7).toFixed(2) + "deg");
+          t.style.setProperty("--ry", ((.5 - y) * 7).toFixed(2) + "deg");
+          t.style.setProperty("--mx", (x * 100).toFixed(1) + "%");
+          t.style.setProperty("--my", (y * 100).toFixed(1) + "%");
+        });
+        app.addEventListener("pointerout", e => {
+          const t = e.target.closest?.(".tile");
+          if (t && !t.contains(e.relatedTarget)) {
+            t.style.removeProperty("--rx"); t.style.removeProperty("--ry");
+          }
+        });
+      }
+
+      /* =========================
+         Lightbox
+      ========================= */
+      const lb = $("#lightbox"), lbImg = $("#lbImg"), stage = $("#lbStage"), strip = $("#lbStrip");
+      let lbList = [], lbIdx = 0;
+
+      function openLightbox(list, i) {
+        if (!list.length || i < 0) return;
+        lbList = list; lbIdx = i;
+        buildStrip();
+        lbShow();
+        if (!lb.open) lb.showModal();
+      }
+
+      function buildStrip() {
+        strip.textContent = "";
+        strip.classList.toggle("single", lbList.length < 2);
+        stage.classList.toggle("single", lbList.length < 2);
+        lbList.forEach((it, i) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.setAttribute("aria-label", it.title);
+          const im = new Image();
+          im.src = it.src; im.alt = ""; im.loading = "lazy"; im.decoding = "async";
+          b.append(im);
+          b.addEventListener("click", () => { lbIdx = i; lbShow(); });
+          strip.append(b);
+        });
+      }
+
+      function lbShow() {
+        const it = lbList[lbIdx];
+        stage.classList.remove("zoomed");
+        lbImg.style.transformOrigin = "50% 50%";
+        lbImg.style.opacity = 0;
+        lbImg.src = it.src;
+        lbImg.alt = it.title;
+        $("#lbTitle").textContent = it.title;
+        $("#lbCount").textContent = `${lbIdx + 1} / ${lbList.length}`;
+        $("#lbOpen").href = it.src;
+
+        $$("button", strip).forEach((b, i) => b.classList.toggle("on", i === lbIdx));
+        strip.children[lbIdx]?.scrollIntoView({ inline: "center", block: "nearest", behavior: reduce ? "auto" : "smooth" });
+
+        [-1, 1].forEach(d => {
+          const n = lbList[(lbIdx + d + lbList.length) % lbList.length];
+          if (n && n !== it) new Image().src = n.src;
+        });
+      }
+
+      lbImg.addEventListener("load", () => { lbImg.style.opacity = 1; });
+      lbImg.addEventListener("error", () => {
+        $("#lbTitle").textContent = "This image couldn't be loaded";
+        lbImg.style.opacity = 0;
+      });
+
+      const step = d => { lbIdx = (lbIdx + d + lbList.length) % lbList.length; lbShow(); };
+      $("#lbPrev").addEventListener("click", () => step(-1));
+      $("#lbNext").addEventListener("click", () => step(1));
+      $("#lbClose").addEventListener("click", () => lb.close());
+
+      lb.addEventListener("keydown", e => {
+        if (e.key === "ArrowLeft") step(-1);
+        else if (e.key === "ArrowRight") step(1);
+        else if (e.key === "Home") { lbIdx = 0; lbShow(); }
+        else if (e.key === "End") { lbIdx = lbList.length - 1; lbShow(); }
+      });
+
+      // Click empty space to close
+      lb.addEventListener("click", e => { if (e.target === lb || e.target === stage) lb.close(); });
+
+      // Zoom (click toggles, pointer pans) and swipe between pieces
+      let startX = 0, startY = 0, dragged = false;
+      stage.addEventListener("pointerdown", e => { startX = e.clientX; startY = e.clientY; dragged = false; });
+      stage.addEventListener("pointerup", e => {
+        const dx = e.clientX - startX, dy = e.clientY - startY;
+        if (Math.hypot(dx, dy) > 8) dragged = true;
+        if (!stage.classList.contains("zoomed") && Math.abs(dx) > 70 && Math.abs(dy) < 80 && lbList.length > 1) step(dx < 0 ? 1 : -1);
+      });
+
+      function setOrigin(e) {
+        const r = lbImg.getBoundingClientRect();
+        // Use the un-zoomed box so the origin doesn't drift while zoomed
+        const w = lbImg.offsetWidth, h = lbImg.offsetHeight;
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        const zoomed = stage.classList.contains("zoomed");
+        const scale = zoomed ? 2.3 : 1;
+        const x = ((e.clientX - cx) / scale + w / 2) / w * 100;
+        const y = ((e.clientY - cy) / scale + h / 2) / h * 100;
+        lbImg.style.transformOrigin = `${Math.min(100, Math.max(0, x))}% ${Math.min(100, Math.max(0, y))}%`;
+      }
+      lbImg.addEventListener("click", e => {
+        if (dragged) { dragged = false; return; }
+        if (!stage.classList.contains("zoomed")) setOrigin(e);
+        stage.classList.toggle("zoomed");
+      });
+      stage.addEventListener("pointermove", e => {
+        if (stage.classList.contains("zoomed") && e.pointerType === "mouse") {
+          const r = stage.getBoundingClientRect();
+          lbImg.style.transformOrigin = `${((e.clientX - r.left) / r.width * 100).toFixed(1)}% ${((e.clientY - r.top) / r.height * 100).toFixed(1)}%`;
+        }
+      });
+
+      /* =========================
+         Legal dialogs
+      ========================= */
+      [["open-tos", "tos-modal"], ["open-privacy", "privacy-modal"]].forEach(([btn, dlg]) => {
+        $("#" + btn).addEventListener("click", () => $("#" + dlg).showModal());
+      });
+      $$("dialog.legal").forEach(d => {
+        d.addEventListener("click", e => { if (e.target === d) d.close(); });
+        $(".close", d).addEventListener("click", () => d.close());
+      });
+
+      /* =========================
+         Cursor glow
+      ========================= */
+      if (finePointer && !reduce) {
+        const g = $("#cursorGlow");
+        let x = 0, y = 0, ticking = false;
+        addEventListener("pointermove", e => {
+          x = e.clientX; y = e.clientY;
+          g.classList.add("on");
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(() => { g.style.transform = `translate(${x}px, ${y}px)`; ticking = false; });
+          }
+        });
+        document.addEventListener("pointerleave", () => g.classList.remove("on"));
+      }
+
+      /* =========================
+         Go
+      ========================= */
+      show(routeFromHash(), true);
+    })();
+  </script>
+</body>
 
 </html>
