@@ -1,1372 +1,721 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-        <!-- Author Meta Tag -->
-        <meta name="author" content="Caitlin Ak Fallen">
-        <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
-        <title>Welcome Page | Caitlin's Creative Space</title>
-
-        <!-- Open Graph Meta Tags (Facebook, Discord) -->
-        <meta property="og:title" content="Welcome Page | Caitlin's Creative Space">
-        <meta property="og:description" content="Explore photography, digital art, code, and more">
-        <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-welcomepage.jpg">
-        <meta property="og:url" content="https://caitlinscreativespace.xyz/">
-        <meta property="og:type" content="website">
-
-        <!-- Twitter / X Card -->
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="Welcome Page | Caitlin's Creative Space">
-        <meta name="twitter:description" content="Explore photography, digital art, code, and more">
-        <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-welcomepage.jpg">
-
-        <!-- Instagram Card (Uses OG Tags) -->
-        <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-welcomepage.jpg">
-        <meta property="og:url" content="https://caitlinscreativespace.xyz/">
-        
-
-       <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-       <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-        <style>
-            /* =========================
-            Global Styles
-            ========================= */
-            body {
-            font-family: "Poppins", Arial, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #000000);
-            overflow-x: hidden;
-            color: #fff;
-            }
-
-            /* =========================
-            Header
-            ========================= */
-            header {
-            background: url("images/main-page.JPG") no-repeat center center / cover;
-            height: 30vh;
-            min-height: 200px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            text-align: center;
-            }
-
-            header::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(3px);
-            border-radius: 10px;
-            }
-
-            header div {
-            position: relative;
-            z-index: 2;
-            }
-
-            header h2 {
-            font-family: Georgia, serif;
-            font-size: 42px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #fdf471;
-            text-shadow: 0 0 12px #000;
-            margin: 0;
-            }
-
-            header h5 {
-            font-family: Verdana, sans-serif;
-            font-size: 18px;
-            font-weight: 400;
-            margin-top: 10px;
-            color: #fff;
-            text-shadow: 0 0 8px #000;
-            }
-
-            /* =========================
-            Navigation Bar
-            ========================= */
-            .horizontal-nav {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            padding: 12px 0;
-            display: flex;
-            justify-content: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            overflow-x: auto;
-            scrollbar-width: none;
-            }
-
-            .horizontal-nav::-webkit-scrollbar { display: none; }
-
-            .nav-list {
-            list-style: none;
-            display: flex;
-            gap: 15px;
-            padding: 0;
-            margin: 0;
-            }
-
-            .nav-list li { display: flex; }
-
-            .nav-list a {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            padding: 10px 16px;
-            border-radius: 12px;
-            font-size: 15px;
-            transition: all 0.3s ease-in-out;
-            color: #f0f0f0;
-            }
-
-            .nav-list a i {
-            margin-right: 8px;
-            font-size: 20px;
-            color: #f0f0f0;
-            transition: color 0.3s ease;
-            }
-
-            .nav-list a:hover i {
-            color: #32f2f8; /* optional gradient effect handled via text above */
-            }
-
-            .nav-list a:hover {
-            -webkit-text-fill-color: transparent;
-            background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
-            background-clip: text;
-            box-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
-            }
-            /* Login Button */
-            .login-btn {
-            background: linear-gradient(90deg, #7f00ff, #e100ff);
-            border: none;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            margin: 10px;
-            transition: all 0.3s ease;
-            }
-            .login-btn:hover {
-            transform: scale(1.05);
-            }
-
-            /* Existing Modal Background */
-            .modal {
-                display: none; 
-                position: fixed;
-                z-index: 9999;
-                padding-top: 120px;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(6px);
-            }
-
-            /* Existing Modal Box (Glassy) */
-            .modal-content {
-                background: rgba(255, 255, 255, 0.05);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                backdrop-filter: blur(10px);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-                margin: auto;
-                padding: 25px;
-                border-radius: 15px;
-                width: 90%;
-                max-width: 400px;
-                text-align: center;
-                color: white;
-                animation: slideIn 0.3s ease;
-            }
-
-            /* --- Updated Terms & Privacy Modals --- */
-            #tos-modal .modal-content,
-            #privacy-modal .modal-content {
-                max-width: 800px;
-                width: 90%;
-                background: rgba(30, 30, 40, 0.85);
-                backdrop-filter: blur(12px);
-                border-radius: 16px;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
-                text-align: left;
-                padding: 35px 40px;
-                color: #f1f1f1;
-                line-height: 1.7;
-                overflow-y: auto;
-                max-height: 85vh;
-                transition: all 0.3s ease-in-out;
-            }
-
-            /* Headings inside TOS/Privacy */
-            #tos-modal h2, 
-            #privacy-modal h2 {
-                text-align: center;
-                color: #ff79c6;
-                font-size: 1.8rem;
-                margin-bottom: 25px;
-                letter-spacing: 0.5px;
-                text-shadow: 0 0 8px rgba(255, 121, 198, 0.6);
-            }
-
-            #tos-modal h3, 
-            #privacy-modal h3 {
-                color: #8be9fd;
-                margin-top: 25px;
-                font-size: 1.2rem;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-                padding-bottom: 6px;
-                text-shadow: 0 0 6px rgba(139, 233, 253, 0.4);
-            }
-
-            #tos-modal h4,
-            #privacy-modal h4 {
-                color: #50fa7b;
-                margin-top: 15px;
-                font-size: 1.1rem;
-                text-shadow: 0 0 5px rgba(80, 250, 123, 0.4);
-            }
-            .contact-email {
-                color: #ff79c6; /* neon pink tone */
-                font-weight: 600;
-                text-decoration: none;
-                transition: color 0.3s ease, text-shadow 0.3s ease;
-            }
-
-            .contact-email:hover {
-                color: #ffb3e6;
-                text-shadow: 0 0 8px rgba(255, 121, 198, 0.8);
-            }
-
-            /* Paragraph and text spacing */
-            #tos-modal p,
-            #privacy-modal p {
-                margin-bottom: 15px;
-                font-size: 0.98rem;
-            }
-
-            /* Lists inside modals */
-            #tos-modal ul, 
-            #privacy-modal ul {
-                margin-left: 25px;
-                list-style-type: disc;
-            }
-
-            #tos-modal li, 
-            #privacy-modal li {
-                margin-bottom: 10px;
-                font-size: 0.95rem;
-            }
-
-            /* Scrollbar styling for long text */
-            #tos-modal .modal-content::-webkit-scrollbar,
-            #privacy-modal .modal-content::-webkit-scrollbar {
-                width: 10px;
-            }
-
-            #tos-modal .modal-content::-webkit-scrollbar-thumb,
-            #privacy-modal .modal-content::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 10px;
-            }
-
-            #tos-modal .modal-content::-webkit-scrollbar-thumb:hover,
-            #privacy-modal .modal-content::-webkit-scrollbar-thumb:hover {
-                background: rgba(255, 255, 255, 0.6);
-            }
-
-            /* Close Button */
-            .close {
-                float: right;
-                font-size: 28px;
-                cursor: pointer;
-                color: #ccc;
-                transition: color 0.3s ease, transform 0.2s ease;
-            }
-            .close:hover {
-                color: #ff0080;
-                transform: scale(1.2);
-            }
-
-            /* Responsive tweaks for smaller screens */
-            @media (max-width: 600px) {
-                #tos-modal .modal-content,
-                #privacy-modal .modal-content {
-                    padding: 25px 20px;
-                    font-size: 0.95rem;
-                }
-
-                #tos-modal h2,
-                #privacy-modal h2 {
-                    font-size: 1.5rem;
-                }
-
-                #tos-modal h3,
-                #privacy-modal h3 {
-                    font-size: 1.1rem;
-                }
-            }
-
-
-            /* Social Buttons */
-            .social-login button {
-                display: block;
-                width: 100%;
-                margin: 10px 0;
-                border: none;
-                border-radius: 8px;
-                font-size: 16px;
-                font-weight: 600;
-                padding: 10px;
-                cursor: pointer;
-                transition: 0.3s;
-            }
-
-            .twitch-btn { background: #9146ff; color: white; }
-            .discord-btn { background: #5865f2; color: white; }
-            .youtube-btn { background: #ff0000; color: white; }
-
-            .social-login button:hover {
-                opacity: 0.85;
-            }
-
-            .small-text {
-                font-size: 12px;
-                color: #ccc;
-            }
-            .small-text a {
-                color: #ff79c6;
-                text-decoration: none;
-            }
-            .small-text a:hover {
-                text-decoration: underline;
-            }
-
-            /* Optional fade-in animation for modals */
-            @keyframes slideIn {
-                from { transform: translateY(-40px); opacity: 0; }
-                to { transform: translateY(0); opacity: 1; }
-            }
-
-    /* =========================
-   Twitch Login / User Display
-   ========================= */
-
-/* Hide elements by default */
-.hidden {
-    display: none !important;
-}
-
-/* Twitch login container inside modal */
-.twitch-login,
-.twitch-user {
-    text-align: center;
-    margin: 20px auto;
-}
-
-/* Twitch login button */
-.twitch-button {
-    background-color: #9146ff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 18px;
-    font-size: 1rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    width: 100%;
-    justify-content: center; /* center icon + text */
-}
-
-.twitch-button i {
-    font-size: 20px;
-}
-
-/* Twitch user avatar inside nav or modal */
-.twitch-user img {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    margin-right: 10px;
-    vertical-align: middle;
-}
-
-/* Logout button styling */
-.twitch-logout {
-    margin-left: 10px;
-    background: #444;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 12px;
-    cursor: pointer;
-}
-
-/* Optional hover effects for Twitch button */
-.twitch-button:hover {
-    background-color: #772ce8;
-}
-
-/* =========================
-   Two-Column Layout (Responsive)
-   ========================= */
-.content-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 30px;
-  width: 90%;
-  max-width: 1200px;
-  margin: 40px auto;
-  flex-wrap: wrap; /* allows stacking on smaller screens */
-}
-
-/* Left Column (Top) */
-.main-content {
-  flex: 1;
-  min-width: 280px;
-  padding-bottom: 140px;
-}
-
-#content {
-  padding: 20px;
-  background: linear-gradient(135deg, #f2f3f8, #7e39ff);
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-#content h2 {
-  font-family: Georgia, serif;
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: rgb(92, 26, 245);
-}
-
-#content p {
-  font-family: Verdana, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: rgb(40, 40, 40);
-  margin-bottom: 12px;
-}
-
-/* Right Column (Top) */
-.main-updates {
-  flex: 1;
-  min-width: 280px;
-}
-
-#updates {
-  padding: 20px;
-  background: linear-gradient(135deg, #ffffff, #aaf380); /* Twitch purple */
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-#updates h2 {
-  font-family: Georgia, serif;
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: rgb(19, 245, 94);
-}
-
-#updates p {
-  font-family: Verdana, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: rgb(40, 40, 40);
-  margin-bottom: 12px;
-}
-
-/* =========================
-   Bottom Row
-   ========================= */
-.left-bottom-column,
-.right-bottom-column {
-  flex: 1;
-  min-width: 280px;
-}
-
-/* Tips (Bottom Left) */
-#tips {
-  padding: 20px;
-  background: linear-gradient(135deg, #e6f9ff, #00bcd4); /* Aqua style */
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-#tips h2 {
-  font-family: Georgia, serif;
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: #008c99;
-}
-
-#tips p {
-  font-family: Verdana, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: rgb(30, 30, 30);
-  margin-bottom: 12px;
-}
-
-/* Extra Right (Bottom Right) */
-#extra-right {
-  padding: 20px;
-  background: linear-gradient(135deg, #ffffff, #ff4444); /* YouTube red */
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-#extra-right h2 {
-  font-family: Georgia, serif;
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: #cc0000;
-}
-
-#extra-right p {
-  font-family: Verdana, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: rgb(40, 40, 40);
-  margin-bottom: 12px;
-}
-
-#extra-left {
-  padding: 20px;
-  background: linear-gradient(135deg, #ffffff, #3d58f3); /* YouTube red */
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-#extra-left h2 {
-  font-family: Georgia, serif;
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: #3d58f3;
-}
-
-#extra-left p {
-  font-family: Verdana, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: rgb(40, 40, 40);
-  margin-bottom: 12px;
-}
-
-/* Twitch Subscriber (Bottom Right) */
-#twitch-subscriber {
-  padding: 20px;
-  background: linear-gradient(135deg, #ffffff, #4d2eff); /* Twitch Purple */
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-#twitch-subscriber h2 {
-  font-family: Georgia, serif;
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: #9a41ff;
-  text-align: center;
-}
-
-#twitch-subscriber p {
-  font-family: Verdana, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: rgb(40, 40, 40);
-  margin-bottom: 12px;
-}
-
-
-
-#twitch-subscriber a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  padding: 8px 16px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #721dfa;
-  background: rgba(144, 70, 255, 0); /* soft translucent purple */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-#twitch-subscriber a:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(145, 70, 255, 0.3);
-}
-
-
-
-/* =========================
-   Responsive Layout
-   ========================= */
-@media screen and (max-width: 900px) {
-  .content-wrapper {
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Welcome | Caitlin's Creative Space</title>
+<meta name="author" content="Caitlin Ak Fallen" />
+<meta name="description" content="Explore photography, digital art, code, and more." />
+<meta property="og:title" content="Welcome | Caitlin's Creative Space" />
+<meta property="og:description" content="Explore photography, digital art, code, and more" />
+<meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-welcomepage.jpg" />
+<meta property="og:url" content="https://caitlinscreativespace.xyz/" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Welcome | Caitlin's Creative Space" />
+<meta name="twitter:description" content="Explore photography, digital art, code, and more" />
+<meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-welcomepage.jpg" />
+
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --violet: #9146ff;
+    --violet-hi: #bf94ff;
+    --aqua: #4ae4e9;
+    --cyan: #00bcd4;
+    --blue: #3d58f3;
+    --red: #ff3b3b;
+    --pink: #ff66cc;
+    --ink: #eef0ff;
+    --muted: #a9a6c4;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-strong: rgba(14, 12, 24, 0.72);
+    --line: rgba(255, 255, 255, 0.1);
+    --radius: 20px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+    --top: 70px;
   }
-
-  .main-content,
-  .main-updates,
-  .left-bottom-column,
-  .right-bottom-column {
-    width: 100%;
-    max-width: 600px;
-    padding-bottom: 80px;
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      linear-gradient(rgba(7, 6, 13, .5), rgba(7, 6, 13, .8)),
+      url("images/main-page.JPG") center / cover fixed no-repeat;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
   }
-}
-
-/* =========================
-   Collapsible Section Body
-   ========================= */
-.section-body {
-  transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
-  max-height: 1000px;
-  overflow: hidden;
-  opacity: 1;
-  padding: 10px 0;
-}
-
-.section-body.collapsed {
-  max-height: 0;
-  opacity: 0;
-  padding: 0;
-}
-/* =========================
-   Responsive Layout
-   ========================= */
-@media screen and (max-width: 900px) {
-  .content-wrapper {
-    flex-direction: column;
-    align-items: stretch; /* makes them fill width */
-    gap: 20px;
-    width: 95%; /* use more space on mobile */
-    margin: 20px auto;
+  .aurora {
+    position: fixed; inset: -20%; z-index: -2; pointer-events: none;
+    background:
+      radial-gradient(40% 35% at 12% 18%, rgba(145, 70, 255, .28), transparent 60%),
+      radial-gradient(35% 30% at 88% 12%, rgba(0, 168, 255, .18), transparent 60%),
+      radial-gradient(45% 40% at 62% 92%, rgba(255, 59, 59, .12), transparent 60%);
+    filter: blur(40px);
+    animation: drift 24s ease-in-out infinite alternate;
   }
-
-  .main-content,
-  .main-updates,
-  .left-bottom-column,
-  .right-bottom-column {
-    width: 100%;
-    max-width: 100%; /* no artificial limit */
-    padding-bottom: 40px; /* less padding for mobile */
+  @keyframes drift { to { transform: translate3d(3%, -2%, 0) scale(1.05); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes ping {
+    0% { box-shadow: 0 0 0 0 rgba(255,59,59,.7); }
+    70% { box-shadow: 0 0 0 8px rgba(255,59,59,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,59,59,0); }
   }
+  .ico { width: 18px; height: 18px; display: block; flex-shrink: 0; }
 
-  /* Headings a little smaller for phones */
-  #content h2,
-  #updates h2,
-  #tips h2,
-  #extra-right h2,
-  #extra-left h2,
-  #twitch-subscriber h2{
-    font-size: 22px;
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--top);
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 0 16px;
+    background: var(--glass-strong);
+    backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.3);
   }
-
-  /* Paragraphs scale for readability */
-  #content p,
-  #updates p,
-  #tips p,
-  #extra-right p,
-  #twitch-subscriber p{
-    font-size: 15px;
-    line-height: 1.5;
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; white-space: nowrap; }
+  .brand .logo {
+    width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--violet), var(--aqua)); box-shadow: 0 6px 18px rgba(145,70,255,.4);
+    font-family: "Orbitron", sans-serif; font-weight: 800; font-size: .9rem;
   }
-}
+  .brand .name { font-family: "Orbitron", sans-serif; font-weight: 800; font-size: .92rem; letter-spacing: .04em; }
+  .brand .name em { font-style: normal; color: var(--violet-hi); }
 
-/* Extra tweak for very small phones (<= 480px) */
-@media screen and (max-width: 480px) {
-  .content-wrapper {
-    gap: 15px;
-    width: 100%;
-    margin: 15px auto;
+  .nav-scroll {
+    min-width: 0; overflow-x: auto; scrollbar-width: none;
+    mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
   }
-
-  #content,
-  #updates,
-  #tips,
-  #extra-right,
-  #extra-left,
-  #twitch-subscriber {
-    padding: 15px;
+  .nav-scroll::-webkit-scrollbar { display: none; }
+  .nav { display: flex; gap: 4px; padding: 5px; width: max-content; margin: 0 auto; border-radius: 999px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+  .nav a {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 999px;
+    color: var(--muted); text-decoration: none; font-size: .86rem; font-weight: 600; white-space: nowrap;
+    transition: color .25s, background .25s, transform .25s var(--ease);
   }
+  .nav a svg { width: 17px; height: 17px; }
+  .nav a:hover { color: #fff; background: rgba(255,255,255,.08); transform: translateY(-1px); }
+  .nav a[aria-current="page"] { color: #fff; background: linear-gradient(135deg, rgba(145,70,255,.55), rgba(0,168,255,.35)); box-shadow: 0 0 18px rgba(145,70,255,.3); }
 
-  #content h2,
-  #updates h2,
-  #tips h2,
-  #extra-right h2,
-  #extra-left h2,
-  #twitch-subscriber h2{
-    font-size: 20px;
+  .actions { display: flex; align-items: center; gap: 8px; }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; cursor: pointer;
+    background: rgba(255,255,255,.05); border: 1px solid var(--line); color: var(--ink); font: inherit;
+    transition: background .2s, transform .2s var(--ease), box-shadow .2s;
   }
-
-  #content p,
-  #updates p,
-  #tips p,
-  #extra-right p,
-  #extra-left p,
-  #twitch-subscriber p {
-    font-size: 14px;
+  .icon-btn:hover { background: rgba(255,255,255,.12); transform: translateY(-1px); box-shadow: 0 0 14px rgba(0,188,212,.25); }
+  .login {
+    height: 40px; display: inline-flex; align-items: center; gap: 9px; padding: 0 16px;
+    border-radius: 999px; cursor: pointer; font: inherit; font-size: .84rem; font-weight: 600; color: #fff;
+    background: linear-gradient(90deg, #7f00ff, #e100ff); border: 0; box-shadow: 0 8px 22px rgba(145,70,255,.3);
+    transition: transform .25s var(--ease), box-shadow .25s;
   }
-}
-
-
-.toggle-icon {
-  margin-left: 10px;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-  font-size: 18px;
-  vertical-align: middle;
-}
-
-.toggle-icon.rotate {
-  transform: rotate(180deg); /* points up when open */
-}
-
-/* Responsive Adjustments */
-@media screen and (max-width: 1024px) {
-  .section-body {
-    font-size: 15px;
-    padding: 8px 0;
+  .login:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(145,70,255,.45); }
+  .profile { display: none; align-items: center; gap: 8px; padding: 4px 6px 4px 4px; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid var(--line); }
+  .profile.show { display: inline-flex; }
+  .profile img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 2px solid var(--violet); }
+  .profile .pn { font-size: .84rem; font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .profile button {
+    font: inherit; font-size: .76rem; font-weight: 700; color: #ff7b7b; cursor: pointer;
+    background: rgba(255,68,68,.1); border: 1px solid rgba(255,68,68,.3); border-radius: 999px; padding: 5px 10px;
   }
+  .profile button:hover { background: #ff4444; color: #fff; }
 
-  .toggle-icon {
-    font-size: 16px;
+  /* ---------- Layout ---------- */
+  main { max-width: 1200px; margin: 0 auto; padding: calc(var(--top) + 24px) 16px 40px; }
+  .hero {
+    position: relative; border-radius: 28px; overflow: hidden; min-height: 320px;
+    display: grid; place-items: center; text-align: center; padding: 56px 24px;
+    background: #120e20 url("images/main-page.JPG") center / cover no-repeat;
+    border: 1px solid var(--line); box-shadow: 0 30px 60px rgba(0,0,0,.5);
+    animation: rise .8s var(--ease) both;
   }
-}
-
-@media screen and (max-width: 480px) {
-  .section-body {
-    font-size: 14px;
-    padding: 6px 0;
+  .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,6,13,.35), rgba(7,6,13,.9)); }
+  .hero::after {
+    content: ""; position: absolute; inset: -40%; pointer-events: none; opacity: .6;
+    background: conic-gradient(from 180deg, transparent, rgba(145,70,255,.2), transparent 40%, rgba(0,188,212,.18), transparent 80%);
+    animation: spin 18s linear infinite;
   }
-
-  .toggle-icon {
-    font-size: 14px;
-    margin-left: 6px;
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hero-inner { position: relative; z-index: 1; }
+  .eyebrow { font-family: "Fira Code", monospace; font-size: .76rem; letter-spacing: .3em; text-transform: uppercase; color: var(--aqua); }
+  .hero h1 {
+    margin: 12px 0 14px; font-family: "Orbitron", sans-serif; font-weight: 800;
+    font-size: clamp(2.2rem, 7vw, 4.2rem); line-height: 1.05; letter-spacing: .02em;
+    background: linear-gradient(60deg, #fff 15%, var(--aqua) 50%, var(--violet) 90%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 20px rgba(0,0,0,.4));
   }
-}
+  .hero p.lede { margin: 0 auto; max-width: 620px; font-size: 1.05rem; color: #dcd9f0; line-height: 1.6; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 26px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; border-radius: 999px;
+    font-size: .86rem; font-weight: 600; background: rgba(0,0,0,.45); border: 1px solid var(--line); backdrop-filter: blur(8px);
+  }
+  .pill .d { width: 9px; height: 9px; border-radius: 50%; background: #555; }
+  .pill.live { border-color: rgba(255,59,59,.6); color: #ffd6d6; box-shadow: 0 0 18px rgba(255,40,40,.35); }
+  .pill.live .d { background: var(--red); box-shadow: 0 0 10px var(--red); animation: ping 1.6s infinite; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 999px; cursor: pointer;
+    font: inherit; font-size: .88rem; font-weight: 600; color: #fff; text-decoration: none; border: 1px solid transparent;
+    background: linear-gradient(135deg, var(--violet), var(--blue)); box-shadow: 0 8px 24px rgba(145,70,255,.35);
+    transition: transform .25s var(--ease), box-shadow .25s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(145,70,255,.5); }
+  .btn.ghost { background: rgba(255,255,255,.06); border-color: var(--line); box-shadow: none; }
+  .btn.ghost:hover { background: rgba(255,255,255,.12); }
 
-            /* =========================
-            Site News
-            ========================= */
-            #site-news {
-            position: relative;
-            overflow: hidden;
-            padding: 20px;
-            background: rgba(17, 17, 17, 0.014);
-            color: #eee;
-            border-radius: 10px;
-            margin: 10px auto;
-            max-width: 900px;
-            backdrop-filter: blur(10px);
-            }
+  .block { margin-top: 40px; animation: rise .7s var(--ease) both; }
+  .block-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 4px 16px; flex-wrap: wrap; }
+  .block-head h2 { margin: 0; font-family: "Orbitron", sans-serif; font-size: 1.15rem; letter-spacing: .05em; text-transform: uppercase; }
+  .block-head span { color: var(--muted); font-size: .84rem; }
 
-            .revamp-notice {
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-            background: transparent;
-            color: #f0f0f0;
-            font-size: 14px;
-            text-align: center;
-            padding: 8px 0;
-            border-radius: 5px;
-            }
+  /* ---------- Notice ---------- */
+  .notice {
+    position: relative; overflow: hidden; padding: 18px 20px; border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(255,59,59,.12), rgba(145,70,255,.1));
+    border: 1px solid rgba(255,120,120,.3); backdrop-filter: blur(12px);
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .notice::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(var(--red), var(--violet)); }
+  .notice .n-ico { font-size: 1.3rem; line-height: 1; }
+  .notice p { margin: 0; color: #f0eefa; line-height: 1.6; font-size: .94rem; }
+  .notice .date { display: inline-block; margin-top: 8px; font-size: .8rem; color: var(--muted); }
+  .notice .date strong { color: #fff; }
 
-            .revamp-notice p {
-            display: inline-block;
-            padding-left: 100%;
-            animation: scrollNotice 90s linear infinite;
-            }
+  /* ---------- Cards ---------- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
+  .card {
+    --accent: var(--violet-hi);
+    position: relative; border-radius: var(--radius); overflow: hidden;
+    background: var(--glass); border: 1px solid var(--line);
+    backdrop-filter: blur(14px) saturate(150%); -webkit-backdrop-filter: blur(14px) saturate(150%);
+    box-shadow: 0 14px 40px rgba(0,0,0,.25); transition: border-color .3s, box-shadow .3s;
+  }
+  .card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: linear-gradient(90deg, var(--accent), transparent); }
+  .card:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); box-shadow: 0 18px 46px rgba(0,0,0,.35); }
+  .card.wide { grid-column: 1 / -1; }
+  .card[data-accent="aqua"] { --accent: var(--aqua); }
+  .card[data-accent="cyan"] { --accent: var(--cyan); }
+  .card[data-accent="blue"] { --accent: #7b8cff; }
+  .card[data-accent="red"] { --accent: #ff6b6b; }
+  .card[data-accent="pink"] { --accent: var(--pink); }
+  .card[data-accent="violet"] { --accent: var(--violet-hi); }
+  .card-head {
+    width: 100%; display: flex; align-items: center; gap: 12px; padding: 18px 20px;
+    background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer;
+  }
+  .c-ico {
+    width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; flex-shrink: 0;
+    background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent);
+  }
+  .c-ico svg { width: 21px; height: 21px; }
+  .card-head h2 { margin: 0; flex: 1; font-family: "Orbitron", sans-serif; font-size: 1rem; letter-spacing: .04em; color: #fff; }
+  .chev { width: 18px; height: 18px; color: var(--muted); transition: transform .35s var(--ease); }
+  .card.closed .chev { transform: rotate(-90deg); }
+  .collapse { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .45s var(--ease); }
+  .card.closed .collapse { grid-template-rows: 0fr; }
+  .collapse > div { overflow: hidden; min-height: 0; }
+  .card-body { padding: 0 22px 22px; color: #d9d9e6; line-height: 1.7; font-size: .95rem; }
+  .card-body p { margin: 0 0 12px; }
+  .card-body p:last-child { margin-bottom: 0; }
+  .card-body strong { color: #fff; }
+  .card-body a { color: var(--violet-hi); text-decoration: none; border-bottom: 1px solid rgba(191,148,255,.4); }
+  .card-body a:hover { color: #fff; border-color: #fff; }
+  .card-body .btn { margin-top: 14px; }
 
-            @keyframes scrollNotice {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
-            }
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: 48px; padding: 24px 18px; text-align: center; border-radius: 22px;
+    background: var(--glass-strong); border: 1px solid var(--line);
+    backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+  footer p { margin: 0 0 14px; color: #cfcfe0; font-size: .86rem; }
+  .f-search { display: flex; justify-content: center; margin: 0 auto 16px; max-width: 420px; }
+  .f-search form { display: flex; width: 100%; gap: 8px; }
+  .f-search input {
+    flex: 1; min-width: 0; padding: 11px 16px; border-radius: 999px; font: inherit; font-size: .9rem;
+    color: #fff; background: rgba(255,255,255,.06); border: 1px solid var(--line); outline: none;
+    transition: border-color .25s, box-shadow .25s;
+  }
+  .f-search input::placeholder { color: rgba(255,255,255,.4); }
+  .f-search input:focus { border-color: var(--aqua); box-shadow: 0 0 0 4px rgba(74,228,233,.12); }
+  .f-search button {
+    width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; flex-shrink: 0;
+    background: rgba(255,255,255,.06); border: 1px solid var(--line); color: #fff; transition: background .2s, transform .2s;
+  }
+  .f-search button:hover { background: rgba(255,255,255,.14); transform: scale(1.05); }
+  .socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .socials a {
+    width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+    color: #f5f5f5; background: rgba(255,255,255,.05); border: 1px solid var(--line);
+    transition: transform .3s var(--ease), color .3s, border-color .3s, box-shadow .3s;
+  }
+  .socials a svg { width: 20px; height: 20px; }
+  .socials a:hover { transform: translateY(-3px); color: var(--c); border-color: var(--c); box-shadow: 0 0 18px color-mix(in srgb, var(--c) 45%, transparent); }
+  .socials .ig { --c: #e1306c; }
+  .socials .tw { --c: #9146ff; }
+  .socials .yt { --c: #ff3b3b; }
+  .socials .bsky { --c: #1da1f2; }
+  .socials .gh { --c: #ffffff; }
+  .socials .pt { --c: #f96854; }
+  .socials .rd { --c: #ff4500; }
+  .top-link { margin-top: 16px; display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: .8rem; text-decoration: none; }
+  .top-link:hover { color: #fff; }
+  .top-link svg { width: 14px; height: 14px; transform: rotate(-90deg); }
 
-            /* =========================
-            Sleek Glassy Footer (Refined)
-            ========================= */
-            footer {
-            background: rgba(20, 20, 20, 0.164); /* glassy */
-            -webkit-backdrop-filter: blur(14px) saturate(160%);
-            backdrop-filter: blur(14px) saturate(160%);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            color: #eaeaea;
-            font-weight: 500;
-            text-align: center;
-            padding: 8px 10px; /* smaller padding */
-            position: fixed;
-            bottom: -80px; /* small default hidden offset */
-            left: 0;
-            right: 0;
-            width: 100%;
-            max-height: 115px; /* prevents large expansion */
-            box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.35);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: bottom 0.5s ease-in-out, background 0.4s ease;
-            z-index: 9999;
-            border-radius: 12px 12px 0 0; /* rounded top */
-            }
+  /* ---------- Modals ---------- */
+  .modal {
+    position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; padding: 20px;
+    background: rgba(4,3,10,.6); backdrop-filter: blur(8px);
+    opacity: 0; visibility: hidden; transition: opacity .25s, visibility .25s;
+  }
+  .modal.open { opacity: 1; visibility: visible; }
+  .modal-box {
+    width: min(440px, 100%); max-height: 86vh; overflow-y: auto; padding: 26px;
+    border-radius: 22px; background: rgba(18,14,32,.96); border: 1px solid var(--line);
+    box-shadow: 0 30px 80px rgba(0,0,0,.6); transform: translateY(-8px) scale(.98); transition: transform .3s var(--ease);
+  }
+  .modal.open .modal-box { transform: none; }
+  .modal-box.legal { width: min(780px, 100%); text-align: left; line-height: 1.7; color: #e6e4f5; font-size: .94rem; }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .modal-head h2 { margin: 0; font-family: "Orbitron", sans-serif; font-size: 1.05rem; letter-spacing: .04em; }
+  .x-btn {
+    width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+    background: none; border: 1px solid var(--line); color: #ccc; transition: color .2s, border-color .2s;
+  }
+  .x-btn:hover { color: var(--aqua); border-color: var(--aqua); }
+  .x-btn svg { width: 14px; height: 14px; }
+  .modal-box p.intro { margin: 0 0 16px; color: #d9d9e6; }
+  .sign-list { display: grid; gap: 10px; }
+  .sign-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px;
+    border: 0; border-radius: 12px; cursor: pointer; font: inherit; font-size: .95rem; font-weight: 600; color: #fff;
+    transition: transform .2s var(--ease), filter .2s;
+  }
+  .sign-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+  .sign-btn svg { width: 20px; height: 20px; }
+  .sign-btn.tw { background: #9146ff; }
+  .sign-btn.dc { background: #5865f2; }
+  .sign-btn.yt { background: #ff0000; }
+  .small { margin: 16px 0 0; font-size: .8rem; color: var(--muted); text-align: center; }
+  .small a { color: var(--violet-hi); }
+  .legal h3 { color: var(--aqua); font-size: 1rem; margin: 22px 0 6px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .legal p { margin: 0 0 12px; }
+  .legal ul { margin: 0 0 12px 22px; padding: 0; }
+  .legal li { margin-bottom: 8px; }
+  .legal a { color: var(--pink); text-decoration: none; }
+  .legal a:hover { text-decoration: underline; }
 
-            footer:hover {
-            bottom: 0;
-            background: rgba(30, 30, 30, 0.7);
-            }
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); z-index: 600;
+    padding: 11px 18px; border-radius: 12px; font-size: .9rem; color: #fff;
+    background: rgba(12,10,22,.92); border: 1px solid rgba(145,70,255,.5); box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    opacity: 0; pointer-events: none; transition: opacity .3s, transform .35s var(--ease);
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-            /* Footer Container */
-            .footer-container {
-            width: 100%;
-            max-width: 550px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin: 0 auto;
-            position: relative;
-            }
+  /* ---------- Search palette ---------- */
+  .palette {
+    position: fixed; inset: 0; z-index: 550; display: flex; align-items: flex-start; justify-content: center;
+    padding: 12vh 16px 16px; background: rgba(4,3,10,.6); backdrop-filter: blur(8px);
+    opacity: 0; visibility: hidden; transition: opacity .25s, visibility .25s;
+  }
+  .palette.open { opacity: 1; visibility: visible; }
+  .palette-box {
+    width: min(620px, 100%); border-radius: 22px; overflow: hidden;
+    background: rgba(18,14,32,.96); border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    transform: translateY(-8px) scale(.98); transition: transform .3s var(--ease);
+  }
+  .palette.open .palette-box { transform: none; }
+  .palette-input { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+  .palette-input svg { width: 18px; height: 18px; color: var(--muted); }
+  .palette-input input { flex: 1; background: none; border: 0; outline: none; color: #fff; font: inherit; font-size: 1rem; }
+  .palette-input input::placeholder { color: rgba(255,255,255,.4); }
+  .palette-input kbd { font-family: "Fira Code", monospace; font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; }
+  .palette-list { list-style: none; margin: 0; padding: 8px; max-height: 50vh; overflow-y: auto; }
+  .palette-list a { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; color: var(--ink); text-decoration: none; }
+  .palette-list a.active, .palette-list a:hover { background: rgba(145,70,255,.18); }
+  .p-ico { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: rgba(255,255,255,.06); color: var(--violet-hi); }
+  .p-ico svg { width: 18px; height: 18px; }
+  .palette-list small { display: block; color: var(--muted); font-size: .76rem; }
+  .palette-empty { padding: 22px; text-align: center; color: var(--muted); }
 
-            /* Footer Text */
-            .footer-container p {
-            font-size: 12px;
-            margin: 0;
-            color: #cfcfcf;
-            opacity: 0.85;
-            }
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1000px) {
+    .brand .name { display: none; }
+    .nav a span { display: none; }
+    .nav a { padding: 9px 11px; }
+  }
+  @media (max-width: 640px) {
+    :root { --top: 118px; }
+    .topbar { grid-template-columns: 1fr auto; grid-template-rows: auto auto; height: auto; padding: 10px 14px 8px; row-gap: 8px; }
+    .brand { grid-column: 1; grid-row: 1; }
+    .actions { grid-column: 2; grid-row: 1; }
+    .nav-scroll { grid-column: 1 / -1; grid-row: 2; }
+    .nav { margin: 0; }
+    .nav a span { display: inline; }
+    .profile .pn { display: none; }
+    .hero { min-height: 280px; padding: 40px 18px; }
+    .modal-box { padding: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
 
+<div class="aurora" aria-hidden="true"></div>
 
-            /* Social Links */
-            .socials {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 8px;
-            padding-bottom: env(safe-area-inset-bottom);
-            }
+<!-- ========== Icon sprite ========== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-welcome" viewBox="0 0 24 24"><path d="M4 21V9l8-6 8 6v12h-5v-6H9v6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-brush" viewBox="0 0 24 24"><path d="M14 4l6 6-9 9H5v-6zM4 20c2 0 3-1 3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 010 7M18 14.5c2 .7 3.2 2.5 3.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9M12 12C12 7 8 5 4 5c0 4 2 7 8 7zM12 12c0-4 4-6 8-6 0 4-2 6-8 6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0112 0c0 6 2 7 2 7H4s2-1 2-7M10 20a2 2 0 004 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-twitch" viewBox="0 0 24 24"><path d="M4 2 2 6v15h5v3h3l3-3h4l5-5V2zm16 11-3 3h-5l-3 3v-3H6V4h14z" fill="currentColor"/><path d="M15 7h2v5h-2zM10 7h2v5h-2z" fill="currentColor"/></symbol>
+  <symbol id="i-youtube" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9v6l5-3z" fill="#0b0b12"/></symbol>
+  <symbol id="i-discord" viewBox="0 0 24 24"><path d="M7 7c2-1 3-1 5-1s3 0 5 1c1 1.5 2 4 2 8-2 1.5-3.5 2-4 2l-1-1.5c.8-.3 1.6-.7 2-1.2-2 1-3 1-4 1s-2 0-4-1c.4.5 1.2.9 2 1.2L8 17c-.5 0-2-.5-4-2 0-4 1-6.5 2-8z" fill="currentColor"/><circle cx="9.5" cy="12.5" r="1.2" fill="#5865f2"/><circle cx="14.5" cy="12.5" r="1.2" fill="#5865f2"/></symbol>
+  <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-bluesky" viewBox="0 0 24 24"><path d="M6 5c2 1.5 4 4.5 6 7 2-2.5 4-5.5 6-7 1.5-1 2.5 0 2 3-.5 2.5-2 4-4 5 1.5 0 2.5 1 2 3-1 2-3 2-5 1-2 1-3 2-3 2s-1-1-3-2c-2-1-4-1-5-1-2 1-4 0-5-2-.5-2 .5-3 2-3-2-1-3.5-2.5-4-5-.5-3 .5-4 2-3z" fill="currentColor"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 3a9 9 0 00-2.8 17.5c.5.1.6-.2.6-.5v-1.7c-2.5.5-3-1.2-3-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.1 1 2.6.8.1-.6.3-1 .6-1.2-2-.2-4-1-4-4.4 0-1 .3-1.8.9-2.4-.1-.2-.4-1.1.1-2.3 0 0 .8-.2 2.5.9a8.6 8.6 0 014.6 0c1.7-1.1 2.5-.9 2.5-.9.5 1.2.2 2.1.1 2.3.6.6.9 1.4.9 2.4 0 3.4-2.1 4.2-4 4.4.3.3.6.8.6 1.6v2.4c0 .3.2.6.6.5A9 9 0 0012 3z" fill="currentColor"/></symbol>
+  <symbol id="i-patreon" viewBox="0 0 24 24"><circle cx="15" cy="9" r="5.5" fill="currentColor"/><rect x="3" y="3" width="3.5" height="18" fill="currentColor"/></symbol>
+  <symbol id="i-reddit" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5" fill="currentColor"/><circle cx="18.5" cy="5.5" r="2" fill="currentColor"/><circle cx="9" cy="13" r="1.3" fill="#0b0b12"/><circle cx="15" cy="13" r="1.3" fill="#0b0b12"/></symbol>
+</svg>
 
-            .social-link {
-            font-size: 22px;
-            color: #f5f5f5;
-            opacity: 0.85;
-            text-decoration: none;
-            transition: transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
-            }
+<!-- ========== Top bar ========== -->
+<header class="topbar">
+  <a class="brand" href="index.html" aria-label="Caitlin's Creative Space home">
+    <span class="logo">CS</span>
+    <span class="name">Caitlin's <em>Space</em></span>
+  </a>
 
-            .social-link:hover {
-            transform: scale(1.2);
-            opacity: 1;
-            }
+  <div class="nav-scroll">
+    <nav class="nav" aria-label="Site navigation">
+      <a href="photography.html" data-page="photography.html"><svg class="ico" aria-hidden="true"><use href="#i-camera"/></svg><span>Photography</span></a>
+      <a href="programming.html" data-page="programming.html"><svg class="ico" aria-hidden="true"><use href="#i-code"/></svg><span>Programming</span></a>
+      <a href="viewer-art.html" data-page="viewer-art.html"><svg class="ico" aria-hidden="true"><use href="#i-brush"/></svg><span>Gallery</span></a>
+      <a href="viewers-convention.html" data-page="viewers-convention.html"><svg class="ico" aria-hidden="true"><use href="#i-users"/></svg><span>Conventions</span></a>
+      <a href="schedule.html" data-page="schedule.html"><svg class="ico" aria-hidden="true"><use href="#i-video"/></svg><span>Content</span></a>
+      <a href="about.html" data-page="about.html"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg><span>About</span></a>
+      <a href="contact.html" data-page="contact.html"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg><span>Contact</span></a>
+    </nav>
+  </div>
 
-             /* Social Hover Colors */ 
-            .social-link:nth-child(1):hover { color: #C13584; }  /* Instagram */
-            .social-link:nth-child(2):hover { color: #9146FF; }  /* Twitch */
-            .social-link:nth-child(3):hover { color: #FF0000; }  /* YouTube */
-            .social-link:nth-child(4):hover { color: #24f21d; }  /* Kick */
-            .social-link:nth-child(5):hover { color: #1DA1F2; }  /* Bluesky */
-            .social-link:nth-child(6):hover { color: #000; }     /* GitHub */
-            .social-link:nth-child(7):hover { color: #F96854; }  /* Patreon */
-            .social-link:nth-child(8):hover { color: #FF4500; }  /* Reddit */
-
-
-             /* ========================= Twitch LIVE indicator ========================= */
-        /* NOTE: The live indicator has been updated with a second block later in the CSS, 
-          I have ensured the final version below is the one used for the compiled result. */
-
-        /* Final version of live-indicator */
-        #live-indicator {
-          display: none; /* hidden by default */
-          margin-left: 6px;
-          font-size: 0.75rem;
-          font-weight: bold;
-          color: #ff0000;
-          text-shadow: 0 0 6px rgba(255, 0, 0, 0.8), 0 0 12px rgba(255, 0, 0, 0.6);
-          animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-          0% { opacity: 1; text-shadow: 0 0 6px rgba(255,0,0,0.9), 0 0 12px rgba(255,0,0,0.7); }
-          50% { opacity: 0.5; text-shadow: 0 0 3px rgba(255,0,0,0.6), 0 0 8px rgba(255,0,0,0.4); }
-          100% { opacity: 1; text-shadow: 0 0 6px rgba(255,0,0,0.9), 0 0 12px rgba(255,0,0,0.7); }
-        }
-            /* Responsive Adjustments */
-            @media screen and (max-width: 600px) {
-            footer {
-                bottom: -100px;
-                padding: 8px calc(10px + env(safe-area-inset-bottom));
-            }
-            .footer-container p { font-size: 10px; }
-            #search-bar { max-width: 100%; }
-            .social-link { font-size: 18px; }
-            }
-
-            @media screen and (max-width: 812px) and (orientation: landscape) {
-            footer { bottom: -80px; padding: 10px calc(12px + env(safe-area-inset-bottom)); }
-            .footer-container p { font-size: 11px; }
-            .social-link { font-size: 16px; }
-            }
-
-            @media screen and (min-width: 1025px) {
-            footer { height: auto; bottom: -90px; }
-            }
-
-        </style>
-    </head>
-        <body>
-                    <header style="background-image: url('images/main-page.JPG'); background-size: cover; background-position: center; height: 300px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
-                    <div style="text-align: center; color: rgb(253, 244, 113); padding-top: 0;">
-                        <h2 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
-                        Caitlin's Creative Space
-                        </h2>
-                        <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
-                        Explore my world of creativity: photography, digital art, coding, and more!
-                        </h5>
-                    </div>
-                    </header>
-
-           <!-- Horizontal Navigation Bar -->
-<nav id="horizontal-nav" class="horizontal-nav">
-    <ul class="nav-list">
-        <!-- Login Button -->
-        <li>
-            <a id="loginBtn" href="javascript:void(0)">
-                <i class="fas fa-sign-in-alt"></i>
-                <span>Social Accounts Login</span>
-            </a>
-        </li>
-
-        <!-- Hidden User Profile (shows after login) -->
-        <li id="userProfile" style="display:none;">
-            <a href="javascript:void(0)" style="display:flex; align-items:center;">
-                <img
-                    id="profilePic"
-                    src="images/default-avatar.png"
-                    alt="Profile Picture"
-                    style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;"
-                >
-                <span id="profileName" style="font-weight:600;"></span>
-            </a>
-            <button id="logoutBtn" style="margin-left:10px; padding:4px 8px; border:none; border-radius:6px; cursor:pointer;">Logout</button>
-        </li>
-    </ul>
-</nav>
-
-<!-- Modal Background -->
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Social Login Accounts</h2>
-        <p>Use your social media account to continue:</p>
-
-        <div class="social-login">
-            <!-- Twitch Login using your div structure -->
-            <div id="twitch-btn" class="auth-visible">
-                <button id="twitchLoginBtn" class="twitch-button">
-                    <i class="fab fa-twitch"></i> Continue with Twitch
-                </button>
-            </div>
-
-            <!-- Discord Login -->
-            <button class="discord-btn" id="discordLoginBtn">
-                <i class="fab fa-discord"></i> Continue with Discord
-            </button>
-
-            <!-- YouTube / Google Login -->
-            <button class="youtube-btn" id="youtubeLoginBtn">
-                <i class="fab fa-youtube"></i> Continue with YouTube
-            </button>
-            
-        </div>
-
-        <p class="small-text">
-            By continuing, you agree to our 
-            <a href="#" id="open-tos">Terms</a> and 
-            <a href="#" id="open-privacy">Privacy</a>.
-        </p>
+  <div class="actions">
+    <button class="icon-btn" id="openSearch" type="button" aria-label="Search pages (press /)" title="Search (/)">
+      <svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>
+    </button>
+    <div class="profile" id="profile">
+      <img id="profilePic" src="images/default-avatar.png" alt="" />
+      <span class="pn" id="profileName"></span>
+      <button id="logoutBtn" type="button">Log out</button>
     </div>
+    <button class="login" id="loginBtn" type="button">
+      <svg class="ico" aria-hidden="true"><use href="#i-user"/></svg>
+      <span>Log in</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- ========== Hero ========== -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-inner">
+      <div class="eyebrow">Welcome</div>
+      <h1 id="hero-title">Caitlin's Creative Space</h1>
+      <p class="lede">Explore my world of creativity: photography, digital art, coding, and more!</p>
+      <div class="hero-actions">
+        <div class="pill" id="livePill"><span class="d"></span><span id="liveText">Checking Twitch…</span></div>
+        <button class="btn" id="browseBtn" type="button">
+          <svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>
+          Browse pages
+        </button>
+        <a class="btn ghost" href="twitch.html">
+          <svg class="ico" aria-hidden="true"><use href="#i-twitch"/></svg>
+          Twitch Lounge
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Notice ========== -->
+  <section class="block" aria-label="Site news">
+    <div class="notice">
+      <span class="n-ico" aria-hidden="true">⚠️</span>
+      <div>
+        <p>This website is entering a revamp stage to improve eye-sight protection. Eye strain can be bothersome, so some visual elements may temporarily change. Also we are putting a login in with social media accounts for a more personalized experience. Still in working progress of getting the profile pictures and names to show up correctly. Thank you for your patience during this transition!</p>
+        <span class="date"><strong>Date:</strong> <span id="revamp-date"></span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Cards ========== -->
+  <section class="block" aria-labelledby="info-title">
+    <div class="block-head">
+      <h2 id="info-title">About this site</h2>
+      <span>Tap a card to open or close it</span>
+    </div>
+
+    <div class="cards">
+      <article class="card wide" data-accent="violet">
+        <button class="card-head" aria-expanded="true" aria-controls="c-welcome">
+          <span class="c-ico"><svg aria-hidden="true"><use href="#i-welcome"/></svg></span>
+          <h2>Welcome</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-welcome"><div>
+          <div class="card-body">
+            <p>Welcome to the Creative Space of My Mind! Step into a world where photography, digital art, coding, and endless creativity come together. Explore the unique projects, stories, and inspirations that shape my artistic journey. Let’s create something extraordinary together!</p>
+            <p>Please select any categories.</p>
+          </div>
+        </div></div>
+      </article>
+
+      <article class="card" data-accent="aqua">
+        <button class="card-head" aria-expanded="true" aria-controls="c-updates">
+          <span class="c-ico"><svg aria-hidden="true"><use href="#i-bell"/></svg></span>
+          <h2>Updates</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-updates"><div>
+          <div class="card-body">
+            <p>As this website continues to show improvement, new features and content will be added regularly. Stay tuned for the latest updates!</p>
+            <p>Feel free to explore the different sections and reach out if you have any questions or suggestions. Your feedback is always welcome!</p>
+          </div>
+        </div></div>
+      </article>
+
+      <article class="card" data-accent="cyan">
+        <button class="card-head" aria-expanded="true" aria-controls="c-tips">
+          <span class="c-ico"><svg aria-hidden="true"><use href="#i-bulb"/></svg></span>
+          <h2>Mobile Tips</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-tips"><div>
+          <div class="card-body">
+            <p>💡 Just to let you know: the horizontal navigation is scrollable. Swipe side to side to see more options!</p>
+          </div>
+        </div></div>
+      </article>
+
+      <article class="card" data-accent="blue">
+        <button class="card-head" aria-expanded="true" aria-controls="c-history">
+          <span class="c-ico"><svg aria-hidden="true"><use href="#i-sprout"/></svg></span>
+          <h2>Website History</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-history"><div>
+          <div class="card-body">
+            <p>🌱 <strong>Caitlin’s Creative Space</strong> began as a single, simple page back in <strong>November/December 2024</strong>. It was originally just a small idea: a place to showcase my creative projects and coding experiments.</p>
+            <p>💡 Over time, that one page started to grow, expanding into multiple sections featuring my art, photography, coding tutorials, and streaming tools. Each new addition was built from scratch with care and passion, reflecting my journey as a creator and developer.</p>
+            <p>🌟 Today, it’s evolved into a full creative hub that continues to expand, blending technology, art, and imagination, and there’s still more to come!</p>
+          </div>
+        </div></div>
+      </article>
+
+      <article class="card" data-accent="red">
+        <button class="card-head" aria-expanded="true" aria-controls="c-rules">
+          <span class="c-ico"><svg aria-hidden="true"><use href="#i-shield"/></svg></span>
+          <h2>Rules &amp; Credits</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-rules"><div>
+          <div class="card-body">
+            <p>🚫 Please respect my work. Using any of my projects, designs, or code as your own without giving credit is not allowed.</p>
+            <p>✅ If you’d like to share or use something, make sure to properly credit me: <strong>caitlinakafallen</strong>.</p>
+            <p>💬 Collaboration is always welcome. Just reach out before reusing or modifying any of my projects. I love seeing how others build upon creative ideas, as long as proper credit is given and the spirit of respect remains.</p>
+            <p>🌐 All assets, layouts, and designs showcased here are created by me unless otherwise stated. Any third-party tools, libraries, or plugins are credited where used.</p>
+            <p>🪄 This site and its contents were built from the ground up with passion, creativity, and transparency. Please keep that same energy if you take inspiration from it!</p>
+          </div>
+        </div></div>
+      </article>
+
+      <article class="card" data-accent="pink">
+        <button class="card-head" aria-expanded="true" aria-controls="c-sub">
+          <span class="c-ico"><svg aria-hidden="true"><use href="#i-heart"/></svg></span>
+          <h2>Twitch Subscriber</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-sub"><div>
+          <div class="card-body">
+            <p>💜 This content is available for <strong>subscribers only</strong>. Please subscribe to <a href="https://twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer">FallenOneArt</a> on Twitch to unlock exclusive access to bonus material, behind-the-scenes updates, and special creative content.</p>
+            <p>🌟 Being a subscriber not only supports my work, it also helps me continue creating art, tools, and projects for everyone to enjoy. Thank you so much for your support!</p>
+            <p>🏆 Once subscribed, you’ll automatically gain access to subscriber-only sections, features, or rewards when logged in through Twitch on this website.</p>
+            <a class="btn" href="https://twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer">
+              <svg class="ico" aria-hidden="true"><use href="#i-twitch"/></svg>
+              Subscribe on Twitch
+            </a>
+          </div>
+        </div></div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2025 Caitlin's Creative Space | All Rights Reserved</p>
+
+  <div class="f-search">
+    <form id="footerSearch" role="search">
+      <input id="footerInput" type="search" placeholder="Search pages…" aria-label="Search pages" autocomplete="off" />
+      <button type="submit" aria-label="Search"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg></button>
+    </form>
+  </div>
+
+  <div class="socials" aria-label="Social links">
+    <a class="ig" href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><svg aria-hidden="true"><use href="#i-instagram"/></svg></a>
+    <a class="tw" href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener" title="Twitch" aria-label="Twitch"><svg aria-hidden="true"><use href="#i-twitch"/></svg></a>
+    <a class="yt" href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener" title="YouTube" aria-label="YouTube"><svg aria-hidden="true"><use href="#i-youtube"/></svg></a>
+    <a class="bsky" href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener" title="Bluesky" aria-label="Bluesky"><svg aria-hidden="true"><use href="#i-bluesky"/></svg></a>
+    <a class="gh" href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+    <a class="pt" href="https://patreon.com/FallenOneArt" target="_blank" rel="noopener" title="Patreon" aria-label="Patreon"><svg aria-hidden="true"><use href="#i-patreon"/></svg></a>
+    <a class="rd" href="https://www.reddit.com/user/CaitlinAkAFallen" target="_blank" rel="noopener" title="Reddit" aria-label="Reddit"><svg aria-hidden="true"><use href="#i-reddit"/></svg></a>
+  </div>
+  <a class="top-link" href="#">Back to top <svg aria-hidden="true"><use href="#i-chev"/></svg></a>
+</footer>
+
+<!-- ========== Login modal ========== -->
+<div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="loginTitle">Social Login</h2>
+      <button class="x-btn" type="button" data-close aria-label="Close"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="intro">Use your social media account to continue:</p>
+    <div class="sign-list">
+      <button class="sign-btn tw" id="twitchLoginBtn" type="button"><svg aria-hidden="true"><use href="#i-twitch"/></svg> Continue with Twitch</button>
+      <button class="sign-btn dc" id="discordLoginBtn" type="button"><svg aria-hidden="true"><use href="#i-discord"/></svg> Continue with Discord</button>
+      <button class="sign-btn yt" id="youtubeLoginBtn" type="button"><svg aria-hidden="true"><use href="#i-youtube"/></svg> Continue with YouTube</button>
+    </div>
+    <p class="small">By continuing, you agree to our <a href="#" id="open-tos">Terms</a> and <a href="#" id="open-privacy">Privacy</a>.</p>
+  </div>
 </div>
 
-                    <!-- Terms of Service Glassy Modal -->
-                    <div id="tos-modal" class="modal">
-                        <div class="modal-content">
-                            <span class="close">&times;</span>
-                            <h2>Terms of Service</h2>
-                                <p>Welcome to <strong>Caitlin’s Creative Space</strong>. By accessing or using this website, you agree to the following Terms of Service (“Terms”). Please read them carefully before using the site.</p>
+<!-- ========== Terms of Service ========== -->
+<div class="modal" id="tos-modal" role="dialog" aria-modal="true" aria-labelledby="tosTitle">
+  <div class="modal-box legal">
+    <div class="modal-head">
+      <h2 id="tosTitle">Terms of Service</h2>
+      <button class="x-btn" type="button" data-close aria-label="Close"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <p>Welcome to <strong>Caitlin’s Creative Space</strong>. By accessing or using this website, you agree to the following Terms of Service (“Terms”). Please read them carefully before using the site.</p>
+    <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree with any part of these Terms, you must not use the Website.</p>
 
-                                <p>By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by these Terms, as well as our Privacy Policy. If you do not agree with any part of these Terms, you must not use the Website.</p>
+    <h3>1. Changes to Terms</h3>
+    <p>We may update or revise these Terms at any time. If any changes are significant, we will provide notice at least 30 days before the new Terms take effect. Your continued use of the Website after any updates constitutes your acceptance of the revised Terms.</p>
 
-                                <h3>1. Changes to Terms</h3>
-                                <p>We may update or revise these Terms at any time. If any changes are significant, we will provide notice at least 30 days before the new Terms take effect. Your continued use of the Website after any updates constitutes your acceptance of the revised Terms.</p>
+    <h3>2. Use of Website</h3>
+    <p>You agree to use this Website only for lawful purposes and in a manner that does not infringe the rights of others or restrict their enjoyment of the Website.</p>
+    <ul>
+      <li>You must not use the Website in any way that may damage, disable, or impair its operation or accessibility.</li>
+      <li>You must not engage in any unauthorized automated data collection (such as scraping or data mining) without prior written consent.</li>
+      <li>You must not use the Website to send spam, unsolicited messages, or harmful content.</li>
+    </ul>
 
-                                <h3>2. Use of Website</h3>
-                                <p>You agree to use this Website only for lawful purposes and in a manner that does not infringe the rights of others or restrict their enjoyment of the Website.</p>
-                                <ul>
-                                    <li>You must not use the Website in any way that may damage, disable, or impair its operation or accessibility.</li>
-                                    <li>You must not engage in any unauthorized automated data collection (such as scraping or data mining) without prior written consent.</li>
-                                    <li>You must not use the Website to send spam, unsolicited messages, or harmful content.</li>
-                                </ul>
+    <h3>3. Intellectual Property</h3>
+    <p>All content, design, and functionality of <strong>Caitlin’s Creative Space</strong>, including but not limited to text, graphics, images, videos, and code, are the exclusive property of Caitlin’s Creative Space and its licensors. The Website is protected under copyright, trademark, and other intellectual property laws. You may not reproduce, redistribute, or modify any part of this Website without explicit written permission.</p>
 
-                                <h3>3. Intellectual Property</h3>
-                                <p>All content, design, and functionality of <strong>Caitlin’s Creative Space</strong> — including but not limited to text, graphics, images, videos, and code — are the exclusive property of Caitlin’s Creative Space and its licensors. The Website is protected under copyright, trademark, and other intellectual property laws. You may not reproduce, redistribute, or modify any part of this Website without explicit written permission.</p>
+    <h3>4. Links to Third-Party Websites</h3>
+    <p>Our Website may include links to third-party sites or services that are not owned or controlled by Caitlin’s Creative Space. We are not responsible for the content, policies, or practices of any third-party websites. Visiting these links is at your own risk.</p>
 
-                                <h3>4. Links to Third-Party Websites</h3>
-                                <p>Our Website may include links to third-party sites or services that are not owned or controlled by Caitlin’s Creative Space. We are not responsible for the content, policies, or practices of any third-party websites. Visiting these links is at your own risk.</p>
+    <h3>5. Disclaimer</h3>
+    <p>Your use of the Website is at your own risk. The Website is provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis. We make no warranties or representations of any kind, express or implied, regarding the operation, reliability, or availability of the Website.</p>
 
-                                <h3>5. Disclaimer</h3>
-                                <p>Your use of the Website is at your own risk. The Website is provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis. We make no warranties or representations of any kind, express or implied, regarding the operation, reliability, or availability of the Website.</p>
+    <h3>6. Limitation of Liability</h3>
+    <p>To the fullest extent permitted by law, Caitlin’s Creative Space and its affiliates shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Website or any linked services.</p>
 
-                                <h3>6. Limitation of Liability</h3>
-                                <p>To the fullest extent permitted by law, Caitlin’s Creative Space and its affiliates shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Website or any linked services.</p>
+    <h3>7. Governing Law</h3>
+    <p>These Terms are governed by and construed in accordance with the laws of the State of California, United States, without regard to its conflict of law principles.</p>
 
-                                <h3>7. Governing Law</h3>
-                                <p>These Terms are governed by and construed in accordance with the laws of the State of California, United States, without regard to its conflict of law principles.</p>
+    <h3>8. Contact Information</h3>
+    <p>If you have any questions about these Terms, please contact us at:<br><a href="mailto:fallenonerart@gmail.com">fallenonerart@gmail.com</a></p>
 
-                                <h3>8. Contact Information</h3>
-                                <p>
-                                    If you have any questions about these Terms, please contact us at:<br>
-                                    <a href="mailto:fallenonerart@gmail.com" class="contact-email">fallenonerart@gmail.com</a>
-                                </p>
+    <p><strong>Effective Date:</strong> October 12, 2025</p>
+  </div>
+</div>
 
-                                <p><strong>Effective Date:</strong> October 12, 2025</p>
-                        </div>
-                    </div>
+<!-- ========== Privacy Policy ========== -->
+<div class="modal" id="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+  <div class="modal-box legal">
+    <div class="modal-head">
+      <h2 id="privacyTitle">Privacy Policy</h2>
+      <button class="x-btn" type="button" data-close aria-label="Close"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <p>This Privacy Policy describes how Caitlin's Creative Space collects, uses, and protects information obtained from visitors to the website.</p>
 
-                    <!-- Privacy Policy Glassy Modal -->
-                    <div id="privacy-modal" class="modal">
-                    <div class="modal-content">
-                        <span class="close">&times;</span>
-                        <h2>Privacy Policy</h2>
+    <h3>Information We Collect</h3>
+    <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+    <p><strong>Information We Collect Directly From You:</strong> We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+    <p><strong>Information We Collect Automatically:</strong> We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This may include your IP address, browser type, operating system, pages viewed, links clicked, and timestamps of visits.</p>
 
-                        <p>This Privacy Policy describes how Caitlin's Creative Space collects, uses, and protects information obtained from visitors to the website.</p>
+    <h3>How We Use Your Information</h3>
+    <ul>
+      <li>Provide and maintain our Website and its features.</li>
+      <li>Improve our Website and develop new tools and creative projects.</li>
+      <li>Communicate with you about updates or inquiries.</li>
+      <li>Analyze user interactions to enhance user experience.</li>
+    </ul>
 
-                        <h3>Information We Collect</h3>
-                        <p>We collect information about you directly from you and automatically through your use of our Website.</p>
+    <h3>Disclosure of Your Information</h3>
+    <ul>
+      <li>With your explicit consent.</li>
+      <li>To comply with legal obligations.</li>
+      <li>To protect our rights, intellectual property, and website security.</li>
+    </ul>
 
-                        <h4>Information We Collect Directly From You:</h4>
-                        <p>We may collect information you provide directly to us when you interact with our Website, such as when you submit feedback, register for an account, or contact us for support.</p>
+    <h3>Content Ownership and Usage Restrictions</h3>
+    <p>All content featured on this website, including but not limited to photography, digital art, gallery works, and programming projects, is the intellectual property of Caitlin's Creative Space. Unauthorized use, reproduction, redistribution, or claiming of any such materials as your own is strictly prohibited.</p>
+    <p>If you use any of the mentioned works (photography, gallery, or programming content) without permission, you will be subject to a formal <strong>Cease and Desist Letter</strong> and potential legal action for copyright infringement.</p>
 
-                        <h4>Information We Collect Automatically:</h4>
-                        <p>We automatically collect information about your use of our Website through cookies, web beacons, and other technologies. This may include your IP address, browser type, operating system, pages viewed, links clicked, and timestamps of visits.</p>
+    <h3>Data Security</h3>
+    <p>We implement reasonable security measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, or destruction.</p>
 
-                        <h3>How We Use Your Information</h3>
-                        <ul>
-                            <li>Provide and maintain our Website and its features.</li>
-                            <li>Improve our Website and develop new tools and creative projects.</li>
-                            <li>Communicate with you about updates or inquiries.</li>
-                            <li>Analyze user interactions to enhance user experience.</li>
-                        </ul>
+    <h3>Changes to This Policy</h3>
+    <p>We may update this Privacy Policy periodically. Any significant updates will be posted on this page with a revised effective date.</p>
 
-                        <h3>Disclosure of Your Information</h3>
-                        <ul>
-                            <li>With your explicit consent.</li>
-                            <li>To comply with legal obligations.</li>
-                            <li>To protect our rights, intellectual property, and website security.</li>
-                        </ul>
+    <p><strong>Last Updated: October 12, 2025</strong></p>
+    <p>If you have any questions regarding this Privacy Policy or content usage permissions, please contact us at:<br><a href="mailto:fallenonerart@gmail.com">fallenonerart@gmail.com</a></p>
+  </div>
+</div>
 
-                        <h3>Content Ownership and Usage Restrictions</h3>
-                        <p>
-                            All content featured on this website — including but not limited to 
-                            photography, digital art, gallery works, and programming projects — 
-                            is the intellectual property of Caitlin's Creative Space. 
-                            Unauthorized use, reproduction, redistribution, or claiming of any 
-                            such materials as your own is strictly prohibited.
-                        </p>
-                        <p>
-                            If you use any of the mentioned works (photography, gallery, or programming content) 
-                            without permission, you will be subject to a formal <strong>Cease and Desist Letter</strong> 
-                            and potential legal action for copyright infringement.
-                        </p>
+<!-- ========== Search palette ========== -->
+<div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Search pages">
+  <div class="palette-box">
+    <div class="palette-input">
+      <svg aria-hidden="true"><use href="#i-search"/></svg>
+      <input id="paletteInput" type="search" placeholder="Search pages…" autocomplete="off" aria-label="Search pages" />
+      <kbd>Esc</kbd>
+    </div>
+    <ul class="palette-list" id="paletteList" role="listbox"></ul>
+  </div>
+</div>
 
-                        <h3>Data Security</h3>
-                        <p>We implement reasonable security measures to protect information from loss, misuse, unauthorized access, disclosure, alteration, or destruction.</p>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-                        <h3>Changes to This Policy</h3>
-                        <p>We may update this Privacy Policy periodically. Any significant updates will be posted on this page with a revised effective date.</p>
+<script src="script.js"></script>
 
-                        <p><strong>Last Updated: October 12, 2025</strong></p>
-
-                        <p>If you have any questions regarding this Privacy Policy or content usage permissions, please contact us at:<br>
-                        <a href="mailto:fallenonerart@gmail.com" class="contact-email">fallenonerart@gmail.com</a></p>
-                    </div>
-                    </div>
-
-            <div class="content-wrapper">
-
-            <!-- Top Left Column -->
-            <div class="main-content">
-                <main>
-                <section id="content">
-                    <h2>
-                    Welcome 
-                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('content')"></i>
-                    </h2>
-                    <div class="section-body">
-                    <p>
-                        Welcome to the Creative Space of My Mind! Step into a world where
-                        photography, digital art, coding, and endless creativity come
-                        together. Explore the unique projects, stories, and inspirations
-                        that shape my artistic journey. Let’s create something extraordinary
-                        together!
-                    </p>
-                    <p>Please select any categories.</p>
-                    </div>
-                </section>
-                </main>
-            </div>
-
-            <!-- Top Right Column -->
-            <div class="main-updates">
-                <main>
-                <section id="updates">
-                    <h2>
-                    Updates 
-                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('updates')"></i>
-                    </h2>
-                    <div class="section-body">
-                    <p>
-                        As this website continues to show improvement, new features and
-                        content will be added regularly. Stay tuned for the latest updates!
-                    </p>
-                    <p>
-                        Feel free to explore the different sections and reach out if you have
-                        any questions or suggestions. Your feedback is always welcome!
-                    </p>
-                    </div>
-                </section>
-                </main>
-            </div>
-
-            <!-- Bottom Left Column: Mobile Tips -->
-            <div class="left-bottom-column">
-                <main>
-                <section id="tips">
-                    <h2>
-                    Mobile Tips 
-                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('tips')"></i>
-                    </h2>
-                    <div class="section-body">
-                    <p>
-                        💡 Just to let you know: the horizontal navigation is scrollable — 
-                        swipe side to side to see more options!
-                    </p>
-                    </div>
-                </section>
-                </main>
-            </div>
-
-            <!-- Bottom Left Column: Website History -->
-            <div class="left-bottom-column">
-                <main>
-                <section id="extra-left">
-                    <h2>
-                    Website History
-                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('extra-left')"></i>
-                    </h2>
-                    <div class="section-body">
-                    <p>
-                        🌱 <strong>Caitlin’s Creative Space</strong> began as a single, simple page back in 
-                        <strong>November/December 2024</strong>. It was originally just a small idea — a place to 
-                        showcase my creative projects and coding experiments.
-                    </p>
-                    <p>
-                        💡 Over time, that one page started to grow — expanding into multiple sections featuring 
-                        my art, photography, coding tutorials, and streaming tools. Each new addition was built 
-                        from scratch with care and passion, reflecting my journey as a creator and developer.
-                    </p>
-                    <p>
-                        🌟 Today, it’s evolved into a full creative hub that continues to expand, blending 
-                        technology, art, and imagination — and there’s still more to come!
-                    </p>
-                    </div>
-                </section>
-                </main>
-            </div>
-
-            <!-- Bottom Right Column: Rules & Credits -->
-            <div class="right-bottom-column">
-                <main>
-                <section id="extra-right">
-                    <h2>
-                    Rules & Credits 
-                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('extra-right')"></i>
-                    </h2>
-                    <div class="section-body">
-                    <p>
-                        🚫 Please respect my work. Using any of my projects, designs, or code 
-                        as your own without giving credit is not allowed.  
-                    </p>
-                    <p>
-                        ✅ If you’d like to share or use something, make sure to properly 
-                        credit me: <strong>caitlinakafallen</strong>.
-                    </p>
-                    <p>
-                        💬 Collaboration is always welcome — just reach out before reusing or modifying 
-                        any of my projects. I love seeing how others build upon creative ideas, as long as 
-                        proper credit is given and the spirit of respect remains.
-                    </p>
-                    <p>
-                        🌐 All assets, layouts, and designs showcased here are created by me unless otherwise stated. 
-                        Any third-party tools, libraries, or plugins are credited where used.
-                    </p>
-                    <p>
-                        🪄 This site and its contents were built from the ground up with passion, creativity, 
-                        and transparency — please keep that same energy if you take inspiration from it!
-                    </p>
-                    </div>
-                </section>
-                </main>
-            </div>
-
-            <!-- Bottom Right Column: Twitch Subscriber Access -->
-            <div class="right-bottom-column">
-                <main>
-                <section id="twitch-subscriber">
-                    <h2>
-                    Twitch Subscriber
-                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('twitch-subscriber')"></i>
-                    </h2>
-                    <div class="section-body">
-                    <p>
-                        💜 This content is available for <strong>subscribers only</strong>.  
-                        Please subscribe to 
-                        <a href="https://twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer">
-                        FallenOneArt
-                        </a> 
-                        on Twitch to unlock exclusive access to bonus material, behind-the-scenes updates, 
-                        and special creative content.
-                    </p>
-                    <p>
-                        🌟 Being a subscriber not only supports my work — it also helps me continue 
-                        creating art, tools, and projects for everyone to enjoy. Thank you so much 
-                        for your support!
-                    </p>
-                    <p>
-                        🏆 Once subscribed, you’ll automatically gain access to subscriber-only sections, 
-                        features, or rewards when logged in through Twitch on this website.
-                    </p>
-                    </div>
-                </section>
-                </main>
-            </div>
-
-            </div>
-
-
-
-
-            <!-- Site News Section: comes after bulletin -->
-          <section id="site-news">
-            <div class="revamp-notice">
-              <p id="revamp-message">
-                ⚠️ This website is entering a revamp stage to improve eye-sight protection.
-                Eye strain can be bothersome, so some visual elements may temporarily change.
-                Also we are putting a login in with social media accounts for a more personalized experience.
-                Still in working progress of getting the profile pictures and names to show up correctly.
-                Thank you for your patience during this transition!
-                <br>
-                <strong>Date:</strong> <span id="revamp-date"></span>
-              </p>
-            </div>
-          </section>
-        </body>
-
-
-        <footer>
-                <p>© 2025 Caitlin's Creative Space | All Rights Reserved</p> 
-
-                <div class="footer-container">
-                    <!-- Social Sidebar -->
-                    <div id="social-sidebar" class="social">
-                        <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener" class="social-link" title="Instagram">
-                            <i class="fa-brands fa-instagram"></i>
-                        </a>
-                         <a href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener" class="social-link" title="Twitch">
-                               <span id="live-indicator">LIVE</span>
-                              <i class="fa-brands fa-twitch"></i>
-                          </a>
-                        <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener" class="social-link" title="YouTube">
-                            <i class="fa-brands fa-youtube"></i>
-                        </a>
-                        <a href="https://kick.com/caitlinakafallen" target="_blank" rel="noopener" class="social-link" title="Kick">
-                              <i class="fa-brands fa-kickstarter-k"></i>
-                        </a>
-                        <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener" class="social-link" title="Bluesky">
-                            <i class="fa-brands fa-bluesky"></i>
-                        </a>
-                        <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener" class="social-link" title="GitHub">
-                            <i class="fa-brands fa-github"></i>
-                        </a>
-                        <a href="https://patreon.com/FallenOneArt" target="_blank" rel="noopener" class="social-link" title="Patreon">
-                            <i class="fa-brands fa-patreon"></i>
-                        </a>
-                        <a href="https://www.reddit.com/user/CaitlinAkAFallen" target="_blank" rel="noopener" class="social-link" title="Reddit">
-                            <i class="fa-brands fa-reddit"></i>
-                        </a>
-                    </div>
-
-
-                </div>
-        </footer>
-
-        <script src="script.js"></script>
-            
 <script>
 document.addEventListener("DOMContentLoaded", async function () {
 
@@ -1618,6 +967,5 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 </script>
 
-
-
+</body>
 </html>
