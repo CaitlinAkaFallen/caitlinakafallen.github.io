@@ -31,7 +31,9 @@
     twitchScope: "user:read:email",
     discordClientId: "1426998908164505600",
     googleClientId: "323446283951-pqq1ic2ivpnofmfrp7flc83iklc6tjp1.apps.googleusercontent.com",
-    redirectUri: "https://caitlinscreativespace.xyz/main-page",
+    // Twitch returns to the clean address; Discord and Google use the .html address
+    twitchRedirectUri: "https://caitlinscreativespace.xyz/main-page",
+    standardRedirectUri: "https://caitlinscreativespace.xyz/main-page.html",
     liveCheckMs: 60_000
   };
 
@@ -133,21 +135,21 @@
     startOAuth("twitch",
       "https://id.twitch.tv/oauth2/authorize?response_type=token" +
       `&client_id=${CONFIG.twitchClientId}` +
-      `&redirect_uri=${encodeURIComponent(CONFIG.redirectUri)}` +
+      `&redirect_uri=${encodeURIComponent(CONFIG.twitchRedirectUri)}` +
       `&scope=${encodeURIComponent(CONFIG.twitchScope)}`);
   }
   function loginWithDiscord() {
     startOAuth("discord",
       "https://discord.com/api/oauth2/authorize?response_type=code" +
       `&client_id=${CONFIG.discordClientId}` +
-      `&redirect_uri=${encodeURIComponent(CONFIG.redirectUri)}` +
+      `&redirect_uri=${encodeURIComponent(CONFIG.standardRedirectUri)}` +
       "&scope=identify%20email");
   }
   function loginWithGoogle() {
     startOAuth("google",
       "https://accounts.google.com/o/oauth2/v2/auth?response_type=token" +
       `&client_id=${CONFIG.googleClientId}` +
-      `&redirect_uri=${encodeURIComponent(CONFIG.redirectUri)}` +
+      `&redirect_uri=${encodeURIComponent(CONFIG.standardRedirectUri)}` +
       "&scope=profile%20email");
   }
 
