@@ -3,116 +3,872 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me</title>
+    <title>About Me | Caitlin's Creative Space</title>
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="about.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
 
-  </head>
-  
+    <style>
+/* =========================
+   Global Styles
+   ========================= */
+body {
+  font-family: "Poppins", Arial, sans-serif;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #000000);
+  overflow-x: hidden;
+  color: #fff;
+}
 
+/* =========================
+   Header
+   ========================= */
+header {
+  background: url("images/main-page.JPG") no-repeat center center / cover;
+  height: 30vh;
+  min-height: 200px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+  border-radius: 10px;
+}
+
+header div {
+  position: relative;
+  z-index: 2;
+}
+
+header h2 {
+  font-family: Georgia, serif;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fdf471;
+  text-shadow: 0 0 12px #000;
+  margin: 0;
+}
+
+header h5 {
+  font-family: Verdana, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  margin-top: 10px;
+  color: #fff;
+  text-shadow: 0 0 8px #000;
+}
+
+/* =========================
+   Navigation Bar
+   ========================= */
+.horizontal-nav {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  padding: 12px 0;
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.horizontal-nav::-webkit-scrollbar { display: none; }
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-list li { display: flex; }
+
+.nav-list a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: all 0.3s ease-in-out;
+  color: #f0f0f0;
+}
+
+.nav-list a:hover {
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(60deg, #be2edd, #00a8ff, #F79F1F);
+  background-clip: text;
+  box-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
+}
+
+.nav-list img {
+  margin-right: 8px;
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
+}
+
+.nav-list a i {
+  margin-right: 8px;
+  font-size: 20px;
+  color: #f0f0f0;
+  transition: color 0.3s ease;
+}
+
+.nav-list a:hover i {
+  color: #32f2f8; /* optional gradient effect handled via text above */
+}
+
+
+/* About Me Section */
+#about-me {
+  padding: 25px;
+  margin: 120px auto 40px auto;
+  width: 90%;
+  max-width: 1000px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  animation: fadeIn 1s ease-in-out;
+}
+
+#about-me h2 {
+  font-size: 32px;
+  color: #c2a2fc;
+  margin-bottom: 20px;
+  text-shadow: 0 0 12px rgba(194, 162, 252, 0.7);
+}
+
+#about-me p {
+  font-size: 18px;
+  color: #eaeaea;
+  line-height: 1.8;
+  text-align: center;
+}
+
+#about-me p::before {
+  content: "✧ ";
+  color: #c2a2fc;
+  font-size: 22px;
+}
+
+#about-me p::after {
+  content: " ✧";
+  color: #4fd6ee;
+  font-size: 22px;
+}
+
+/* About Me Image */
+#about-me img {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#about-me img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(79, 214, 238, 0.6);
+}
+
+/* Buttons */
+button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background: linear-gradient(135deg, #32f2f8, #6e18f8);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+button:hover {
+  background: linear-gradient(135deg, #20f1e0, #8e3bff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  header h2 {
+    font-size: 28px;
+  }
+  header h5 {
+    font-size: 14px;
+  }
+  .nav-list {
+    gap: 8px;
+  }
+  .nav-list a {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  #about-me {
+    padding: 15px;
+  }
+}
+
+/* =========================
+   Sleek Glassy Footer (Refined)
+   ========================= */
+footer {
+  background: rgba(20, 20, 20, 0.164); /* glassy */
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: #eaeaea;
+  font-weight: 500;
+  text-align: center;
+  padding: 8px 10px; /* smaller padding */
+  position: fixed;
+  bottom: -80px; /* small default hidden offset */
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-height: 115px; /* prevents large expansion */
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: bottom 0.5s ease-in-out, background 0.4s ease;
+  z-index: 9999;
+  border-radius: 12px 12px 0 0; /* rounded top */
+}
+
+footer:hover {
+  bottom: 0;
+  background: rgba(30, 30, 30, 0.7);
+}
+
+/* Footer Container */
+.footer-container {
+  width: 100%;
+  max-width: 550px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Footer Text */
+.footer-container p {
+  font-size: 12px;
+  margin: 0;
+  color: #cfcfcf;
+  opacity: 0.85;
+}
+
+/* Search Bar */
+.footer-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transform: translateY(10px);
+  opacity: 0;
+  transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+}
+
+footer:hover .footer-search {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+#search-bar {
+  width: 0;
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  outline: none;
+  max-width: 220px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  transition: width 0.4s ease, opacity 0.3s ease, border-color 0.3s ease;
+  opacity: 0;
+}
+
+#search-bar.active,
+#search-bar:focus {
+  width: 220px;
+  opacity: 1;
+  border-color: #20f1e0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+#search-button {
+  width: 38px;           /* smaller size */
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0); /* subtle glass look */
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;       /* smaller font to fit */
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  /* Soft inner & outer glow */
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.2), 
+    0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+#search-button:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.25), 
+    0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+
+
+
+
+
+/* Social Links */
+.socials {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 8px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.social-link {
+  font-size: 22px;
+  color: #f5f5f5;
+  opacity: 0.85;
+  text-decoration: none;
+  transition: transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+}
+
+.social-link:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+/* Social Hover Colors */
+.social-link:nth-child(1):hover { color: #C13584; }  /* Instagram */
+.social-link:nth-child(2):hover { color: #9146FF; }  /* Twitch */
+.social-link:nth-child(3):hover { color: #FF0000; }  /* YouTube */
+.social-link:nth-child(4):hover { color: #1DA1F2; }  /* Bluesky */
+.social-link:nth-child(5):hover { color: #000; }     /* X/Twitter */
+.social-link:nth-child(6):hover { color: #171515; }  /* GitHub */
+
+/* Responsive Adjustments */
+@media screen and (max-width: 600px) {
+  footer {
+    bottom: -100px;
+    padding: 8px calc(10px + env(safe-area-inset-bottom));
+  }
+  .footer-container p { font-size: 10px; }
+  #search-bar { max-width: 100%; }
+  .social-link { font-size: 18px; }
+}
+
+@media screen and (max-width: 812px) and (orientation: landscape) {
+  footer { bottom: -80px; padding: 10px calc(12px + env(safe-area-inset-bottom)); }
+  .footer-container p { font-size: 11px; }
+  .social-link { font-size: 16px; }
+}
+
+@media screen and (min-width: 1025px) {
+  footer { height: auto; bottom: -90px; }
+}
+
+/* =====================================================
+   ADVANCED UI LAYER (additive – overrides the above)
+   ===================================================== */
+:root{
+  --lav:#c2a2fc; --cyan:#4fd6ee; --gold:#fdf471;
+  --edge: rgba(255,255,255,.12);
+  --lift: 0 30px 60px -20px rgba(0,0,0,.8);
+}
+html{ scroll-behavior:smooth; }
+body{ position:relative; }
+
+/* Slow aurora + dot grid (gentle, never flashes) */
+body::before{
+  content:""; position:fixed; inset:-20%; z-index:-2; pointer-events:none;
+  background:
+    radial-gradient(40% 35% at 15% 15%, rgba(194,162,252,.2), transparent 70%),
+    radial-gradient(35% 40% at 85% 30%, rgba(79,214,238,.16), transparent 70%),
+    radial-gradient(45% 40% at 55% 95%, rgba(253,244,113,.09), transparent 70%);
+  filter: blur(40px);
+  animation: aurora 40s ease-in-out infinite alternate;
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background-image: radial-gradient(rgba(255,255,255,.1) 1px, transparent 1px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 25%, transparent 80%);
+  mask-image: radial-gradient(ellipse at center, #000 25%, transparent 80%);
+}
+@keyframes aurora{ from{ transform: translate3d(-3%,-2%,0) scale(1); } to{ transform: translate3d(3%,3%,0) scale(1.08); } }
+
+a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--cyan); outline-offset:3px; }
+
+/* Floating glass nav (8 links: scrolls sideways inside the pill on small screens) */
+.horizontal-nav{
+  position:fixed; /* stays put while the page scrolls */
+  top:12px; left:0; right:0; margin-inline:auto;
+  width:fit-content; max-width:calc(100% - 24px);
+  padding:8px 10px; border-radius:22px; overflow:visible;
+  background: rgba(22,22,34,.55);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  backdrop-filter: blur(18px) saturate(170%);
+  border:1px solid var(--edge);
+  box-shadow: var(--lift), inset 0 1px 0 rgba(255,255,255,.1);
+}
+.nav-list{ gap:6px; padding:2px; max-width:100%; overflow-x:auto; scrollbar-width:none; touch-action:pan-y; overscroll-behavior:contain; }
+.nav-list::-webkit-scrollbar{ display:none; }
+.nav-list li{ flex:none; }
+.nav-list a{ white-space:nowrap; }
+.nav-list a:hover{ box-shadow: inset 0 0 0 1px rgba(255,255,255,.22); }
+.nav-list a:hover i{ -webkit-text-fill-color:#32f2f8; } /* keeps icons visible on hover */
+.nav-list a.active{ box-shadow: inset 0 0 0 1px rgba(255,255,255,.28), 0 10px 22px -10px rgba(194,162,252,.8); }
+.nav-list a.active i{ color:var(--lav); }
+
+/* Hero: framed banner */
+header{
+  width:min(1100px, calc(100% - 32px)); margin:96px auto 0;
+  height:clamp(240px, 34vh, 340px); border-radius:28px;
+  border:1px solid var(--edge); box-shadow: var(--lift);
+}
+header::before{ border-radius:inherit; background: linear-gradient(180deg, rgba(10,8,20,.35), rgba(10,8,20,.72)); }
+header::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background: radial-gradient(60% 70% at 50% 120%, rgba(194,162,252,.35), transparent 70%);
+}
+header div{ padding:0 16px; text-align:center; }
+header h2{
+  font-size:clamp(1.7rem, 5vw, 3rem); line-height:1.15; text-shadow:none;
+  background: linear-gradient(90deg, var(--gold), #f6c9ff 55%, #9fe7ff);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  filter: drop-shadow(0 2px 14px rgba(0,0,0,.75));
+}
+header h5{ max-width:58ch; margin-inline:auto; font-size:clamp(.95rem, 2vw, 1.15rem); line-height:1.55; }
+
+/* About card: photo + text side by side, gradient edge, spotlight */
+#about-me{
+  position:relative; isolation:isolate; display:grid;
+  grid-template-columns:minmax(0,300px) 1fr; column-gap:clamp(24px,4vw,48px); row-gap:14px; align-items:start;
+  margin:32px auto 150px; padding:clamp(22px,4vw,40px); border-radius:28px; text-align:left;
+  border:1px solid var(--edge); box-shadow: var(--lift);
+}
+#about-me::before{
+  content:""; position:absolute; inset:0; border-radius:inherit; z-index:-1; pointer-events:none; opacity:0; transition:opacity .35s ease;
+  background: radial-gradient(520px circle at var(--mx,50%) var(--my,0%), rgba(194,162,252,.18), transparent 60%);
+}
+#about-me:hover::before{ opacity:1; }
+#about-me::after{
+  content:""; position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none; opacity:.7;
+  background: linear-gradient(135deg, rgba(194,162,252,.8), rgba(79,214,238,.2) 45%, rgba(253,244,113,.6));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+#about-me h2{ grid-column:1 / -1; text-align:center; margin:0 0 6px; letter-spacing:-.01em; }
+#about-me img{
+  grid-column:1; grid-row:2 / span 2; justify-self:center; margin:0;
+  width:100%; max-width:300px; height:auto; aspect-ratio:3/4; object-fit:cover;
+  padding:4px; border-radius:22px;
+  background: linear-gradient(135deg, var(--lav), var(--cyan), var(--gold));
+}
+#about-me p{ grid-column:2; align-self:center; text-align:left; margin:0; }
+
+/* Skill chips */
+.about-chips{ grid-column:2; display:flex; flex-wrap:wrap; gap:10px; }
+.about-chips span{
+  display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:999px;
+  font-size:.85rem; font-weight:600; color:#eaeaea;
+  background:rgba(255,255,255,.07); border:1px solid var(--edge);
+  transition: background .25s ease, border-color .25s ease, transform .25s ease;
+}
+.about-chips span:hover{ background:rgba(194,162,252,.18); border-color:rgba(194,162,252,.5); transform:translateY(-2px); }
+.about-chips i{ color:var(--lav); }
+
+/* Footer dock: tap/click or keyboard focus opens it too (not just hover) */
+footer{
+  left:0; right:0; margin-inline:auto; width:min(720px, calc(100% - 24px));
+  max-height:140px; padding-top:18px; cursor:pointer;
+  background: rgba(22,22,34,.6); border:1px solid var(--edge); border-bottom:0;
+  border-radius:24px 24px 0 0; box-shadow: var(--lift);
+}
+footer::before{
+  content:""; position:absolute; top:7px; left:50%; width:44px; height:4px; margin-left:-22px;
+  border-radius:4px; background:rgba(255,255,255,.3);
+}
+footer:hover, footer:focus-within, footer.open{ bottom:0; background: rgba(30,30,44,.85); }
+footer:focus-within .footer-search, footer.open .footer-search{ transform:translateY(0); opacity:1; }
+.social-link{
+  display:grid; place-items:center; width:40px; height:40px; border-radius:12px; line-height:1;
+  background:rgba(255,255,255,.06); border:1px solid var(--edge);
+}
+.social-link:hover{ background:rgba(255,255,255,.14); }
+.social-link:nth-child(5):hover{ color:#e7e8e9; } /* GitHub (was black on a dark footer) */
+
+/* Mobile */
+@media (max-width: 768px){
+  header{ margin-top:84px; }
+  .horizontal-nav{ top:8px; padding:6px 8px; border-radius:18px; }
+  #about-me{ grid-template-columns:1fr; }
+  #about-me img, #about-me p, .about-chips{ grid-column:1; }
+  #about-me img{ grid-row:auto; }
+  #about-me p{ text-align:center; }
+  .about-chips{ justify-content:center; }
+}
+@media (max-width: 520px){
+  .nav-list a:not(.active) span{ display:none; }
+  .nav-list a:not(.active) i{ margin-right:0; }
+  .nav-list a{ padding:10px 12px; }
+}
+
+/* Motion safety: nothing flashes, and nothing moves if you ask for less */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+}
+
+    </style>
+
+  </head>
 
   <body>
-      <header style="background-image: url('images/main-page.JPG'); background-size: cover; background-position: center; height: 300px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
-      <div style="text-align: center; color: rgb(253, 244, 113); padding-top: 0;">
-        <h2 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
+    <header>
+      <div>
+        <h2>
           Caitlin's Creative Space
         </h2>
-        <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
+        <h5>
           Explore my world of creativity: photography, digital art, coding, and more!
         </h5>
-
       </div>
     </header>
 
-<!-- Horizontal Navigation Bar -->
-<nav id="horizontal-nav" class="horizontal-nav">
-  <ul class="nav-list">
-    <li>
-      <a id="nav-mainpage" href="main-page.html">
-        <i class="fas fa-home"></i><span>Main Page</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-art" href="viewer-art.html">
-        <i class="fas fa-paint-brush"></i><span>Gallery</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-conventions" href="viewers-convention.html">
-        <i class="fas fa-users"></i><span>Conventions</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-coding" href="programming.html">
-        <i class="fas fa-code"></i><span>Programming</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-streaming" href="schedule.html">
-        <i class="fas fa-video"></i><span>Content</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-about-me" href="about.html">
-        <i class="fas fa-user"></i><span>About</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-contact" href="contact.html">
-        <i class="fas fa-envelope"></i><span>Contact</span>
-      </a>
-    </li>
-  </ul>
-</nav>
+    <!-- Horizontal Navigation Bar -->
+    <nav id="horizontal-nav" class="horizontal-nav">
+      <ul class="nav-list">
+        <li>
+          <a id="nav-mainpage" href="main-page.html" aria-label="Main Page">
+            <i class="fas fa-home"></i><span>Main Page</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-art" href="viewer-art.html" aria-label="Gallery">
+            <i class="fas fa-paint-brush"></i><span>Gallery</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-photography" href="photography.html" aria-label="Photography">
+            <i class="fas fa-camera"></i><span>Photography</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-conventions" href="viewers-convention.html" aria-label="Conventions">
+            <i class="fas fa-users"></i><span>Conventions</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-coding" href="programming.html" aria-label="Programming">
+            <i class="fas fa-code"></i><span>Programming</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-streaming" href="schedule.html" aria-label="Content">
+            <i class="fas fa-video"></i><span>Content</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-about-me" href="about.html" class="active" aria-current="page" aria-label="About">
+            <i class="fas fa-user"></i><span>About</span>
+          </a>
+        </li>
+        <li>
+          <a id="nav-contact" href="contact.html" aria-label="Contact">
+            <i class="fas fa-envelope"></i><span>Contact</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
 
+    <section id="about-me">
+      <h2>About Me</h2>
+      <!-- Update the image source to the appropriate path -->
+      <img src="images/me.jpg" alt="Photography" width="300" height="400">
+      <p>"As a neurodivergent Twitch Affiliate and variety streamer, I thrive on embracing my unique perspective and channeling it into everything I do. I'm deeply passionate about cosplay, photography, video editing, digital art, video games, coding, and crafting immersive audio sound effects. Join me on my creative journey as I blend these passions to bring you an unforgettable, engaging experience!"</p>
+      <div class="about-chips" aria-label="Interests">
+        <span><i class="fas fa-mask"></i>Cosplay</span>
+        <span><i class="fas fa-camera"></i>Photography</span>
+        <span><i class="fas fa-film"></i>Video editing</span>
+        <span><i class="fas fa-palette"></i>Digital art</span>
+        <span><i class="fas fa-gamepad"></i>Video games</span>
+        <span><i class="fas fa-code"></i>Coding</span>
+        <span><i class="fas fa-wave-square"></i>Sound effects</span>
+      </div>
+    </section>
 
-      
-      <section id="about-me">
-          <h2>About Me</h2>
-          <!-- Update the image source to the appropriate path -->
-          <img src="images/me.jpg" alt="Photography" style="width: 300px; height: 400px; margin-bottom: 10px; border-radius: 10px;">
-          <p>"As a neurodivergent Twitch Affiliate and variety streamer, I thrive on embracing my unique perspective and channeling it into everything I do. I'm deeply passionate about cosplay, photography, video editing, digital art, video games, coding, and crafting immersive audio sound effects. Join me on my creative journey as I blend these passions to bring you an unforgettable, engaging experience!"</p>
-      </section>
+    <footer>
+      <p>© 2025 Caitlin's Creative Space | All Rights Reserved</p> 
+
+      <div class="footer-container">
+        <div class="footer-search">
+          <input type="text" placeholder="Search..." id="search-bar" aria-label="Search pages">
+          <button id="search-button" aria-label="Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <!-- Social Sidebar -->
+        <div id="social-sidebar" class="social socials">
+          <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener" class="social-link" title="Instagram" aria-label="Instagram">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener" class="social-link" title="Twitch" aria-label="Twitch">
+            <i class="fa-brands fa-twitch"></i>
+          </a>
+          <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener" class="social-link" title="YouTube" aria-label="YouTube">
+            <i class="fa-brands fa-youtube"></i>
+          </a>
+          <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener" class="social-link" title="Bluesky" aria-label="Bluesky">
+            <i class="fa-brands fa-bluesky"></i>
+          </a>
+          <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener" class="social-link" title="GitHub" aria-label="GitHub">
+            <i class="fa-brands fa-github"></i>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+/* ===== REMOVE .HTML FROM URL ===== */
+(function hideHtmlInURL() {
+  const pathname = window.location.pathname;
+  if (pathname.endsWith(".html")) {
+    window.history.replaceState({}, "", pathname.replace(/\.html$/, "") + window.location.search + window.location.hash);
+  }
+})();
+
+document.addEventListener("DOMContentLoaded", function () {
+    const searchButton = document.getElementById("search-button");
+    const searchBar = document.getElementById("search-bar");
+
+    if (searchButton && searchBar) {
+        searchButton.addEventListener("click", function (event) {
+            if (!searchBar.classList.contains("active")) {
+                searchBar.classList.add("active");
+                searchBar.focus();
+            } else if (searchBar.value.trim() === "") {
+                searchBar.classList.remove("active");
+            } else {
+                event.preventDefault();
+                redirectToPage();
+            }
+        });
+
+        searchBar.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                redirectToPage();
+            }
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!searchBar.contains(event.target) && !searchButton.contains(event.target)) {
+                if (searchBar.value.trim() === "") {
+                    searchBar.classList.remove("active");
+                }
+            }
+        });
+
+        function redirectToPage() {
+            const searchInput = searchBar.value.trim();
+            const pages = {
+                "Programming": "programming.html",
+                "About": "about.html",
+                "Gallery": "viewer-art.html",
+                "Photography": "photography.html",
+                "Contact": "contact.html",
+                "Conventions": "viewer-convention.html",
+                "Stream Platforms": "schedule.html"
+            };
+
+            const matchedPage = Object.keys(pages).find(key => key.toLowerCase() === searchInput.toLowerCase());
+
+            if (matchedPage) {
+                window.location.href = pages[matchedPage];
+            } else {
+                console.log("Page not found for: " + searchInput);
+            }
+        }
+    }
+
+    // Auto-scroll functionality for navbar
+    const navList = document.querySelector(".nav-list");
+    if (!navList) return; // Prevent errors if navList doesn't exist
+
+    let scrollSpeed = 12;
+    let scrollInterval = null;
+
+    // The nav only needs to scroll when its links don't all fit
+    function navOverflows() {
+        return navList.scrollWidth > navList.clientWidth;
+    }
+
+    function autoScroll(event) {
+        if (!navOverflows()) { stopScrolling(); return; }
+        const { clientX } = event;
+        // FIX: measure the whole nav, not whichever link the mouse is over
+        const { left, width } = navList.getBoundingClientRect();
+        const edgeOffset = window.innerWidth < 600 ? 120 : 80;
+
+        if (clientX < left + edgeOffset) {
+            if (navList.scrollLeft > 0) startScrolling(-scrollSpeed);
+        } else if (clientX > left + width - edgeOffset) {
+            startScrolling(scrollSpeed);
+        } else {
+            stopScrolling();
+        }
+    }
+
+    function startScrolling(speed) {
+        if (scrollInterval) return; // Prevent multiple intervals
+        scrollInterval = setInterval(() => {
+            navList.scrollBy({ left: speed, behavior: "smooth" });
+        }, 12);
+    }
+
+    function stopScrolling() {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
+    }
+
+    navList.addEventListener("mousemove", autoScroll);
+    navList.addEventListener("mouseleave", stopScrolling);
+
+    navList.addEventListener("wheel", (e) => {
+        if (!navOverflows()) return; // FIX: let the page scroll normally over the nav
+        e.preventDefault();
+        navList.scrollBy({ left: e.deltaY, behavior: "smooth" });
+    }, { passive: false });
+
+    let touchStartX = 0;
+    let touchScrollLeft = 0;
+
+    navList.addEventListener("touchstart", (e) => {
+        touchStartX = e.touches[0].pageX;
+        touchScrollLeft = navList.scrollLeft;
+    });
+
+    navList.addEventListener("touchmove", (e) => {
+        const touchX = e.touches[0].pageX - touchStartX;
+        navList.scrollLeft = touchScrollLeft - touchX;
+    });
+
+    const scrollLeftBtn = document.getElementById("scroll-left");
+    const scrollRightBtn = document.getElementById("scroll-right");
+
+    if (scrollLeftBtn && scrollRightBtn) {
+        scrollLeftBtn.addEventListener("click", () => {
+            navList.scrollBy({ left: -300, behavior: "smooth" });
+        });
+
+        scrollRightBtn.addEventListener("click", () => {
+            navList.scrollBy({ left: 300, behavior: "smooth" });
+        });
+    }
+
+    /* ---- Advanced UI enhancements (additive) ---- */
+
+    // Keep the active nav link in view on small screens
+    const activeLink = navList.querySelector("a.active");
+    if (activeLink && navOverflows()) {
+        // scroll only the nav itself (scrollIntoView can nudge the whole page)
+        const a = activeLink.getBoundingClientRect();
+        const n = navList.getBoundingClientRect();
+        navList.scrollLeft += (a.left + a.width / 2) - (n.left + n.width / 2);
+    }
+
+    // Footer dock: tap/click toggles it (touch screens have no hover); Esc or outside click closes it
+    const footer = document.querySelector("footer");
+    if (footer) {
+        footer.addEventListener("click", (e) => {
+            if (e.target.closest("a, input, button")) return;
+            footer.classList.toggle("open");
+        });
+        document.addEventListener("click", (e) => {
+            if (!footer.contains(e.target)) footer.classList.remove("open");
+        });
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") footer.classList.remove("open");
+        });
+    }
+
+    // Cursor spotlight on the About card
+    const card = document.getElementById("about-me");
+    if (card) {
+        card.addEventListener("pointermove", (e) => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty("--mx", (e.clientX - r.left) + "px");
+            card.style.setProperty("--my", (e.clientY - r.top) + "px");
+        }, { passive: true });
+    }
+});
+
+    </script>
   </body>
-
-
-  <footer>
-          <p>© 2025 Caitlin's Creative Space | All Rights Reserved</p> 
-      
-           <div class="footer-container">
-              <div class="footer-search">
-                <input type="text" placeholder="Search..." id="search-bar">
-                <button id="search-button" aria-label="Search">
-                  <i class="fa fa-search"></i>
-                </button>
-              </div>
-              <!-- Social Sidebar -->
-              <div id="social-sidebar" class="social">
-                  <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener" class="social-link" title="Instagram">
-                      <i class="fa-brands fa-instagram"></i>
-                  </a>
-                  <a href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener" class="social-link" title="Twitch">
-                      <i class="fa-brands fa-twitch"></i>
-                  </a>
-                  <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener" class="social-link" title="YouTube">
-                      <i class="fa-brands fa-youtube"></i>
-                  </a>
-                  <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener" class="social-link" title="Bluesky">
-                      <i class="fa-brands fa-bluesky"></i> <!-- Bluesky doesn't have an official icon, so I used a cloud -->
-                  </a>
-                  <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener" class="social-link" title="GitHub">
-                    <i class="fa-brands fa-github"></i>
-                  </a>
-                </div>
-    
-            </div>
-        </footer>
-  <script src="about.js"></script>
-   
-
-  
 </html>
-
-
