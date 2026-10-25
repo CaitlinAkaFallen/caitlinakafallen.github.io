@@ -152,6 +152,7 @@
     localStorage.setItem("twitchUser", JSON.stringify({
       username: u.display_name, avatar: u.profile_image_url, id: u.id, token
     }));
+    localStorage.setItem("twitch_access_token", token);
     localStorage.removeItem("socialUser");
     toast(`Logged in as ${u.display_name}`);
   }
@@ -207,6 +208,7 @@
     $("#logoutBtn")?.addEventListener("click", () => {
       localStorage.removeItem("twitchUser");
       localStorage.removeItem("socialUser");
+      localStorage.removeItem("twitch_access_token");
       sessionStorage.removeItem("oauthProvider");
       renderProfile();
       toast("Logged out");
@@ -346,6 +348,18 @@
     }, { threshold: .12 });
     items.forEach(el => { el.style.opacity = "0"; io.observe(el); });
   }
+
+  /* ---------- Section toggle (kept for older onclick="toggleSection(...)" markup) ---------- */
+  window.toggleSection = function (sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    const body = section.querySelector(".section-body");
+    const icon = section.querySelector(".toggle-icon");
+    if (body && icon) {
+      body.classList.toggle("collapsed");
+      icon.classList.toggle("rotate");
+    }
+  };
 
   /* ---------- Revamp notice date ---------- */
   function setToday() {
