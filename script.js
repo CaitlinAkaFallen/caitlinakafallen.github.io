@@ -27,7 +27,7 @@
      ========================================================= */
   const CONFIG = {
     channel: "fallenoneart",
-    twitchClientId: "iv3dicfghd1hflqzzysljadc8mw1sa",   // login client (shared)
+    twitchClientId: "93zm8q03ri0840ul18y8e7owbl4y01",   // login client (shared)
     twitchScope: "user:read:email",
     discordClientId: "1426998908164505600",
     googleClientId: "323446283951-pqq1ic2ivpnofmfrp7flc83iklc6tjp1.apps.googleusercontent.com",
