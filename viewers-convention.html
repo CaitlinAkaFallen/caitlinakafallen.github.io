@@ -10,7 +10,7 @@
   <meta property="og:title" content="Upcoming Conventions | Caitlin's Creative Space">
   <meta property="og:description" content="Check out the latest conventions and events!">
   <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-vc.jpg">
-  <meta property="og:url" content="https://caitlinscreativespace.xyz/viewers-vc.html">
+  <meta property="og:url" content="https://caitlinscreativespace.xyz/viewer-conventions.html">
   <meta property="og:type" content="website">
 
   <!-- Twitter / X Card -->
@@ -615,6 +615,7 @@
         e.preventDefault();
         const u = $("#adminUsername").value, p = $("#adminPassword").value;
         if (await checkLogin(u, p)) {
+          try { sessionStorage.setItem("conventionsAdmin", "1"); } catch (_) { /* storage blocked */ }
           window.location.href = "conventions.html";
           return;
         }
