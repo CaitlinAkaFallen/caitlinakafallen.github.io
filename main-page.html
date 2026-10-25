@@ -1,307 +1,1426 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Caitlin's Creative Space</title>
 
-    <title>Caitlin's Creative Space</title>
+<meta name="author" content="Caitlin Ak Fallen" />
+<meta name="description" content="Explore photography, digital art, code, and more by Caitlin." />
+<meta property="og:title" content="Caitlin's Creative Space" />
+<meta property="og:description" content="Explore photography, digital art, code, and more by Caitlin." />
+<meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview.jpg" />
+<meta property="og:url" content="https://caitlinscreativespace.xyz/main-page.html" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Caitlin's Creative Space" />
+<meta name="twitter:description" content="Explore photography, digital art, code, and more by Caitlin." />
+<meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview.jpg" />
 
-    <!-- Author Meta Tag -->
-    <meta name="author" content="Caitlin Ak Fallen">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet" />
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
 
-    <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
-    <meta property="og:title" content="Caitlin's Creative Space">
-    <meta property="og:description" content="Explore photography, digital art, code, and more by Caitlin.">
-    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview.jpg">
-    <meta property="og:url" content="https://caitlinscreativespace.xyz/main-page.html">
-    <meta property="og:type" content="website">
+<style>
+  :root {
+    --bg: #07060d;
+    --violet: #9146ff;
+    --violet-hi: #bf94ff;
+    --aqua: #4ae4e9;
+    --cyan: #00bcd4;
+    --blue: #3d58f3;
+    --red: #ff3b3b;
+    --pink: #ff66cc;
+    --ink: #eef0ff;
+    --muted: #a9a6c4;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-strong: rgba(14, 12, 24, 0.72);
+    --line: rgba(255, 255, 255, 0.1);
+    --radius: 20px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+    --spring: cubic-bezier(.34, 1.56, .64, 1);
+    --top: 70px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { scroll-behavior: smooth; font-size: calc(16px * var(--text-scale, 1)); }
+  html, body { margin: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      linear-gradient(rgba(7, 6, 13, var(--dim-top, .5)), rgba(7, 6, 13, var(--dim-bottom, .78))),
+      var(--bg-photo, url("images/main-page.JPG")) center / cover fixed no-repeat;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .aurora {
+    position: fixed; inset: -20%; z-index: -2; pointer-events: none;
+    background:
+      radial-gradient(40% 35% at 12% 18%, rgba(145, 70, 255, .28), transparent 60%),
+      radial-gradient(35% 30% at 88% 12%, rgba(0, 168, 255, .18), transparent 60%),
+      radial-gradient(45% 40% at 62% 92%, rgba(255, 59, 59, .12), transparent 60%);
+    filter: blur(40px);
+    animation: drift 24s ease-in-out infinite alternate;
+  }
+  @keyframes drift { to { transform: translate3d(3%, -2%, 0) scale(1.05); } }
+  @keyframes ping {
+    0% { box-shadow: 0 0 0 0 rgba(255,59,59,.7); }
+    70% { box-shadow: 0 0 0 8px rgba(255,59,59,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,59,59,0); }
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .ico { width: 20px; height: 20px; display: block; flex-shrink: 0; }
 
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Caitlin's Creative Space">
-    <meta name="twitter:description" content="Explore photography, digital art, code, and more by Caitlin.">
-    <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview.jpg">
-    <meta name="twitter:url" content="https://caitlinscreativespace.xyz/main-page.html">
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--top);
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px;
+    padding: 0 16px;
+    background: var(--glass-strong);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; white-space: nowrap; }
+  .brand .logo {
+    width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--violet), var(--aqua));
+    box-shadow: 0 6px 18px rgba(145,70,255,.4);
+    font-family: "Orbitron", sans-serif; font-weight: 800; font-size: .9rem; color: #fff;
+  }
+  .brand .name { font-family: "Orbitron", sans-serif; font-weight: 800; font-size: .92rem; letter-spacing: .04em; }
+  .brand .name em { font-style: normal; color: var(--violet-hi); }
 
+  .nav-scroll {
+    min-width: 0; overflow-x: auto; scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  }
+  .nav-scroll::-webkit-scrollbar { display: none; }
+  .nav { display: flex; gap: 4px; padding: 5px; width: max-content; margin: 0 auto; border-radius: 999px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+  .nav a {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 999px;
+    color: var(--muted); text-decoration: none; font-size: .86rem; font-weight: 600; white-space: nowrap;
+    transition: color .25s, background .25s, transform .25s var(--ease);
+  }
+  .nav a svg { width: 17px; height: 17px; }
+  .nav a:hover { color: #fff; background: rgba(255,255,255,.08); transform: translateY(-1px); }
+  .nav a[aria-current="page"] { color: #fff; background: linear-gradient(135deg, rgba(145,70,255,.55), rgba(0,168,255,.35)); box-shadow: 0 0 18px rgba(145,70,255,.3); }
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="style.css" />
- </head>
+  .actions { display: flex; align-items: center; gap: 8px; }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; cursor: pointer;
+    background: rgba(255,255,255,.05); border: 1px solid var(--line); color: var(--ink); font: inherit;
+    transition: background .2s, transform .2s var(--ease), box-shadow .2s;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,.12); transform: translateY(-1px); box-shadow: 0 0 14px rgba(0,188,212,.25); }
+  .icon-btn svg { width: 18px; height: 18px; }
+  .login {
+    height: 40px; display: inline-flex; align-items: center; gap: 9px; padding: 0 14px 0 4px;
+    border-radius: 999px; cursor: pointer; font: inherit; font-size: .84rem; font-weight: 600; color: #fff;
+    background: rgba(145,70,255,.14); border: 1px solid rgba(145,70,255,.5);
+    transition: background .2s, box-shadow .2s, transform .2s var(--ease);
+  }
+  .login:hover { background: rgba(145,70,255,.32); box-shadow: 0 0 18px rgba(145,70,255,.3); transform: translateY(-1px); }
+  .login .av {
+    width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.08) center / cover no-repeat;
+    display: grid; place-items: center; color: var(--muted);
+  }
+  .login .av svg { width: 15px; height: 15px; }
+  .login.has-user .av { border: 2px solid var(--violet); }
+  .login .u { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+  /* ---------- Hero ---------- */
+  main { max-width: 1200px; margin: 0 auto; padding: calc(var(--top) + 24px) 16px 40px; }
+  .hero {
+    position: relative; border-radius: 28px; overflow: hidden;
+    min-height: 340px; display: grid; place-items: center; text-align: center;
+    padding: 56px 24px;
+    background: #120e20 url("images/main-page.JPG") center / cover no-repeat;
+    border: 1px solid var(--line);
+    box-shadow: 0 30px 60px rgba(0,0,0,.5);
+    animation: rise .8s var(--ease) both;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(7,6,13,.35), rgba(7,6,13,.9));
+  }
+  .hero::after {
+    content: ""; position: absolute; inset: -40%; pointer-events: none;
+    background: conic-gradient(from 180deg, transparent, rgba(145,70,255,.2), transparent 40%, rgba(0,188,212,.18), transparent 80%);
+    animation: spin 18s linear infinite; opacity: .6;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hero-inner { position: relative; z-index: 1; }
+  .eyebrow {
+    font-family: "Fira Code", monospace; font-size: .76rem; letter-spacing: .3em; text-transform: uppercase; color: var(--aqua);
+  }
+  .hero h1 {
+    margin: 12px 0 14px;
+    font-family: "Orbitron", sans-serif; font-weight: 800;
+    font-size: clamp(2.2rem, 7vw, 4.2rem); letter-spacing: .02em; line-height: 1.05;
+    background: linear-gradient(60deg, #fff 15%, var(--aqua) 50%, var(--violet) 90%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 20px rgba(0,0,0,.4));
+  }
+  .hero p.lede { margin: 0 auto; max-width: 620px; font-size: 1.05rem; color: #dcd9f0; line-height: 1.6; }
+  .status-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 26px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px; padding: 9px 15px; border-radius: 999px;
+    font-size: .86rem; font-weight: 600; background: rgba(0,0,0,.45); border: 1px solid var(--line); backdrop-filter: blur(8px);
+  }
+  .pill .d { width: 9px; height: 9px; border-radius: 50%; background: #555; }
+  .pill.live { border-color: rgba(255,59,59,.6); color: #ffd6d6; box-shadow: 0 0 18px rgba(255,40,40,.35); }
+  .pill.live .d { background: var(--red); box-shadow: 0 0 10px var(--red); animation: ping 1.6s infinite; }
+  .cta {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 999px; text-decoration: none;
+    color: #fff; font-weight: 600; font-size: .88rem;
+    background: linear-gradient(135deg, var(--violet), var(--blue));
+    box-shadow: 0 8px 24px rgba(145,70,255,.35);
+    transition: transform .25s var(--ease), box-shadow .25s;
+  }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(145,70,255,.5); }
+  .cta svg { width: 16px; height: 16px; }
 
-  <body>
-      <header style="background-image: url('images/main-page.JPG'); background-size: cover; background-position: center; height: 300px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
-      <div style="text-align: center; color: rgb(253, 244, 113); padding-top: 0;">
-        <h2 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
-          Caitlin's Creative Space
-        </h2>
-        <h5 style="text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
-          Explore my world of creativity: photography, digital art, coding, and more!
-        </h5>
-      </div>
-    </header>
+  /* ---------- Section titles ---------- */
+  .block { margin-top: 44px; animation: rise .7s var(--ease) both; }
+  .block-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 4px 16px; }
+  .block-head h2 {
+    margin: 0; font-family: "Orbitron", sans-serif; font-size: 1.2rem; letter-spacing: .05em; text-transform: uppercase;
+  }
+  .block-head span { color: var(--muted); font-size: .84rem; }
 
-    <!-- Horizontal Navigation Bar -->
-    <nav id="horizontal-nav" class="horizontal-nav">
-      <ul class="nav-list">
-        <li><a id="nav-welcome" href="index.html">
-           <i class="fa-solid fa-door-open"></i><span>Welcome</span>
-          </a>
-        </li>
-        <li>
-          <a id="nav-photography" href="photography.html">
-            <i class="fas fa-camera"></i><span>Photography</span>
-          </a>
-        </li>
-        <li>
-          <a id="nav-coding" href="programming.html">
-            <i class="fas fa-code"></i><span>Programming</span>
-          </a>
-        </li>
-        <li>
-          <a id="nav-art" href="viewer-art.html">
-            <i class="fas fa-paint-brush"></i><span>Gallery</span>
-          </a>
-        </li>
-        <li>
-          <a id="nav-conventions" href="viewers-convention.html">
-            <i class="fas fa-users"></i><span>Conventions</span>
-          </a>
-        </li>
-        <li>
-          <a id="nav-streaming" href="schedule.html">
-            <i class="fas fa-video"></i><span>Content</span>
-          </a>
-        </li>
-        <li>
-          <a id="nav-about" href="about.html">
-            <i class="fas fa-user"></i><span>About</span>
-          </a>
-        </li>
-        <li>
-          <a id="nav-contact" href="contact.html">
-            <i class="fas fa-envelope"></i><span>Contact</span>
-          </a>
-        </li>
-         <!-- Hidden User Profile (shows after login) -->
-        <li id="userProfile" style="display:none;">
-            <a href="javascript:void(0)" style="display:flex; align-items:center;">
-                <img
-                    id="profilePic"
-                    src="images/default-avatar.png"
-                    alt="Profile Picture"
-                    style="width: 30px; height: 30px; border-radius: 50%; margin-right: 8px;"
-                >
-                <span id="profileName" style="font-weight:600;"></span>
-            </a>
-            <button id="logoutBtn" style="margin-left:10px; padding:4px 8px; border:none; border-radius:6px; cursor:pointer;">Logout</button>
-        </li>
-      </ul>
+  /* ---------- Explore tiles ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+  .tile {
+    position: relative; display: flex; flex-direction: column; gap: 10px;
+    padding: 18px; border-radius: 18px; text-decoration: none; color: var(--ink);
+    background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.015));
+    border: 1px solid var(--line); backdrop-filter: blur(12px);
+    transition: transform .35s var(--ease), border-color .35s, box-shadow .35s;
+    overflow: hidden;
+  }
+  .tile::after {
+    content: ""; position: absolute; inset: auto -30% -60% auto; width: 140px; height: 140px; border-radius: 50%;
+    background: var(--tint, var(--violet)); opacity: .18; filter: blur(30px); transition: opacity .35s;
+  }
+  .tile:hover { transform: translateY(-5px); border-color: var(--tint, var(--violet)); box-shadow: 0 16px 40px rgba(0,0,0,.35); }
+  .tile:hover::after { opacity: .35; }
+  .tile .t-ico {
+    width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center;
+    background: color-mix(in srgb, var(--tint, var(--violet)) 22%, transparent);
+    color: var(--tint, var(--violet));
+  }
+  .tile .t-ico svg { width: 22px; height: 22px; }
+  .tile h3 { margin: 0; font-size: 1rem; }
+  .tile p { margin: 0; font-size: .84rem; color: var(--muted); }
+  .tile .go { margin-top: auto; font-size: .78rem; color: var(--tint, var(--violet)); display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  .tile .go svg { width: 13px; height: 13px; transition: transform .3s var(--ease); }
+  .tile:hover .go svg { transform: translate(2px, -2px); }
+
+  /* ---------- Content cards ---------- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
+  .card {
+    --accent: var(--violet);
+    position: relative; border-radius: var(--radius); overflow: hidden;
+    background: var(--glass); border: 1px solid var(--line);
+    backdrop-filter: blur(14px) saturate(150%); -webkit-backdrop-filter: blur(14px) saturate(150%);
+    box-shadow: 0 14px 40px rgba(0,0,0,.25);
+    transition: border-color .3s, box-shadow .3s;
+  }
+  .card::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .card:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); box-shadow: 0 18px 46px rgba(0,0,0,.35); }
+  .card.wide { grid-column: 1 / -1; }
+  .card-head {
+    width: 100%; display: flex; align-items: center; gap: 12px; padding: 18px 20px;
+    background: none; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer;
+  }
+  .card-head .c-ico {
+    width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; flex-shrink: 0;
+    background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent);
+  }
+  .card-head .c-ico svg { width: 21px; height: 21px; }
+  .card-head h2 { margin: 0; flex: 1; font-family: "Orbitron", sans-serif; font-size: 1.02rem; letter-spacing: .04em; color: #fff; }
+  .card-head .chev { width: 18px; height: 18px; color: var(--muted); transition: transform .35s var(--ease); }
+  .card.closed .chev { transform: rotate(-90deg); }
+  .collapse { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .45s var(--ease); }
+  .card.closed .collapse { grid-template-rows: 0fr; }
+  .collapse > div { overflow: hidden; min-height: 0; }
+  .card-body { padding: 0 22px 22px; color: #d9d9e6; line-height: 1.7; font-size: .95rem; }
+  .card-body p { margin: 0 0 12px; }
+  .card-body p:last-child { margin-bottom: 0; }
+  .card-body strong { color: #fff; }
+  .card-body a { color: var(--violet-hi); text-decoration: none; border-bottom: 1px solid rgba(191,148,255,.4); }
+  .card-body a:hover { color: #fff; border-color: #fff; }
+  .card-body .sub-btn {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; padding: 9px 16px; border-radius: 999px;
+    color: #fff !important; border: 0 !important; background: var(--violet); font-weight: 600; font-size: .88rem;
+    box-shadow: 0 8px 22px rgba(145,70,255,.35);
+  }
+  .card-body .sub-btn:hover { background: #a266ff; }
+
+  .card[data-accent="violet"] { --accent: var(--violet-hi); }
+  .card[data-accent="aqua"] { --accent: var(--aqua); }
+  .card[data-accent="cyan"] { --accent: var(--cyan); }
+  .card[data-accent="blue"] { --accent: #7b8cff; }
+  .card[data-accent="red"] { --accent: #ff6b6b; }
+  .card[data-accent="pink"] { --accent: var(--pink); }
+
+  .live-card-note { font-size: .84rem; color: var(--muted); margin: 0 0 12px; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    position: relative; margin-top: 56px; padding: 26px 18px;
+    text-align: center; border-radius: 22px;
+    background: var(--glass-strong); border: 1px solid var(--line);
+    backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+  footer p { margin: 0 0 14px; color: #cfcfe0; font-size: .86rem; }
+  .socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .socials a {
+    width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+    color: #f5f5f5; background: rgba(255,255,255,.05); border: 1px solid var(--line);
+    text-decoration: none; box-shadow: none;
+    transition: transform .3s var(--ease), color .3s, border-color .3s, box-shadow .3s;
+  }
+  .socials a,
+  .socials a:hover,
+  .socials a:focus,
+  .socials a:visited { text-decoration: none; }
+  .socials a i { font-size: 1.2rem; line-height: 1; }
+  .socials a:hover { transform: translateY(-3px); color: var(--c); border-color: var(--c); box-shadow: 0 0 18px color-mix(in srgb, var(--c) 45%, transparent); }
+  .socials .ig { --c: #e1306c; }
+  .socials .tw { --c: #9146ff; }
+  .socials .yt { --c: #ff3b3b; }
+  .socials .bsky { --c: #1da1f2; }
+  .socials .gh { --c: #ffffff; }
+  .socials .pt { --c: #f96854; }
+  .socials .rd { --c: #ff4500; }
+  .top-link { margin-top: 16px; display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: .8rem; text-decoration: none; }
+  .top-link:hover { color: #fff; }
+  .top-link i { transform: rotate(180deg); }
+
+  /* ---------- Search palette ---------- */
+  .palette {
+    position: fixed; inset: 0; z-index: 500;
+    display: flex; align-items: flex-start; justify-content: center; padding: 12vh 16px 16px;
+    background: rgba(4,3,10,.6); backdrop-filter: blur(8px);
+    opacity: 0; transition: opacity .25s;
+  }
+  .palette.open { opacity: 1; }
+  .palette-box {
+    width: min(620px, 100%); border-radius: 22px; overflow: hidden;
+    background: rgba(18,14,32,.96); border: 1px solid var(--line);
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    transform: translateY(-8px) scale(.98); transition: transform .3s var(--ease);
+  }
+  .palette.open .palette-box { transform: none; }
+  .palette-input {
+    display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line);
+  }
+  .palette-input svg { width: 18px; height: 18px; color: var(--muted); }
+  .palette-input input {
+    flex: 1; background: none; border: 0; outline: none; color: #fff; font: inherit; font-size: 1rem;
+  }
+  .palette-input input::placeholder { color: rgba(255,255,255,.4); }
+  .palette-input kbd {
+    font-family: "Fira Code", monospace; font-size: .72rem; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px;
+  }
+  .palette-list { list-style: none; margin: 0; padding: 8px; max-height: 50vh; overflow-y: auto; }
+  .palette-list li a {
+    display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; color: var(--ink); text-decoration: none;
+  }
+  .palette-list li a .p-ico { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: rgba(255,255,255,.06); color: var(--violet-hi); }
+  .palette-list li a .p-ico svg { width: 18px; height: 18px; }
+  .palette-list li a small { display: block; color: var(--muted); font-size: .76rem; }
+  .palette-list li a[aria-selected="true"], .palette-list li a:hover { background: rgba(145,70,255,.18); }
+  .palette-empty { padding: 22px; text-align: center; color: var(--muted); }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); z-index: 600;
+    padding: 11px 18px; border-radius: 12px; font-size: .9rem; color: #fff;
+    background: rgba(12,10,22,.92); border: 1px solid rgba(145,70,255,.5); box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    opacity: 0; pointer-events: none; transition: opacity .3s, transform .35s var(--ease);
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ---------- Customize panel ---------- */
+  .scrim {
+    position: fixed; inset: 0; z-index: 650;
+    background: rgba(4, 3, 10, .55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    opacity: 0; transition: opacity .3s;
+  }
+  .scrim.show { opacity: 1; }
+  .settings {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 700;
+    width: min(380px, 100%); display: flex; flex-direction: column;
+    background: rgba(14, 12, 24, .95);
+    backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border-left: 1px solid var(--line); box-shadow: -20px 0 60px rgba(0,0,0,.5);
+    transform: translateX(104%); transition: transform .4s var(--ease);
+  }
+  .settings.open { transform: none; }
+  .settings-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 22px 14px; border-bottom: 1px solid var(--line); }
+  .settings-head h2 { margin: 0; font-family: "Orbitron", sans-serif; font-size: 1.05rem; letter-spacing: .05em; }
+  .settings-body { flex: 1; overflow-y: auto; padding: 16px 22px 24px; }
+  .set-note { margin: 0 0 18px; font-size: .8rem; color: var(--muted); }
+  .set-group { margin-bottom: 24px; }
+  .set-group h3 {
+    margin: 0 0 6px; font-family: "Fira Code", monospace; font-size: .7rem; font-weight: 500;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
+  }
+  .set-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,.08); font-size: .9rem;
+  }
+  .set-row small { display: block; margin-top: 2px; font-size: .76rem; color: var(--muted); }
+  .swatches { display: flex; gap: 10px; }
+  .swatch {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;
+    background: var(--c); box-shadow: 0 0 0 1px rgba(255,255,255,.12);
+    transition: transform .2s var(--spring), border-color .2s, box-shadow .2s;
+  }
+  .swatch:hover { transform: scale(1.1); }
+  .swatch[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 16px var(--c); }
+  .switch { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+  .switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .switch .track { position: absolute; inset: 0; border-radius: 999px; background: rgba(255,255,255,.14); cursor: pointer; transition: background .25s; }
+  .switch .track::after {
+    content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
+    background: #fff; transition: transform .3s var(--spring);
+  }
+  .switch input:checked + .track { background: var(--violet); }
+  .switch input:checked + .track::after { transform: translateX(20px); }
+  .switch input:focus-visible + .track { outline: 2px solid var(--aqua); outline-offset: 2px; }
+  .seg2 { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px solid var(--line); }
+  .seg2 button {
+    padding: 7px 10px; border: 0; border-radius: 9px; background: transparent; color: var(--muted);
+    font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer;
+  }
+  .seg2 button[aria-pressed="true"] { background: linear-gradient(135deg, var(--violet), var(--blue)); color: #fff; }
+  .range { width: 150px; accent-color: var(--violet); }
+  .settings-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--line); }
+  .saved-tag { font-size: .82rem; color: #7dffb0; opacity: 0; transition: opacity .3s; }
+  .saved-tag.show { opacity: 1; }
+  .btn-reset {
+    padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255,68,68,.4); background: rgba(255,68,68,.1);
+    color: #ff7b7b; font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; transition: background .2s, color .2s;
+  }
+  .btn-reset:hover { background: #ff4444; color: #fff; }
+
+  /* Saved preferences applied to the page */
+  html.no-photo body { background: var(--bg) !important; }
+  html.compact .block { margin-top: 26px; }
+  html.compact .card-head { padding: 12px 16px; }
+  html.compact .card-body { padding: 0 16px 16px; }
+  html.compact .tiles { gap: 10px; }
+  html.compact .tile { padding: 14px; }
+  html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after { animation: none !important; transition: none !important; }
+  html.reduce-motion .tile, html.reduce-motion .card { opacity: 1 !important; }
+  @media (prefers-reduced-motion: reduce) { .tile, .card { opacity: 1 !important; } }
+
+  /* Style options */
+  html.font-serif body { font-family: Georgia, "Times New Roman", serif; }
+  html.font-mono body { font-family: "Fira Code", ui-monospace, monospace; }
+  html.sharp .card, html.sharp .tile, html.sharp .hero, html.sharp footer, html.sharp .settings { border-radius: 6px !important; }
+  html.sharp .login, html.sharp .btn-reset, html.sharp .btn-mini { border-radius: 6px !important; }
+  html.no-glow .tile:hover, html.no-glow .card:hover, html.no-glow .cta:hover, html.no-glow .btn-action:hover { box-shadow: none !important; }
+  html.no-glass .card, html.no-glass .tile, html.no-glass footer, html.no-glass .topbar, html.no-glass .nav, html.no-glass .settings {
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: rgba(14, 12, 24, .92) !important;
+  }
+  .setup-code { width: 100%; resize: vertical; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(0,0,0,.35); color: #fff; font-family: "Fira Code", monospace; font-size: .75rem; }
+  .setup-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .btn-mini { flex: 1; padding: 9px 10px; border-radius: 999px; border: 1px solid rgba(145,70,255,.5); background: rgba(145,70,255,.14); color: #fff; font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; }
+  .btn-mini:hover { background: rgba(145,70,255,.32); }
+  .setup-msg { margin: 8px 0 0; font-size: .8rem; color: #7dffb0; min-height: 1em; }
+
+  /* Background library */
+  .bg-library { margin-top: 14px; }
+  .bg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; font-size: .9rem; }
+  .bg-head small { margin-left: 6px; font-size: .76rem; color: var(--muted); }
+  .bg-upload { position: relative; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .bg-file { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+  .bg-history { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+  .bg-item { position: relative; }
+  .bg-tile {
+    width: 100%; padding: 0; display: flex; flex-direction: column; overflow: hidden; text-align: left;
+    border: 2px solid transparent; border-radius: 12px; background: rgba(255,255,255,.04); color: #fff; font: inherit; cursor: pointer;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .bg-tile:hover { border-color: rgba(255,255,255,.3); }
+  .bg-tile.is-active { border-color: var(--violet); box-shadow: 0 0 14px rgba(145,70,255,.4); }
+  .bg-thumb { display: block; width: 100%; aspect-ratio: 16 / 10; background: #111 center / cover no-repeat; }
+  .bg-default { background: url("images/main-page.JPG") center / cover no-repeat; }
+  .bg-name { display: block; padding: 6px 8px; font-size: .72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bg-del {
+    position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 8px; border: 0;
+    display: grid; place-items: center; background: rgba(0,0,0,.6); color: #ff8a8a; font-size: 12px; cursor: pointer;
+  }
+  .bg-del:hover { background: #ff4444; color: #fff; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1000px) {
+    .topbar { grid-template-columns: auto minmax(0, 1fr) auto; }
+    .brand .name { display: none; }
+    .nav a span { display: none; }
+    .nav a { padding: 9px 11px; }
+  }
+  @media (max-width: 640px) {
+    :root { --top: 118px; }
+    .topbar { grid-template-columns: 1fr auto; grid-template-rows: auto auto; height: auto; padding: 10px 14px 8px; row-gap: 8px; }
+    .brand { grid-column: 1; grid-row: 1; }
+    .actions { grid-column: 2; grid-row: 1; }
+    .nav-scroll { grid-column: 1 / -1; grid-row: 2; }
+    .nav { margin: 0; }
+    .nav a span { display: inline; }
+    .login .u { display: none; }
+    .login { padding: 0 6px 0 4px; }
+    .card-body { padding: 0 18px 18px; }
+    .hero { min-height: 300px; padding: 40px 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== Icon sprite ========== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-welcome" viewBox="0 0 24 24"><path d="M4 21V9l8-6 8 6v12h-5v-6H9v6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-brush" viewBox="0 0 24 24"><path d="M14 4l6 6-9 9H5v-6zM4 20c2 0 3-1 3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 010 7M18 14.5c2 .7 3.2 2.5 3.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0112 0c0 6 2 7 2 7H4s2-1 2-7M10 20a2 2 0 004 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-twitch" viewBox="0 0 24 24"><path d="M4 2 2 6v15h5v3h3l3-3h4l5-5V2zm16 11-3 3h-5l-3 3v-3H6V4h14z" fill="currentColor"/><path d="M15 7h2v5h-2zM10 7h2v5h-2z" fill="currentColor"/></symbol>
+  <symbol id="i-youtube" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9v6l5-3z" fill="#0b0b12"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<!-- ========== Top bar ========== -->
+<header class="topbar">
+  <a class="brand" href="index.html" aria-label="Caitlin's Creative Space home">
+    <span class="name">Welcome <em>Page</em></span>
+  </a>
+
+  <div class="nav-scroll">
+    <nav class="nav" aria-label="Site navigation">
+      <a href="photography.html" data-page="photography.html"><i class="fa-solid fa-camera ico" aria-hidden="true"></i><span>Photography</span></a>
+      <a href="programming.html" data-page="programming.html"><i class="fa-solid fa-code ico" aria-hidden="true"></i><span>Programming</span></a>
+      <a href="viewer-art.html" data-page="viewer-art.html"><i class="fa-solid fa-paintbrush ico" aria-hidden="true"></i><span>Gallery</span></a>
+      <a href="viewers-convention.html" data-page="viewers-convention.html"><i class="fa-solid fa-users ico" aria-hidden="true"></i><span>Conventions</span></a>
+      <a href="schedule.html" data-page="schedule.html"><i class="fa-solid fa-video ico" aria-hidden="true"></i><span>Content</span></a>
+      <a href="about.html" data-page="about.html"><i class="fa-solid fa-user ico" aria-hidden="true"></i><span>About</span></a>
+      <a href="contact.html" data-page="contact.html"><i class="fa-solid fa-envelope ico" aria-hidden="true"></i><span>Contact</span></a>
     </nav>
+  </div>
 
-    <div class="content-wrapper">
-          <!-- Top Left Column -->
-            <div class="main-content">
-              <main>
-                <section id="content">
-                  <h2>
-                    Welcome 
-                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('content')"></i>
-                  </h2>
-                  <div class="section-body">
-                    <p>
-                      Welcome to the Creative Space of My Mind! Step into a world where
-                      photography, digital art, coding, and endless creativity come
-                      together. Explore the unique projects, stories, and inspirations
-                      that shape my artistic journey. Let’s create something extraordinary
-                      together!
-                    </p>
-                    <p>Please select any categories.</p>
-                  </div>
-                </section>
-              </main>
-            </div>
+  <div class="actions">
+    <button class="icon-btn" id="openSearch" type="button" aria-label="Search pages (press /)" title="Search (/)">
+      <svg aria-hidden="true"><use href="#i-search"/></svg>
+    </button>
+    <button class="icon-btn" id="settingsBtn" type="button" aria-label="Customize this page" aria-controls="settings" aria-expanded="false" title="Customize this page">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="15" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+    </button>
+    <button class="login" id="loginBtn" type="button">
+      <span class="av" id="avatar"><svg aria-hidden="true"><use href="#i-user"/></svg></span>
+      <span class="u" id="username">Log in</span>
+    </button>
+  </div>
+</header>
 
-          <!-- Top Right Column -->
-            <div class="main-updates">
-              <main>
-                <section id="updates">
-                  <h2>
-                    Updates 
-                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('updates')"></i>
-                  </h2>
-                  <div class="section-body">
-                    <p>
-                      As this website continues to show improvement, new features and
-                      content will be added regularly. Stay tuned for the latest updates!
-                    </p>
-                    <p>
-                      Feel free to explore the different sections and reach out if you have
-                      any questions or suggestions. Your feedback is always welcome!
-                    </p>
-                  </div>
-                </section>
-              </main>
-            </div>
-
-          <!-- Bottom Left Column: Mobile Tips -->
-            <div class="left-bottom-column">
-              <main>
-                <section id="tips">
-                  <h2>
-                    Mobile Tips 
-                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('tips')"></i>
-                  </h2>
-                  <div class="section-body">
-                    <p>
-                      💡 Just to let you know: the horizontal navigation is scrollable —
-                      swipe side to side to see more options!
-                    </p>
-                  </div>
-                </section>
-              </main>
-            </div>
-
-          <!-- Bottom Left Column: Website History -->
-            <div class="left-bottom-column">
-              <main>
-                <section id="extra-left">
-                  <h2>
-                    Website History
-                    <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('extra-left')"></i>
-                  </h2>
-                  <div class="section-body">
-                    <p>
-                      🌱 <strong>Caitlin’s Creative Space</strong> began as a single, simple page back in 
-                      <strong>November/December 2024</strong>. It was originally just a small idea — a place to 
-                      showcase my creative projects and coding experiments.
-                    </p>
-                    <p>
-                      💡 Over time, that one page started to grow — expanding into multiple sections featuring 
-                      my art, photography, coding tutorials, and streaming tools. Each new addition was built 
-                      from scratch with care and passion, reflecting my journey as a creator and developer.
-                    </p>
-                    <p>
-                      🌟 Today, it’s evolved into a full creative hub that continues to expand, blending 
-                      technology, art, and imagination — and there’s still more to come!
-                    </p>
-                  </div>
-                </section>
-              </main>
-            </div>
-
-          <!-- Bottom Right Column: Rules & Credits -->
-          <div class="right-bottom-column">
-            <main>
-              <section id="extra-right">
-                <h2>
-                  Rules & Credits 
-                  <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('extra-right')"></i>
-                </h2>
-                <div class="section-body">
-                  <p>
-                    🚫 Please respect my work. Using any of my projects, designs, or code 
-                    as your own without giving credit is not allowed.  
-                  </p>
-                  <p>
-                    ✅ If you’d like to share or use something, make sure to properly 
-                    credit me: <strong>caitlinakafallen</strong>.
-                  </p>
-                  <p>
-                    💬 Collaboration is always welcome — just reach out before reusing or modifying 
-                    any of my projects. I love seeing how others build upon creative ideas, as long as 
-                    proper credit is given and the spirit of respect remains.
-                  </p>
-                  <p>
-                    🌐 All assets, layouts, and designs showcased here are created by me unless otherwise stated. 
-                    Any third-party tools, libraries, or plugins are credited where used.
-                  </p>
-                  <p>
-                    🪄 This site and its contents were built from the ground up with passion, creativity, 
-                    and transparency — please keep that same energy if you take inspiration from it!
-                  </p>
-                </div>
-              </section>
-            </main>
-
-            
-          </div>
-        <!-- Twitch Subscriber Access -->
-        <div class="left-bottom-column">
-          <main>
-              <section id="twitch-subscriber">
-                  <h2>
-                  Twitch Subscriber
-                  <i class="fas fa-chevron-down toggle-icon" onclick="toggleSection('twitch-subscriber')"></i>
-                  </h2>
-                  <div class="section-body">
-                      <p>
-                          💜 This content is available for <strong>subscribers only</strong>.  
-                          Please subscribe to 
-                          <a href="https://twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer">
-                          FallenOneArt
-                          </a> 
-                          on Twitch to unlock exclusive access to bonus material, behind-the-scenes updates, 
-                          and special creative content.
-                      </p>
-                      <p>
-                          🌟 Being a subscriber not only supports my work — it also helps me continue 
-                          creating art, tools, and projects for everyone to enjoy. Thank you so much 
-                          for your support!
-                      </p>
-                      <p>
-                          🏆 Once subscribed, you’ll automatically gain access to subscriber-only sections, 
-                          features, or rewards when logged in through Twitch on this website.
-                      </p>
-                  </div>
-              </section>
-          </main>
+<main>
+  <!-- ========== Hero ========== -->
+  <section class="hero" aria-labelledby="hero-title" data-section="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Creative hub</div>
+      <h1 id="hero-title">Caitlin's Creative Space</h1>
+      <p class="lede">Explore my world of creativity: photography, digital art, coding, and more!</p>
+      <div class="status-row">
+        <div class="pill" id="livePill"><span class="d"></span><span id="liveText">Checking Twitch…</span></div>
+        <a class="cta" href="twitch.html">
+          <svg aria-hidden="true"><use href="#i-twitch"/></svg>
+          Open the Twitch Lounge
+        </a>
       </div>
+    </div>
+  </section>
 
+  <!-- ========== Explore ========== -->
+  <section class="block" aria-labelledby="explore-title" data-section="explore">
+    <div class="block-head">
+      <h2 id="explore-title">Explore</h2>
+      <span>Jump straight to a section</span>
+    </div>
+    <div class="tiles">
+      <a class="tile" href="photography.html" style="--tint:#ff6ec4">
+        <span class="t-ico"><i class="fa-solid fa-camera" aria-hidden="true"></i></span>
+        <h3>Photography</h3>
+        <p>Photos and portfolio</p>
+        <span class="go">Open <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </a>
+      <a class="tile" href="programming.html" style="--tint:#00bcd4">
+        <span class="t-ico"><i class="fa-solid fa-code" aria-hidden="true"></i></span>
+        <h3>Programming</h3>
+        <p>Code and projects</p>
+        <span class="go">Open <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </a>
+      <a class="tile" href="viewer-art.html" style="--tint:#9146ff">
+        <span class="t-ico"><i class="fa-solid fa-paintbrush" aria-hidden="true"></i></span>
+        <h3>Gallery</h3>
+        <p>Art from the community</p>
+        <span class="go">Open <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </a>
+      <a class="tile" href="schedule.html" style="--tint:#4ae4e9">
+        <span class="t-ico"><i class="fa-solid fa-video" aria-hidden="true"></i></span>
+        <h3>Content</h3>
+        <p>Stream schedule</p>
+        <span class="go">Open <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </a>
+      <a class="tile" href="twitch.html" style="--tint:#bf94ff">
+        <span class="t-ico"><svg aria-hidden="true"><use href="#i-twitch"/></svg></span>
+        <h3>Twitch Lounge</h3>
+        <p>Watch live and browse clips</p>
+        <span class="go">Open <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </a>
+      <a class="tile" href="stream-commands.html" style="--tint:#00bfae">
+        <span class="t-ico"><svg aria-hidden="true"><use href="#i-bell"/></svg></span>
+        <h3>Commands</h3>
+        <p>Chat commands to copy</p>
+        <span class="go">Open <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ========== Content cards ========== -->
+  <section class="block" aria-labelledby="info-title" data-section="about">
+    <div class="block-head">
+      <h2 id="info-title">About this site</h2>
+      <span>Tap a card to open or close it</span>
     </div>
 
+    <div class="cards">
+      <article class="card wide" data-accent="violet" data-card="welcome">
+        <button class="card-head" aria-expanded="true" aria-controls="c-welcome">
+          <span class="c-ico"><i class="fa-solid fa-door-open" aria-hidden="true"></i></span>
+          <h2>Welcome</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-welcome"><div>
+          <div class="card-body">
+            <p>Welcome to the Creative Space of My Mind! Step into a world where photography, digital art, coding, and endless creativity come together. Explore the unique projects, stories, and inspirations that shape my artistic journey. Let’s create something extraordinary together!</p>
+            <p>Please select any categories.</p>
+          </div>
+        </div></div>
+      </article>
 
-       <footer>
-          <p>© 2025 Caitlin's Creative Space | All Rights Reserved</p> 
-      
-            <div class="footer-container">
-                <div class="footer-search">
-                  <input type="text" placeholder="Search..." id="search-bar">
-                  <button id="search-button" aria-label="Search">
-                    <i class="fa fa-search"></i>
-                  </button>
-              </div>
-              <!-- Social Sidebar -->
-              <div id="social-sidebar" class="social">
-                          <a href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener" class="social-link" title="Instagram">
-                              <i class="fa-brands fa-instagram"></i>
-                          </a>
-                          <a href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener" class="social-link twitch-link" title="Twitch">
-                               <span id="live-indicator">LIVE</span>
-                              <i class="fa-brands fa-twitch"></i>
-                          </a>
-                          <a href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener" class="social-link" title="YouTube">
-                              <i class="fa-brands fa-youtube"></i>
-                          </a>
-                          <a href="https://kick.com/caitlinakafallen" target="_blank" rel="noopener" class="social-link" title="Kick">
-                              <i class="fa-brands fa-kickstarter-k"></i>
-                          </a>
-                          <a href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener" class="social-link" title="Bluesky">
-                              <i class="fa-brands fa-bluesky"></i>
-                          </a>
-                          <a href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener" class="social-link" title="GitHub">
-                              <i class="fa-brands fa-github"></i>
-                          </a>
-                          <a href="https://patreon.com/FallenOneArt" target="_blank" rel="noopener" class="social-link" title="Patreon">
-                              <i class="fa-brands fa-patreon"></i>
-                          </a>
-                          <a href="https://www.reddit.com/user/CaitlinAkAFallen" target="_blank" rel="noopener" class="social-link" title="Reddit">
-                              <i class="fa-brands fa-reddit"></i>
-                          </a>
-                  </div>
-            </div>
-        </footer>
-  </body>
-  <script src="script.js"></script>
+      <article class="card" data-accent="aqua" data-card="updates">
+        <button class="card-head" aria-expanded="true" aria-controls="c-updates">
+          <span class="c-ico"><svg aria-hidden="true"><use href="#i-bell"/></svg></span>
+          <h2>Updates</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-updates"><div>
+          <div class="card-body">
+            <p>As this website continues to show improvement, new features and content will be added regularly. Stay tuned for the latest updates!</p>
+            <p>Feel free to explore the different sections and reach out if you have any questions or suggestions. Your feedback is always welcome!</p>
+          </div>
+        </div></div>
+      </article>
+
+      <article class="card" data-accent="cyan" data-card="tips">
+        <button class="card-head" aria-expanded="true" aria-controls="c-tips">
+          <span class="c-ico"><i class="fa-solid fa-lightbulb" aria-hidden="true"></i></span>
+          <h2>Mobile Tips</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-tips"><div>
+          <div class="card-body">
+            <p>💡 Just to let you know: the horizontal navigation is scrollable. Swipe side to side to see more options!</p>
+          </div>
+        </div></div>
+      </article>
+
+      <article class="card" data-accent="blue" data-card="history">
+        <button class="card-head" aria-expanded="true" aria-controls="c-history">
+          <span class="c-ico"><i class="fa-solid fa-seedling" aria-hidden="true"></i></span>
+          <h2>Website History</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-history"><div>
+          <div class="card-body">
+            <p>🌱 <strong>Caitlin’s Creative Space</strong> began as a single, simple page back in <strong>November/December 2024</strong>. It was originally just a small idea: a place to showcase my creative projects and coding experiments.</p>
+            <p>💡 Over time, that one page started to grow, expanding into multiple sections featuring my art, photography, coding tutorials, and streaming tools. Each new addition was built from scratch with care and passion, reflecting my journey as a creator and developer.</p>
+            <p>🌟 Today, it’s evolved into a full creative hub that continues to expand, blending technology, art, and imagination, and there’s still more to come!</p>
+          </div>
+        </div></div>
+      </article>
+
+      <article class="card" data-accent="red" data-card="rules">
+        <button class="card-head" aria-expanded="true" aria-controls="c-rules">
+          <span class="c-ico"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
+          <h2>Rules &amp; Credits</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-rules"><div>
+          <div class="card-body">
+            <p>🚫 Please respect my work. Using any of my projects, designs, or code as your own without giving credit is not allowed.</p>
+            <p>✅ If you’d like to share or use something, make sure to properly credit me: <strong>caitlinakafallen</strong>.</p>
+            <p>💬 Collaboration is always welcome. Just reach out before reusing or modifying any of my projects. I love seeing how others build upon creative ideas, as long as proper credit is given and the spirit of respect remains.</p>
+            <p>🌐 All assets, layouts, and designs showcased here are created by me unless otherwise stated. Any third-party tools, libraries, or plugins are credited where used.</p>
+            <p>🪄 This site and its contents were built from the ground up with passion, creativity, and transparency. Please keep that same energy if you take inspiration from it!</p>
+          </div>
+        </div></div>
+      </article>
+
+      <article class="card" data-accent="pink" data-card="sub">
+        <button class="card-head" aria-expanded="true" aria-controls="c-sub">
+          <span class="c-ico"><i class="fa-solid fa-heart" aria-hidden="true"></i></span>
+          <h2>Twitch Subscriber</h2>
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <div class="collapse" id="c-sub"><div>
+          <div class="card-body">
+            <p>💜 This content is available for <strong>subscribers only</strong>. Please subscribe to <a href="https://twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer">FallenOneArt</a> on Twitch to unlock exclusive access to bonus material, behind-the-scenes updates, and special creative content.</p>
+            <p>🌟 Being a subscriber not only supports my work, it also helps me continue creating art, tools, and projects for everyone to enjoy. Thank you so much for your support!</p>
+            <p>🏆 Once subscribed, you’ll automatically gain access to subscriber-only sections, features, or rewards when logged in through Twitch on this website.</p>
+            <a class="sub-btn" href="https://twitch.tv/fallenoneart" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-twitch" aria-hidden="true"></i>
+              Subscribe on Twitch
+            </a>
+          </div>
+        </div></div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2025 Caitlin's Creative Space | All Rights Reserved</p>
+  <div class="socials" aria-label="Social links">
+    <a class="ig" href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+    <a class="tw" href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener" title="Twitch" aria-label="Twitch"><i class="fa-brands fa-twitch" aria-hidden="true"></i></a>
+    <a class="yt" href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener" title="YouTube" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
+    <a class="bsky" href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener" title="Bluesky" aria-label="Bluesky"><i class="fa-brands fa-bluesky" aria-hidden="true"></i></a>
+    <a class="gh" href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"><i class="fa-brands fa-github" aria-hidden="true"></i></a>
+    <a class="pt" href="https://patreon.com/FallenOneArt" target="_blank" rel="noopener" title="Patreon" aria-label="Patreon"><i class="fa-brands fa-patreon" aria-hidden="true"></i></a>
+    <a class="rd" href="https://www.reddit.com/user/CaitlinAkAFallen" target="_blank" rel="noopener" title="Reddit" aria-label="Reddit"><i class="fa-brands fa-reddit-alien" aria-hidden="true"></i></a>
+  </div>
+  <a class="top-link" href="#">Back to top <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></a>
+</footer>
+
+<!-- ========== Search palette ========== -->
+<div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Search pages" hidden>
+  <div class="palette-box">
+    <div class="palette-input">
+      <svg aria-hidden="true"><use href="#i-search"/></svg>
+      <input id="paletteInput" type="search" placeholder="Search pages…" autocomplete="off" aria-label="Search pages" />
+      <kbd>Esc</kbd>
+    </div>
+    <ul class="palette-list" id="paletteList" role="listbox"></ul>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<aside class="settings" id="settings" role="dialog" aria-modal="true" aria-label="Customize this page" aria-hidden="true">
+  <div class="settings-head">
+    <h2>Customize</h2>
+    <button class="icon-btn" id="settingsClose" type="button" aria-label="Close customize panel"><svg aria-hidden="true"><use href="#i-x"/></svg></button>
+  </div>
+
+  <div class="settings-body">
+    <p class="set-note">Your changes save automatically in this browser.</p>
+
+    <div class="set-group">
+      <h3>Appearance</h3>
+      <div class="set-row">
+        <span>Accent color</span>
+        <div class="swatches" role="group" aria-label="Accent color">
+          <button class="swatch" type="button" data-accent="violet" style="--c:#9146ff" aria-label="Violet" aria-pressed="false"></button>
+          <button class="swatch" type="button" data-accent="teal" style="--c:#00bcd4" aria-label="Teal" aria-pressed="false"></button>
+          <button class="swatch" type="button" data-accent="pink" style="--c:#ff4fa3" aria-label="Pink" aria-pressed="false"></button>
+          <button class="swatch" type="button" data-accent="gold" style="--c:#f5b942" aria-label="Gold" aria-pressed="false"></button>
+        </div>
+      </div>
+      <div class="set-row">
+        <span>Background photo<small>The tree photo behind the page</small></span>
+        <label class="switch"><input type="checkbox" id="set-photo"><span class="track"></span></label>
+      </div>
+      <div class="set-row">
+        <span>Background darkness</span>
+        <input type="range" class="range" id="set-dim" min="0" max="100" step="5" aria-label="Background darkness">
+      </div>
+      <div class="bg-library">
+        <div class="bg-head">
+          <span>Your backgrounds <small id="bg-count">0 saved</small></span>
+          <label class="btn-mini bg-upload"><i class="fa-solid fa-upload" aria-hidden="true"></i> Upload photo<input type="file" id="bg-upload" accept="image/*" class="bg-file"></label>
+        </div>
+        <p class="set-note">Each upload is saved as a new entry, so nothing gets overwritten. Click one to use it.</p>
+        <div class="bg-history" id="bg-history"></div>
+      </div>
+    </div>
+
+    <div class="set-group">
+      <h3>Layout</h3>
+      <div class="set-row">
+        <span>Compact spacing</span>
+        <label class="switch"><input type="checkbox" id="set-compact"><span class="track"></span></label>
+      </div>
+      <div class="set-row">
+        <span>Show Explore tiles</span>
+        <label class="switch"><input type="checkbox" data-show-section="explore"><span class="track"></span></label>
+      </div>
+      <div class="set-row">
+        <span>Show About this site</span>
+        <label class="switch"><input type="checkbox" data-show-section="about"><span class="track"></span></label>
+      </div>
+      <div class="set-row"><span>Show hero banner</span><label class="switch"><input type="checkbox" data-show-section="hero"><span class="track"></span></label></div>
+      <div class="set-row"><span>Show live status</span><label class="switch"><input type="checkbox" id="set-live"><span class="track"></span></label></div>
+      <div class="set-row"><span>Welcome card</span><label class="switch"><input type="checkbox" data-show-card="welcome"><span class="track"></span></label></div>
+      <div class="set-row"><span>Updates card</span><label class="switch"><input type="checkbox" data-show-card="updates"><span class="track"></span></label></div>
+      <div class="set-row"><span>Mobile Tips card</span><label class="switch"><input type="checkbox" data-show-card="tips"><span class="track"></span></label></div>
+      <div class="set-row"><span>Website History card</span><label class="switch"><input type="checkbox" data-show-card="history"><span class="track"></span></label></div>
+      <div class="set-row"><span>Rules &amp; Credits card</span><label class="switch"><input type="checkbox" data-show-card="rules"><span class="track"></span></label></div>
+      <div class="set-row"><span>Twitch Subscriber card</span><label class="switch"><input type="checkbox" data-show-card="sub"><span class="track"></span></label></div>
+    </div>
+
+    <div class="set-group">
+      <h3>Accessibility</h3>
+      <div class="set-row">
+        <span>Text size</span>
+        <div class="seg2" role="group" aria-label="Text size">
+          <button type="button" data-size="small" aria-pressed="false">Small</button>
+          <button type="button" data-size="normal" aria-pressed="true">Normal</button>
+          <button type="button" data-size="large" aria-pressed="false">Large</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <span>Reduce motion<small>Turns off animations</small></span>
+        <label class="switch"><input type="checkbox" id="set-motion"><span class="track"></span></label>
+      </div>
+    </div>
+    <div class="set-group">
+      <h3>Style</h3>
+      <div class="set-row">
+        <span>Font</span>
+        <div class="seg2" role="group" aria-label="Font">
+          <button type="button" data-font="inter" aria-pressed="true">Modern</button>
+          <button type="button" data-font="serif" aria-pressed="false">Serif</button>
+          <button type="button" data-font="mono" aria-pressed="false">Mono</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <span>Corners</span>
+        <div class="seg2" role="group" aria-label="Corner style">
+          <button type="button" data-radius="soft" aria-pressed="true">Rounded</button>
+          <button type="button" data-radius="sharp" aria-pressed="false">Sharp</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <span>Hover glow<small>Light up cards and tiles</small></span>
+        <label class="switch"><input type="checkbox" id="set-glow"><span class="track"></span></label>
+      </div>
+      <div class="set-row">
+        <span>Glass effect<small>Frosted blur on panels. Turn off for speed.</small></span>
+        <label class="switch"><input type="checkbox" id="set-glass"><span class="track"></span></label>
+      </div>
+    </div>
+
+    <div class="set-group">
+      <h3>Your setup</h3>
+      <p class="set-note">Copy this code to save your look or share it. Paste a code to apply it.</p>
+      <textarea id="setup-code" class="setup-code" rows="3" spellcheck="false" aria-label="Setup code" placeholder="Paste a setup code here…"></textarea>
+      <div class="setup-actions">
+        <button class="btn-mini" id="setup-export" type="button">Copy my setup</button>
+        <button class="btn-mini" id="setup-import" type="button">Apply code</button>
+      </div>
+      <p class="setup-msg" id="setup-msg" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div class="settings-foot">
+    <span class="saved-tag" id="saved-tag">✓ Saved</span>
+    <button class="btn-reset" id="settings-reset" type="button">Reset to default</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* =========================================================
+     CONFIG — login happens on index.html (Twitch / Discord / Google).
+     This page only READS the saved session, so no app token is needed.
+     ========================================================= */
+  const CONFIG = {
+    channel: "fallenoneart",
+    twitchClientId: "iv3dicfghd1hflqzzysljadc8mw1sa",   // login client (shared)
+    twitchScope: "user:read:email",
+    discordClientId: "1426998908164505600",
+    googleClientId: "323446283951-pqq1ic2ivpnofmfrp7flc83iklc6tjp1.apps.googleusercontent.com",
+    loginPage: "index.html",
+    liveCheckMs: 60_000
+  };
+
+  const PAGES = [
+    { href: "index.html", label: "Welcome", keys: "home start intro", icon: "welcome" },
+    { href: "photography.html", label: "Photography", keys: "portfolio photos camera", icon: "camera" },
+    { href: "programming.html", label: "Programming", keys: "code coding projects", icon: "code" },
+    { href: "viewer-art.html", label: "Gallery", keys: "art viewer community", icon: "brush" },
+    { href: "viewers-convention.html", label: "Conventions", keys: "convention events", icon: "users" },
+    { href: "schedule.html", label: "Content", keys: "schedule stream content", icon: "video" },
+    { href: "about.html", label: "About", keys: "about me bio", icon: "user" },
+    { href: "contact.html", label: "Contact", keys: "contact email message", icon: "mail" },
+    { href: "twitch.html", label: "Twitch Lounge", keys: "twitch live stream", icon: "twitch" },
+    { href: "stream-commands.html", label: "Commands", keys: "commands chat bot", icon: "bell" },
+    { href: "youtube.html", label: "YouTube", keys: "youtube video", icon: "youtube" }
+  ];
+
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+  /* ---------- Clean URL (drop .html) on the live domain ---------- */
+  if (location.hostname === "caitlinscreativespace.xyz" && location.pathname.endsWith(".html")) {
+    history.replaceState({}, "", location.pathname.replace(/\.html$/, "") + location.search);
+  }
+
+  /* ---------- Current page highlight ---------- */
+  const current = (location.pathname.split("/").pop() || "index.html").replace(/\.html$/, "") + ".html";
+  document.querySelectorAll(".nav a").forEach(a => {
+    if (a.dataset.page === current) a.setAttribute("aria-current", "page");
+  });
+
+  /* ---------- Toast ---------- */
+  let toastTimer;
+  function toast(msg) {
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+  }
+
+  /* ---------- Login (session saved by index.html: Twitch / Discord / Google) ---------- */
+  const USER_KEYS = ["twitchUser", "discordUser", "googleUser", "siteUser", "user"];
+
+  function normalizeUser(raw, key) {
+    if (!raw || typeof raw !== "object") return null;
+    const username = raw.username || raw.display_name || raw.global_name || raw.name || raw.login;
+    if (!username) return null;
+    let avatar = raw.avatar || raw.picture || raw.profile_image_url || raw.avatarUrl || raw.avatar_url || raw.image || "";
+    if (avatar && !/^(https?:|data:|blob:)/.test(avatar) && raw.id) {
+      avatar = `https://cdn.discordapp.com/avatars/${raw.id}/${avatar}.png`;   // Discord stores a hash
+    }
+    const provider = raw.provider || (key ? key.replace(/User$/, "") : "") || "";
+    return { username: String(username), avatar, provider, id: raw.id, token: raw.token || raw.access_token || null, key };
+  }
+
+  function loadUser() {
+    for (const key of USER_KEYS) {
+      try {
+        const u = normalizeUser(JSON.parse(localStorage.getItem(key)), key);
+        if (u) return u;
+      } catch (e) {}
+    }
+    // Fallback: scan for any saved object that has a username + avatar
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key === SETTINGS_KEY) continue;
+      try {
+        const raw = JSON.parse(localStorage.getItem(key));
+        if (raw && typeof raw === "object" && !Array.isArray(raw) && (raw.avatar || raw.picture || raw.profile_image_url)) {
+          const u = normalizeUser(raw, key);
+          if (u) return u;
+        }
+      } catch (e) {}
+    }
+    return null;
+  }
+
+  function twitchToken() {
+    try {
+      const t = JSON.parse(localStorage.getItem("twitchUser"));
+      return t && t.token ? t.token : null;
+    } catch (e) { return null; }
+  }
+
+  function renderUser(u) {
+    const btn = $("#loginBtn"), av = $("#avatar"), nm = $("#username");
+    if (u) {
+      av.style.backgroundImage = u.avatar ? `url("${u.avatar}")` : "";
+      av.innerHTML = u.avatar ? "" : '<svg aria-hidden="true"><use href="#i-user"/></svg>';
+      nm.textContent = u.username;
+      btn.classList.add("has-user");
+      btn.title = "Log out";
+    } else {
+      av.style.backgroundImage = "";
+      av.innerHTML = '<svg aria-hidden="true"><use href="#i-user"/></svg>';
+      nm.textContent = "Log in";
+      btn.classList.remove("has-user");
+      btn.title = "Log in";
+    }
+  }
+
+  function logout() {
+    const u = loadUser();
+    USER_KEYS.forEach(k => localStorage.removeItem(k));
+    if (u && u.key) localStorage.removeItem(u.key);
+    sessionStorage.removeItem("twitchAccessToken");
+    refreshUser();
+    toast("Logged out");
+  }
+
+  function refreshUser() {
+    renderUser(loadUser());
+    checkLive();
+  }
+
+  $("#loginBtn").addEventListener("click", () => {
+    if (loadUser()) logout();
+    else location.href = CONFIG.loginPage;
+  });
+
+  // Stay in sync if you log in or out in another tab
+  window.addEventListener("storage", e => {
+    if (!e.key || USER_KEYS.includes(e.key)) refreshUser();
+  });
+
+  /* ---------- Live status pill (uses the logged-in Twitch token) ---------- */
+  async function checkLive() {
+    const pill = $("#livePill"), text = $("#liveText");
+    const token = twitchToken();
+    if (!token) {
+      pill.classList.remove("live");
+      text.textContent = "Log in with Twitch to see live status";
+      return;
+    }
+    try {
+      const r = await fetch(`https://api.twitch.tv/helix/streams?user_login=${CONFIG.channel}`, {
+        headers: { "Client-ID": CONFIG.twitchClientId, "Authorization": "Bearer " + token }
+      });
+      if (!r.ok) throw new Error(String(r.status));
+      const live = (await r.json()).data?.length > 0;
+      pill.classList.toggle("live", live);
+      text.textContent = live ? "LIVE on Twitch now" : "Offline on Twitch";
+    } catch (e) {
+      console.warn("Live check failed:", e);
+      pill.classList.remove("live");
+      text.textContent = "Twitch status unavailable";
+    }
+  }
+
+  /* ---------- Accordion cards ---------- */
+  document.querySelectorAll(".card-head").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".card");
+      const closed = card.classList.toggle("closed");
+      btn.setAttribute("aria-expanded", String(!closed));
+    });
+  });
+
+  /* ---------- Reveal on scroll ---------- */
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.animation = "rise .7s var(--ease) both";
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: .12 });
+    document.querySelectorAll(".tile, .card").forEach(el => { el.style.opacity = "0"; io.observe(el); });
+  }
+
+  /* ---------- Search palette ---------- */
+  const palette = $("#palette"), input = $("#paletteInput"), list = $("#paletteList");
+  let active = 0, shown = [];
+
+  function renderPalette() {
+    const q = input.value.trim().toLowerCase();
+    shown = PAGES.filter(p => !q || (p.label + " " + p.keys).toLowerCase().includes(q));
+    if (active >= shown.length) active = 0;
+    list.innerHTML = shown.length
+      ? shown.map((p, i) => `
+          <li role="option" aria-selected="${i === active}">
+            <a href="${esc(p.href)}" data-i="${i}" aria-selected="${i === active}">
+              <span class="p-ico"><svg aria-hidden="true"><use href="#i-${esc(p.icon)}"/></svg></span>
+              <span><strong>${esc(p.label)}</strong><small>${esc(p.href)}</small></span>
+            </a>
+          </li>`).join("")
+      : `<li class="palette-empty">No pages match “${esc(input.value)}”.</li>`;
+  }
+  function openPalette() {
+    palette.hidden = false;
+    requestAnimationFrame(() => palette.classList.add("open"));
+    input.value = "";
+    active = 0;
+    renderPalette();
+    setTimeout(() => input.focus(), 20);
+  }
+  function closePalette() {
+    palette.classList.remove("open");
+    setTimeout(() => { palette.hidden = true; }, 250);
+  }
+
+  $("#openSearch").addEventListener("click", openPalette);
+  input.addEventListener("input", () => { active = 0; renderPalette(); });
+  palette.addEventListener("click", e => { if (e.target === palette) closePalette(); });
+  list.addEventListener("mousemove", e => {
+    const a = e.target.closest("a[data-i]");
+    if (a && Number(a.dataset.i) !== active) { active = Number(a.dataset.i); renderPalette(); }
+  });
+
+  input.addEventListener("keydown", e => {
+    if (e.key === "ArrowDown") { e.preventDefault(); active = (active + 1) % Math.max(shown.length, 1); renderPalette(); }
+    if (e.key === "ArrowUp") { e.preventDefault(); active = (active - 1 + Math.max(shown.length, 1)) % Math.max(shown.length, 1); renderPalette(); }
+    if (e.key === "Enter" && shown[active]) { e.preventDefault(); location.href = shown[active].href; }
+    if (e.key === "Escape") closePalette();
+  });
+
+  document.addEventListener("keydown", e => {
+    const typing = e.target.matches("input, textarea");
+    if (e.key === "/" && !typing) { e.preventDefault(); openPalette(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); openPalette(); }
+    if (e.key === "Escape" && !palette.hidden) closePalette();
+  });
+
+  /* ---------- Customize (saved per visitor in this browser) ---------- */
+  const SETTINGS_KEY = "ccs-main-settings";
+  const ACCENTS = {
+    violet: { a: "#9146ff", hi: "#bf94ff" },
+    teal:   { a: "#00bcd4", hi: "#6efaf3" },
+    pink:   { a: "#ff4fa3", hi: "#ff9ccc" },
+    gold:   { a: "#f5b942", hi: "#ffd98a" }
+  };
+  const TEXT_SIZES = { small: 0.92, normal: 1, large: 1.12 };
+  const SECTION_KEYS = ["hero", "explore", "about"];
+  const CARD_KEYS = ["welcome", "updates", "tips", "history", "rules", "sub"];
+  const reduceMotionPref = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const DEFAULTS = {
+    accent: "violet",
+    photo: true,
+    dim: 50,
+    compact: false,
+    textSize: "normal",
+    font: "inter",
+    radius: "soft",
+    glow: true,
+    glass: true,
+    live: true,
+    motion: reduceMotionPref,
+    sections: Object.fromEntries(SECTION_KEYS.map(k => [k, true])),
+    cards: Object.fromEntries(CARD_KEYS.map(k => [k, true]))
+  };
+  const clone = o => JSON.parse(JSON.stringify(o));
+
+  function loadSettings() {
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch (e) {}
+    const s = { ...clone(DEFAULTS), ...saved };
+    s.sections = { ...DEFAULTS.sections, ...(saved.sections || {}) };
+    s.cards = { ...DEFAULTS.cards, ...(saved.cards || {}) };
+    return s;
+  }
+  let settings = loadSettings();
+
+  function applySettings() {
+    const root = document.documentElement;
+    const acc = ACCENTS[settings.accent] || ACCENTS.violet;
+    root.style.setProperty("--violet", acc.a);
+    root.style.setProperty("--violet-hi", acc.hi);
+    root.style.setProperty("--text-scale", TEXT_SIZES[settings.textSize] || 1);
+    const d = settings.dim / 100;
+    root.style.setProperty("--dim-top", (0.2 + d * 0.4).toFixed(2));
+    root.style.setProperty("--dim-bottom", (0.35 + d * 0.5).toFixed(2));
+    root.classList.toggle("no-photo", !settings.photo);
+    root.classList.toggle("reduce-motion", !!settings.motion);
+    root.classList.toggle("compact", !!settings.compact);
+    setBackground(bgCache.find(r => r.id === settings.bgId) || null);
+    root.classList.toggle("font-serif", settings.font === "serif");
+    root.classList.toggle("font-mono", settings.font === "mono");
+    root.classList.toggle("sharp", settings.radius === "sharp");
+    root.classList.toggle("no-glow", !settings.glow);
+    root.classList.toggle("no-glass", !settings.glass);
+    const livePill = document.getElementById("livePill");
+    if (livePill) livePill.hidden = !settings.live;
+    SECTION_KEYS.forEach(k => {
+      const el = document.querySelector(`[data-section="${k}"]`);
+      if (el) el.hidden = !settings.sections[k];
+    });
+    CARD_KEYS.forEach(k => {
+      const el = document.querySelector(`[data-card="${k}"]`);
+      if (el) el.hidden = !settings.cards[k];
+    });
+  }
+
+  function syncControls() {
+    document.querySelectorAll(".swatch").forEach(b =>
+      b.setAttribute("aria-pressed", String(b.dataset.accent === settings.accent)));
+    document.querySelectorAll("[data-size]").forEach(b =>
+      b.setAttribute("aria-pressed", String(b.dataset.size === settings.textSize)));
+    $("#set-photo").checked = settings.photo;
+    $("#set-dim").value = settings.dim;
+    $("#set-compact").checked = settings.compact;
+    $("#set-motion").checked = !!settings.motion;
+    $("#set-glow").checked = !!settings.glow;
+    $("#set-glass").checked = !!settings.glass;
+    $("#set-live").checked = !!settings.live;
+    document.querySelectorAll("[data-font]").forEach(b =>
+      b.setAttribute("aria-pressed", String(b.dataset.font === settings.font)));
+    document.querySelectorAll("[data-radius]").forEach(b =>
+      b.setAttribute("aria-pressed", String(b.dataset.radius === settings.radius)));
+    document.querySelectorAll("[data-show-section]").forEach(i =>
+      i.checked = !!settings.sections[i.dataset.showSection]);
+    document.querySelectorAll("[data-show-card]").forEach(i =>
+      i.checked = !!settings.cards[i.dataset.showCard]);
+  }
+
+  let savedTimer;
+  function saveSettings() {
+    try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) {}
+    applySettings();
+    const tag = $("#saved-tag");
+    tag.classList.add("show");
+    clearTimeout(savedTimer);
+    savedTimer = setTimeout(() => tag.classList.remove("show"), 1400);
+  }
+  function update(change) {
+    change(settings);
+    saveSettings();
+    syncControls();
+  }
+
+  const settingsBtn = $("#settingsBtn");
+  const settingsPanel = $("#settings");
+  const scrim = $("#scrim");
+  function openSettings() {
+    scrim.hidden = false;
+    requestAnimationFrame(() => {
+      scrim.classList.add("show");
+      settingsPanel.classList.add("open");
+    });
+    settingsPanel.setAttribute("aria-hidden", "false");
+    settingsBtn.setAttribute("aria-expanded", "true");
+    setTimeout(() => $("#settingsClose").focus(), 60);
+  }
+  function closeSettings() {
+    settingsPanel.classList.remove("open");
+    scrim.classList.remove("show");
+    settingsPanel.setAttribute("aria-hidden", "true");
+    settingsBtn.setAttribute("aria-expanded", "false");
+    setTimeout(() => { scrim.hidden = true; }, 300);
+  }
+  settingsBtn.addEventListener("click", openSettings);
+  document.addEventListener("keydown", e => {
+    if (e.key.toLowerCase() !== "c" || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.target.matches("input, textarea, select")) return;
+    settingsPanel.classList.contains("open") ? closeSettings() : openSettings();
+  });
+  $("#settingsClose").addEventListener("click", closeSettings);
+  scrim.addEventListener("click", closeSettings);
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && settingsPanel.classList.contains("open")) closeSettings();
+  });
+
+  document.querySelectorAll(".swatch").forEach(b =>
+    b.addEventListener("click", () => update(s => { s.accent = b.dataset.accent; })));
+  document.querySelectorAll("[data-size]").forEach(b =>
+    b.addEventListener("click", () => update(s => { s.textSize = b.dataset.size; })));
+  $("#set-photo").addEventListener("change", e => update(s => { s.photo = e.target.checked; }));
+  $("#set-dim").addEventListener("input", e => update(s => { s.dim = Number(e.target.value); }));
+  $("#set-compact").addEventListener("change", e => update(s => { s.compact = e.target.checked; }));
+  $("#set-motion").addEventListener("change", e => update(s => { s.motion = e.target.checked; }));
+  document.querySelectorAll("[data-show-section]").forEach(i =>
+    i.addEventListener("change", () => update(s => { s.sections[i.dataset.showSection] = i.checked; })));
+  document.querySelectorAll("[data-show-card]").forEach(i =>
+    i.addEventListener("change", () => update(s => { s.cards[i.dataset.showCard] = i.checked; })));
+  document.querySelectorAll("[data-font]").forEach(b =>
+    b.addEventListener("click", () => update(s => { s.font = b.dataset.font; })));
+  document.querySelectorAll("[data-radius]").forEach(b =>
+    b.addEventListener("click", () => update(s => { s.radius = b.dataset.radius; })));
+  $("#set-glow").addEventListener("change", e => update(s => { s.glow = e.target.checked; }));
+  $("#set-glass").addEventListener("change", e => update(s => { s.glass = e.target.checked; }));
+  $("#set-live").addEventListener("change", e => update(s => { s.live = e.target.checked; }));
+
+  /* Copy / paste a full setup as a short code */
+  const setupCode = $("#setup-code"), setupMsg = $("#setup-msg");
+  const encodeSetup = () => btoa(unescape(encodeURIComponent(JSON.stringify(settings))));
+  const decodeSetup = code => JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+  $("#setup-export").addEventListener("click", () => {
+    setupCode.value = encodeSetup();
+    setupCode.select();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(setupCode.value)
+        .then(() => { setupMsg.textContent = "Copied to clipboard ✓"; })
+        .catch(() => { setupMsg.textContent = "Code ready. Copy it from the box."; });
+    } else {
+      setupMsg.textContent = "Code ready. Copy it from the box.";
+    }
+  });
+  $("#setup-import").addEventListener("click", () => {
+    try {
+      const incoming = decodeSetup(setupCode.value);
+      settings = {
+        ...clone(DEFAULTS), ...incoming,
+        sections: { ...DEFAULTS.sections, ...(incoming.sections || {}) },
+        cards: { ...DEFAULTS.cards, ...(incoming.cards || {}) }
+      };
+      saveSettings();
+      syncControls();
+      setupMsg.textContent = "Setup applied ✓";
+    } catch (err) {
+      setupMsg.textContent = "That code isn't valid.";
+    }
+  });
+
+  $("#settings-reset").addEventListener("click", () => {
+    settings = clone(DEFAULTS);
+    saveSettings();
+    syncControls();
+    toast("Defaults restored");
+  });
+
+  /* ---------- Background photos (your uploads, kept as history) ---------- */
+  const BG_DB = "ccs-backgrounds";
+  const BG_STORE = "photos";
+  let bgCache = [];
+  let currentBgId;
+  let activeUrl = null;
+  let thumbUrls = [];
+
+  function openBgDb() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(BG_DB, 1);
+      req.onupgradeneeded = () => req.result.createObjectStore(BG_STORE, { keyPath: "id" });
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function bgTx(mode, action) {
+    const db = await openBgDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(BG_STORE, mode);
+      const req = action(tx.objectStore(BG_STORE));
+      tx.oncomplete = () => { db.close(); resolve(req ? req.result : undefined); };
+      tx.onerror = () => { db.close(); reject(tx.error); };
+    });
+  }
+  const bgAll = () => bgTx("readonly", s => s.getAll())
+    .then(list => list.sort((a, b) => b.createdAt - a.createdAt));
+  const bgSave = rec => bgTx("readwrite", s => s.put(rec));
+  const bgRemove = id => bgTx("readwrite", s => s.delete(id));
+
+  function setBackground(rec) {
+    const id = rec ? rec.id : null;
+    if (id === currentBgId) return;
+    currentBgId = id;
+    if (activeUrl) URL.revokeObjectURL(activeUrl);
+    activeUrl = rec ? URL.createObjectURL(rec.blob) : null;
+    document.documentElement.style.setProperty(
+      "--bg-photo", activeUrl ? `url("${activeUrl}")` : 'url("images/main-page.JPG")');
+  }
+
+  function renderBgHistory() {
+    thumbUrls.forEach(u => URL.revokeObjectURL(u));
+    thumbUrls = [];
+    const isDefault = !settings.bgId;
+    const items = bgCache.map(rec => {
+      const u = URL.createObjectURL(rec.blob);
+      thumbUrls.push(u);
+      const on = settings.bgId === rec.id;
+      return `<div class="bg-item">
+        <button class="bg-tile${on ? " is-active" : ""}" type="button" data-bg-id="${esc(rec.id)}" aria-pressed="${on}">
+          <span class="bg-thumb" style="background-image:url('${u}')"></span>
+          <span class="bg-name">${esc(rec.name)}</span>
+        </button>
+        <button class="bg-del" type="button" data-bg-del="${esc(rec.id)}" aria-label="Delete ${esc(rec.name)}"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+      </div>`;
+    }).join("");
+    $("#bg-history").innerHTML = `
+      <div class="bg-item">
+        <button class="bg-tile${isDefault ? " is-active" : ""}" type="button" data-bg-id="" aria-pressed="${isDefault}">
+          <span class="bg-thumb bg-default"></span>
+          <span class="bg-name">Original tree</span>
+        </button>
+      </div>` + items;
+    $("#bg-count").textContent = `${bgCache.length} saved`;
+  }
+
+  async function refreshBgCache() {
+    try { bgCache = await bgAll(); } catch (e) { bgCache = []; }
+    renderBgHistory();
+    applySettings();
+  }
+
+  $("#bg-upload").addEventListener("change", async e => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast("That file isn't an image."); return; }
+    if (file.size > 20 * 1024 * 1024) { toast("Please pick an image under 20 MB."); return; }
+    const rec = {
+      id: `bg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name: file.name,
+      createdAt: Date.now(),
+      blob: file
+    };
+    try {
+      await bgSave(rec);
+      await refreshBgCache();
+      update(s => { s.bgId = rec.id; });
+      renderBgHistory();
+      toast("Saved to your background history ✓");
+    } catch (err) {
+      toast("Couldn't save that image in this browser.");
+    }
+  });
+
+  $("#bg-history").addEventListener("click", async e => {
+    const del = e.target.closest("[data-bg-del]");
+    if (del) {
+      if (!confirm("Delete this background from your history?")) return;
+      try { await bgRemove(del.dataset.bgDel); } catch (err) {}
+      if (settings.bgId === del.dataset.bgDel) update(s => { s.bgId = null; });
+      await refreshBgCache();
+      toast("Removed from history");
+      return;
+    }
+    const tile = e.target.closest("[data-bg-id]");
+    if (tile) {
+      update(s => { s.bgId = tile.dataset.bgId || null; });
+      renderBgHistory();
+    }
+  });
+
+  refreshBgCache();
+  applySettings();
+  syncControls();
+
+  /* ---------- Init ---------- */
+  refreshUser();
+  setInterval(checkLive, CONFIG.liveCheckMs);
+})();
+</script>
+</body>
 </html>
