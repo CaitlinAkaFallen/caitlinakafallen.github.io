@@ -6,20 +6,13 @@
    ========================================================= */
 (() => {
   "use strict";
-    /* ===== REMOVE .HTML FROM URL ===== */
-    (function hideHtmlInURL() {
-        const pathname = window.location.pathname;
-        if (pathname.endsWith("/index.html")) {
-            // Replace URL in browser without reloading the page
-            window.history.replaceState({}, "", pathname.replace(".html", ""));
-        }
-    })();
+
   /* =========================================================
      CONFIG
      - twitchClientId is the public login client (same as the
        Twitch Lounge and main pages), so one login works everywhere.
-     - redirectUri is this page. Register that exact URL in each
-       provider's developer console (Twitch, Discord, Google).
+     - redirectUri must exactly match an address registered in each
+       provider's developer console. main-page is registered for Twitch.
      - The live pill uses the logged-in Twitch token, so no
        app credentials are needed.
      ========================================================= */
@@ -29,7 +22,7 @@
     twitchScope: "user:read:email",
     discordClientId: "1426998908164505600",
     googleClientId: "323446283951-pqq1ic2ivpnofmfrp7flc83iklc6tjp1.apps.googleusercontent.com",
-    redirectUri: location.origin + location.pathname,
+    redirectUri: "https://caitlinscreativespace.xyz/main-page",
     liveCheckMs: 60_000
   };
 
