@@ -3,866 +3,992 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07090d">
   <title>Upcoming Conventions</title>
-  <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn) -->
-    <meta property="og:title" content="Upcoming Conventions | Caitlin's Creative Space">
-    <meta property="og:description" content="Check out the latest conventions and events!">
-    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-vc.jpg">
-    <meta property="og:url" content="https://caitlinscreativespace.xyz/viewers-vc.html">
-    <meta property="og:type" content="website">
 
-    <!-- Twitter / X Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Upcoming Conventions - Caitlin's Creative Space">
-    <meta name="twitter:description" content="Check out the latest conventions and events!">
-    <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-vc.jpg">
+  <!-- Open Graph Meta Tags (Facebook, Discord, LinkedIn, Instagram) -->
+  <meta property="og:title" content="Upcoming Conventions | Caitlin's Creative Space">
+  <meta property="og:description" content="Check out the latest conventions and events!">
+  <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-vc.jpg">
+  <meta property="og:url" content="https://caitlinscreativespace.xyz/viewers-vc.html">
+  <meta property="og:type" content="website">
 
-    <!-- Instagram Card (Uses OG Tags) -->
-    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-vc.jpg">
-    <meta property="og:url" content="https://caitlinscreativespace.xyz/">
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Upcoming Conventions - Caitlin's Creative Space">
+  <meta name="twitter:description" content="Check out the latest conventions and events!">
+  <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-vc.jpg">
+
   <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
   <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+
   <style>
-/* viewers-convention.css
-   Full stylesheet for viewer-convention page
-   Glass style, responsive, accessible collapsible cards
-*/
-
-:root{
-  --bg-color: #0f0f0f;
-  --text-color: #ffffff;
-  --accent-color: #00e0d4;
-  --card-bg: rgba(255,255,255,0.06);
-  --muted: rgba(255,255,255,0.85);
-  --shadow-light: 0 8px 25px rgba(0,0,0,0.18);
-  --shadow-glow: 0 0 20px rgba(0,224,212,0.14);
-  --transition: all 0.32s ease;
-  --max-card-height: 520px;
-}
-
-/* Reset */
-*{ box-sizing: border-box; margin:0; padding:0; }
-html,body{ height:100%; }
-
-/* Page */
-body{
-  background: linear-gradient(135deg,#0f0f0f,#151515 45%, #070707);
-  color: var(--text-color);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  min-height:100vh;
-  line-height:1.5;
-}
-
-/* ============================= */
-/* ADMIN GLASS LOGIN MODAL */
-/* ============================= */
-
-.admin-modal{
-  display:none;
-  position:fixed;
-  z-index:9999;
-  inset:0;
-  background:rgba(0,0,0,0.55);
-  backdrop-filter:blur(12px);
-  justify-content:center;
-  align-items:center;
-  animation:fadeIn .4s ease;
-}
-
-/* Fade animation */
-
-@keyframes fadeIn{
-  from{
-    opacity:0;
-  }
-  to{
-    opacity:1;
-  }
-}
-
-/* ============================= */
-/* GLASS CARD */
-/* ============================= */
-
-.admin-modal-content{
-
-  position: relative;
-  width: 360px;
-  padding: 40px 35px;
-
-  border-radius: 18px;
-
-  /* Clear glass */
-  background: rgba(255, 255, 255, 0.08);
-
-  -webkit-backdrop-filter: blur(35px) saturate(160%);
-  backdrop-filter: blur(35px) saturate(160%);
-
-  /* glass border */
-  border: 1px solid rgba(255,255,255,0.25);
-
-  /* glass reflection */
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,0.35),
-    inset 0 -1px 1px rgba(255,255,255,0.08),
-    0 8px 32px rgba(0,0,0,0.35),
-    0 0 25px rgba(145,70,255,.35);
-
-  color: white;
-
-  animation: modalFloat .45s ease;
-
-  /* smooth glass transition */
-  transition: all .3s ease;
-}
-/* floating animation */
-
-@keyframes modalFloat{
-  from{
-    transform:translateY(25px) scale(.95);
-    opacity:0;
-  }
-  to{
-    transform:translateY(0) scale(1);
-    opacity:1;
-  }
-}
-
-/* ============================= */
-/* TITLE */
-/* ============================= */
-
-.admin-title{
-  text-align:center;
-  font-size:22px;
-  font-weight:600;
-  margin-bottom:30px;
-
-  background:linear-gradient(90deg,#fff,#9146FF);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color:transparent;
-}
-
-/* ============================= */
-/* INPUT GROUP */
-/* ============================= */
-
-.admin-input-group{
-  position:relative;
-  margin-bottom:25px;
-}
-
-.admin-input-group input{
-
-  width:100%;
-  padding:12px 12px;
-
-  border-radius:8px;
-  border:1px solid rgba(255,255,255,0.1);
-
-  background:rgba(0,0,0,0.35);
-
-  color:white;
-  font-size:14px;
-
-  outline:none;
-
-  transition:.25s;
-}
-
-.admin-input-group input:focus{
-
-  border-color:#9146FF;
-
-  box-shadow:
-  0 0 12px rgba(145,70,255,.4);
-}
-
-/* floating label */
-
-.admin-input-group label{
-
-  position:absolute;
-  left:12px;
-  top:50%;
-  transform:translateY(-50%);
-
-  font-size:13px;
-  color:#aaa;
-
-  pointer-events:none;
-
-  transition:.25s;
-}
-
-.admin-input-group input:focus + label,
-.admin-input-group input:valid + label{
-
-  top:-8px;
-  font-size:11px;
-  color:#9146FF;
-}
-
-/* ============================= */
-/* LOGIN BUTTON */
-/* ============================= */
-
-#adminLoginBtn{
-
-  width:100%;
-  padding:12px;
-
-  border:none;
-  border-radius:8px;
-
-  background:linear-gradient(135deg,#9146FF,#772ce8);
-
-  font-weight:600;
-  color:white;
-
-  cursor:pointer;
-
-  transition:.25s;
-
-  box-shadow:
-  0 0 10px rgba(145,70,255,.6);
-}
-
-#adminLoginBtn:hover{
-
-  transform:translateY(-2px);
-
-  box-shadow:
-  0 0 18px rgba(145,70,255,.9),
-  0 0 40px rgba(145,70,255,.4);
-}
-
-/* ============================= */
-/* CLOSE BUTTON */
-/* ============================= */
-
-.close-admin-modal{
-
-  position:absolute;
-  top:14px;
-  right:16px;
-
-  font-size:20px;
-  color:#bbb;
-
-  cursor:pointer;
-
-  transition:.2s;
-}
-
-.close-admin-modal:hover{
-  color:#fff;
-}
-
-/* ============================= */
-/* ERROR MESSAGE */
-/* ============================= */
-
-#adminLoginError{
-
-  margin-top:12px;
-
-  color:#ff4d4d;
-
-  font-size:13px;
-
-  text-align:center;
-}
-
-/* Header */
-.main-header{
-  width:100%;
-  text-align:center;
-  padding:60px 20px 36px;
-  background: linear-gradient(135deg,#141414,#202020);
-  color:#06f3e7;
-  border-bottom:3px solid var(--accent-color);
-  box-shadow:var(--shadow-light);
-  border-radius:0 0 22px 22px;
-  position:relative;
-  z-index:2;
-}
-
-.main-header h1{
-  font-size:2.6rem;
-  font-weight:700;
-  letter-spacing:1px;
-  text-shadow:
-    -1px -1px 0 #000,
-     1px -1px 0 #000,
-    -1px 1px 0 #000,
-     1px 1px 0 #000,
-     0 0 6px #000;
-}
-
-.main-header p{ margin-top:8px; font-size:1.05rem; opacity:.95; }
-
-/* Navigation bar (if used) - keeps layout consistent */
-.horizontal-nav{
-  width:100%;
-  background:rgba(255,255,255,0.03);
-  backdrop-filter: blur(8px);
-  padding:12px 8px;
-  display:flex;
-  justify-content:center;
-  position:fixed;
-  top:0;
-  left:0;
-  z-index:1200;
-  box-shadow:0 4px 14px rgba(0,0,0,0.35);
-  border-bottom:1px solid rgba(255,255,255,0.04);
-}
-
-.nav-list{ list-style:none; display:flex; gap:12px; padding:0; margin:0; align-items:center; }
-.nav-list a{ color: #f0f0f0; text-decoration:none; padding:8px 12px; display:flex; align-items:center; gap:8px; border-radius:10px; transition:var(--transition); }
-.nav-list a:hover{ transform:translateY(-2px); }
-
-/* Conventions list container */
-.conventions-list{
-  width:90%;
-  max-width:1000px;
-  margin: 150px auto 60px; /* leave room for fixed nav and header */
-  display:flex;
-  flex-direction:column;
-  gap:20px;
-  padding:0 6px;
-  z-index:1;
-}
-
-/* Card */
-.conventions-list li{
-  list-style:none;
-  background: var(--card-bg);
-  border-radius:16px;
-  padding:18px 20px;
-  box-shadow:var(--shadow-light);
-  backdrop-filter: blur(18px);
-  transition: var(--transition);
-  position:relative;
-  overflow:visible;
-  border:1px solid rgba(255,255,255,0.035);
-  cursor: pointer;
-  outline: none;
-}
-
-/* Hover */
-.conventions-list li:hover{
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-glow);
-}
-
-/* Header row inside card */
-.event-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-
-/* Event name */
-.event-name{
-  font-size:1.45rem;
-  font-weight:700;
-  color:var(--accent-color);
-}
-
-/* Toggle icon (chevron) */
-.toggle-icon{
-  font-size:18px;
-  color:var(--muted);
-  transition: transform 0.28s ease;
-}
-
-/* Rotate helper */
-.toggle-icon.rotate{ transform: rotate(180deg); }
-
-/* Collapsible body */
-.section-body{
-  max-height:0;
-  overflow:hidden;
-  opacity:0;
-  transition: max-height 0.36s ease, opacity 0.28s ease, padding 0.28s ease;
-  padding: 0;
-  margin-top:10px;
-}
-
-/* Open body */
-.section-body.open{
-  max-height: var(--max-card-height);
-  opacity:1;
-  padding:10px 0 4px 0;
-}
-
-/* Body text */
-.event-date, .event-location, .event-description{
-  display:block;
-  color:var(--text-color);
-  opacity:.92;
-  margin:6px 0;
-  font-size:1.02rem;
-}
-
-/* TBA style */
-.event-date.tba{ color: rgba(255,255,255,0.65); font-style:italic; }
-
-/* Make each list item keyboard-focusable and visible */
-.conventions-list li:focus{
-  box-shadow: 0 0 0 3px rgba(0,224,212,0.12), var(--shadow-light);
-  transform: translateY(-4px);
-}
-
-/* small screens */
-@media (max-width:768px){
-  .main-header{ padding:46px 16px 28px; border-radius:0 0 16px 16px; }
-  .main-header h1{ font-size:1.9rem; }
-  .conventions-list{ margin-top:120px; width:95%; gap:16px; }
-  .conventions-list li{ padding:14px; }
-  .event-name{ font-size:1.18rem; }
-  .event-date, .event-location, .event-description{ font-size:0.95rem; }
-  .toggle-icon{ font-size:16px; }
-}
-
-/* micro adjustments */
-.event-meta{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:6px; }
-.event-meta span{ font-size:0.98rem; opacity:0.95; }
+    /* =========================
+       Tokens
+    ========================= */
+    :root {
+      --bg: #07090d;
+      --accent: #00e0d4;
+      --accent-2: #00a8ff;
+      --magenta: #be2edd;
+      --amber: #F79F1F;
+      --live: #2ed573;
+      --danger: #ff4d5e;
+      --text: #eef1f7;
+      --muted: #97a0b5;
+      --glass: rgba(255, 255, 255, 0.045);
+      --glass-strong: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.09);
+      --shadow: 0 24px 50px -18px rgba(0, 0, 0, 0.7);
+      --ease: cubic-bezier(.22, .9, .3, 1);
+      --fa: "Font Awesome 7 Free", "Font Awesome 6 Free", sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html:has(dialog[open]) { overflow: hidden; }
+
+    body {
+      font-family: "Inter", system-ui, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -20%;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(40% 35% at 85% 8%, rgba(0, 224, 212, 0.20), transparent 70%),
+        radial-gradient(38% 40% at 8% 45%, rgba(190, 46, 221, 0.16), transparent 70%),
+        radial-gradient(34% 32% at 70% 95%, rgba(247, 159, 31, 0.10), transparent 70%);
+      animation: ambient 40s ease-in-out infinite alternate;
+    }
+    @keyframes ambient { to { transform: translate(-3%, 4%) scale(1.08); } }
+
+    h1, h2, .next-name, .event-name, .countdown b, .admin-title {
+      font-family: "Space Grotesk", "Inter", sans-serif;
+    }
+
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(22px); } }
+
+    /* =========================
+       Navigation (floating pill)
+    ========================= */
+    .horizontal-nav {
+      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 1000; max-width: calc(100vw - 20px); padding: 6px;
+      background: rgba(12, 14, 20, 0.62);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .horizontal-nav::-webkit-scrollbar { display: none; }
+
+    .nav-list { list-style: none; display: flex; gap: 2px; }
+    .nav-list li { display: flex; }
+
+    .nav-list a {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 15px; border-radius: 999px;
+      text-decoration: none; font-size: 14px; font-weight: 500;
+      color: var(--muted); white-space: nowrap;
+      transition: color .25s, background .25s;
+    }
+    .nav-list a i { font-size: 15px; transition: color .25s; }
+    .nav-list a:hover { color: #fff; background: var(--glass-strong); }
+    .nav-list a:hover i { color: var(--accent); }
+    .nav-list a.active {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(0, 224, 212, 0.25), rgba(0, 168, 255, 0.25));
+      box-shadow: inset 0 0 0 1px rgba(0, 224, 212, 0.35);
+    }
+    .nav-list a.active i { color: var(--accent); }
+
+    /* =========================
+       Hero
+    ========================= */
+    .main-content { width: 100%; }
+
+    .main-header {
+      position: relative; isolation: isolate;
+      width: 100%; padding: 150px 24px 70px;
+    }
+    .main-header::before {
+      content: ""; position: absolute; inset: 0; z-index: -1;
+      background-image: var(--hero); background-size: cover; background-position: center;
+      opacity: 0.32;
+      -webkit-mask-image: linear-gradient(#000 35%, transparent);
+      mask-image: linear-gradient(#000 35%, transparent);
+    }
+
+    .hero-grid {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.15fr 1fr; gap: 40px; align-items: end;
+    }
+
+    .main-header h1 {
+      font-size: clamp(2.6rem, 7vw, 5rem); font-weight: 700;
+      line-height: 1.02; letter-spacing: -0.035em; max-width: 11ch;
+      color: #fff; text-shadow: 0 4px 30px rgba(0, 0, 0, 0.55);
+    }
+    .main-header p {
+      margin-top: 18px; font-size: 1.2rem; color: #d4dae8;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    @property --angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+    @keyframes spin { to { --angle: 360deg; } }
+
+    .edge::after {
+      content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+      background: conic-gradient(from var(--angle), transparent 0 60%, var(--accent) 80%, var(--magenta) 92%, transparent);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      animation: spin 8s linear infinite;
+    }
+
+    .next-up {
+      position: relative; padding: 26px 28px 28px; border-radius: 24px;
+      background: rgba(14, 17, 24, 0.55);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
+      backdrop-filter: blur(22px) saturate(150%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      animation: rise .8s var(--ease) .1s backwards;
+    }
+
+    .next-label {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin: 0 0 12px; font-size: 0.9rem; font-weight: 500; color: var(--muted); text-shadow: none;
+    }
+    .next-up.live .next-label { color: var(--live); }
+    .next-up.live .next-label::before {
+      content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--live);
+      box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.6); animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(46, 213, 115, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 213, 115, 0); } }
+
+    .next-name { font-size: clamp(1.5rem, 3.2vw, 2.1rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+
+    .next-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 0 20px; font-size: 0.95rem; color: #c3cadb; }
+    .next-meta span:empty { display: none; }
+    .next-meta #nextDate::before, .next-meta #nextPlace::before {
+      font-family: var(--fa); font-weight: 900; color: var(--accent); margin-right: 8px; font-size: 0.85em;
+    }
+    .next-meta #nextDate::before { content: "\f073"; }
+    .next-meta #nextPlace::before { content: "\f3c5"; }
+
+    .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .countdown div {
+      padding: 14px 6px 12px; text-align: center;
+      background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 16px;
+    }
+    .countdown b { display: block; font-size: clamp(1.6rem, 3.4vw, 2.3rem); font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+    .countdown span { display: block; margin-top: 8px; font-size: 0.78rem; color: var(--muted); }
+
+    .next-jump {
+      margin-top: 16px; display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 16px; border-radius: 12px; font-size: .88rem; font-weight: 500;
+      background: var(--glass-strong); border: 1px solid var(--glass-border);
+      transition: background .25s, transform .3s var(--ease);
+    }
+    .next-jump:hover { background: rgba(255, 255, 255, .13); transform: translateY(-2px); }
+    .next-up.no-date .countdown, .next-up.no-date .next-jump { display: none; }
+    .next-up.no-date .next-meta { margin-bottom: 0; }
+
+    /* =========================
+       Convention Section
+    ========================= */
+    .convention-content { width: 100%; max-width: 1000px; margin: 0 auto; padding: 30px 20px 90px; }
+
+    .section-head {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+      gap: 12px 20px; margin-bottom: 34px; padding-left: 44px;
+    }
+    .section-head h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 600; letter-spacing: -0.02em; color: #fff; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 16px; border-radius: 12px; font-size: .88rem; font-weight: 500;
+      background: var(--glass-strong); border: 1px solid var(--glass-border);
+      transition: background .25s;
+    }
+    .btn-ghost:hover { background: rgba(255, 255, 255, .13); }
+
+    /* Timeline */
+    .conventions-list { position: relative; list-style: none; display: flex; flex-direction: column; gap: 22px; }
+    .conventions-list::before {
+      content: ""; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 2px; border-radius: 2px;
+      background: linear-gradient(180deg, var(--accent), var(--accent-2) 55%, rgba(190, 46, 221, 0.15));
+      opacity: 0.55;
+    }
+
+    .event {
+      --c: var(--accent); --mx: -600px; --my: -600px;
+      position: relative; margin-left: 44px; border-radius: 20px;
+      background:
+        radial-gradient(520px circle at var(--mx) var(--my), rgba(0, 224, 212, 0.11), transparent 45%),
+        var(--glass);
+      -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      transition: transform .35s var(--ease), border-color .3s, box-shadow .3s;
+      animation: rise .7s var(--ease) backwards;
+    }
+    .event:nth-child(1) { animation-delay: .15s; }
+    .event:nth-child(2) { animation-delay: .23s; }
+    .event:nth-child(3) { animation-delay: .31s; }
+    .event:nth-child(4) { animation-delay: .39s; }
+    .event:nth-child(n+5) { animation-delay: .47s; }
+
+    .event:hover, .event.open {
+      border-color: color-mix(in srgb, var(--c) 45%, transparent);
+      box-shadow: 0 26px 50px -16px rgba(0, 0, 0, 0.75), 0 0 0 1px color-mix(in srgb, var(--c) 22%, transparent);
+    }
+    .event:hover { transform: translateY(-3px); }
+
+    .event::before {
+      content: ""; position: absolute; left: -36px; top: 30px; width: 14px; height: 14px; border-radius: 50%;
+      background: var(--bg); border: 3px solid var(--c);
+      box-shadow: 0 0 14px color-mix(in srgb, var(--c) 70%, transparent);
+    }
+    .event[data-status="soon"] { --c: var(--amber); }
+    .event[data-status="now"] { --c: var(--live); }
+    .event[data-status="tba"] { --c: #8f98b3; }
+    .event[data-status="now"]::before { animation: nodePulse 1.8s infinite; }
+    @keyframes nodePulse { 50% { box-shadow: 0 0 0 9px rgba(46, 213, 115, 0), 0 0 14px rgba(46, 213, 115, 0.9); } }
+
+    .event-header {
+      width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 22px 24px 22px 28px; background: none; border: 0; text-align: left; border-radius: inherit;
+    }
+    .event-main { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; min-width: 0; }
+
+    .event-chip {
+      padding: 5px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; color: var(--c);
+      background: color-mix(in srgb, var(--c) 14%, transparent);
+      border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
+    }
+
+    .event-name { font-size: clamp(1.35rem, 2.6vw, 1.7rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; color: #fff; }
+
+    .event-date, .event-location, .event-time {
+      display: inline-block; padding: 7px 14px; border-radius: 999px; font-size: 0.95rem; color: #d3d9e8;
+      background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+    }
+    .event-date::before, .event-location::before, .event-time::before {
+      font-family: var(--fa); font-weight: 900; font-size: 0.82em; margin-right: 9px; color: var(--c);
+    }
+    .event-date::before { content: "\f073"; }
+    .event-location::before { content: "\f3c5"; }
+    .event-time::before { content: "\f017"; }
+    .event-date.tba { font-style: italic; color: var(--muted); }
+
+    .toggle-icon {
+      flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%;
+      font-size: 15px; color: var(--c); background: var(--glass-strong); border: 1px solid var(--glass-border);
+      transition: transform .45s var(--ease), background .25s;
+    }
+    .event-header:hover .toggle-icon { background: rgba(255, 255, 255, .13); }
+    .event.open .toggle-icon { transform: rotate(180deg); }
+
+    /* Smooth, height-agnostic expand */
+    .section-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s var(--ease); }
+    .event.open .section-body { grid-template-rows: 1fr; }
+    .body-inner { min-height: 0; overflow: hidden; padding: 0 28px; opacity: 0; transition: opacity .3s, padding .45s var(--ease); }
+    .event.open .body-inner { opacity: 1; padding: 0 28px 26px; }
+
+    .body-content { border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 18px; display: flex; flex-direction: column; gap: 16px; }
+    .event-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+    .event-description { font-size: 1.02rem; line-height: 1.65; color: #b9c0d3; max-width: 62ch; }
+
+    .event-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .act {
+      display: inline-flex; align-items: center; gap: 9px; padding: 10px 16px; border-radius: 12px;
+      font-size: .9rem; font-weight: 500; text-decoration: none; color: var(--text);
+      background: var(--glass-strong); border: 1px solid var(--glass-border);
+      transition: background .25s, transform .3s var(--ease), box-shadow .3s;
+    }
+    .act:hover { background: rgba(255, 255, 255, .13); transform: translateY(-2px); }
+    .act.primary { color: #031313; font-weight: 600; border-color: transparent; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    .act.primary:hover { box-shadow: 0 12px 28px -8px rgba(0, 224, 212, .55); background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+
+    .empty {
+      margin-left: 44px; padding: 40px 24px; text-align: center; color: var(--muted);
+      border: 1px dashed var(--glass-border); border-radius: 18px;
+    }
+
+    /* =========================
+       Admin dialog
+    ========================= */
+    dialog.admin-modal {
+      width: min(400px, calc(100vw - 32px)); padding: 0; overflow: visible; color: var(--text);
+      background: rgba(16, 18, 27, 0.72);
+      -webkit-backdrop-filter: blur(30px) saturate(160%); backdrop-filter: blur(30px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 24px;
+      box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+    dialog.admin-modal[open] { animation: modalIn .45s var(--ease); }
+    dialog.admin-modal::backdrop { background: rgba(0, 0, 0, 0.6); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+    @keyframes modalIn { from { transform: translateY(24px) scale(.96); opacity: 0; } }
+
+    .admin-modal-content { position: relative; padding: 40px 34px 32px; text-align: center; border-radius: 24px; }
+    .admin-modal-content.shake { animation: shake .45s; }
+    @keyframes shake { 20%, 60% { transform: translateX(-9px); } 40%, 80% { transform: translateX(9px); } }
+
+    .sigil {
+      width: 60px; height: 60px; margin: 0 auto 20px; border-radius: 18px; display: grid; place-items: center;
+      font-size: 22px; color: #031313; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 0 6px rgba(0, 224, 212, .08), 0 14px 36px rgba(0, 224, 212, .3);
+    }
+    .admin-title { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 26px; }
+
+    .admin-input-group { position: relative; margin-bottom: 16px; text-align: left; }
+    .admin-input-group i.lead { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; pointer-events: none; transition: color .25s; }
+    .admin-input-group input {
+      width: 100%; padding: 14px 44px; background: rgba(0, 0, 0, 0.3); color: #fff; font: inherit; font-size: 15px; outline: none;
+      border: 1px solid var(--glass-border); border-radius: 14px; transition: border-color .25s, box-shadow .25s, background .25s;
+    }
+    .admin-input-group input::placeholder { color: #5b6073; }
+    .admin-input-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(0, 224, 212, .14); background: rgba(0, 0, 0, .4); }
+    .admin-input-group:focus-within i.lead { color: var(--accent); }
+
+    .peek {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px;
+      border: 0; border-radius: 10px; background: transparent; color: var(--muted);
+    }
+    .peek:hover { color: #fff; background: var(--glass-strong); }
+
+    #adminLoginBtn {
+      width: 100%; margin-top: 6px; padding: 14px; border: 0; border-radius: 14px;
+      font-weight: 600; font-size: 15px; color: #031313;
+      background: linear-gradient(120deg, var(--accent), var(--accent-2), var(--accent)); background-size: 200% 100%;
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      box-shadow: 0 10px 28px rgba(0, 224, 212, .22);
+      transition: transform .25s var(--ease), box-shadow .3s, background-position .5s;
+    }
+    #adminLoginBtn:hover { background-position: 100% 0; transform: translateY(-2px); box-shadow: 0 14px 34px rgba(0, 168, 255, .35); }
+    #adminLoginBtn:disabled { filter: grayscale(.8) brightness(.7); cursor: not-allowed; transform: none; box-shadow: none; }
+
+    #adminLoginError { margin-top: 14px; min-height: 18px; color: var(--danger); font-size: 13px; text-align: center; }
+
+    .close-admin-modal {
+      position: absolute; top: 14px; right: 14px; width: 36px; height: 36px; display: grid; place-items: center;
+      border: 0; border-radius: 50%; background: transparent; color: #aab; font-size: 17px; transition: color .2s, background .2s;
+    }
+    .close-admin-modal:hover { color: #fff; background: var(--glass-strong); }
+
+    /* =========================
+       Responsive
+    ========================= */
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 28px; }
+      .main-header h1 { max-width: none; }
+    }
+
+    @media (max-width: 768px) {
+      .main-header { padding: 120px 18px 50px; }
+      .main-header p { font-size: 1.05rem; }
+      .nav-list a:not(.active) span { display: none; }
+      .nav-list a { padding: 10px 13px; }
+
+      .section-head { padding-left: 30px; }
+      .conventions-list::before { left: 7px; }
+      .event, .empty { margin-left: 30px; }
+      .event::before { left: -30px; top: 26px; width: 12px; height: 12px; border-width: 2px; }
+      .event-header { padding: 18px 16px 18px 20px; }
+      .body-inner, .event.open .body-inner { padding-left: 20px; padding-right: 20px; }
+      .event.open .body-inner { padding-bottom: 22px; }
+    }
+
+    @media (max-width: 420px) {
+      .next-up { padding: 22px 18px; }
+      .countdown { gap: 6px; }
+      .admin-modal-content { padding: 36px 22px 26px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
-<header class="main-header" 
-        style="background-image: url('images/main-page.JPG'); background-size: cover; background-position: center;">
-  <h1>Upcoming Conventions</h1>
-  <p>Where you can meet me! 🎉</p>
-</header>
+  <!-- Horizontal Navigation Bar -->
+  <nav id="horizontal-nav" class="horizontal-nav" aria-label="Primary">
+    <ul class="nav-list">
+      <li>
+        <a id="nav-mainpage" href="main-page.html">
+          <i class="fas fa-home"></i><span>Main Page</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-coding" href="programming.html">
+          <i class="fas fa-code"></i><span>Programming</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-art" href="viewer-art.html">
+          <i class="fas fa-paint-brush"></i><span>Gallery</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" id="nav-conventions" class="active" aria-current="page" aria-haspopup="dialog">
+          <i class="fas fa-users"></i><span>Conventions</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-streaming" href="schedule.html">
+          <i class="fas fa-video"></i><span>Content</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-about" href="about.html">
+          <i class="fas fa-user"></i><span>About</span>
+        </a>
+      </li>
+      <li>
+        <a id="nav-contact" href="contact.html">
+          <i class="fas fa-envelope"></i><span>Contact</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 
+  <main class="main-content">
 
- <!-- Horizontal Navigation Bar -->
-<nav id="horizontal-nav" class="horizontal-nav">
-  <ul class="nav-list">
-    <li>
-      <a id="nav-mainpage" href="main-page.html">
-        <i class="fas fa-home"></i><span>Main Page</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-coding" href="programming.html">
-        <i class="fas fa-code"></i><span>Programming</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-art" href="viewer-art.html">
-        <i class="fas fa-paint-brush"></i><span>Gallery</span>
-      </a>
-    </li>
-   <li>
-  <a href="#" id="nav-conventions">
-    <i class="fas fa-users"></i>
-    <span>Conventions</span>
-  </a>
-</li>
-    <li>
-      <a id="nav-streaming" href="schedule.html">
-        <i class="fas fa-video"></i><span>Content</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-about" href="about.html">
-        <i class="fas fa-user"></i><span>About</span>
-      </a>
-    </li>
-    <li>
-      <a id="nav-contact" href="contact.html">
-        <i class="fas fa-envelope"></i><span>Contact</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-
-<!-- ADMIN LOGIN MODAL -->
-<div id="adminLoginModal" class="admin-modal">
-
-  <div class="admin-modal-content">
-
-    <span class="close-admin-modal">&times;</span>
-
-    <h2 class="admin-title">Admin Access</h2>
-
-    <div class="admin-input-group">
-      <input type="text" id="adminUsername" required>
-      <label>Username</label>
-    </div>
-
-    <div class="admin-input-group">
-      <input type="password" id="adminPassword" required>
-      <label>Password</label>
-    </div>
-
-    <button id="adminLoginBtn">Login</button>
-
-    <p id="adminLoginError"></p>
-
-  </div>
-
-</div>
-
-  <!-- Conventions -->
-  <ul class="conventions-list">
-    <li onclick="toggleEvent(this)">
-      <div class="event-header">
-        <span class="event-name">Game On Expo</span>
-        <i class="fa-solid fa-chevron-down toggle-icon"></i>
-      </div>
-      <div class="section-body">
-        <span class="event-date">April 4th–6th, 2025</span><br>
-        <span class="event-location">Phoenix, AZ</span><br>
-        <span class="event-description">A celebration of gaming culture.</span>
-      </div>
-    </li>
-    <li onclick="toggleEvent(this)">
-      <div class="event-header">
-        <span class="event-name">Phoenix Fan Fusion</span>
-        <i class="fa-solid fa-chevron-down toggle-icon"></i>
-      </div>
-      <div class="section-body">
-        <span class="event-date">June 6th–8th, 2025</span><br>
-        <span class="event-location">Phoenix, AZ</span><br>
-        <span class="event-description">Pop culture, comics, anime, and more!</span>
-      </div>
-    </li>
-    <li onclick="toggleEvent(this)">
-      <div class="event-header">
-        <span class="event-name">TBA</span>
-        <i class="fa-solid fa-chevron-down toggle-icon"></i>
-      </div>
-      <div class="section-body">
-        <span class="event-date">Date</span><br>
-        <span class="event-location">Location</span><br>
-        <span class="event-description">Stay tuned for more updates.</span>
-        <span class="event-time">Time to be Annouce</span>
-      </div>
-    </li>
-  </ul>
-
- <script src="info.js"></script>
-<script>
-      /* ===== REMOVE .HTML FROM URL ===== */
-    (function hideHtmlInURL() {
-        const pathname = window.location.pathname;
-        if (pathname.endsWith(".html")) {
-            // Replace URL in browser without reloading the page
-            window.history.replaceState({}, "", pathname.replace(".html", ""));
-        }
-    })();
-const modal = document.getElementById("adminLoginModal");
-const navLink = document.getElementById("nav-conventions");
-const closeModal = document.querySelector(".close-admin-modal");
-const loginBtn = document.getElementById("adminLoginBtn");
-
-navLink.addEventListener("click", function(e) {
-    e.preventDefault();
-    modal.style.display = "flex";
-});
-
-closeModal.onclick = function() {
-    modal.style.display = "none";
-};
-
-window.onclick = function(e) {
-    if (e.target === modal) {
-        modal.style.display = "none";
-    }
-};
-
-loginBtn.onclick = function() {
-
-    const username = document.getElementById("adminUsername").value;
-    const password = document.getElementById("adminPassword").value;
-    const error = document.getElementById("adminLoginError");
-
-    if (username === ADMIN_INFO.username && password === ADMIN_INFO.password) {
-
-        window.location.href = "conventions.html";
-
-    } else {
-
-        error.textContent = "Invalid username or password.";
-
-    }
-};
-/* viewers-convention.js
-   Full script for viewer-convention page.
-   - loads saved events (or default)
-   - removes past events
-   - sorts upcoming by start date
-   - collapsible accessible cards (click or Enter/Space)
-   - read-only: removes delete buttons and disables editing
-*/
-
-document.addEventListener("DOMContentLoaded", () => {
-  const list = document.querySelector(".conventions-list");
-  if (!list) return;
-
-  const saved = localStorage.getItem("conventionsList");
-  list.innerHTML = saved || getDefaultConventionsHTML();
-
-  // Ensure any admin-only delete buttons or editable attributes are removed/disabled
-  stripAdminControls(list);
-
-  // Remove past events (based on end date when possible)
-  removePastEventsFromList(list);
-
-  // Sort by start date (TBA go to bottom)
-  sortConventionsByStartDate(list);
-
-  // Make cards accessible & wire toggles
-  wireCardToggles(list);
-
-  // Save any normalization we performed (removing buttons, removing expired)
-  localStorage.setItem("conventionsList", list.innerHTML);
-});
-
-/* -------------------------
-   Default conventions HTML
-   ------------------------- */
-function getDefaultConventionsHTML() {
-  return `
-    <li>
-      <div class="event-header">
-        <span class="event-name">Fandomcon</span>
-        <i class="fa-solid fa-chevron-down toggle-icon"></i>
-      </div>
-      <div class="section-body">
-        <span class="event-date">November 7–9, 2025</span>
-        <div class="event-meta">
-          <span class="event-location">San Jose Convention Center</span>
+    <!-- Header -->
+    <header class="main-header" style="--hero: url('images/main-page.JPG');">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Upcoming Conventions</h1>
+          <p>Where you can meet me! 🎉</p>
         </div>
-        <div class="event-description">Going to hang out for one day</div>
-      </div>
-    </li>
 
-    <li>
-      <div class="event-header">
-        <span class="event-name">TBA 2026</span>
-        <i class="fa-solid fa-chevron-down toggle-icon"></i>
+        <aside class="next-up edge no-date" id="nextUp" aria-label="Next convention">
+          <p class="next-label" id="nextLabel">Next convention</p>
+          <div class="next-name" id="nextName">Dates announced soon</div>
+          <div class="next-meta">
+            <span id="nextDate"></span>
+            <span id="nextPlace"></span>
+          </div>
+          <div class="countdown" id="countdown" role="timer" aria-live="off">
+            <div><b id="cdD">00</b><span>days</span></div>
+            <div><b id="cdH">00</b><span>hours</span></div>
+            <div><b id="cdM">00</b><span>min</span></div>
+            <div><b id="cdS">00</b><span>sec</span></div>
+          </div>
+          <button type="button" class="next-jump" id="nextJump"><i class="fa-solid fa-arrow-down"></i> See details</button>
+        </aside>
       </div>
-      <div class="section-body">
-        <span class="event-date">TBA</span>
-        <div class="event-meta">
-          <span class="event-location">TBA</span>
+    </header>
+
+    <!-- Conventions -->
+    <section class="convention-content">
+      <div class="section-head">
+        <h2>Convention Schedule</h2>
+        <button type="button" class="btn-ghost" id="toggleAll" hidden><i class="fa-solid fa-angles-down"></i> <span>Expand all</span></button>
+      </div>
+
+      <ul class="conventions-list" id="conventionList"></ul>
+      <noscript><p class="empty">Turn on JavaScript to see the convention schedule.</p></noscript>
+    </section>
+
+  </main>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <dialog id="adminLoginModal" class="admin-modal" aria-labelledby="adminTitle">
+    <div class="admin-modal-content edge" id="adminCard">
+
+      <button type="button" class="close-admin-modal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+
+      <div class="sigil"><i class="fa-solid fa-lock"></i></div>
+      <h2 class="admin-title" id="adminTitle">Admin access</h2>
+
+      <form id="adminForm" novalidate>
+        <div class="admin-input-group">
+          <i class="fa-solid fa-user lead"></i>
+          <input type="text" id="adminUsername" placeholder="Username" aria-label="Username" autocomplete="username" required>
         </div>
-        <div class="event-description">Details coming soon!</div>
-        <div class="event-time"> Time are coming soon!</div>
-      </div>
-    </li>
-  `;
-}
 
-/* -------------------------
-   Remove admin-only buttons + disable editing
-   ------------------------- */
-function stripAdminControls(list) {
-  // remove any element with class "delete-btn" if present
-  list.querySelectorAll(".delete-btn").forEach(btn => btn.remove());
+        <div class="admin-input-group">
+          <i class="fa-solid fa-key lead"></i>
+          <input type="password" id="adminPassword" placeholder="Password" aria-label="Password" autocomplete="current-password" required>
+          <button type="button" class="peek" id="peekBtn" aria-label="Show password"><i class="fa-solid fa-eye"></i></button>
+        </div>
 
-  // remove contentEditable attributes just in case
-  list.querySelectorAll("[contenteditable]").forEach(el => {
-    el.removeAttribute("contenteditable");
-  });
-}
+        <button type="submit" id="adminLoginBtn"><i class="fa-solid fa-fingerprint"></i> Login</button>
 
-/* -------------------------
-   Remove past events
-   We try to parse an end date; if found and in the past, remove the item
-   ------------------------- */
-function removePastEventsFromList(list) {
-  const today = new Date();
-  today.setHours(0,0,0,0);
+        <p id="adminLoginError" role="alert"></p>
+      </form>
 
-  const items = Array.from(list.querySelectorAll("li"));
-  items.forEach(li => {
-    const dateSpan = li.querySelector(".event-date");
-    const dateText = dateSpan ? dateSpan.innerText.trim() : "";
-    const endDate = parseConventionEndDate(dateText);
-    if (endDate && endDate < today) {
-      li.remove();
-    }
-  });
-}
+    </div>
+  </dialog>
 
-/* -------------------------
-   Sorting: place items with earliest start date first.
-   TBA or unparsable dates go to the bottom in original relative order.
-   ------------------------- */
-function sortConventionsByStartDate(list) {
-  const items = Array.from(list.querySelectorAll("li"));
+  <script src="info.js"></script>
+  <script>
+    (() => {
+      "use strict";
 
-  const mapped = items.map(li => {
-    const dateText = li.querySelector(".event-date")?.innerText.trim() || "";
-    const start = parseConventionStartDate(dateText);
-    return { li, start, originalIndex: items.indexOf(li) };
-  });
+      const $ = (s, el = document) => el.querySelector(s);
+      const STORAGE_KEY = "conventionsList";
+      const DAY = 86400000;
 
-  // Sort: items with valid start date come first by date; invalid dates later in original order
-  mapped.sort((a, b) => {
-    if (a.start && b.start) return a.start - b.start;
-    if (a.start && !b.start) return -1;
-    if (!a.start && b.start) return 1;
-    return a.originalIndex - b.originalIndex;
-  });
-
-  // Re-append in order
-  mapped.forEach(m => list.appendChild(m.li));
-}
-
-/* -------------------------
-   Wire up click/keyboard toggles and make li focusable
-   ------------------------- */
-function wireCardToggles(list) {
-  const items = list.querySelectorAll("li");
-
-  items.forEach(li => {
-    // make focusable
-    li.tabIndex = 0;
-    li.setAttribute("role", "button");
-    li.setAttribute("aria-expanded", "false");
-
-    // ensure section-body and icon exist
-    const body = li.querySelector(".section-body");
-    const icon = li.querySelector(".toggle-icon");
-
-    // attach click to header only (so clicking links inside theme would be safe)
-    const header = li.querySelector(".event-header") || li;
-
-    header.addEventListener("click", (e) => {
-      // Prevent toggle when clicking actual interactive elements inside header (if any)
-      if (e.target && (e.target.tagName === "A" || e.target.tagName === "BUTTON")) return;
-      toggleLi(li, body, icon);
-    });
-
-    // keyboard: Enter or Space toggles
-    li.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        toggleLi(li, body, icon);
+        /* ===== REMOVE .HTML FROM URL (http/https only) ===== */
+  (function hideHtmlInURL() {
+    try {
+      if (!/^https?:$/.test(window.location.protocol)) return;
+      const pathname = window.location.pathname;
+      if (pathname.endsWith(".html")) {
+        window.history.replaceState({}, "", pathname.replace(/\.html$/, "") + window.location.search + window.location.hash);
       }
-    });
-  });
-}
+    } catch (err) {
+      /* cosmetic only */
+    }
+  })();
+      
+      /* =========================
+         Admin login
+      ========================= */
+      const modal = $("#adminLoginModal");
+      const card = $("#adminCard");
+      const err = $("#adminLoginError");
+      const loginBtn = $("#adminLoginBtn");
+      let attempts = 0;
 
-/* Helper to toggle a single li */
-function toggleLi(li, body, icon) {
-  if (!body) return;
-  const isOpen = body.classList.contains("open");
-  if (isOpen) {
-    body.classList.remove("open");
-    li.setAttribute("aria-expanded", "false");
-    if (icon) icon.classList.remove("rotate");
-  } else {
-    body.classList.add("open");
-    li.setAttribute("aria-expanded", "true");
-    if (icon) icon.classList.add("rotate");
-  }
-}
+      $("#nav-conventions").addEventListener("click", e => {
+        e.preventDefault();
+        modal.showModal();
+        $("#adminUsername").focus();
+      });
+      $(".close-admin-modal").addEventListener("click", () => modal.close());
+      modal.addEventListener("click", e => { if (e.target === modal) modal.close(); });
+      modal.addEventListener("close", () => { $("#adminPassword").value = ""; err.textContent = ""; });
 
-/* -------------------------
-   Date parsing helpers
-   - parseConventionStartDate: returns Date for the *start* of the event (for sorting)
-   - parseConventionEndDate: returns Date for the *end* of the event (for expiry)
-   Accepts formats like:
-     "November 7–9, 2025", "April 4th–6th, 2025", "November 9, 2025", "2025-11-09"
-   ------------------------- */
+      $("#peekBtn").addEventListener("click", () => {
+        const p = $("#adminPassword"), show = p.type === "password";
+        p.type = show ? "text" : "password";
+        $("#peekBtn i").className = "fa-solid " + (show ? "fa-eye-slash" : "fa-eye");
+        $("#peekBtn").setAttribute("aria-label", show ? "Hide password" : "Show password");
+      });
 
-function parseConventionStartDate(text) {
-  if (!text) return null;
-  const u = text.toUpperCase();
-  if (u.includes("TBA") || u.includes("TBD")) return null;
+      async function sha256(s) {
+        const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+        return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+      }
 
-  // ISO date YYYY-MM-DD
-  const iso = /^\d{4}-\d{2}-\d{2}$/;
-  if (iso.test(text.trim())) {
-    const d = new Date(text.trim());
-    return isNaN(d) ? null : d;
-  }
+      // Works with plain values (username/password) or SHA-256 hashes (usernameHash/passwordHash) in info.js
+      async function checkLogin(u, p) {
+        const info = typeof ADMIN_INFO !== "undefined" ? ADMIN_INFO : {};
+        if (info.usernameHash && info.passwordHash) {
+          if (!crypto?.subtle) return false;
+          return (await sha256(u)) === info.usernameHash && (await sha256(p)) === info.passwordHash;
+        }
+        return u === info.username && p === info.password;
+      }
 
-  // Range like "November 7–9, 2025" or "Nov 7-9, 2025" with ordinals
-  const rangeRegex = /([A-Za-z]+)\s+(\d+)(?:st|nd|rd|th)?\s*[-–]\s*(\d+)(?:st|nd|rd|th)?,?\s*(\d{4})/;
-  let match = text.match(rangeRegex);
-  if (match) {
-    const month = match[1];
-    const startDay = match[2];
-    const year = match[4];
-    const d = new Date(`${month} ${startDay}, ${year}`);
-    return isNaN(d) ? null : d;
-  }
+      function fail(msg) {
+        err.textContent = msg;
+        card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake");
+      }
 
-  // Single date "November 9, 2025" or "Nov 9, 2025"
-  const singleRegex = /([A-Za-z]+)\s+(\d+)(?:st|nd|rd|th)?,?\s*(\d{4})/;
-  match = text.match(singleRegex);
-  if (match) {
-    const month = match[1];
-    const day = match[2];
-    const year = match[3];
-    const d = new Date(`${month} ${day}, ${year}`);
-    return isNaN(d) ? null : d;
-  }
+      $("#adminForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        const u = $("#adminUsername").value, p = $("#adminPassword").value;
+        if (await checkLogin(u, p)) {
+          window.location.href = "conventions.html";
+          return;
+        }
+        attempts++;
+        if (attempts >= 5) {
+          fail("Too many attempts.");
+          loginBtn.disabled = true;
+          let left = 30;
+          const t = setInterval(() => {
+            left--;
+            err.textContent = `Too many attempts. Try again in ${left}s.`;
+            if (left <= 0) { clearInterval(t); attempts = 0; loginBtn.disabled = false; err.textContent = ""; }
+          }, 1000);
+        } else {
+          fail("Invalid username or password.");
+        }
+      });
 
-  // Last fallback: try Date.parse
-  const parsed = new Date(text);
-  return isNaN(parsed) ? null : parsed;
-}
+      /* =========================
+         Data: read events saved by the admin page
+         Accepts both the flat admin markup and the older card markup.
+         Read-only: this page never writes back to storage.
+      ========================= */
+      const DEFAULT_EVENTS = [
+        { name: "Fandomcon", date: "November 7–9, 2025", location: "San Jose Convention Center", description: "Going to hang out for one day", time: "" },
+        { name: "TBA 2026", date: "TBA", location: "TBA", description: "Details coming soon!", time: "Times are coming soon!" }
+      ];
 
-function parseConventionEndDate(text) {
-  if (!text) return null;
-  const u = text.toUpperCase();
-  if (u.includes("TBA") || u.includes("TBD")) return null;
+      function loadEvents() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return DEFAULT_EVENTS.map(e => ({ ...e }));
 
-  // ISO date
-  const iso = /^\d{4}-\d{2}-\d{2}$/;
-  if (iso.test(text.trim())) {
-    const d = new Date(text.trim());
-    return isNaN(d) ? null : d;
-  }
+        const doc = new DOMParser().parseFromString("<ul>" + saved + "</ul>", "text/html"); // inert: no scripts or handlers run
+        return [...doc.querySelectorAll("li")].map(li => {
+          const t = sel => (li.querySelector(sel)?.textContent || "").replace(/\s+/g, " ").trim();
+          return { name: t(".event-name"), date: t(".event-date"), location: t(".event-location"), description: t(".event-description"), time: t(".event-time") };
+        }).filter(e => e.name || e.date);
+      }
 
-  // Range: use the end day
-  const rangeRegex = /([A-Za-z]+)\s+(\d+)(?:st|nd|rd|th)?\s*[-–]\s*(\d+)(?:st|nd|rd|th)?,?\s*(\d{4})/;
-  let match = text.match(rangeRegex);
-  if (match) {
-    const month = match[1];
-    const endDay = match[3];
-    const year = match[4];
-    const d = new Date(`${month} ${endDay}, ${year}`);
-    return isNaN(d) ? null : d;
-  }
+      /* =========================
+         Date parsing → { start, end } at local midnight, or null
+      ========================= */
+      function parseRange(text) {
+        if (!text || /tba|tbd/i.test(text)) return null;
 
-  // Single date -> that date is both start and end
-  const singleRegex = /([A-Za-z]+)\s+(\d+)(?:st|nd|rd|th)?,?\s*(\d{4})/;
-  match = text.match(singleRegex);
-  if (match) {
-    const month = match[1];
-    const day = match[2];
-    const year = match[3];
-    const d = new Date(`${month} ${day}, ${year}`);
-    return isNaN(d) ? null : d;
-  }
+        const mk = (month, day, year) => {
+          const d = new Date(`${month} ${day}, ${year}`);
+          if (isNaN(d)) return null;
+          d.setHours(0, 0, 0, 0);
+          return d;
+        };
+        const ord = "(?:st|nd|rd|th)?";
+        const dash = "\\s*[-–—]\\s*";
 
-  // fallback
-  const parsed = new Date(text);
-  return isNaN(parsed) ? null : parsed;
-}
+        let m = text.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (m) {
+          const d = new Date(+m[1], +m[2] - 1, +m[3]);
+          return isNaN(d) ? null : { start: d, end: d };
+        }
 
+        // Nov 30 – Dec 2, 2026
+        m = text.match(new RegExp(`([A-Za-z]+)\\.?\\s+(\\d+)${ord}${dash}([A-Za-z]+)\\.?\\s+(\\d+)${ord},?\\s*(\\d{4})`));
+        if (m) {
+          const start = mk(m[1], m[2], m[5]), end = mk(m[3], m[4], m[5]);
+          return start && end ? { start, end } : null;
+        }
+
+        // November 7–9, 2026 (ordinals allowed)
+        m = text.match(new RegExp(`([A-Za-z]+)\\.?\\s+(\\d+)${ord}${dash}(\\d+)${ord},?\\s*(\\d{4})`));
+        if (m) {
+          const start = mk(m[1], m[2], m[4]), end = mk(m[1], m[3], m[4]);
+          return start && end ? { start, end } : null;
+        }
+
+        // November 9, 2026
+        m = text.match(new RegExp(`([A-Za-z]+)\\.?\\s+(\\d+)${ord},?\\s*(\\d{4})`));
+        if (m) {
+          const d = mk(m[1], m[2], m[3]);
+          return d ? { start: d, end: d } : null;
+        }
+
+        const p = new Date(text);
+        if (isNaN(p)) return null;
+        p.setHours(0, 0, 0, 0);
+        return { start: p, end: p };
+      }
+
+      function describe(range) {
+        if (!range) return { status: "tba", label: "Date to be announced" };
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const endEx = new Date(range.end.getFullYear(), range.end.getMonth(), range.end.getDate() + 1);
+
+        if (today >= range.start && today < endEx) return { status: "now", label: "Happening now" };
+        if (today >= endEx) return { status: "past", label: "Ended" };
+
+        const days = Math.round((range.start - today) / DAY);
+        const label = days === 1 ? "Tomorrow" : days <= 60 ? `In ${days} days` : `In ${Math.round(days / 30)} months`;
+        return { status: days <= 14 ? "soon" : "upcoming", label };
+      }
+
+      /* =========================
+         Render
+      ========================= */
+      const list = $("#conventionList");
+      let events = [];
+      let nextTarget = null;
+      let nextEvent = null;
+
+      function prepare() {
+        events = loadEvents().map(e => {
+          const range = parseRange(e.date);
+          return { ...e, range, info: describe(range) };
+        }).filter(e => e.info.status !== "past");
+
+        // Earliest start first; TBA / unparsable keep their original order at the bottom
+        events = events.map((e, i) => ({ e, i })).sort((a, b) => {
+          if (a.e.range && b.e.range) return a.e.range.start - b.e.range.start;
+          if (a.e.range) return -1;
+          if (b.e.range) return 1;
+          return a.i - b.i;
+        }).map(x => x.e);
+      }
+
+      const isPlaceholder = s => !s || /^(tba|tbd|location|date)$/i.test(s.trim());
+
+      function buildEvent(ev, i) {
+        const li = document.createElement("li");
+        li.className = "event";
+        li.dataset.status = ev.info.status;
+        ev.el = li;
+
+        const header = document.createElement("button");
+        header.type = "button";
+        header.className = "event-header";
+        header.setAttribute("aria-expanded", "false");
+        header.setAttribute("aria-controls", `ev-body-${i}`);
+
+        const main = document.createElement("span");
+        main.className = "event-main";
+
+        const chip = document.createElement("span");
+        chip.className = "event-chip";
+        chip.textContent = ev.info.label;
+
+        const name = document.createElement("span");
+        name.className = "event-name";
+        name.textContent = ev.name || "Untitled event";
+
+        main.append(chip, name);
+
+        if (ev.date) {
+          const date = document.createElement("span");
+          date.className = "event-date" + (ev.range ? "" : " tba");
+          date.textContent = ev.date;
+          main.append(date);
+        }
+
+        const icon = document.createElement("i");
+        icon.className = "fa-solid fa-chevron-down toggle-icon";
+        icon.setAttribute("aria-hidden", "true");
+
+        header.append(main, icon);
+
+        // Body
+        const body = document.createElement("div");
+        body.className = "section-body";
+        body.id = `ev-body-${i}`;
+        body.setAttribute("role", "region");
+        body.setAttribute("aria-label", `${ev.name} details`);
+        body.inert = true;
+
+        const inner = document.createElement("div");
+        inner.className = "body-inner";
+        const content = document.createElement("div");
+        content.className = "body-content";
+
+        const meta = document.createElement("div");
+        meta.className = "event-meta";
+        if (ev.location) {
+          const loc = document.createElement("span");
+          loc.className = "event-location";
+          loc.textContent = ev.location;
+          meta.append(loc);
+        }
+        if (ev.time) {
+          const tm = document.createElement("span");
+          tm.className = "event-time";
+          tm.textContent = ev.time;
+          meta.append(tm);
+        }
+        if (meta.children.length) content.append(meta);
+
+        if (ev.description) {
+          const d = document.createElement("p");
+          d.className = "event-description";
+          d.textContent = ev.description;
+          content.append(d);
+        }
+
+        const actions = document.createElement("div");
+        actions.className = "event-actions";
+
+        if (ev.range) {
+          const cal = document.createElement("button");
+          cal.type = "button";
+          cal.className = "act primary";
+          cal.innerHTML = '<i class="fa-solid fa-calendar-plus"></i><span>Add to calendar</span>';
+          cal.addEventListener("click", () => downloadIcs(ev));
+          actions.append(cal);
+        }
+        if (!isPlaceholder(ev.location)) {
+          const map = document.createElement("a");
+          map.className = "act";
+          map.target = "_blank";
+          map.rel = "noopener noreferrer";
+          map.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(ev.location);
+          map.innerHTML = '<i class="fa-solid fa-map-location-dot"></i><span>Open in Maps</span>';
+          actions.append(map);
+        }
+        if (actions.children.length) content.append(actions);
+
+        inner.append(content);
+        body.append(inner);
+        li.append(header, body);
+        return li;
+      }
+
+      function render() {
+        list.textContent = "";
+        if (!events.length) {
+          const empty = document.createElement("li");
+          empty.className = "empty";
+          empty.textContent = "No conventions listed right now. New dates will show up here.";
+          list.append(empty);
+          $("#toggleAll").hidden = true;
+        } else {
+          events.forEach((ev, i) => list.append(buildEvent(ev, i)));
+          $("#toggleAll").hidden = false;
+        }
+        updateNextUp();
+      }
+
+      function setOpen(li, open) {
+        li.classList.toggle("open", open);
+        $(".event-header", li).setAttribute("aria-expanded", String(open));
+        $(".section-body", li).inert = !open;
+      }
+
+      list.addEventListener("click", e => {
+        const h = e.target.closest(".event-header");
+        if (!h) return;
+        const li = h.closest(".event");
+        setOpen(li, !li.classList.contains("open"));
+        syncToggleAll();
+      });
+
+      const toggleAll = $("#toggleAll");
+      function syncToggleAll() {
+        const all = [...list.querySelectorAll(".event")];
+        const allOpen = all.length && all.every(li => li.classList.contains("open"));
+        $("span", toggleAll).textContent = allOpen ? "Collapse all" : "Expand all";
+        $("i", toggleAll).className = "fa-solid " + (allOpen ? "fa-angles-up" : "fa-angles-down");
+      }
+      toggleAll.addEventListener("click", () => {
+        const all = [...list.querySelectorAll(".event")];
+        const open = !all.every(li => li.classList.contains("open"));
+        all.forEach(li => setOpen(li, open));
+        syncToggleAll();
+      });
+
+      // Cursor spotlight
+      list.addEventListener("pointermove", e => {
+        const li = e.target.closest(".event");
+        if (!li) return;
+        const r = li.getBoundingClientRect();
+        li.style.setProperty("--mx", (e.clientX - r.left) + "px");
+        li.style.setProperty("--my", (e.clientY - r.top) + "px");
+      });
+
+      /* =========================
+         Next-up hero + live countdown
+      ========================= */
+      function updateNextUp() {
+        const card = $("#nextUp");
+        const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+
+        nextEvent = events.find(e => e.range && ["now", "soon", "upcoming"].includes(e.info.status)) || null;
+
+        if (!nextEvent) {
+          nextTarget = null;
+          card.classList.add("no-date");
+          card.classList.remove("live");
+          set("nextLabel", "Next convention");
+          set("nextName", "Dates announced soon");
+          set("nextDate", "");
+          set("nextPlace", "Check back for new events");
+          return;
+        }
+
+        const live = nextEvent.info.status === "now";
+        const r = nextEvent.range;
+        nextTarget = { live, target: live ? new Date(r.end.getFullYear(), r.end.getMonth(), r.end.getDate() + 1) : r.start };
+
+        card.classList.remove("no-date");
+        card.classList.toggle("live", live);
+        set("nextLabel", live ? "Happening now, ends in" : "Next convention");
+        set("nextName", nextEvent.name);
+        set("nextDate", nextEvent.date);
+        set("nextPlace", isPlaceholder(nextEvent.location) ? "" : nextEvent.location);
+        tick();
+      }
+
+      function tick() {
+        if (!nextTarget) return;
+        const diff = nextTarget.target - new Date();
+        if (diff <= 0) { prepare(); render(); return; }
+
+        const pad = n => String(n).padStart(2, "0");
+        const s = Math.floor(diff / 1000);
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        set("cdD", pad(Math.floor(s / 86400)));
+        set("cdH", pad(Math.floor((s % 86400) / 3600)));
+        set("cdM", pad(Math.floor((s % 3600) / 60)));
+        set("cdS", pad(s % 60));
+      }
+
+      $("#nextJump").addEventListener("click", () => {
+        if (!nextEvent?.el) return;
+        setOpen(nextEvent.el, true);
+        syncToggleAll();
+        nextEvent.el.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+
+      /* =========================
+         Add to calendar (.ics)
+      ========================= */
+      const icsDate = d => d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
+      const icsEsc = s => String(s || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+
+      function downloadIcs(ev) {
+        const end = new Date(ev.range.end.getFullYear(), ev.range.end.getMonth(), ev.range.end.getDate() + 1);
+        const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+        const slug = (ev.name || "event").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "event";
+        const desc = [ev.description, ev.time].filter(Boolean).join("\n");
+
+        const lines = [
+          "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Caitlin's Creative Space//Conventions//EN", "CALSCALE:GREGORIAN",
+          "BEGIN:VEVENT",
+          `UID:${icsDate(ev.range.start)}-${slug}@caitlinscreativespace.xyz`,
+          `DTSTAMP:${stamp}`,
+          `DTSTART;VALUE=DATE:${icsDate(ev.range.start)}`,
+          `DTEND;VALUE=DATE:${icsDate(end)}`,
+          `SUMMARY:${icsEsc(ev.name)}`,
+          ...(isPlaceholder(ev.location) ? [] : [`LOCATION:${icsEsc(ev.location)}`]),
+          ...(desc ? [`DESCRIPTION:${icsEsc(desc)}`] : []),
+          "END:VEVENT", "END:VCALENDAR"
+        ];
+
+        const blob = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = slug + ".ics";
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      /* =========================
+         Go
+      ========================= */
+      prepare();
+      render();
+      syncToggleAll();
+      setInterval(tick, 1000);
+    })();
   </script>
 
 </body>
