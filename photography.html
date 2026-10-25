@@ -1,1220 +1,853 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Caitlin's Photography</title>
-
-    <meta property="og:title" content="Photography Portfolio | Caitlin's Creative Space">
-    <meta property="og:description" content="High-quality stills and gallery featuring work from the Sony A7IV.">
-    <meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-photography.jpg">
-    <meta property="og:url" content="https://caitlinscreativespace.xyz/photography.html">
-    <meta property="og:type" content="website">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Photography Portfolio - Caitlin's Creative Space">
-    <meta name="twitter:description" content="High-quality stills and gallery featuring work from the Sony A7IV.">
-    <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-photography.jpg">
-    <meta name="twitter:url" content="https://caitlinscreativespace.xyz/photography.html">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet"/>
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
-    <style>
-      /* =========================
-        Global Styles
-        ========================= */
-      body {
-        font-family: "Poppins", Arial, sans-serif;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #000000);
-        overflow-x: hidden;
-        color: #fff;
-      }
-
-      /* =========================
-        Header
-        ========================= */
-      header {
-        background-image: url("images/main-page.JPG");
-        background-size: cover;
-        min-height: 200px;
-        padding: 0px 20px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
-        text-align: center;
-        /* Removed the linear-gradient because you're using a background image inline */
-        /* background: linear-gradient(to right, rgba(20, 20, 30, 0.8), rgba(40, 20, 50, 0.8)); */
-
-        /* UPDATED: Set width to cover 100% of the parent container */
-        width: 100%;
-        max-width: none; /* Ensure no max-width is limiting it */
-        margin: 40px auto;
-        box-sizing: border-box;
-      }
-
-      /* Optional overlay layer */
-      header::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        /* Use a semi-transparent dark overlay to make text stand out over the image */
-        background: rgba(0, 0, 0, 0.4);
-        border-radius: 12px;
-        z-index: 0;
-      }
-
-      /* Content stays above overlay */
-      header > * {
-        position: relative;
-        z-index: 1;
-      }
-
-      /* Content above blur + overlay */
-      header div {
-        position: relative;
-        z-index: 2;
-      }
-
-      header h2 {
-        font-family: Georgia, serif;
-        font-size: 42px;
-        font-weight: 700;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        color: #fdf471;
-        text-shadow: 0 0 12px #000;
-        margin: 0;
-      }
-
-      header h5 {
-        font-family: Verdana, sans-serif;
-        font-size: 18px;
-        font-weight: 400;
-        margin-top: 10px;
-        color: #fff;
-        text-shadow: 0 0 8px #000;
-      }
-
-      /* =========================
-            Navigation Bar
-        ========================= */
-      .horizontal-nav {
-        width: 100%;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(12px);
-        padding: 12px 0;
-        display: flex;
-        justify-content: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        overflow-x: auto;
-        scrollbar-width: none;
-      }
-
-      .horizontal-nav::-webkit-scrollbar {
-        display: none;
-      }
-
-      .nav-list {
-        list-style: none;
-        display: flex;
-        gap: 15px;
-        padding: 0;
-        margin: 0;
-      }
-
-      .nav-list li {
-        display: flex;
-      }
-
-      .nav-list a {
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        padding: 10px 16px;
-        border-radius: 12px;
-        font-size: 15px;
-        transition: all 0.3s ease-in-out;
-        color: #f0f0f0;
-      }
-
-      .nav-list a i {
-        margin-right: 8px;
-        font-size: 20px;
-        color: #f0f0f0;
-        transition: color 0.3s ease;
-      }
-
-      .nav-list a:hover i {
-        color: #32f2f8;
-        /* optional gradient effect handled via text above */
-      }
-
-      .nav-list a:hover {
-        -webkit-text-fill-color: transparent;
-        background: linear-gradient(60deg, #be2edd, #00a8ff, #f79f1f);
-        background-clip: text;
-        box-shadow: 0 0 10px rgba(50, 242, 248, 0.3);
-      }
-
-      /* === Main Content Area === */
-      .main-content {
-        /* Adjusted to avoid overriding fixed header width logic */
-        margin-left: 270px;
-        /* Adjust margin for sidebar */
-        padding: 40px;
-        flex-grow: 1;
-        background: linear-gradient(
-          to bottom right,
-          rgba(0, 0, 0, 0.6),
-          rgba(30, 30, 40, 0.7)
-        );
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        transition:
-          background-color 0.3s ease,
-          transform 0.3s ease;
-        max-width: 100%;
-        width: 75%;
-        margin: 40px auto;
-        color: white;
-        box-sizing: border-box;
-        overflow: hidden;
-      }
-
-      /* Shifted state for dropdown or sidebar */
-      .main-content.shifted {
-        transform: translateX(70px);
-      }
-
-      /* === Introduction Section === */
-      #introduction {
-        text-align: center;
-        margin-bottom: 50px;
-        padding: 20px;
-        background: rgba(50, 50, 70, 0.4);
-        border-radius: 12px;
-        box-shadow: 0 0 20px rgba(110, 250, 243, 0.2);
-        transition: box-shadow 0.3s ease;
-      }
-
-      #introduction:hover {
-        box-shadow: 0 0 28px rgba(110, 250, 243, 0.4);
-      }
-
-      #introduction h2 {
-        font-size: 2rem;
-        margin-bottom: 12px;
-        color: #6efaf3;
-        text-shadow: 0 0 12px rgba(110, 250, 243, 0.7);
-        letter-spacing: 1px;
-      }
-
-      #introduction p {
-        font-size: 1.1rem;
-        color: #e0e0e0;
-        line-height: 1.6;
-        max-width: 600px;
-        margin: 0 auto;
-      }
-
-      #introduction p::before {
-        content: "✧ ";
-        color: #6efaf3;
-        font-size: 22px;
-      }
-
-      #introduction p::after {
-        content: " ✧";
-        color: #4fd6ee;
-        font-size: 22px;
-      }
-
-      /* =========================
-    Carousel Styles (Slow & Smooth)
-========================= */
-      .carousel-wrapper {
-        margin: 60px 0;
-      }
-
-      .carousel-wrapper h2 {
-        text-align: center;
-        color: #6efaf3;
-        margin-bottom: 25px;
-        text-shadow: 0 0 10px rgba(110, 250, 243, 0.3);
-      }
-
-      .carousel-container {
-        width: 100%;
-        overflow: hidden;
-        padding: 20px 0;
-        position: relative;
-
-        /* Adds a soft fade effect on the left and right edges */
-        -webkit-mask-image: linear-gradient(
-          to right,
-          transparent,
-          black 10%,
-          black 90%,
-          transparent
-        );
-        mask-image: linear-gradient(
-          to right,
-          transparent,
-          black 10%,
-          black 90%,
-          transparent
-        );
-      }
-
-      .image-container {
-        display: flex;
-        width: max-content;
-        /* Increased to 80s for a very slow, smooth crawl */
-        animation: carouselAnimation 80s linear infinite;
-      }
-
-      /* Pause animation on hover */
-      .image-container:hover {
-        animation-play-state: paused;
-      }
-
-      .image-item {
-        flex: 0 0 280px;
-        margin: 0 15px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        overflow: hidden;
-        transition:
-          transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-          border-color 0.3s ease,
-          box-shadow 0.3s ease;
-        cursor: pointer;
-      }
-
-      .image-item:hover {
-        transform: translateY(-10px) scale(1.05);
-        border-color: #6efaf3;
-        box-shadow: 0 0 25px rgba(110, 250, 243, 0.5);
-        z-index: 10;
-      }
-
-      .image-item img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        display: block;
-      }
-
-      .image-item figcaption {
-        padding: 12px;
-        text-align: center;
-        font-style: italic;
-        font-size: 14px;
-        color: #eaeaea;
-        background: rgba(0, 0, 0, 0.6);
-      }
-
-      /* Infinite Loop Animation */
-      @keyframes carouselAnimation {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(-50%);
-        }
-      }
-
-      /* Header Styling - Redundant, clean up done above */
-      /* header {
-            border-radius: 10px;
-            color: #f0f0f0;
-            padding: 20px 26px; 
-            text-align: center;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            box-sizing: border-box;
-            transform: none;
-        } */
-
-      /* Social Links in Navbar */
-      .social-links {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-      }
-
-      .social-links a {
-        text-decoration: none;
-        display: inline-block;
-      }
-
-      .social-links a i {
-        font-size: 24px;
-        color: #333;
-        transition:
-          transform 0.3s ease,
-          color 0.3s ease;
-      }
-
-      .social-links a:hover i {
-        transform: scale(1.2);
-      }
-
-      /* Social Sidebar inside Footer (Original, will be superseded by .fancy-box styles) */
-      .socials {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 20px;
-      }
-
-      .social-link {
-        font-size: 24px;
-        color: #070707;
-        text-decoration: none;
-        transition:
-          transform 0.3s ease,
-          color 0.3s ease;
-      }
-
-      .social-link:hover {
-        transform: scale(1.2);
-      }
-
-      /* Patreon (original) */
-      .social-link:nth-child(1):hover {
-        color: #9146ff;
-      }
-
-      /* Instagram (original) */
-      .social-link:nth-child(2):hover {
-        color: #e4405f;
-      }
-
-      /* Bluesky (updated to accurate sky blue) (original) */
-      .social-link:nth-child(3):hover {
-        color: #1184fe;
-      }
-
-      /* GitHub (updated to light gray) (original) */
-      .social-link:nth-child(4):hover {
-        color: #c9d1d9;
-      }
-
-      /* Button styling */
-      button {
-        padding: 12px 20px;
-        background-color: #2c3e50;
-        color: white;
-        border: none;
-        cursor: pointer;
-        font-size: 16px;
-        border-radius: 8px;
-        transition: background-color 0.3s ease;
-        margin-top: 25px;
-      }
-
-      button:hover {
-        background-color: #34495e;
-      }
-
-      /* Keyframe for carousel scrolling */
-      @keyframes carouselAnimation {
-        0% {
-          transform: translateX(0);
-        }
-
-        100% {
-          transform: translateX(-100%);
-        }
-      }
-
-      /* Links styling */
-      a {
-        color: #6efaf3;
-        text-decoration: none;
-        transition: color 0.3s ease;
-      }
-
-      a:hover {
-        color: #fff;
-      }
-
-      .menu-icon {
-        margin-right: 10px;
-      }
-
-      .camera-icon-margin {
-        margin-right: 10px;
-      }
-
-      .icon-margin {
-        margin-right: 10px;
-      }
-
-      .contact-icon-margin {
-        margin-right: 10px;
-      }
-
-      .pulse-animation {
-        animation: pulse 2s infinite ease-in-out;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-
-        50% {
-          transform: scale(1.1);
-        }
-      }
-
-      .image-modal {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-
-        /* Modern blur background */
-        backdrop-filter: blur(6px);
-
-        cursor: zoom-out;
-      }
-
-      /* Wrapper for bounce animation */
-      .modal-content-wrapper {
-        position: relative;
-
-        display: flex;
-        flex-direction: column;
-
-        align-items: center; /* centers image + caption */
-        justify-content: center;
-
-        max-width: 90%;
-        max-height: 90%;
-
-        animation: modalBounce 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      }
-
-      .image-modal-caption {
-        width: 100%;
-        text-align: center;
-
-        color: white;
-
-        margin-top: 12px;
-
-        font-size: 18px;
-
-        text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .image-modal-content {
-        display: block;
-
-        max-width: 100%;
-        max-height: 85vh;
-
-        border-radius: 12px;
-
-        /* Neon border */
-        border: 3px solid #00f3ff;
-
-        /* Glow effect */
-        box-shadow:
-          0 0 10px #00f3ff,
-          0 0 20px #00f3ff,
-          0 0 40px rgba(0, 243, 255, 0.5),
-          0 20px 50px rgba(0, 0, 0, 0.9);
-
-        transition: 0.3s;
-
-        cursor: default;
-      }
-
-      /* Glow pulse */
-      .image-modal-content:hover {
-        box-shadow:
-          0 0 15px #00f3ff,
-          0 0 30px #00f3ff,
-          0 0 60px rgba(0, 243, 255, 0.7),
-          0 25px 60px rgba(0, 0, 0, 1);
-      }
-
-      .image-modal-caption {
-        color: white;
-        margin-top: 15px;
-        font-size: 18px;
-        text-shadow: 0 0 8px rgba(0, 243, 255, 0.7);
-      }
-
-      .image-modal-close {
-        position: absolute;
-
-        top: -45px;
-        right: -5px;
-
-        color: white;
-
-        font-size: 40px;
-
-        cursor: pointer;
-
-        text-shadow: 0 0 10px #00f3ff;
-
-        transition: 0.3s;
-      }
-
-      .image-modal-close:hover {
-        color: #ff0055;
-
-        text-shadow: 0 0 15px #ff0055;
-
-        transform: rotate(90deg);
-      }
-
-      /* Bounce animation */
-      @keyframes modalBounce {
-        0% {
-          transform: scale(0.55);
-          opacity: 0;
-        }
-
-        60% {
-          transform: scale(1.05);
-        }
-
-        100% {
-          transform: scale(1);
-          opacity: 1;
-        }
-      }
-      /* About Me Section */
-      #about-me {
-        padding: 25px;
-        margin: 120px auto 40px auto;
-        width: 90%;
-        max-width: 1000px;
-        border-radius: 20px;
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-        text-align: center;
-        animation: fadeIn 1s ease-in-out;
-      }
-
-      #about-me h2 {
-        font-size: 32px;
-        color: #c2a2fc;
-        margin-bottom: 20px;
-        text-shadow: 0 0 12px rgba(194, 162, 252, 0.7);
-      }
-
-      #about-me p {
-        font-size: 18px;
-        color: #eaeaea;
-        line-height: 1.8;
-        text-align: center;
-      }
-
-      #about-me p::before {
-        content: "✧ ";
-        color: #c2a2fc;
-        font-size: 22px;
-      }
-
-      #about-me p::after {
-        content: " ✧";
-        color: #4fd6ee;
-        font-size: 22px;
-      }
-
-      /* About Me Image */
-      #about-me img {
-        width: 100%;
-        max-width: 300px;
-        border-radius: 15px;
-        margin-bottom: 15px;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-        transition:
-          transform 0.3s ease,
-          box-shadow 0.3s ease;
-      }
-
-      #about-me img:hover {
-        transform: scale(1.05);
-        box-shadow: 0 8px 24px rgba(79, 214, 238, 0.6);
-      }
-
-      /* === Glassy Section Boxes === */
-      section#contact,
-      section#contacts {
-        background: rgba(40, 40, 40, 0.45);
-        -webkit-backdrop-filter: blur(16px) saturate(160%);
-        backdrop-filter: blur(16px) saturate(160%);
-        border-radius: 15px;
-        padding: 40px;
-        margin: 50px auto;
-        max-width: 900px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-        animation: fadeUp 1s ease forwards;
-        transform: translateY(30px);
-        opacity: 0;
-      }
-
-      section#contact {
-        animation-delay: 0.2s;
-      }
-
-      section#contacts {
-        animation-delay: 0.4s;
-      }
-
-      @keyframes fadeUp {
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
-
-      /* Headings */
-      section#contact h2,
-      section#contacts h3 {
-        color: #fff;
-        text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
-        letter-spacing: 1.5px;
-        font-weight: 600;
-        text-align: center;
-        /* center align headings too */
-      }
-
-      /* Remove underline + default link colors globally */
-      a,
-      a:visited,
-      a:active {
-        text-decoration: none;
-        color: inherit;
-        outline: none;
-      }
-
-      /*
-            =========================================
-            FANCY BOX / SOCIALS BOX STYLES (New/Updated)
-            =========================================
-        */
-
-      /* Container for the fancy box (based on the image) */
-      .fancy-box {
-        /* Adjust these values to match the size and positioning in your HTML layout */
-        margin: 50px auto;
-        padding: 20px;
-        max-width: 300px;
-        text-align: center;
-
-        /* Styles from the image */
-        background: #1a1a1a;
-        border-radius: 12px;
-        box-shadow:
-          0 0 20px rgba(0, 0, 0, 0.5),
-          0 0 30px rgba(145, 70, 255, 0.2);
-      }
-
-      /* Headings inside the fancy box */
-      .fancy-box h4 {
-        color: #f0f0f0;
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin: 10px 0;
-        letter-spacing: 0.5px;
-      }
-
-      /* === Center the icon groups === */
-      .socials,
-      .streaming-platforms {
-        display: flex;
-        justify-content: center;
-        /* center horizontally */
-        gap: 25px;
-        /* spacing between icons */
-        margin-top: 15px; /* Reduced margin for closer grouping */
-        margin-bottom: 20px; /* Space after the group */
-      }
-
-      /* === Base Icon Style === */
-      .socials .social-link,
-      .streaming-platforms .social-link {
-        font-size: 32px;
-        color: #f0f0f0; /* Default icon color if not specified below */
-        transition:
-          transform 0.4s ease,
-          color 0.3s ease,
-          text-shadow 0.3s ease;
-      }
-
-      /* === Social Media Colors === */
-      /* The icons in the image are: Instagram, Bluesky (Twitter icon used), Patreon (Heart icon used), GitHub */
-      .socials .social-link:nth-child(1) {
-        color: #c13584;
-      }
-
-      /* Instagram */
-      .socials .social-link:nth-child(2) {
-        color: #0285ff;
-      }
-
-      /* Bluesky (using Twitter/X blue) */
-      .socials .social-link:nth-child(3) {
-        color: #ff424d;
-      }
-
-      /* Patreon (using a red/pink) */
-      .socials .social-link:nth-child(4) {
-        color: #ffffff;
-      }
-
-      /* GitHub */
-
-      /* === Streaming Platforms Colors === */
-      /* The icons in the image are: Twitch, YouTube, Kick */
-      .streaming-platforms .social-link:nth-child(1) {
-        color: #9146ff;
-      }
-
-      /* Twitch */
-      .streaming-platforms .social-link:nth-child(2) {
-        color: #ff0000;
-      }
-
-      /* YouTube */
-      .streaming-platforms .social-link:nth-child(3) {
-        color: #52f000;
-      }
-
-      /* Kick */
-
-      /* === Hover Effect (glow + enlarge) === */
-      .socials .social-link:hover,
-      .streaming-platforms .social-link:hover {
-        transform: scale(1.25) rotate(5deg);
-        /* Slightly less rotation than before */
-        text-shadow:
-          0 0 10px currentColor,
-          0 0 20px currentColor;
-        cursor: pointer;
-      }
-
-
-
-/* =========================
-   Revamped Portfolio & Camera Styles
-========================= */
-.revamp-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 25px;
-  margin-top: 30px;
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 25px;
-  text-align: center;
-  transition: 0.3s;
-  /* Added for overall safety, ensures children calculate 
-     their width relative to the true container width */
-  box-sizing: border-box; 
-}
-
-.glass-card:hover {
-  transform: translateY(-10px);
-  border-color: #6efaf3;
-  box-shadow: 0 10px 30px rgba(110, 250, 243, 0.2);
-}
-
-.btn-action {
-  display: inline-block;
-  margin-top: 15px;
-  /* (Desktop/Default) Horizontal padding is a little too much for small cards */
-  padding: 10px 18px; 
-  background: transparent;
-  border: 2px solid #ce6efa;
-  color: #fdfdfd6e;
-  border-radius: 30px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow:
-    0 0 10px rgba(81, 245, 237, 0.3),
-    inset 0 0 5px rgba(110, 250, 243, 0.2);
-
-  /* ========================================================
-     [ CRITICAL FIX ]
-     ========================================================
-     This single property forces the width calculation to INCLUDE 
-     the padding and border inside the container, preventing 
-     it from 'growing' larger than 100%. */
-  box-sizing: border-box; 
-  /* ======================================================== */
-}
-
-.btn-action:hover {
-  background: rgba(110, 250, 243, 0.1);
-  color: #fff;
-  border-color: #fff;
-  box-shadow:
-    0 0 20px rgba(206, 110, 250, 0.6),
-    0 0 40px rgba(110, 250, 243, 0.2);
-  transform: translateY(-2px);
-}
-
-/* Styling for transparent equipment images */
-.equipment-img {
-  width: 100%;
-  height: 180px;
-  object-fit: contain;
-  background: transparent; 
-  margin-bottom: 15px;
-  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.8));
-  transition: filter 0.3s ease;
-}
-
-.glass-card:hover .equipment-img {
-  filter: drop-shadow(0 0 10px rgba(110, 250, 243, 0.4));
-}
-
-/* Mobile phones (Standard 600px and under) */
-@media (max-width: 600px) {
-  .revamp-grid {
-    grid-template-columns: 1fr;
-    gap: 18px;
-    margin-top: 20px;
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Caitlin's Photography</title>
+
+<meta name="description" content="High-quality stills and gallery featuring work from the Sony A7IV." />
+<meta property="og:title" content="Photography Portfolio | Caitlin's Creative Space" />
+<meta property="og:description" content="High-quality stills and gallery featuring work from the Sony A7IV." />
+<meta property="og:image" content="https://caitlinscreativespace.xyz/images/social-preview-photography.jpg" />
+<meta property="og:url" content="https://caitlinscreativespace.xyz/photography.html" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Photography Portfolio - Caitlin's Creative Space" />
+<meta name="twitter:description" content="High-quality stills and gallery featuring work from the Sony A7IV." />
+<meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-photography.jpg" />
+<meta name="twitter:url" content="https://caitlinscreativespace.xyz/photography.html" />
+
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #07060d;
+    --teal: #6efaf3;
+    --teal-2: #4fd6ee;
+    --lilac: #c2a2fc;
+    --violet: #9146ff;
+    --pink: #ff4fa3;
+    --ink: #eef0ff;
+    --muted: #a9a6c4;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-strong: rgba(12, 10, 22, 0.72);
+    --line: rgba(255, 255, 255, 0.1);
+    --radius: 22px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+    --spring: cubic-bezier(.175, .885, .32, 1.275);
+    --top: 70px;
+    --py: 0px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(135deg, #0f0f0f, #1a1a1a, #000);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: -20%; z-index: -2; pointer-events: none;
+    background:
+      radial-gradient(40% 35% at 10% 18%, rgba(110, 250, 243, .14), transparent 60%),
+      radial-gradient(35% 30% at 90% 12%, rgba(145, 70, 255, .18), transparent 60%),
+      radial-gradient(45% 40% at 60% 95%, rgba(79, 214, 238, .1), transparent 60%);
+    filter: blur(40px);
+    animation: drift 24s ease-in-out infinite alternate;
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  }
+  @keyframes drift { to { transform: translate3d(3%, -2%, 0) scale(1.05); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+  @keyframes bounceIn { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.03); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+  @keyframes float { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-14px,0); } }
+  @keyframes gradientMove { to { background-position: 300% 50%; } }
+
+  /* ---------- Scroll progress ---------- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 100%; z-index: 200;
+    background: linear-gradient(90deg, var(--teal), var(--lilac), var(--pink));
+    transform-origin: 0 50%; transform: scaleX(0);
+    box-shadow: 0 0 12px rgba(110,250,243,.6);
   }
 
-  .glass-card {
-    padding: 18px;
-    border-radius: 16px;
+  /* ---------- Cursor glow (fine pointers only) ---------- */
+  .cursor-glow {
+    position: fixed; top: 0; left: 0; width: 320px; height: 320px; margin: -160px 0 0 -160px; border-radius: 50%;
+    pointer-events: none; z-index: -1; opacity: 0; transition: opacity .4s;
+    background: radial-gradient(circle, rgba(110,250,243,.12), transparent 60%);
+    will-change: transform;
+  }
+  .cursor-glow.on { opacity: 1; }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--top);
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 0 16px;
+    background: var(--glass-strong);
+    backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; white-space: nowrap; }
+  .brand .logo {
+    width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--violet), var(--teal)); box-shadow: 0 6px 18px rgba(110,250,243,.25);
+    font-family: "Orbitron", sans-serif; font-weight: 800; font-size: .9rem; color: #07060d;
+    transition: transform .4s var(--spring);
+  }
+  .brand:hover .logo { transform: rotate(-8deg) scale(1.08); }
+  .brand .name { font-family: "Orbitron", sans-serif; font-weight: 800; font-size: .92rem; letter-spacing: .04em; }
+  .brand .name em { font-style: normal; color: var(--teal); }
+  .nav-scroll { min-width: 0; overflow-x: auto; scrollbar-width: none; mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); }
+  .nav-scroll::-webkit-scrollbar { display: none; }
+  .nav { position: relative; display: flex; gap: 4px; padding: 5px; width: max-content; margin: 0 auto; border-radius: 999px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+  .nav-pill {
+    position: absolute; top: 5px; bottom: 5px; left: 0; width: 0; border-radius: 999px; z-index: 0; pointer-events: none;
+    background: linear-gradient(135deg, var(--teal), var(--lilac)); box-shadow: 0 0 18px rgba(110,250,243,.35);
+    transition: left .5s var(--spring), width .5s var(--spring);
+  }
+  .nav a, .nav button {
+    position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 999px; border: 0; cursor: pointer;
+    background: transparent; color: var(--muted); text-decoration: none; font: inherit; font-size: .86rem; font-weight: 600; white-space: nowrap;
+    transition: color .3s;
+  }
+  .nav a:hover, .nav button:hover { color: #fff; }
+  .nav button[aria-selected="true"] { color: #07060d; }
+  .nav i { font-size: 15px; width: 18px; text-align: center; }
+  :focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  /* ---------- Hero ---------- */
+  main { max-width: 1200px; margin: 0 auto; padding: calc(var(--top) + 24px) 16px 60px; }
+  .hero {
+    position: relative; overflow: hidden; border-radius: 30px; min-height: 340px;
+    display: grid; place-items: center; text-align: center; padding: 60px 24px;
+    border: 1px solid var(--line); box-shadow: 0 30px 70px rgba(0,0,0,.55);
+    animation: rise .9s var(--ease) both;
+  }
+  .hero-bg {
+    position: absolute; inset: -12% 0 -12% 0; z-index: 0;
+    background: #120e20 url("images/main-page.JPG") center / cover no-repeat;
+    transform: translate3d(0, var(--py), 0) scale(1.08);
+    will-change: transform;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(180deg, rgba(7,6,13,.3), rgba(7,6,13,.92));
+  }
+  .hero::after {
+    content: ""; position: absolute; inset: -40%; z-index: 1; pointer-events: none; opacity: .5;
+    background: conic-gradient(from 180deg, transparent, rgba(110,250,243,.2), transparent 40%, rgba(145,70,255,.22), transparent 80%);
+    animation: spin 20s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .orb { position: absolute; border-radius: 50%; filter: blur(30px); z-index: 1; pointer-events: none; opacity: .55; }
+  .orb.a { width: 180px; height: 180px; left: 6%; top: 14%; background: rgba(110,250,243,.35); animation: float 9s ease-in-out infinite; }
+  .orb.b { width: 220px; height: 220px; right: 4%; bottom: 8%; background: rgba(145,70,255,.35); animation: float 11s ease-in-out infinite reverse; }
+  .hero-inner { position: relative; z-index: 2; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: "Fira Code", monospace; font-size: .76rem; letter-spacing: .3em; text-transform: uppercase; color: var(--teal);
+  }
+  .eyebrow::before, .eyebrow::after { content: ""; width: 26px; height: 1px; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+  .hero h1 {
+    margin: 14px 0 10px; font-family: "Orbitron", sans-serif; font-weight: 800;
+    font-size: clamp(2.6rem, 8vw, 5rem); letter-spacing: .03em; line-height: 1.02;
+    background: linear-gradient(90deg, #fff, var(--teal), var(--lilac), #fff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: gradientMove 8s linear infinite;
+    filter: drop-shadow(0 4px 20px rgba(0,0,0,.4));
+  }
+  .hero .tagline { margin: 0; font-size: 1.1rem; color: #dcd9f0; letter-spacing: .5px; }
+  .intro {
+    max-width: 640px; margin: 22px auto 0; padding: 14px 20px; border-radius: 16px;
+    background: rgba(0,0,0,.4); border: 1px solid rgba(110,250,243,.25); color: #e0e0e0; line-height: 1.6;
+    backdrop-filter: blur(10px);
+  }
+  .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; font-size: .82rem; font-weight: 600;
+    background: rgba(0,0,0,.45); border: 1px solid var(--line); color: #e9fdff; backdrop-filter: blur(8px);
+    transition: transform .3s var(--spring), border-color .3s;
+  }
+  .chip:hover { transform: translateY(-3px); border-color: rgba(110,250,243,.5); }
+  .chip i { color: var(--teal); }
+
+  /* ---------- Section heads ---------- */
+  .section-head { text-align: center; margin: 56px 0 26px; }
+  .section-head h2 {
+    margin: 0; font-family: "Orbitron", sans-serif; font-size: 1.6rem; letter-spacing: .05em; color: var(--teal);
+    text-shadow: 0 0 12px rgba(110,250,243,.4);
+  }
+  .section-head .ul { width: 90px; height: 3px; margin: 12px auto 0; border-radius: 3px; background: linear-gradient(90deg, transparent, var(--teal), var(--lilac), transparent); background-size: 200% 100%; animation: shimmer 4s linear infinite; }
+  .section-head p { margin: 10px 0 0; color: var(--muted); }
+  .panel { animation: rise .6s var(--ease); }
+  .glass {
+    position: relative; background: var(--glass); border: 1px solid var(--line); border-radius: var(--radius);
+    backdrop-filter: blur(14px) saturate(150%); -webkit-backdrop-filter: blur(14px) saturate(150%);
+    box-shadow: 0 14px 40px rgba(0,0,0,.3); overflow: hidden;
   }
 
-  .glass-card:hover {
-    transform: none; 
+  /* Spotlight: radial light that follows the pointer (set by JS) */
+  .spot::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .4s;
+    background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(110,250,243,.13), transparent 45%);
   }
+  .spot:hover::after { opacity: 1; }
 
-  .equipment-img {
-    height: 140px;
+  /* ---------- About ---------- */
+  .about {
+    display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 36px; align-items: center;
+    padding: 36px; max-width: 940px; margin: 0 auto;
   }
+  .about-photo { position: relative; perspective: 900px; }
+  .about-photo img {
+    width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block;
+    border-radius: 20px; border: 2px solid var(--teal);
+    box-shadow: 0 10px 30px rgba(0,0,0,.6), 0 0 30px rgba(110,250,243,.2);
+    transition: transform .5s var(--ease), box-shadow .5s;
+  }
+  .about-photo::before {
+    content: ""; position: absolute; inset: -10px; border-radius: 26px; z-index: -1;
+    background: conic-gradient(from 0deg, var(--teal), var(--lilac), var(--pink), var(--teal));
+    filter: blur(18px); opacity: .45; animation: spin 10s linear infinite;
+  }
+  .about-photo img:hover { transform: scale(1.04) rotate(-1deg); box-shadow: 0 16px 44px rgba(0,0,0,.6), 0 0 44px rgba(110,250,243,.35); }
+  .about h3 { margin: 0 0 14px; font-family: "Orbitron", sans-serif; color: var(--lilac); font-size: 1.1rem; letter-spacing: .04em; }
+  .about blockquote {
+    margin: 0; font-size: 1.14rem; line-height: 1.85; color: #ececf6;
+    padding: 6px 4px 6px 22px; border-left: 3px solid var(--lilac); position: relative;
+  }
+  .about blockquote .word { display: inline-block; opacity: 0; transform: translateY(8px); transition: opacity .5s var(--ease), transform .5s var(--ease); }
+  .about blockquote.in .word { opacity: 1; transform: none; }
 
-  .btn-action {
-    display: block; /* Changes from inline-block to allow full width */
-    width: 100%;
-    /* Reduced horizontal padding to prevent crowding */
-    padding: 12px 10px; 
-    font-size: 15px;
-    /* Added text-wrap insurance */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  /* ---------- Portfolio cards ---------- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 920px; margin: 0 auto; }
+  .card {
+    padding: 34px 28px; text-align: center; border-radius: 24px;
+    background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.015));
+    border: 1px solid var(--line); transform-style: preserve-3d;
+    transition: transform .4s var(--ease), border-color .35s, box-shadow .35s;
   }
-}
+  .card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: linear-gradient(90deg, var(--teal), var(--lilac)); }
+  .card:hover { border-color: rgba(110,250,243,.5); box-shadow: 0 22px 50px rgba(110,250,243,.14); }
+  .c-ico {
+    width: 70px; height: 70px; border-radius: 22px; margin: 0 auto 18px; display: grid; place-items: center;
+    background: rgba(110,250,243,.08); border: 1px solid rgba(110,250,243,.3); font-size: 28px; color: var(--teal);
+    transform: translateZ(30px); transition: transform .4s var(--spring), box-shadow .4s;
+  }
+  .card:hover .c-ico { transform: translateZ(40px) scale(1.08); box-shadow: 0 0 24px rgba(110,250,243,.35); }
+  .card h3 { margin: 0 0 8px; font-size: 1.22rem; color: #fff; transform: translateZ(20px); }
+  .card p { margin: 0; color: #d6d4ec; line-height: 1.6; transform: translateZ(10px); }
 
-/* Very small phones (Under 400px, e.g., iPhone SE) */
-@media (max-width: 400px) {
-  .glass-card {
-    padding: 15px;
+  /* Magnetic, shimmering button */
+  .btn {
+    position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 9px; margin-top: 20px; padding: 12px 22px;
+    border-radius: 999px; border: 2px solid rgba(206,110,250,.7); background: rgba(255,255,255,.03); color: #fff;
+    font: inherit; font-size: .92rem; font-weight: 600; text-decoration: none; cursor: pointer; overflow: hidden;
+    box-shadow: 0 0 10px rgba(81,245,237,.2), inset 0 0 5px rgba(110,250,243,.15);
+    transition: background .3s, border-color .3s, box-shadow .3s, color .3s;
+    will-change: transform;
   }
+  .btn::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; opacity: 0; transition: opacity .3s;
+    background: linear-gradient(120deg, transparent, rgba(110,250,243,.35), transparent);
+    background-size: 200% 100%;
+  }
+  .btn:hover { border-color: #fff; color: #fff; background: rgba(110,250,243,.1); box-shadow: 0 0 22px rgba(206,110,250,.5), 0 0 40px rgba(110,250,243,.2); }
+  .btn:hover::before { opacity: 1; animation: shimmer 1.4s linear infinite; }
+  .btn i { font-size: 13px; transition: transform .3s var(--spring); }
+  .btn:hover i { transform: translate(2px, -2px); }
 
-  .equipment-img {
-    height: 120px;
+  /* ---------- Gallery ---------- */
+  .rows { display: grid; gap: 44px; }
+  .row-head { display: flex; align-items: center; gap: 14px; padding: 0 20px; margin-bottom: 14px; }
+  .row-head .count { font-family: "Fira Code", monospace; font-size: .72rem; color: var(--muted); }
+  .row-head h3 { margin: 0; font-family: "Orbitron", sans-serif; font-size: 1.05rem; letter-spacing: .05em; color: var(--teal); }
+  .row-head::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(110,250,243,.5), transparent); }
+  .carousel {
+    overflow: hidden; padding: 16px 0;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
   }
-  
-  .btn-action {
-    /* Further reduction for extreme screens */
-    padding: 10px 5px;
-    font-size: 14px;
+  .track { display: flex; width: max-content; animation: scroll 80s linear infinite; }
+  .track.reverse { animation-direction: reverse; }
+  .carousel:hover .track { animation-play-state: paused; }
+  @keyframes scroll { to { transform: translateX(-50%); } }
+  .shot {
+    position: relative; flex: 0 0 260px; margin: 0 10px; border-radius: 18px; overflow: hidden; cursor: zoom-in;
+    background: rgba(255,255,255,.04); border: 1px solid var(--line);
+    transition: transform .45s var(--spring), border-color .3s, box-shadow .3s;
   }
-}
-      /*
-            =========================================
-            CLEAN UP / FIXES
-            =========================================
-        */
-      /* The redundant header style block below the carousel styles has been removed. 
-        The initial 'header' block was updated for a 'perfect size' using width/max-width/margin-auto. */
-    </style>
-  </head>
-  <header
-    style="
-      background-image: url(&quot;images/main-page.JPG&quot;);
-      background-size: cover;
-      background-position: center;
-      height: 300px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    "
-  >
-    <div style="text-align: center">
-      <h2>Portfolio</h2>
-      <h5>Capturing Moments, Creating Memories</h5>
-    </div>
-  </header>
-  <body>
-    <!-- Horizontal Navigation Bar -->
-    <nav id="horizontal-nav" class="horizontal-nav">
-        <ul class="nav-list">
-            <li>
-                <a href="main-page.html">
-                    <i class="fas fa-home"></i><span>Home</span>
-                </a>
-            </li>
-            <li>
-    <a href="#" onclick="switchCategory(event, 'about')">
-        <i class="fas fa-user"></i><span>About</span>
-    </a>
-</li>
-<li>
-    <a href="#" onclick="switchCategory(event, 'portfolio')">
-        <i class="fas fa-briefcase"></i><span>Portfolio</span>
-    </a>
-</li>
-<li>
-    <a href="#" onclick="switchCategory(event, 'gallery')">
-        <i class="fas fa-paint-brush"></i><span>Gallery</span>
-    </a>
-</li>
-<li>
-    <a href="#" onclick="switchCategory(event, 'camera')">
-        <i class="fas fa-camera"></i><span>Camera Equipment</span>
-    </a>
-</li>
-            <li>
-                <a href="contact.html">
-                    <i class="fas fa-envelope"></i><span>Contact</span>
-                </a>
-            </li>
-        </ul>
+  .shot:hover { transform: translateY(-10px) scale(1.04); border-color: var(--teal); box-shadow: 0 0 30px rgba(110,250,243,.35); z-index: 2; }
+  .shot img { width: 100%; height: 190px; object-fit: cover; display: block; transition: transform .6s var(--ease); }
+  .shot:hover img { transform: scale(1.08); }
+  .shot figcaption {
+    padding: 10px 12px; text-align: center; font-size: .86rem; font-style: italic; color: #eaeaea; background: rgba(0,0,0,.6);
+  }
+  .shot .zoom {
+    position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+    background: rgba(0,0,0,.55); color: var(--teal); opacity: 0; transform: scale(.6); transition: opacity .3s, transform .4s var(--spring);
+  }
+  .shot:hover .zoom { opacity: 1; transform: scale(1); }
+  .shot.loading img { background: linear-gradient(90deg, #1b1b26 25%, #2a2a3a 50%, #1b1b26 75%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; }
+
+  /* ---------- Camera gear ---------- */
+  .gear { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; max-width: 1120px; margin: 0 auto; }
+  .gear-card {
+    padding: 24px; text-align: center; border-radius: 24px; display: flex; flex-direction: column; align-items: center;
+    background: linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.015));
+    border: 1px solid var(--line); transform-style: preserve-3d; will-change: transform;
+    transition: transform .25s var(--ease), border-color .35s, box-shadow .35s;
+  }
+  .gear-card:hover { border-color: rgba(110,250,243,.5); box-shadow: 0 22px 50px rgba(110,250,243,.16); }
+  .gear-card .img-wrap { position: relative; width: 100%; height: 180px; margin-bottom: 14px; transform: translateZ(30px); }
+  .gear-card img {
+    width: 100%; height: 100%; object-fit: contain;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,.8)); transition: filter .4s, transform .5s var(--spring);
+  }
+  .gear-card:hover img { filter: drop-shadow(0 0 14px rgba(110,250,243,.5)); transform: scale(1.06); }
+  .gear-card h3 { margin: 0 0 6px; font-size: 1.05rem; color: #fff; transform: translateZ(20px); }
+  .gear-card p { margin: 0; color: #d6d4ec; font-size: .9rem; line-height: 1.5; flex: 1; transform: translateZ(10px); }
+  .gear-card .btn { transform: translateZ(25px); }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 500; display: grid; grid-template-rows: 1fr auto; padding: 16px;
+    background: rgba(4,3,10,.94); backdrop-filter: blur(10px);
+    opacity: 0; visibility: hidden; transition: opacity .35s, visibility .35s;
+  }
+  .lightbox.open { opacity: 1; visibility: visible; }
+  .lb-stage { position: relative; display: grid; place-items: center; min-height: 0; overflow: hidden; touch-action: pan-y; }
+  .lb-stage img {
+    max-width: min(92vw, 1100px); max-height: 72vh; border-radius: 16px; border: 2px solid var(--teal); display: block;
+    box-shadow: 0 0 22px var(--teal), 0 0 60px rgba(110,250,243,.3), 0 30px 60px rgba(0,0,0,.8);
+    cursor: zoom-in; transition: transform .45s var(--ease);
+    animation: bounceIn .5s var(--ease);
+  }
+  .lb-stage img.zoomed { transform: scale(1.9); cursor: zoom-out; }
+  .lb-caption { margin-top: 12px; color: #e9fdff; text-shadow: 0 0 8px rgba(110,250,243,.6); text-align: center; }
+  .lb-count { font-family: "Fira Code", monospace; font-size: .75rem; color: var(--muted); }
+  .lb-btn {
+    position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+    background: rgba(12,10,22,.7); border: 1px solid rgba(110,250,243,.4); color: #fff; font-size: 18px;
+    transition: background .25s, color .25s, box-shadow .25s, transform .25s var(--spring);
+  }
+  .lb-btn:hover { background: var(--teal); color: #07060d; box-shadow: 0 0 18px rgba(110,250,243,.6); }
+  .lb-prev { left: 12px; }
+  .lb-next { right: 12px; }
+  .lb-close { position: absolute; top: 16px; right: 16px; width: 46px; height: 46px; z-index: 2; }
+  .lb-close:hover { transform: rotate(90deg); }
+  .lb-meta { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-top: 12px; }
+  .lb-thumbs { display: flex; gap: 8px; overflow-x: auto; padding: 12px 4px 4px; max-width: 100%; scrollbar-width: none; }
+  .lb-thumbs::-webkit-scrollbar { display: none; }
+  .lb-thumbs button {
+    flex: 0 0 64px; height: 48px; padding: 0; border-radius: 10px; overflow: hidden; cursor: pointer;
+    border: 2px solid transparent; opacity: .5; background: #111; transition: opacity .3s, border-color .3s, transform .3s var(--spring);
+  }
+  .lb-thumbs button img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lb-thumbs button:hover { opacity: .9; transform: translateY(-2px); }
+  .lb-thumbs button[aria-current="true"] { opacity: 1; border-color: var(--teal); box-shadow: 0 0 12px rgba(110,250,243,.5); }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin: 64px 16px 0; padding: 22px 18px; text-align: center; border-radius: 22px;
+    background: var(--glass-strong); border: 1px solid var(--line);
+    backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+  footer p { margin: 0; color: #cfcfe0; font-size: .86rem; }
+
+  /* ---------- Reveal on scroll ---------- */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: var(--d, 0s); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1000px) {
+    .brand .name { display: none; }
+    .nav a span, .nav button span { display: none; }
+    .nav a, .nav button { padding: 9px 11px; }
+  }
+  @media (max-width: 760px) {
+    :root { --top: 118px; }
+    .topbar { grid-template-columns: 1fr; grid-template-rows: auto auto; height: auto; padding: 10px 14px 8px; row-gap: 8px; }
+    .brand { justify-self: center; }
+    .nav-scroll { grid-row: 2; }
+    .nav { margin: 0; }
+    .nav a span, .nav button span { display: inline; }
+    .about { grid-template-columns: 1fr; padding: 22px; gap: 22px; }
+    .shot { flex-basis: 220px; }
+    .shot img { height: 160px; }
+    .orb { display: none; }
+    .lb-btn { width: 42px; height: 42px; }
+    .lb-prev { left: 4px; }
+    .lb-next { right: 4px; }
+  }
+  @media (hover: none) {
+    .cursor-glow { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+<!-- ========== Top bar ========== -->
+<header class="topbar">
+  <a class="brand" href="main-page.html" aria-label="Caitlin's Creative Space home">
+    <span class="logo">CS</span>
+    <span class="name">Caitlin's <em>Photos</em></span>
+  </a>
+  <div class="nav-scroll">
+    <nav class="nav" aria-label="Photography sections" id="nav">
+      <span class="nav-pill" id="navPill" aria-hidden="true"></span>
+      <a href="main-page.html"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a>
+      <button type="button" data-section="about" aria-selected="false"><i class="fa-solid fa-user" aria-hidden="true"></i><span>About</span></button>
+      <button type="button" data-section="portfolio" aria-selected="true"><i class="fa-solid fa-briefcase" aria-hidden="true"></i><span>Portfolio</span></button>
+      <button type="button" data-section="gallery" aria-selected="false"><i class="fa-solid fa-paintbrush" aria-hidden="true"></i><span>Gallery</span></button>
+      <button type="button" data-section="camera" aria-selected="false"><i class="fa-solid fa-camera" aria-hidden="true"></i><span>Camera Equipment</span></button>
+      <a href="contact.html"><i class="fa-solid fa-envelope" aria-hidden="true"></i><span>Contact</span></a>
     </nav>
+  </div>
+</header>
 
-    <!-- Main content -->
-    <div id="main-content" class="main-content">
-      <section id="introduction">
-        <h2>Welcome to My Photography Portfolio</h2>
-        <p>Explore my work and feel free to reach out!</p>
-      </section>
+<main>
+  <!-- ========== Hero ========== -->
+  <section class="hero" aria-labelledby="hero-title" id="hero">
+    <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
+    <span class="orb a" aria-hidden="true"></span>
+    <span class="orb b" aria-hidden="true"></span>
+    <div class="hero-inner">
+      <div class="eyebrow">Photography</div>
+      <h1 id="hero-title">Portfolio</h1>
+      <p class="tagline">Capturing Moments, Creating Memories</p>
+      <div class="intro">Explore my work and feel free to reach out!</div>
+      <div class="chips">
+        <span class="chip"><i class="fa-solid fa-camera" aria-hidden="true"></i>Sony A7IV</span>
+        <span class="chip"><i class="fa-solid fa-image" aria-hidden="true"></i>Stills &amp; gallery</span>
+        <span class="chip"><i class="fa-solid fa-ticket" aria-hidden="true"></i>Conventions</span>
+      </div>
     </div>
+  </section>
+
+  <!-- ========== About ========== -->
+  <section id="about" class="panel" hidden aria-labelledby="about-title">
+    <div class="section-head reveal">
+      <h2 id="about-title">About Me</h2>
+      <div class="ul"></div>
+    </div>
+    <div class="about glass spot reveal">
+      <div class="about-photo">
+        <img src="images/streamself.png" alt="Caitlin, photographer" />
+      </div>
+      <div>
+        <h3>Behind the lens</h3>
+        <blockquote id="aboutQuote">I'm deeply passionate about photography. I hope to show you some of my fun hobbies when I do some pictures.</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Portfolio ========== -->
+  <section id="portfolio" class="panel" aria-labelledby="portfolio-title">
+    <div class="section-head reveal">
+      <h2 id="portfolio-title">Portfolio</h2>
+      <div class="ul"></div>
+      <p>Two places to see my work</p>
+    </div>
+    <div class="cards">
+      <article class="card glass spot reveal" style="--d:.05s">
+        <div class="c-ico"><i class="fa-solid fa-images" aria-hidden="true"></i></div>
+        <h3>My Portfolio</h3>
+        <p>Visit my main Adobe creative portfolio.</p>
+        <a class="btn magnetic" href="https://caitlinakfallen.myportfolio.com/" target="_blank" rel="noopener noreferrer">Open Portfolio <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+      </article>
+      <article class="card glass spot reveal" style="--d:.15s">
+        <div class="c-ico" style="color:var(--lilac); border-color:rgba(194,162,252,.35); background:rgba(194,162,252,.08);"><i class="fa-solid fa-camera-retro" aria-hidden="true"></i></div>
+        <h3>Sony Portfolio</h3>
+        <p>Check out my gear-specific shots on Sony Creators Cloud.</p>
+        <a class="btn magnetic" href="https://creatorscloud.sony.net/discover/mystudio/gp_Wb27RdL893WZqhGhSRP49F" target="_blank" rel="noopener noreferrer">Open Sony Studio <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+      </article>
+    </div>
+  </section>
+
+  <!-- ========== Gallery ========== -->
+  <section id="gallery" class="panel" hidden aria-labelledby="gallery-title">
+    <div class="section-head reveal">
+      <h2 id="gallery-title">Gallery</h2>
+      <div class="ul"></div>
+      <p>Hover a row to pause. Click any photo to view it larger.</p>
+    </div>
+    <div class="rows" id="galleryRows"></div>
+  </section>
+
+  <!-- ========== Camera Equipment ========== -->
+  <section id="camera" class="panel" hidden aria-labelledby="camera-title">
+    <div class="section-head reveal">
+      <h2 id="camera-title">My Equipment</h2>
+      <div class="ul"></div>
+      <p>The gear behind the shots</p>
+    </div>
+    <div class="gear" id="gearGrid"></div>
+  </section>
+</main>
+
+<footer class="reveal">
+  <p>&copy; 2025 Caitlin's Creative Space | All Rights Reserved</p>
+</footer>
+
+<!-- ========== Lightbox ========== -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <div class="lb-stage" id="lbStage">
+    <button class="lb-btn lb-close" type="button" id="lbClose" aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    <button class="lb-btn lb-prev" type="button" id="lbPrev" aria-label="Previous photo"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+    <img id="lbImg" alt="" />
+    <button class="lb-btn lb-next" type="button" id="lbNext" aria-label="Next photo"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+  </div>
+  <div class="lb-meta">
+    <div class="lb-caption" id="lbCaption"></div>
+    <div class="lb-count" id="lbCount"></div>
+    <div class="lb-thumbs" id="lbThumbs" role="group" aria-label="Thumbnails"></div>
+  </div>
+</div>
 
 <script>
-    const categories = {
-        portfolio: `
-            <div class="revamp-grid">
-                <div class="glass-card">
-                    <i class="fas fa-images fa-3x" style="color:#6efaf3; margin-bottom:15px;"></i>
-                    <h3>My Portfolio</h3>
-                    <p>Visit my main Adobe creative portfolio.</p>
-                    <a href="https://caitlinakfallen.myportfolio.com/" target="_blank" class="btn-action">Open Portfolio</a>
-                </div>
-                <div class="glass-card">
-                    <i class="fas fa-camera-retro fa-3x" style="color:#c2a2fc; margin-bottom:15px;"></i>
-                    <h3>Sony Portfolio</h3>
-                    <p>Check out my gear-specific shots on Sony Creators Cloud.</p>
-                    <a href="https://creatorscloud.sony.net/discover/mystudio/gp_Wb27RdL893WZqhGhSRP49F" target="_blank" class="btn-action">Open Sony Studio</a>
-                </div>
-            </div>
-        `,
-        gallery: `
-            <div class="carousel-wrapper">
-                <h2>General Gallery</h2>
-                <div class="carousel-container">
-                    <div class="image-container">
-                        <div class="image-item"><img src="Photography/Thankgiving.jpg" onclick="openModal(this)"><figcaption>Thanksgiving Celebration</figcaption></div>
-                        <div class="image-item"><img src="Photography/me-and-maggie.jpg" onclick="openModal(this)"><figcaption>Me and Maggie</figcaption></div>
-                        <div class="image-item"><img src="Photography/thanksgiving.jpg" onclick="openModal(this)"><figcaption>Autumn Decorations</figcaption></div>
-                        <div class="image-item"><img src="Photography/Thankgiving.jpg" onclick="openModal(this)"><figcaption>Thanksgiving Celebration</figcaption></div>
-                        <div class="image-item"><img src="Photography/Thankgiving.jpg" onclick="openModal(this)"><figcaption>Thanksgiving Celebration</figcaption></div>
-                        <div class="image-item"><img src="Photography/me-and-maggie.jpg" onclick="openModal(this)"><figcaption>Me and Maggie</figcaption></div>
-                        <div class="image-item"><img src="Photography/thanksgiving.jpg" onclick="openModal(this)"><figcaption>Autumn Decorations</figcaption></div>
-                        <div class="image-item"><img src="Photography/Thankgiving.jpg" onclick="openModal(this)"><figcaption>Thanksgiving Celebration</figcaption></div>
-                    </div>
-                </div>
-            </div>
+(() => {
+  "use strict";
+/* ===== REMOVE .HTML FROM URL ===== */
+  (function hideHtmlInURL() {
+    const pathname = window.location.pathname;
+    if (pathname.endsWith(".html")) {
+      window.history.replaceState({}, "", pathname.replace(/\.html$/, "") + window.location.search + window.location.hash);
+    }
+  })();
 
-            <div class="carousel-wrapper">
-                <h2>Conventions</h2>
-                <div class="carousel-container">
-                    <div class="image-container" style="animation-direction: reverse;">
-                        <div class="image-item"><img src="Photography/setup2/photo1.jpg" onclick="openModal(this)"><figcaption>Scene One</figcaption></div>
-                        <div class="image-item"><img src="Photography/setup2/photo2.jpg" onclick="openModal(this)"><figcaption>Scene Two</figcaption></div>
-                        <div class="image-item"><img src="Photography/setup2/photo3.jpg" onclick="openModal(this)"><figcaption>Scene Three</figcaption></div>
-                        <div class="image-item"><img src="Photography/setup2/photo1.jpg" onclick="openModal(this)"><figcaption>Scene One</figcaption></div>
-                        <div class="image-item"><img src="Photography/setup2/photo1.jpg" onclick="openModal(this)"><figcaption>Scene One</figcaption></div>
-                        <div class="image-item"><img src="Photography/setup2/photo2.jpg" onclick="openModal(this)"><figcaption>Scene Two</figcaption></div>
-                        <div class="image-item"><img src="Photography/setup2/photo3.jpg" onclick="openModal(this)"><figcaption>Scene Three</figcaption></div>
-                        <div class="image-item"><img src="Photography/setup2/photo1.jpg" onclick="openModal(this)"><figcaption>Scene One</figcaption></div>
-                    </div>
-                </div>
-            </div>
+  /* ---------- Content (edit here) ---------- */
+  const GALLERY = [
+    {
+      title: "General Gallery",
+      reverse: false,
+      items: [
+        { src: "Photography/Thankgiving.jpg", caption: "Thanksgiving Celebration" },
+        { src: "Photography/me-and-maggie.jpg", caption: "Me and Maggie" },
+        { src: "Photography/thanksgiving.jpg", caption: "Autumn Decorations" },
+        { src: "Photography/Thankgiving.jpg", caption: "Thanksgiving Celebration" },
+        { src: "Photography/Thankgiving.jpg", caption: "Thanksgiving Celebration" },
+        { src: "Photography/me-and-maggie.jpg", caption: "Me and Maggie" },
+        { src: "Photography/thanksgiving.jpg", caption: "Autumn Decorations" },
+        { src: "Photography/Thankgiving.jpg", caption: "Thanksgiving Celebration" }
+      ]
+    },
+    {
+      title: "Conventions",
+      reverse: true,
+      items: [
+        { src: "Photography/setup2/photo1.jpg", caption: "Scene One" },
+        { src: "Photography/setup2/photo2.jpg", caption: "Scene Two" },
+        { src: "Photography/setup2/photo3.jpg", caption: "Scene Three" },
+        { src: "Photography/setup2/photo1.jpg", caption: "Scene One" },
+        { src: "Photography/setup2/photo1.jpg", caption: "Scene One" },
+        { src: "Photography/setup2/photo2.jpg", caption: "Scene Two" },
+        { src: "Photography/setup2/photo3.jpg", caption: "Scene Three" },
+        { src: "Photography/setup2/photo1.jpg", caption: "Scene One" }
+      ]
+    },
+    {
+      title: "Nature",
+      reverse: false,
+      items: [
+        { src: "Photography/nature1.jpg", caption: "Forest Path" },
+        { src: "Photography/nature2.jpg", caption: "Sunset Peaks" },
+        { src: "Photography/nature3.jpg", caption: "Wildlife" },
+        { src: "Photography/nature1.jpg", caption: "Forest Path" },
+        { src: "Photography/nature1.jpg", caption: "Forest Path" },
+        { src: "Photography/nature2.jpg", caption: "Sunset Peaks" },
+        { src: "Photography/nature3.jpg", caption: "Wildlife" },
+        { src: "Photography/nature1.jpg", caption: "Forest Path" }
+      ]
+    }
+  ];
 
-            <div class="carousel-wrapper">
-                <h2>Nature</h2>
-                <div class="carousel-container">
-                    <div class="image-container">
-                        <div class="image-item"><img src="Photography/nature1.jpg" onclick="openModal(this)"><figcaption>Forest Path</figcaption></div>
-                        <div class="image-item"><img src="Photography/nature2.jpg" onclick="openModal(this)"><figcaption>Sunset Peaks</figcaption></div>
-                        <div class="image-item"><img src="Photography/nature3.jpg" onclick="openModal(this)"><figcaption>Wildlife</figcaption></div>
-                        <div class="image-item"><img src="Photography/nature1.jpg" onclick="openModal(this)"><figcaption>Forest Path</figcaption></div>
-                        <div class="image-item"><img src="Photography/nature1.jpg" onclick="openModal(this)"><figcaption>Forest Path</figcaption></div>
-                        <div class="image-item"><img src="Photography/nature2.jpg" onclick="openModal(this)"><figcaption>Sunset Peaks</figcaption></div>
-                        <div class="image-item"><img src="Photography/nature3.jpg" onclick="openModal(this)"><figcaption>Wildlife</figcaption></div>
-                        <div class="image-item"><img src="Photography/nature1.jpg" onclick="openModal(this)"><figcaption>Forest Path</figcaption></div>
-                    </div>
-                </div>
-            </div>
-        `,
-        about: `
-            <section id="about-me" style="margin-top: 20px;">
-                <h2>About Me</h2>
-                <img src="images/streamself.png" alt="Photography" style="width: 270px; height: 220px; margin-bottom: 10px; border-radius: 10px; border: 2px solid #6efaf3;">
-                <p>"I'm deeply passionate about photography. I hope to show you some of my fun hobbies when I do some pictures."</p>
-            </section>
-        `,
-        camera: `
-            <h2 style="text-align:center; color:#6efaf3; margin-top:20px;">My Equipment</h2>
-            <div class="revamp-grid">
-                <div class="glass-card">
-                    <img src="images/SonyA7IV.png" alt="Sony A7IV" class="equipment-img">
-                    <h3>Sony A7IV</h3>
-                    <p>Primary Mirrorless Camera Body</p>
-                    <a href="https://electronics.sony.com/imaging/interchangeable-lens-cameras/all-interchangeable-lens-cameras/p/ilce7m4k-b" target="_blank" class="btn-action">View Specs</a>
-                </div>
-                <div class="glass-card">
-                    <img src="images/Sigma-150-600mm-Sport.png" alt="Sigma Lens" class="equipment-img">
-                    <h3>Sigma Sports 150-600mm</h3>
-                    <p>F5-6.3 DG DN OS Lens</p>
-                    <a href="https://www.sigma-global.com/en/lenses/s021_150_600_5_63/" target="_blank" class="btn-action">View Specs</a>
-                </div>
-                <div class="glass-card">
-                    <img src="images/SonyFE28-70mm.png" alt="Sony FE 28-70mm" class="equipment-img">
-                    <h3>Sony FE 28-70mm</h3>
-                    <p> F/3.5-5.6 OSS II</p>
-                    <a href="https://electronics.sony.com/imaging/lenses/all-e-mount/p/sel2870" target="_blank" class="btn-action">View Specs</a>
-                </div>
-                 <div class="glass-card">
-                    <img src="images/SonyE-PZ16-50mm.png" alt="Sony E PZ 16-50mm" class="equipment-img">
-                    <h3>Sony E PZ 16-50mm </h3>
-                    <p>F3.5-5.6 OSS II - Compact APS-C standard power zoom lens with Optical SteadyShot</p>
-                    <a href="https://electronics.sony.com/imaging/lenses/all-e-mount/p/sel2870" target="_blank" class="btn-action">View Specs</a>
-                </div>
-                 <div class="glass-card">
-                    <img src="images/SonyGMFE35mm.png" alt="Sony GM FE 35mm" class="equipment-img">
-                    <h3>Sony GM FE 35mm  </h3>
-                    <p>F1.4 GM Full-frame Standard Prime G Master Lens</p>
-                    <a href="https://electronics.sony.com/imaging/lenses/all-e-mount/p/sel35f14gm" target="_blank" class="btn-action">View Specs</a>
-                </div>
-            </div>
-        `,
-    };
-      /* ===== REMOVE .HTML FROM URL ===== */
-    (function hideHtmlInURL() {
-        const pathname = window.location.pathname;
-        if (pathname.endsWith(".html")) {
-            // Replace URL in browser without reloading the page
-            window.history.replaceState({}, "", pathname.replace(".html", ""));
-        }
+  const GEAR = [
+    { img: "images/SonyA7IV.png", name: "Sony A7IV", desc: "Primary Mirrorless Camera Body", url: "https://electronics.sony.com/imaging/interchangeable-lens-cameras/all-interchangeable-lens-cameras/p/ilce7m4k-b" },
+    { img: "images/Sigma-150-600mm-Sport.png", name: "Sigma Sports 150-600mm", desc: "F5-6.3 DG DN OS Lens", url: "https://www.sigma-global.com/en/lenses/s021_150_600_5_63/" },
+    { img: "images/SonyFE28-70mm.png", name: "Sony FE 28-70mm", desc: "F/3.5-5.6 OSS II", url: "https://electronics.sony.com/imaging/lenses/all-e-mount/p/sel2870" },
+    { img: "images/SonyE-PZ16-50mm.png", name: "Sony E PZ 16-50mm", desc: "F3.5-5.6 OSS II - Compact APS-C standard power zoom lens with Optical SteadyShot", url: "https://electronics.sony.com/imaging/lenses/all-e-mount/p/sel2870" },
+    { img: "images/SonyGMFE35mm.png", name: "Sony GM FE 35mm", desc: "F1.4 GM Full-frame Standard Prime G Master Lens", url: "https://electronics.sony.com/imaging/lenses/all-e-mount/p/sel35f14gm" }
+  ];
+
+  const SECTIONS = ["about", "portfolio", "gallery", "camera"];
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const $ = s => document.querySelector(s);
+
+  /* ---------- Build gallery rows (tracks are doubled for a seamless loop) ---------- */
+  function renderGallery() {
+    $("#galleryRows").innerHTML = GALLERY.map((row, r) => {
+      const shots = row.items.map((it, i) => `
+        <figure class="shot loading" data-row="${r}" data-index="${i}" tabindex="0" role="button" aria-label="View ${esc(it.caption)}">
+          <img src="${esc(it.src)}" alt="${esc(it.caption)}" loading="lazy" onload="this.parentElement.classList.remove('loading')" />
+          <span class="zoom" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
+          <figcaption>${esc(it.caption)}</figcaption>
+        </figure>`).join("");
+      return `
+        <div class="reveal">
+          <div class="row-head"><h3>${esc(row.title)}</h3><span class="count">${row.items.length} photos</span></div>
+          <div class="carousel">
+            <div class="track${row.reverse ? " reverse" : ""}">${shots}${shots}</div>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  /* ---------- Build camera gear ---------- */
+  function renderGear() {
+    $("#gearGrid").innerHTML = GEAR.map((g, i) => `
+      <article class="gear-card glass reveal tilt" style="--d:${(i * 0.08).toFixed(2)}s">
+        <div class="img-wrap"><img src="${esc(g.img)}" alt="${esc(g.name)}" loading="lazy" /></div>
+        <h3>${esc(g.name)}</h3>
+        <p>${esc(g.desc)}</p>
+        <a class="btn magnetic" href="${esc(g.url)}" target="_blank" rel="noopener noreferrer">View Specs <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+      </article>`).join("");
+  }
+
+  /* ---------- Section switching (with sliding pill) ---------- */
+  const pill = $("#navPill");
+  function movePill(btn) {
+    if (!btn) return;
+    pill.style.left = btn.offsetLeft + "px";
+    pill.style.width = btn.offsetWidth + "px";
+  }
+  function showSection(id, { updateHash = true, scroll = false } = {}) {
+    if (!SECTIONS.includes(id)) id = "portfolio";
+    SECTIONS.forEach(s => {
+      const panel = document.getElementById(s);
+      const on = s === id;
+      panel.hidden = !on;
+      if (on) { panel.classList.remove("panel"); void panel.offsetWidth; panel.classList.add("panel"); }
+    });
+    document.querySelectorAll(".nav button[data-section]").forEach(b => {
+      const on = b.dataset.section === id;
+      b.setAttribute("aria-selected", String(on));
+      if (on) movePill(b);
+    });
+    observeReveals();
+    if (updateHash) history.replaceState(null, "", "#" + id);
+    if (scroll) window.scrollTo({ top: $("#hero").offsetTop + $("#hero").offsetHeight - 40, behavior: reduceMotion ? "auto" : "smooth" });
+  }
+  document.querySelectorAll(".nav button[data-section]").forEach(b => {
+    b.addEventListener("click", () => showSection(b.dataset.section, { scroll: true }));
+  });
+  window.addEventListener("resize", () => movePill(document.querySelector('.nav button[aria-selected="true"]')));
+
+  /* ---------- Typewriter-style word reveal for the About quote ---------- */
+  function splitWords() {
+    const q = $("#aboutQuote");
+    if (q.dataset.split) return;
+    q.innerHTML = q.textContent.split(" ").map((w, i) =>
+      `<span class="word" style="transition-delay:${(i * 0.03).toFixed(2)}s">${esc(w)}</span>`).join(" ");
+    q.dataset.split = "1";
+  }
+  splitWords();
+
+  /* ---------- Scroll-based effects ---------- */
+  const progress = $("#progress");
+  const heroBg = $("#heroBg");
+  function onScroll() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+    if (!reduceMotion) heroBg.style.setProperty("--py", `${Math.min(scrollY * 0.25, 120) * -1}px`);
+  }
+  addEventListener("scroll", onScroll, { passive: true });
+
+  /* ---------- Reveal on scroll (staggered via --d) ---------- */
+  let revealIO = null;
+  function observeReveals() {
+    if (!("IntersectionObserver" in window)) {
+      document.querySelectorAll(".reveal").forEach(el => el.classList.add("in"));
+      return;
+    }
+    if (!revealIO) {
+      revealIO = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add("in");
+            if (e.target.matches(".about blockquote, #aboutQuote")) e.target.classList.add("in");
+            revealIO.unobserve(e.target);
+          }
+        });
+      }, { threshold: .12 });
+    }
+    document.querySelectorAll(".reveal:not(.in)").forEach(el => {
+      if (el.closest("[hidden]")) return;
+      revealIO.observe(el);
+    });
+    // About quote words animate once the section is visible
+    const q = $("#aboutQuote");
+    if (q && !q.closest("[hidden]")) {
+      requestAnimationFrame(() => q.classList.add("in"));
+    }
+  }
+
+  /* ---------- Spotlight + 3D tilt + magnetic buttons (fine pointers only) ---------- */
+  function initPointerEffects() {
+    if (!finePointer || reduceMotion) return;
+
+    const glow = $("#cursorGlow");
+    let gx = innerWidth / 2, gy = innerHeight / 2, cx = gx, cy = gy;
+    addEventListener("mousemove", e => {
+      gx = e.clientX; gy = e.clientY;
+      glow.classList.add("on");
+    });
+    (function loop() {
+      cx += (gx - cx) * 0.15; cy += (gy - cy) * 0.15;
+      glow.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+      requestAnimationFrame(loop);
     })();
-   function switchCategory(event, category) {
-    // 1. STOP the '#' from appearing in the URL
-    if (event) {
-        event.preventDefault();
+
+    document.addEventListener("pointermove", e => {
+      const card = e.target.closest(".spot");
+      if (card) {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--mx", (e.clientX - r.left) + "px");
+        card.style.setProperty("--my", (e.clientY - r.top) + "px");
+      }
+      const tilt = e.target.closest(".tilt");
+      if (tilt) {
+        const r = tilt.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        tilt.style.transform = `perspective(900px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) translateY(-6px)`;
+      }
+      const mag = e.target.closest(".magnetic");
+      if (mag) {
+        const r = mag.getBoundingClientRect();
+        const x = (e.clientX - (r.left + r.width / 2)) * 0.18;
+        const y = (e.clientY - (r.top + r.height / 2)) * 0.25;
+        mag.style.transform = `translate(${x}px, ${y}px)`;
+      }
+    });
+    document.addEventListener("pointerout", e => {
+      const tilt = e.target.closest && e.target.closest(".tilt");
+      if (tilt && !tilt.contains(e.relatedTarget)) tilt.style.transform = "";
+      const mag = e.target.closest && e.target.closest(".magnetic");
+      if (mag && !mag.contains(e.relatedTarget)) mag.style.transform = "";
+    });
+  }
+
+  /* ---------- Lightbox ---------- */
+  const lb = $("#lightbox");
+  const lbImg = $("#lbImg");
+  const lbCaption = $("#lbCaption");
+  const lbCount = $("#lbCount");
+  const lbThumbs = $("#lbThumbs");
+  const lbStage = $("#lbStage");
+  let lbList = [];
+  let lbIndex = 0;
+  let lastFocus = null;
+
+  function renderThumbs() {
+    lbThumbs.innerHTML = lbList.map((it, i) =>
+      `<button type="button" data-i="${i}" aria-label="Photo ${i + 1}: ${esc(it.caption)}"><img src="${esc(it.src)}" alt="" /></button>`).join("");
+  }
+  function showLightbox(i) {
+    lbIndex = (i + lbList.length) % lbList.length;
+    const item = lbList[lbIndex];
+    lbImg.classList.remove("zoomed");
+    lbImg.src = item.src;
+    lbImg.alt = item.caption;
+    lbCaption.textContent = item.caption;
+    lbCount.textContent = `${lbIndex + 1} / ${lbList.length}`;
+    lbThumbs.querySelectorAll("button").forEach((b, n) => {
+      b.setAttribute("aria-current", String(n === lbIndex));
+    });
+    const active = lbThumbs.querySelector('[aria-current="true"]');
+    if (active) active.scrollIntoView({ inline: "center", block: "nearest", behavior: reduceMotion ? "auto" : "smooth" });
+  }
+  function openLightbox(row, index) {
+    lastFocus = document.activeElement;
+    lbList = GALLERY[row].items;
+    renderThumbs();
+    showLightbox(index);
+    lb.classList.add("open");
+    document.body.style.overflow = "hidden";
+    $("#lbClose").focus();
+  }
+  function closeLightbox() {
+    lb.classList.remove("open");
+    document.body.style.overflow = "";
+    if (lastFocus) lastFocus.focus();
+  }
+
+  $("#galleryRows").addEventListener("click", e => {
+    const shot = e.target.closest(".shot");
+    if (shot) openLightbox(Number(shot.dataset.row), Number(shot.dataset.index));
+  });
+  $("#galleryRows").addEventListener("keydown", e => {
+    const shot = e.target.closest(".shot");
+    if (shot && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      openLightbox(Number(shot.dataset.row), Number(shot.dataset.index));
     }
+  });
 
-    const contentDiv = document.getElementById("main-content");
+  $("#lbClose").addEventListener("click", closeLightbox);
+  $("#lbPrev").addEventListener("click", () => showLightbox(lbIndex - 1));
+  $("#lbNext").addEventListener("click", () => showLightbox(lbIndex + 1));
+  lbThumbs.addEventListener("click", e => {
+    const b = e.target.closest("button[data-i]");
+    if (b) showLightbox(Number(b.dataset.i));
+  });
+  lbImg.addEventListener("click", () => lbImg.classList.toggle("zoomed"));
+  lb.addEventListener("click", e => { if (e.target === lbStage || e.target === lb) closeLightbox(); });
 
-    // 2. Check if the category exists, then inject the HTML
-    if (categories[category]) {
-        contentDiv.innerHTML = categories[category];
-        
-        // 3. Optional: Smooth scroll back to top of content
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-        // 4. Re-initialize modal logic for the new images
-        createImageModal();
-    } else {
-        console.error("Category not found:", category);
-    }
-}
-    // Modal Logic
-    function createImageModal() {
-        if (document.getElementById("imageModal")) return;
-        const modal = document.createElement("div");
-        modal.id = "imageModal";
-        modal.className = "image-modal";
-        modal.innerHTML = `
-            <div class="modal-content-wrapper">
-                <span class="image-modal-close" onclick="closeModal()">&times;</span>
-                <img class="image-modal-content" id="modalImg">
-                <div class="image-modal-caption" id="modalCaption"></div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        modal.onclick = function (e) {
-            if (e.target === modal) closeModal();
-        };
-    }
+  document.addEventListener("keydown", e => {
+    if (!lb.classList.contains("open")) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft") showLightbox(lbIndex - 1);
+    if (e.key === "ArrowRight") showLightbox(lbIndex + 1);
+  });
 
-    function openModal(element) {
-        const modal = document.getElementById("imageModal");
-        if (!modal) createImageModal();
-        
-        const modalImg = document.getElementById("modalImg");
-        const caption = document.getElementById("modalCaption");
+  // Swipe support
+  let touchX = null;
+  lbStage.addEventListener("touchstart", e => { touchX = e.touches[0].clientX; }, { passive: true });
+  lbStage.addEventListener("touchend", e => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) showLightbox(lbIndex + (dx < 0 ? 1 : -1));
+    touchX = null;
+  });
 
-        document.getElementById("imageModal").style.display = "flex";
-        modalImg.src = element.src;
+  /* ---------- Init ---------- */
+  renderGallery();
+  renderGear();
+  initPointerEffects();
+  onScroll();
 
-        const fig = element.parentElement.querySelector("figcaption");
-        caption.textContent = fig ? fig.textContent : "";
-    }
-
-    function closeModal() {
-        const modal = document.getElementById("imageModal");
-        if (modal) modal.style.display = "none";
-    }
+  const fromHash = location.hash.slice(1);
+  showSection(SECTIONS.includes(fromHash) ? fromHash : "portfolio", { updateHash: false });
+  observeReveals();
+})();
 </script>
-  </body>
+</body>
 </html>
