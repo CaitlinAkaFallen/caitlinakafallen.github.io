@@ -678,6 +678,15 @@
       const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
       const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
 
+      /* ===== REMOVE .HTML FROM URL ===== */
+  (function hideHtmlInURL() {
+    const pathname = window.location.pathname;
+    if (pathname.endsWith(".html")) {
+      window.history.replaceState({}, "", pathname.replace(/\.html$/, "") + window.location.search + window.location.hash);
+    }
+  })();
+
+      
       /* =========================
          Gallery data — add or edit art here
          src: image path   title: caption   group: optional section heading
