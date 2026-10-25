@@ -169,14 +169,21 @@
   }
 
   async function finishGoogleLogin(token) {
-    const r = await fetch("https://www.googleapis.com/oauth2/v1/userinfo?alt=json", {
-      headers: { "Authorization": "Bearer " + token }
-    });
-    if (!r.ok) throw new Error("Google " + r.status);
-    const d = await r.json();
-    localStorage.setItem("socialUser", JSON.stringify({ name: d.name, avatar: d.picture, platform: "google" }));
+    // Try the current userinfo endpoint first, then the older one
+    let d = null, lastStatus = null;
+    for (const url of [
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      "https://www.googleapis.com/oauth2/v2/userinfo"
+    ]) {
+      const r = await fetch(url, { headers: { "Authorization": "Bearer " + token } });
+      if (r.ok) { d = await r.json(); break; }
+      lastStatus = r.status;
+    }
+    if (!d) throw new Error("Google " + lastStatus);
+    const name = d.name || d.given_name || "Google user";
+    localStorage.setItem("socialUser", JSON.stringify({ name, avatar: d.picture || "", platform: "google" }));
     localStorage.removeItem("twitchUser");
-    toast(`Logged in as ${d.name}`);
+    toast(`Logged in as ${name}`);
   }
 
   function finishDiscordLogin() {
@@ -205,8 +212,8 @@
       else if (provider === "google" && token) await finishGoogleLogin(token);
       else if (provider === "discord" && code) finishDiscordLogin();
     } catch (e) {
-      console.error("Login failed:", e);
-      toast("Login failed. Please try again.");
+      console.error(`${provider} login failed:`, e);
+      toast(`${provider} login failed (${e.message}). Check the browser console.`);
     }
     renderProfile();
   }
