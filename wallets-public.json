@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-29T05:38:17.325Z",
+  "updatedAt": "2026-10-29T05:39:05.731Z",
   "wallets": {
     "fallenoneart": {
       "inventory": {
@@ -93,11 +93,11 @@
           "label": "Winner Choose Game"
         },
         "No Swear": {
-          "count": 1,
+          "count": 2,
           "label": "No Swearing"
         }
       },
-      "updatedAt": "2026-10-29T05:16:29.032Z"
+      "updatedAt": "2026-10-29T05:38:45.727Z"
     }
   }
 }
