@@ -111,9 +111,9 @@
     .avatar-ring{position:relative;flex-shrink:0;width:72px;height:72px;border-radius:50%;padding:3px;
       background:conic-gradient(from 0deg,var(--violet),var(--cyan),var(--teal),var(--violet));animation:spin 8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
-    #user-avatar{width:100%;height:100%;border-radius:50%;object-fit:cover;background:#111827;border:2px solid var(--bg);display:block;animation:none}
+    #user-avatar{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);border-radius:50%;object-fit:cover;background:#111827;border:2px solid var(--bg);display:block;animation:none;z-index:1}
     #user-avatar:not([src]), #user-avatar[src=""]{visibility:hidden}
-    .avatar-fallback{position:absolute;inset:3px;border-radius:50%;display:grid;place-items:center;background:#111827;color:var(--violet-lt);font-size:24px;pointer-events:none}
+    .avatar-fallback{position:absolute;inset:3px;border-radius:50%;display:grid;place-items:center;background:#111827;color:var(--violet-lt);font-size:24px;pointer-events:none;z-index:0}
     .user-info{flex:1;min-width:200px}
     .user-name-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
     .user-name{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;line-height:1}
@@ -238,7 +238,7 @@
 
   <div class="glass user-card" id="user-card">
     <div class="avatar-ring">
-      <img id="user-avatar" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="">
+      <img id="user-avatar" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" referrerpolicy="no-referrer">
       <div class="avatar-fallback"><i class="fa-solid fa-user"></i></div>
     </div>
     <div class="user-info">
@@ -455,6 +455,7 @@ function loginSuccess(username, displayName, avatarUrl) {
   updateUserCard(username, displayName, avatarUrl);
   loadPrizes(username);
   requestWallet(username);
+  if (PUBLIC_MODE) loadPublicWallets();
   // Only the channel owner sees the lookup panel.
   document.getElementById('admin-section').classList.toggle('hidden', username.toLowerCase() !== TARGET_CHANNEL);
 }
@@ -727,8 +728,36 @@ window.addEventListener('storage', e => {
   if (activeUser && e.key === LS_INV(activeUser)) loadPrizes(activeUser.toLowerCase());
 });
 
+// On the public site the page cannot reach Streamer.bot, so it reads the
+// wallet file the app publishes to the site instead.
+const PUBLIC_MODE = !['localhost', '127.0.0.1'].includes(location.hostname);
+const PUBLIC_FEED = 'wallets-public.json';
+
+async function loadPublicWallets() {
+  try {
+    const res = await fetch(`${PUBLIC_FEED}?t=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const wallets = (data && data.wallets) || {};
+    Object.entries(wallets).forEach(([user, w]) => {
+      localStorage.setItem(LS_INV(user), JSON.stringify(cleanInventory(w.inventory)));
+    });
+    const login = currentLogin();
+    if (login) loadPrizes(login);
+  } catch (e) {
+    // Feed not reachable yet: keep what the page has.
+  }
+}
+
 checkAuth();
-connectWS();
+if (PUBLIC_MODE) {
+  setLink(true, 'Wallet feed: public site');
+  document.getElementById('link-addr').textContent = 'published wallet feed';
+  loadPublicWallets();
+  setInterval(loadPublicWallets, 20000);
+} else {
+  connectWS();
+}
 </script>
 </body>
 </html>
