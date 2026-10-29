@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-29T05:50:09.020Z",
+  "updatedAt": "2026-10-29T05:50:40.354Z",
   "wallets": {
     "fallenoneart": {
       "inventory": {
@@ -32,7 +32,7 @@
           "label": "No Swearing"
         },
         "ViewersChoice": {
-          "count": 1,
+          "count": 2,
           "label": "Viewer's Choice"
         },
         "fallgreement": {
@@ -40,7 +40,7 @@
           "label": "Fallgreement"
         }
       },
-      "updatedAt": "2026-10-29T05:46:52.249Z"
+      "updatedAt": "2026-10-29T05:50:20.352Z"
     },
     "raregangster": {
       "inventory": {
