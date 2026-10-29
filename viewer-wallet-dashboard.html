@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prize Wallet — FallenOneArt</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#05070d;
+      --ink:#e8eef8; --mid:#94a3b8; --dim:#5b6b82;
+      --glass:rgba(16,22,38,.55);
+      --line:rgba(255,255,255,.07); --line-hi:rgba(255,255,255,.18);
+      --violet:#8b5cf6; --violet-lt:#c4b5fd;
+      --cyan:#22d3ee; --teal:#2dd4bf;
+      --rose:#fb7185; --green:#4ade80; --amber:#fbbf24;
+      --twitch:#9146FF; --twitch-hv:#a970ff;
+      --grad:linear-gradient(120deg,#a78bfa,#22d3ee 60%,#2dd4bf);
+      --ease:cubic-bezier(.2,.8,.2,1);
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--ink);font-family:'Rajdhani',sans-serif;font-size:16px;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    ::-webkit-scrollbar{width:8px}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:8px}
+    ::selection{background:rgba(139,92,246,.45)}
+
+    /* ── Ambient ─────────────────────────────────────── */
+    .ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .aurora{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:drift 22s var(--ease) infinite alternate}
+    .aurora.a1{width:620px;height:520px;top:-180px;left:-120px;background:radial-gradient(circle,rgba(139,92,246,.42),transparent 70%)}
+    .aurora.a2{width:580px;height:560px;bottom:-220px;right:-140px;background:radial-gradient(circle,rgba(45,212,191,.28),transparent 70%);animation-duration:28s}
+    .aurora.a3{width:420px;height:380px;top:40%;left:40%;background:radial-gradient(circle,rgba(34,211,238,.14),transparent 70%);animation-duration:34s}
+    @keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(60px,40px,0) scale(1.12)}}
+    .grid-floor{position:absolute;inset:0;
+      background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+      background-size:40px 40px;
+      -webkit-mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse at 50% 20%,#000 20%,transparent 75%)}
+
+    .page{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 22px 90px}
+
+    /* ── Header ──────────────────────────────────────── */
+    header{text-align:center;padding:50px 0 30px;position:relative}
+    .eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--teal);text-transform:uppercase;opacity:.8;margin-bottom:12px;display:inline-flex;align-items:center;gap:10px}
+    .eyebrow i{font-size:12px}
+    header h1{font-family:'Bebas Neue',sans-serif;font-size:76px;letter-spacing:6px;line-height:.95;font-weight:400;
+      background:linear-gradient(125deg,#ddd6fe 0%,#a78bfa 40%,#67e8f9 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      filter:drop-shadow(0 0 30px rgba(139,92,246,.35))}
+    .tagline{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:3px;margin-top:12px;text-transform:uppercase}
+    .header-rule{height:1px;margin:28px auto 0;max-width:520px;background:linear-gradient(90deg,transparent,rgba(196,181,253,.45) 35%,rgba(34,211,238,.45) 65%,transparent)}
+
+    /* ── Glass base ──────────────────────────────────── */
+    .glass{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.01)),var(--glass);
+      border:1px solid var(--line);border-radius:20px;
+      -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+      box-shadow:0 30px 60px -30px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.06);overflow:hidden}
+
+    /* ── Connection bar (Streamer.bot, no password) ──── */
+    .link-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+      padding:12px 18px;border-radius:14px;margin:0 0 22px;background:rgba(255,255,255,.025);border:1px solid var(--line);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.6px;color:var(--mid)}
+    .link-state{display:inline-flex;align-items:center;gap:10px;font-weight:700;text-transform:uppercase}
+    .link-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);transition:background .4s,box-shadow .4s}
+    .link-state.on .link-dot{background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse 2s infinite}
+    .link-state.on{color:var(--green)}
+    .link-state.off{color:var(--rose)}
+    .link-state.off .link-dot{background:var(--rose);box-shadow:0 0 10px var(--rose)}
+    @keyframes pulse{50%{opacity:.4}}
+    .link-meta{color:var(--dim);display:flex;align-items:center;gap:8px}
+    .link-meta i{color:var(--violet-lt)}
+    .btn-gear{background:transparent;border:1px solid var(--line);color:var(--dim);width:28px;height:28px;border-radius:8px;cursor:pointer;display:grid;place-items:center;font-size:12px;transition:all .2s}
+    .btn-gear:hover,.btn-gear.on{color:var(--violet-lt);border-color:rgba(139,92,246,.45);background:rgba(139,92,246,.12)}
+
+    /* ── Twitch setup (Client ID) ────────────────────── */
+    .setup-card{padding:22px 24px;margin:-8px 0 22px}
+    .setup-card h3{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--violet-lt);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+    .setup-row{display:flex;gap:10px;flex-wrap:wrap}
+    .setup-input{flex:1;min-width:220px;background:rgba(3,5,10,.55);border:1px solid var(--line);color:var(--ink);padding:10px 14px;border-radius:10px;
+      font-family:'Space Mono',monospace;font-size:13px;transition:border-color .25s,box-shadow .25s,background .25s}
+    .setup-input:focus{outline:none;border-color:rgba(196,181,253,.6);box-shadow:0 0 0 3px rgba(139,92,246,.15);background:rgba(3,5,10,.85)}
+    .btn-setup{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;letter-spacing:.8px;padding:9px 16px;border-radius:10px;cursor:pointer;
+      background:rgba(34,211,238,.06);color:var(--cyan);border:1px solid rgba(34,211,238,.28);transition:all .2s}
+    .btn-setup:hover{background:rgba(34,211,238,.14);border-color:rgba(34,211,238,.6)}
+    .btn-setup.alt{background:transparent;color:var(--dim);border-color:var(--line-hi)}
+    .btn-setup.alt:hover{color:var(--ink)}
+    .setup-note{font-size:13px;color:var(--dim);line-height:1.55;margin-top:12px}
+    .setup-note b{color:var(--mid)}
+    .setup-status{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;min-height:16px;margin-top:10px;word-break:break-all;color:var(--dim)}
+    .setup-status.ok{color:var(--green)}
+    .setup-status.bad{color:var(--rose)}
+
+    /* ── Auth card ───────────────────────────────────── */
+    .auth-card{padding:34px 26px;margin:0 0 24px;text-align:center}
+    .auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,transparent,var(--twitch),transparent);box-shadow:0 0 14px var(--twitch)}
+    .auth-icon{width:64px;height:64px;margin:0 auto 16px;border-radius:20px;display:grid;place-items:center;font-size:28px;color:#fff;
+      background:linear-gradient(135deg,var(--twitch),#6d28d9);box-shadow:0 12px 30px -8px rgba(145,70,255,.6),inset 0 1px 0 rgba(255,255,255,.3)}
+    .auth-card h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;font-weight:400;margin-bottom:6px}
+    .auth-card p{color:var(--mid);font-size:15px;margin-bottom:20px}
+    .btn-twitch{display:inline-flex;align-items:center;gap:12px;background:var(--twitch);color:#fff;text-decoration:none;
+      padding:13px 30px;border-radius:12px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+      transition:transform .25s var(--ease),box-shadow .25s,background .25s;border:1px solid rgba(255,255,255,.12);position:relative;overflow:hidden}
+    .btn-twitch::before{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s var(--ease)}
+    .btn-twitch:hover{background:var(--twitch-hv);transform:translateY(-2px);box-shadow:0 14px 30px -8px rgba(145,70,255,.6)}
+    .btn-twitch:hover::before{transform:translateX(120%)}
+    .auth-note{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:1.5px;line-height:1.7;text-transform:uppercase;margin-top:18px}
+    .auth-note i{color:var(--teal);margin-right:6px}
+
+    /* ── User card ───────────────────────────────────── */
+    .user-card{padding:20px 24px;display:flex;align-items:center;gap:18px;margin:0 0 28px;flex-wrap:wrap}
+    .avatar-ring{position:relative;flex-shrink:0;width:72px;height:72px;border-radius:50%;padding:3px;
+      background:conic-gradient(from 0deg,var(--violet),var(--cyan),var(--teal),var(--violet));animation:spin 8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #user-avatar{width:100%;height:100%;border-radius:50%;object-fit:cover;background:#111827;border:2px solid var(--bg);display:block;animation:none}
+    #user-avatar:not([src]), #user-avatar[src=""]{visibility:hidden}
+    .avatar-fallback{position:absolute;inset:3px;border-radius:50%;display:grid;place-items:center;background:#111827;color:var(--violet-lt);font-size:24px;pointer-events:none}
+    .user-info{flex:1;min-width:200px}
+    .user-name-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .user-name{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;line-height:1}
+    .user-login{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:1px;margin-top:6px}
+    .btn-signout{background:rgba(251,113,133,.06);border:1px solid rgba(251,113,133,.28);color:var(--rose);padding:4px 11px;border-radius:8px;
+      font-family:'Space Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .2s}
+    .btn-signout:hover{background:rgba(251,113,133,.14);border-color:var(--rose)}
+    .btn-signout i{margin-right:5px}
+    .stream-status{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;padding:6px 14px;border-radius:100px;border:1px solid;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px}
+    .stream-status.live{color:var(--green);border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.07);box-shadow:0 0 14px rgba(74,222,128,.12)}
+    .stream-status.live i{animation:pulse 1.2s ease infinite}
+    .stream-status.offline{color:var(--dim);border-color:rgba(91,107,130,.35);background:transparent}
+
+    /* ── Section labels ──────────────────────────────── */
+    .section-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+    .section-lbl{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--mid);text-transform:uppercase;white-space:nowrap;display:flex;align-items:center;gap:10px}
+    .section-lbl i{color:var(--violet-lt)}
+    .section-rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent)}
+
+    /* ── Prize wallet ────────────────────────────────── */
+    #prize-section{margin-bottom:36px}
+    #prize-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+    .prize-card{position:relative;display:flex;flex-direction:column;overflow:hidden;border-radius:16px;
+      background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.01)),var(--glass);
+      border:1px solid var(--line);transition:transform .35s var(--ease),box-shadow .35s,border-color .35s;
+      animation:cardIn .5s var(--ease) both;animation-delay:calc(var(--i,0) * 60ms)}
+    @keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+    .prize-card:hover{transform:translateY(-4px);border-color:var(--pc);box-shadow:0 20px 40px -18px rgba(0,0,0,.9),0 0 26px -8px var(--pc)}
+    .prize-glow{position:absolute;top:-60px;right:-60px;width:160px;height:160px;border-radius:50%;background:var(--pc);opacity:.18;filter:blur(40px);pointer-events:none;transition:opacity .35s}
+    .prize-card:hover .prize-glow{opacity:.32}
+    .prize-strip{height:3px;background:linear-gradient(90deg,var(--pc,#7c3aed),transparent 85%);box-shadow:0 0 12px var(--pc,#7c3aed)}
+    .prize-body{padding:16px 18px 16px;flex-grow:1;display:flex;flex-direction:column;gap:12px;position:relative}
+    .prize-top{display:flex;align-items:center;gap:12px}
+    .prize-icon{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:15px;color:var(--pc);
+      background:color-mix(in srgb,var(--pc) 16%,transparent);border:1px solid color-mix(in srgb,var(--pc) 40%,transparent)}
+    .prize-label{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700;line-height:1.15;color:var(--ink)}
+    .prize-meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:10px;border-top:1px solid var(--line);gap:8px;flex-wrap:wrap}
+    .prize-count{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase}
+    .prize-count span{color:var(--violet-lt);font-size:14px;font-weight:700;margin-left:4px}
+    .channel-badge{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--cyan);background:rgba(34,211,238,.08);
+      border:1px solid rgba(34,211,238,.25);padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
+    .channel-badge i{margin-right:4px}
+
+    /* ── Empty / loading states ──────────────────────── */
+    .state-box{grid-column:1/-1;text-align:center;padding:44px 24px;border-radius:18px;
+      background:rgba(16,22,38,.4);border:1.5px dashed var(--line-hi)}
+    .state-icon{width:64px;height:64px;margin:0 auto 16px;border-radius:20px;display:grid;place-items:center;font-size:26px;color:var(--violet-lt);
+      background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);animation:float 4s ease-in-out infinite}
+    @keyframes float{50%{transform:translateY(-5px)}}
+    .state-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--ink);margin-bottom:6px}
+    .state-sub{font-size:15px;color:var(--mid);line-height:1.6}
+    .state-sub strong{font-family:'Space Mono',monospace;color:var(--cyan);font-size:13px}
+
+    /* ── Commands ────────────────────────────────────── */
+    .cmd-panel{padding:24px 26px;margin-bottom:28px}
+    .cmd-title{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--violet-lt);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+    .cmd-list{display:flex;flex-direction:column;gap:6px}
+    .cmd-row{display:flex;align-items:center;gap:16px;padding:10px 12px;border-radius:12px;transition:background .2s}
+    .cmd-row:hover{background:rgba(255,255,255,.03)}
+    .cmd-tag{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--violet-lt);
+      background:rgba(139,92,246,.14);border:1px solid rgba(139,92,246,.32);border-radius:8px;padding:5px 11px;white-space:nowrap;flex-shrink:0;min-width:138px;text-align:center}
+    .cmd-desc{font-size:15px;font-weight:600;color:var(--mid);line-height:1.35}
+    .cmd-desc i{color:var(--teal);width:18px;margin-right:6px;text-align:center}
+
+    .hidden{display:none!important}
+    @media (max-width:640px){
+      header h1{font-size:56px;letter-spacing:4px}
+      .cmd-row{flex-direction:column;align-items:flex-start;gap:8px}
+      .cmd-tag{min-width:0}
+    }
+    @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+<div class="ambient" aria-hidden="true">
+  <div class="aurora a1"></div><div class="aurora a2"></div><div class="aurora a3"></div>
+  <div class="grid-floor"></div>
+</div>
+
+<div class="page">
+
+  <header>
+    <div class="eyebrow"><i class="fa-solid fa-circle-nodes"></i> fallenoneart.stream</div>
+    <h1>Prize Wallet</h1>
+    <p class="tagline">spin the wheel · win prizes · redeem in chat</p>
+    <div class="header-rule"></div>
+  </header>
+
+  <!-- Streamer.bot link status. Passwordless: host/port come from the URL query (?address=&port=). -->
+  <div class="link-bar">
+    <div class="link-state off" id="link-state"><span class="link-dot"></span><span id="link-text">Streamer.bot: connecting</span></div>
+    <div class="link-meta">
+      <i class="fa-solid fa-plug"></i><span id="link-addr">ws://localhost:8080</span>
+      <button class="btn-gear" id="gear-btn" type="button" title="Twitch setup" aria-label="Twitch setup" aria-expanded="false" onclick="toggleSetup()"><i class="fa-solid fa-gear"></i></button>
+    </div>
+  </div>
+
+  <!-- Twitch setup: paste the Client ID of your Twitch app. Only the Client ID is needed. -->
+  <div class="glass setup-card hidden" id="setup-card">
+    <h3><i class="fa-brands fa-twitch"></i> Twitch setup</h3>
+    <div class="setup-row">
+      <input class="setup-input" id="client-id-input" type="text" spellcheck="false" autocomplete="off" placeholder="Twitch Client ID">
+      <button class="btn-setup" type="button" onclick="saveClientId()">Save</button>
+      <button class="btn-setup alt" type="button" onclick="resetClientId()">Reset</button>
+    </div>
+    <div class="setup-status" id="client-id-status"></div>
+    <div class="setup-note">
+      Only the <b>Client ID</b> is needed. It lets Twitch create a sign-in token for each viewer who clicks <b>Connect with Twitch</b>.
+      In your Twitch app, add this page's address under <b>OAuth Redirect URLs</b>: <b id="redirect-uri"></b>
+    </div>
+  </div>
+
+  <div class="glass auth-card" id="auth-card">
+    <div class="auth-icon"><i class="fa-brands fa-twitch"></i></div>
+    <h2>Unlock your wallet</h2>
+    <p>Sign in with Twitch to see the prizes you've won.</p>
+    <a id="twitch-login-btn" class="btn-twitch" href="#">
+      <i class="fa-brands fa-twitch"></i> Connect with Twitch
+    </a>
+    <div class="auth-note"><i class="fa-solid fa-shield-halved"></i>read-only · no posting · no follows<br>only used to verify your identity</div>
+  </div>
+
+  <div class="glass user-card" id="user-card">
+    <div class="avatar-ring">
+      <img id="user-avatar" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="">
+      <div class="avatar-fallback"><i class="fa-solid fa-user"></i></div>
+    </div>
+    <div class="user-info">
+      <div class="user-name-row">
+        <div class="user-name" id="user-name">—</div>
+        <button id="signout-btn" class="btn-signout hidden" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i>Sign out</button>
+      </div>
+      <div class="user-login" id="user-login">// login with twitch above</div>
+    </div>
+    <div class="stream-status offline" id="stream-status"><i class="fa-solid fa-circle" style="font-size:7px"></i><span>Offline</span></div>
+  </div>
+
+  <div id="prize-section">
+    <div class="section-row">
+      <span class="section-lbl"><i class="fa-solid fa-wallet"></i> Your prizes</span>
+      <div class="section-rule"></div>
+    </div>
+
+    <div id="prize-grid">
+      <div class="state-box">
+        <div class="state-icon"><i class="fa-solid fa-dharmachakra"></i></div>
+        <div class="state-title">No user loaded</div>
+        <div class="state-sub">Connect your Twitch account above<br>to open your live prize wallet.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-row">
+    <span class="section-lbl"><i class="fa-solid fa-terminal"></i> Chat commands</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="glass cmd-panel">
+    <div class="cmd-list">
+      <div class="cmd-row">
+        <span class="cmd-tag">$ws</span>
+        <span class="cmd-desc"><i class="fa-solid fa-dharmachakra"></i>Spin the wheel for yourself — costs nothing, wins prizes</span>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-tag">$ws @user</span>
+        <span class="cmd-desc"><i class="fa-solid fa-gift"></i>Gift a wheel spin to another viewer</span>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-tag">$wallet</span>
+        <span class="cmd-desc"><i class="fa-solid fa-wallet"></i>Show your prize wallet in chat</span>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-tag">$redeem</span>
+        <span class="cmd-desc"><i class="fa-solid fa-ticket"></i>Redeem your prize (auto-picks if only one held)</span>
+      </div>
+      <div class="cmd-row">
+        <span class="cmd-tag">$redeem [key]</span>
+        <span class="cmd-desc"><i class="fa-solid fa-key"></i>Redeem a specific prize by its key name</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────
+// Twitch Client ID. Order: ?client_id= in the page address, then the one saved
+// with the gear button, then this default.
+const DEFAULT_CLIENT_ID = '87lnemvwe90imdy4epe41ylw79aeyj';
+const LS_CLIENT_ID      = 'tw_client_id';
+const REDIRECT_URI      = window.location.href.split('#')[0].split('?')[0];
+const TARGET_CHANNEL    = 'fallenoneart';
+const CLIENT_ID_RE      = /^[a-z0-9]{20,40}$/i;
+
+function resolveClientId() {
+  const fromUrl = new URLSearchParams(window.location.search).get('client_id');
+  if (fromUrl && CLIENT_ID_RE.test(fromUrl.trim())) return fromUrl.trim();
+  try {
+    const saved = (localStorage.getItem(LS_CLIENT_ID) || '').trim();
+    if (CLIENT_ID_RE.test(saved)) return saved;
+  } catch(e) {}
+  return DEFAULT_CLIENT_ID;
+}
+
+let CLIENT_ID = resolveClientId();
+
+function updateLoginLink() {
+  document.getElementById('twitch-login-btn').href =
+    `https://id.twitch.tv/oauth2/authorize?client_id=${encodeURIComponent(CLIENT_ID)}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=`;
+}
+
+// ── Twitch setup (Client ID) ─────────────────────────────────────
+function toggleSetup() {
+  const card = document.getElementById('setup-card');
+  const btn  = document.getElementById('gear-btn');
+  const open = card.classList.toggle('hidden') === false;
+  btn.classList.toggle('on', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) {
+    document.getElementById('client-id-input').value = CLIENT_ID;
+    document.getElementById('redirect-uri').textContent = REDIRECT_URI;
+  }
+}
+
+function setClientStatus(text, kind) {
+  const el = document.getElementById('client-id-status');
+  el.textContent = text || '';
+  el.className = 'setup-status' + (kind ? ' ' + kind : '');
+}
+
+// A token only works with the Client ID that created it, so changing the ID signs the viewer out.
+function applyClientId(id) {
+  if (id === CLIENT_ID) return false;
+  CLIENT_ID = id;
+  updateLoginLink();
+  ['token','user','display','avatar'].forEach(k => localStorage.removeItem('tw_dashboard_' + k));
+  return true;
+}
+
+function saveClientId() {
+  const id = document.getElementById('client-id-input').value.trim();
+  if (!CLIENT_ID_RE.test(id)) {
+    setClientStatus('That does not look like a Twitch Client ID (letters and numbers only).', 'bad');
+    return;
+  }
+  try { localStorage.setItem(LS_CLIENT_ID, id); } catch(e) {}
+  const changed = applyClientId(id);
+  if (changed) logout();
+  setClientStatus('Client ID saved. Connect with Twitch will use it.', 'ok');
+}
+
+function resetClientId() {
+  try { localStorage.removeItem(LS_CLIENT_ID); } catch(e) {}
+  const changed = applyClientId(DEFAULT_CLIENT_ID);
+  if (changed) logout();
+  document.getElementById('client-id-input').value = DEFAULT_CLIENT_ID;
+  setClientStatus('Back to the default Client ID.', 'ok');
+}
+
+updateLoginLink();
+
+const LS_INV  = u => `sw_inv_${u.toLowerCase()}`;   // shared with the bot — do not rename
+const LS_SEGS = 'sw_segments';                       // shared with the wheel — do not rename
+
+function segmentMeta() {
+  const map = {};
+  try {
+    const s = localStorage.getItem(LS_SEGS);
+    if (s) JSON.parse(s).forEach(seg => { map[seg.key] = { color: seg.color, label: seg.label }; });
+  } catch(e) {}
+  return map;
+}
+
+// ── Twitch auth ──────────────────────────────────────────────────
+function checkAuth() {
+  if (window.location.hash) {
+    const token = new URLSearchParams(window.location.hash.substring(1)).get('access_token');
+    if (token) {
+      localStorage.setItem('tw_dashboard_token', token);
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+      fetchTwitchProfile(token);
+      return;
+    }
+  }
+
+  const savedToken = localStorage.getItem('tw_dashboard_token');
+  const savedUser  = localStorage.getItem('tw_dashboard_user');
+
+  if (savedToken && savedUser) {
+    loginSuccess(
+      savedUser,
+      localStorage.getItem('tw_dashboard_display') || savedUser,
+      localStorage.getItem('tw_dashboard_avatar') || ''
+    );
+  } else if (savedToken) {
+    fetchTwitchProfile(savedToken);
+  }
+}
+
+function fetchTwitchProfile(token) {
+  fetch('https://api.twitch.tv/helix/users', {
+    headers: { 'Client-ID': CLIENT_ID, 'Authorization': `Bearer ${token}` }
+  })
+  .then(res => { if (!res.ok) throw new Error('Token expired'); return res.json(); })
+  .then(payload => {
+    if (payload.data && payload.data.length > 0) {
+      const user = payload.data[0];
+      localStorage.setItem('tw_dashboard_user', user.login);
+      localStorage.setItem('tw_dashboard_display', user.display_name);
+      localStorage.setItem('tw_dashboard_avatar', user.profile_image_url);
+      loginSuccess(user.login, user.display_name, user.profile_image_url);
+    }
+  })
+  .catch(err => {
+    console.warn('[Auth] Token verification failed:', err);
+    logout();
+  });
+}
+
+function loginSuccess(username, displayName, avatarUrl) {
+  document.getElementById('auth-card').classList.add('hidden');
+  document.getElementById('signout-btn').classList.remove('hidden');
+  updateUserCard(username, displayName, avatarUrl);
+  loadPrizes(username);
+}
+
+function logout() {
+  ['token','user','display','avatar'].forEach(k => localStorage.removeItem('tw_dashboard_' + k));
+
+  document.getElementById('auth-card').classList.remove('hidden');
+  document.getElementById('signout-btn').classList.add('hidden');
+  document.getElementById('user-name').textContent  = '—';
+  document.getElementById('user-login').textContent = '// login with twitch above';
+  document.getElementById('user-avatar').removeAttribute('src');
+  setLive(false);
+
+  document.getElementById('prize-grid').innerHTML = `
+    <div class="state-box">
+      <div class="state-icon"><i class="fa-solid fa-dharmachakra"></i></div>
+      <div class="state-title">No user loaded</div>
+      <div class="state-sub">Connect your Twitch account above<br>to open your live prize wallet.</div>
+    </div>`;
+}
+
+function setLive(live) {
+  const el = document.getElementById('stream-status');
+  el.className = 'stream-status ' + (live ? 'live' : 'offline');
+  el.innerHTML = `<i class="fa-solid fa-circle" style="font-size:7px"></i><span>${live ? 'Live' : 'Offline'}</span>`;
+}
+
+function updateUserCard(username, displayName, avatarUrl) {
+  document.getElementById('user-name').textContent  = displayName.toUpperCase();
+  document.getElementById('user-login').textContent = `// ${username.toLowerCase()}`;
+  const av = document.getElementById('user-avatar');
+  if (avatarUrl) { av.src = avatarUrl; av.onerror = () => av.removeAttribute('src'); }
+
+  fetch(`https://decapi.me/twitch/uptime/${username.toLowerCase()}`)
+    .then(r => r.text())
+    .then(t => setLive(!t.toLowerCase().includes('offline') && t.trim().length > 0))
+    .catch(() => setLive(false));
+}
+
+// ── Prize wallet ────────────────────────────────────────────────
+const ICONS = ['fa-gift','fa-trophy','fa-star','fa-gem','fa-bolt','fa-ticket','fa-crown','fa-meteor'];
+
+function loadPrizes(user) {
+  const grid = document.getElementById('prize-grid');
+  const meta = segmentMeta();
+
+  let inv;
+  try { inv = JSON.parse(localStorage.getItem(LS_INV(user)) || '{}'); } catch(e) { inv = {}; }
+
+  const items = Object.entries(inv).filter(([, val]) => {
+    if (!val) return false;
+    const count = typeof val === 'object' ? val.count : val;
+    return count > 0;
+  });
+
+  if (!items.length) {
+    grid.innerHTML = `
+      <div class="state-box">
+        <div class="state-icon"><i class="fa-solid fa-box-open"></i></div>
+        <div class="state-title">Wallet empty</div>
+        <div class="state-sub">You haven't won any prizes yet.<br>
+          Type <strong>$ws</strong> in chat to spin the wheel!</div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = '';
+  items.forEach(([key, prize], i) => {
+    const col    = (meta[key] && meta[key].color) || '#8b5cf6';
+    const label  = typeof prize === 'object' ? (prize.label || (meta[key] && meta[key].label) || key) : ((meta[key] && meta[key].label) || key);
+    const count  = typeof prize === 'object' ? prize.count : prize;
+    const origin = typeof prize === 'object' && prize.channel ? prize.channel : null;
+    const icon   = ICONS[i % ICONS.length];
+
+    const card = document.createElement('div');
+    card.className = 'prize-card';
+    card.style.setProperty('--pc', col);
+    card.style.setProperty('--i', i);
+    card.innerHTML = `
+      <div class="prize-strip"></div>
+      <div class="prize-glow"></div>
+      <div class="prize-body">
+        <div class="prize-top">
+          <div class="prize-icon"><i class="fa-solid ${icon}"></i></div>
+          <div class="prize-label">${esc(String(label).replace(/\\n/g, ' '))}</div>
+        </div>
+        <div class="prize-meta-row">
+          <div class="prize-count">Held<span>×${esc(count)}</span></div>
+          ${origin ? `<div class="channel-badge"><i class="fa-solid fa-tower-broadcast"></i>From ${esc(origin)}</div>` : ''}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Streamer.bot WebSocket (no password; host/port from URL) ────
+const urlParams = new URLSearchParams(window.location.search);
+const WS_HOST   = urlParams.get('address') || 'localhost';
+const WS_PORT   = urlParams.get('port')    || '8080';
+const WS_URI    = `ws://${WS_HOST}:${WS_PORT}/`;
+document.getElementById('link-addr').textContent = WS_URI;
+
+function setLink(on, text) {
+  const el = document.getElementById('link-state');
+  el.className = 'link-state ' + (on ? 'on' : 'off');
+  document.getElementById('link-text').textContent = text;
+}
+
+function connectWS() {
+  try {
+    const ws = new WebSocket(WS_URI);
+
+    ws.onopen = () => {
+      setLink(true, 'Streamer.bot: connected');
+      ws.send(JSON.stringify({
+        request: 'Subscribe',
+        events:  { general: ['Custom'] },
+        id:      'DashboardWalletSub'
+      }));
+    };
+
+    ws.onmessage = (msg) => {
+      let data = null;
+      let inner = msg.data;
+      if (typeof inner === 'string') {
+        try { inner = JSON.parse(inner); } catch { inner = null; }
+      }
+      if (inner && inner.eventName === 'WalletUpdate') data = inner;
+      if (!data) return;
+
+      const targetUser = data.user.toLowerCase();
+
+      // Merge, never overwrite: keep every prize won before this update.
+      let existing = {};
+      try { existing = JSON.parse(localStorage.getItem(LS_INV(targetUser)) || '{}'); } catch(e) {}
+
+      Object.entries(data.inventory).forEach(([key, incoming]) => {
+        const incomingCount = typeof incoming === 'object' ? (incoming.count || 0) : (incoming || 0);
+        const current = existing[key];
+        const currentCount = current
+          ? (typeof current === 'object' ? (current.count || 0) : (current || 0))
+          : 0;
+
+        existing[key] = typeof incoming === 'object'
+          ? { ...incoming, count: currentCount + incomingCount }
+          : currentCount + incomingCount;
+      });
+
+      localStorage.setItem(LS_INV(targetUser), JSON.stringify(existing));
+
+      const currentUser = localStorage.getItem('tw_dashboard_user');
+      if (currentUser && currentUser.toLowerCase() === targetUser) loadPrizes(currentUser);
+    };
+
+    ws.onclose = () => {
+      setLink(false, 'Streamer.bot: reconnecting…');
+      setTimeout(connectWS, 5000);
+    };
+
+    ws.onerror = () => ws.close();
+  } catch (err) {
+    setLink(false, 'Streamer.bot: unavailable');
+    setTimeout(connectWS, 5000);
+  }
+}
+
+// ── Cross-tab sync ──────────────────────────────────────────────
+window.addEventListener('storage', e => {
+  if (!e.key) return;
+  const activeUser = localStorage.getItem('tw_dashboard_user');
+  if (activeUser && e.key === LS_INV(activeUser)) loadPrizes(activeUser.toLowerCase());
+});
+
+checkAuth();
+connectWS();
+</script>
+</body>
+</html>
