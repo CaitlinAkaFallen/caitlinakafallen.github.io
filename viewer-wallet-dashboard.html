@@ -266,6 +266,22 @@
     </div>
   </div>
 
+  <!-- Streamer lookup: shown only when signed in as the channel owner. -->
+  <div id="admin-section" class="hidden">
+    <div class="section-row">
+      <span class="section-lbl"><i class="fa-solid fa-user-shield"></i> Streamer lookup</span>
+      <div class="section-rule"></div>
+    </div>
+    <div class="glass" style="padding:18px 20px;margin-bottom:18px">
+      <div class="setup-row">
+        <input class="setup-input" id="lookup-input" type="text" spellcheck="false" autocomplete="off" placeholder="viewer username" onkeydown="if(event.key==='Enter')lookupViewer()">
+        <button class="btn-setup" type="button" onclick="lookupViewer()">Look up</button>
+      </div>
+      <div class="setup-status" id="lookup-status"></div>
+    </div>
+    <div id="lookup-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:36px"></div>
+  </div>
+
   <div class="section-row">
     <span class="section-lbl"><i class="fa-solid fa-terminal"></i> Chat commands</span>
     <div class="section-rule"></div>
@@ -438,6 +454,9 @@ function loginSuccess(username, displayName, avatarUrl) {
   document.getElementById('signout-btn').classList.remove('hidden');
   updateUserCard(username, displayName, avatarUrl);
   loadPrizes(username);
+  requestWallet(username);
+  // Only the channel owner sees the lookup panel.
+  document.getElementById('admin-section').classList.toggle('hidden', username.toLowerCase() !== TARGET_CHANNEL);
 }
 
 function logout() {
@@ -449,6 +468,7 @@ function logout() {
   document.getElementById('user-login').textContent = '// login with twitch above';
   document.getElementById('user-avatar').removeAttribute('src');
   setLive(false);
+  document.getElementById('admin-section').classList.add('hidden');
 
   document.getElementById('prize-grid').innerHTML = `
     <div class="state-box">
@@ -551,9 +571,125 @@ function setLink(on, text) {
   document.getElementById('link-text').textContent = text;
 }
 
+let sbSocket = null;
+let lookupTarget = null;
+
+// Streamer lookup: show a viewer's stored prizes.
+function lookupViewer() {
+  const name = document.getElementById('lookup-input').value.trim().replace(/^@/, '').toLowerCase();
+  const status = document.getElementById('lookup-status');
+  if (!name) return;
+  if (!sbSocket || sbSocket.readyState !== 1) {
+    status.textContent = 'Not connected to Streamer.bot.';
+    status.className = 'setup-status bad';
+    return;
+  }
+  lookupTarget = name;
+  status.textContent = `Looking up ${name}…`;
+  status.className = 'setup-status';
+  requestWallet(name);
+}
+
+function renderLookup(user) {
+  const grid = document.getElementById('lookup-grid');
+  const status = document.getElementById('lookup-status');
+  let inv = {};
+  try { inv = JSON.parse(localStorage.getItem(LS_INV(user)) || '{}'); } catch(e) {}
+  const items = Object.entries(cleanInventory(inv));
+  status.textContent = items.length ? `${user}: ${items.length} prize type(s) held` : `${user}: no prizes held`;
+  status.className = 'setup-status ok';
+  grid.innerHTML = items.map(([key, val]) => {
+    const count = typeof val === 'object' ? val.count : val;
+    const label = (typeof val === 'object' && val.label) || (segmentMeta()[key] && segmentMeta()[key].label) || key;
+    const col   = (segmentMeta()[key] && segmentMeta()[key].color) || '#8b5cf6';
+    return `
+      <div class="prize-card" style="--pc:${esc(col)}">
+        <div class="prize-strip"></div>
+        <div class="prize-body">
+          <div class="prize-top"><div class="prize-label">${esc(String(label).replace(/\\n/g, ' '))}</div></div>
+          <div class="prize-meta-row">
+            <div class="prize-count">Held<span>×${esc(count)}</span></div>
+            <div class="channel-badge">${esc(key)}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// Ask Streamer.bot for the stored wallet of one viewer. Wins made before this
+// page was open are only in Streamer.bot, so this is how they reach the page.
+function requestWallet(user) {
+  if (!user || !sbSocket || sbSocket.readyState !== 1) return;
+  sbSocket.send(JSON.stringify({
+    request: 'DoAction',
+    action:  { name: 'Wallet_Snapshot' },
+    args:    { user: user.toLowerCase(), targetUser: user.toLowerCase() },
+    id:      'WalletSnapshotReq'
+  }));
+}
+
+function currentLogin() {
+  const u = localStorage.getItem('tw_dashboard_user');
+  return u ? u.toLowerCase() : null;
+}
+
+// Keep only held prizes, with a count above zero.
+function cleanInventory(inv) {
+  const out = {};
+  Object.entries(inv || {}).forEach(([key, val]) => {
+    const count = typeof val === 'object' && val ? (val.count || 0) : (val || 0);
+    if (count > 0) out[key] = typeof val === 'object' && val ? { ...val, count } : count;
+  });
+  return out;
+}
+
+function handleWalletEvent(data) {
+  if (!data || !data.user) return;
+  const targetUser = String(data.user).toLowerCase();
+  const incoming = data.inventory || data.wallet || {};
+
+  if (data.eventName === 'WalletSnapshot') {
+    // Snapshot from Streamer.bot is the full stored wallet: it replaces the cache.
+    localStorage.setItem(LS_INV(targetUser), JSON.stringify(cleanInventory(incoming)));
+  } else {
+    // WalletUpdate is a change: merge, never overwrite prizes won before.
+    let existing = {};
+    try { existing = JSON.parse(localStorage.getItem(LS_INV(targetUser)) || '{}'); } catch(e) {}
+
+    Object.entries(incoming).forEach(([key, inc]) => {
+      const incCount = typeof inc === 'object' && inc ? (inc.count || 0) : (inc || 0);
+      const cur = existing[key];
+      const curCount = cur ? (typeof cur === 'object' ? (cur.count || 0) : (cur || 0)) : 0;
+      existing[key] = typeof inc === 'object' && inc
+        ? { ...inc, count: curCount + incCount }
+        : curCount + incCount;
+    });
+    localStorage.setItem(LS_INV(targetUser), JSON.stringify(cleanInventory(existing)));
+  }
+
+  if (currentLogin() === targetUser) loadPrizes(targetUser);
+  if (lookupTarget === targetUser) renderLookup(targetUser);
+}
+
+// Streamer.bot can wrap the broadcast at the top level, inside data, or as a JSON string.
+function findWalletEvent(raw) {
+  let p = raw;
+  for (let depth = 0; depth < 4 && p != null; depth++) {
+    if (typeof p === 'string') {
+      try { p = JSON.parse(p); } catch { return null; }
+      continue;
+    }
+    if (typeof p !== 'object') return null;
+    if (p.eventName === 'WalletUpdate' || p.eventName === 'WalletSnapshot') return p;
+    p = p.data !== undefined ? p.data : p.payload;
+  }
+  return null;
+}
+
 function connectWS() {
   try {
     const ws = new WebSocket(WS_URI);
+    sbSocket = ws;
 
     ws.onopen = () => {
       setLink(true, 'Streamer.bot: connected');
@@ -562,42 +698,17 @@ function connectWS() {
         events:  { general: ['Custom'] },
         id:      'DashboardWalletSub'
       }));
+      // Load the stored wallet right away, so wins from before this page opened appear.
+      requestWallet(currentLogin());
     };
 
     ws.onmessage = (msg) => {
-      let data = null;
-      let inner = msg.data;
-      if (typeof inner === 'string') {
-        try { inner = JSON.parse(inner); } catch { inner = null; }
-      }
-      if (inner && inner.eventName === 'WalletUpdate') data = inner;
-      if (!data) return;
-
-      const targetUser = data.user.toLowerCase();
-
-      // Merge, never overwrite: keep every prize won before this update.
-      let existing = {};
-      try { existing = JSON.parse(localStorage.getItem(LS_INV(targetUser)) || '{}'); } catch(e) {}
-
-      Object.entries(data.inventory).forEach(([key, incoming]) => {
-        const incomingCount = typeof incoming === 'object' ? (incoming.count || 0) : (incoming || 0);
-        const current = existing[key];
-        const currentCount = current
-          ? (typeof current === 'object' ? (current.count || 0) : (current || 0))
-          : 0;
-
-        existing[key] = typeof incoming === 'object'
-          ? { ...incoming, count: currentCount + incomingCount }
-          : currentCount + incomingCount;
-      });
-
-      localStorage.setItem(LS_INV(targetUser), JSON.stringify(existing));
-
-      const currentUser = localStorage.getItem('tw_dashboard_user');
-      if (currentUser && currentUser.toLowerCase() === targetUser) loadPrizes(currentUser);
+      const ev = findWalletEvent(msg.data);
+      if (ev) handleWalletEvent(ev);
     };
 
     ws.onclose = () => {
+      sbSocket = null;
       setLink(false, 'Streamer.bot: reconnecting…');
       setTimeout(connectWS, 5000);
     };
