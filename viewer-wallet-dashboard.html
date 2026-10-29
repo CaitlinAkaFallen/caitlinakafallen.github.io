@@ -457,7 +457,7 @@ function loginSuccess(username, displayName, avatarUrl) {
   requestWallet(username);
   if (PUBLIC_MODE) loadPublicWallets();
   // Only the channel owner sees the lookup panel.
-  document.getElementById('admin-section').classList.toggle('hidden', username.toLowerCase() !== TARGET_CHANNEL);
+  document.getElementById('admin-section').classList.toggle('hidden', PUBLIC_MODE || username.toLowerCase() !== TARGET_CHANNEL);
 }
 
 function logout() {
