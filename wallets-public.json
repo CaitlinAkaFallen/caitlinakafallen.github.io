@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-29T04:48:26.145Z",
+  "updatedAt": "2026-10-29T05:10:43.744Z",
   "wallets": {
     "fallenoneart": {
       "inventory": {
@@ -82,6 +82,10 @@
         "fallgreement": {
           "count": 2,
           "label": "Fallgreement"
+        },
+        "WCG": {
+          "count": 1,
+          "label": "Winner Choose Game"
         }
       }
     }
