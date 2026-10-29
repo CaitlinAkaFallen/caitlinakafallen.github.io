@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-29T05:10:43.744Z",
+  "updatedAt": "2026-10-29T05:38:17.325Z",
   "wallets": {
     "fallenoneart": {
       "inventory": {
@@ -39,7 +39,8 @@
           "count": 3,
           "label": "Fallgreement"
         }
-      }
+      },
+      "updatedAt": "2026-10-29T05:03:07.240Z"
     },
     "raregangster": {
       "inventory": {
@@ -47,7 +48,8 @@
           "count": 1,
           "label": "Diabolical Foods"
         }
-      }
+      },
+      "updatedAt": "2026-10-29T04:41:32.513Z"
     },
     "crackalackintv": {
       "inventory": {
@@ -59,7 +61,8 @@
           "count": 1,
           "label": "Fallgreement"
         }
-      }
+      },
+      "updatedAt": "2026-10-29T00:35:37.904Z"
     },
     "self_harmonize": {
       "inventory": {
@@ -67,7 +70,8 @@
           "count": 1,
           "label": "Winner Choose Game"
         }
-      }
+      },
+      "updatedAt": "2026-10-29T00:29:54.982Z"
     },
     "sarahrobogirl": {
       "inventory": {
@@ -75,7 +79,8 @@
           "count": 1,
           "label": "Hydrate"
         }
-      }
+      },
+      "updatedAt": "2026-10-29T02:02:10.903Z"
     },
     "fallenpool_bot": {
       "inventory": {
@@ -86,8 +91,13 @@
         "WCG": {
           "count": 1,
           "label": "Winner Choose Game"
+        },
+        "No Swear": {
+          "count": 1,
+          "label": "No Swearing"
         }
-      }
+      },
+      "updatedAt": "2026-10-29T05:16:29.032Z"
     }
   }
 }
