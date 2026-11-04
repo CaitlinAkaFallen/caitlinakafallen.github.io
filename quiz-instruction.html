@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game Quiz Manual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Orbitron:wght@600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06070b;--ink:#eceff6;--mute:#8a92a6;--dim:#586074;--teal:#5eead4;--purple:#a78bfa;--blue:#60a5fa;--amber:#fbbf24;--green:#4ade80;--red:#f87171;
+--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.16);--card:rgba(255,255,255,.04);--r:16px;
+--ui:'Inter',system-ui,'Segoe UI',sans-serif;--num:'Share Tech Mono',ui-monospace,Consolas,monospace;--disp:'Orbitron','Inter',sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;color:var(--ink);font:15px/1.6 var(--ui);-webkit-font-smoothing:antialiased;display:grid;grid-template-columns:268px minmax(0,1fr);min-height:100vh;
+background:radial-gradient(900px 500px at 85% -5%,rgba(167,139,250,.18),transparent 60%),radial-gradient(700px 450px at 10% 105%,rgba(94,234,212,.12),transparent 60%),var(--bg)}
+h1,h2,h3,p{margin:0}a{color:var(--teal)}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:8px}
+code{font-family:var(--num);background:rgba(255,255,255,.07);border:1px solid var(--line);padding:1px 8px;border-radius:7px;font-size:.92em;color:var(--teal)}
+aside{position:sticky;top:0;height:100vh;overflow:auto;padding:26px 18px;border-right:1px solid var(--line);background:rgba(10,11,18,.6);backdrop-filter:blur(20px)}
+.brand{font:800 17px var(--disp);letter-spacing:.04em;margin-bottom:2px}.brand+small{color:var(--mute);font-size:12px;display:block;margin-bottom:22px}
+.grp{font-size:11px;color:var(--dim);font-weight:600;letter-spacing:.12em;margin:18px 10px 6px}
+aside a.nv{display:block;padding:7px 12px;border-radius:10px;color:var(--mute);text-decoration:none;font-size:13.5px;border:1px solid transparent}
+aside a.nv:hover{color:var(--ink);background:rgba(255,255,255,.04)}
+aside a.nv.on{color:var(--ink);background:rgba(94,234,212,.12);border-color:rgba(94,234,212,.4)}
+main{padding:48px clamp(18px,4.5vw,64px) 90px;max-width:1120px;width:100%}
+section{margin-top:72px}
+h2{font:700 24px var(--disp);letter-spacing:.02em;display:flex;align-items:center;gap:14px;margin-bottom:8px}
+h2::before{content:"";width:5px;height:26px;border-radius:4px;background:linear-gradient(var(--teal),var(--purple))}
+.sub{color:var(--mute);max-width:70ch;margin-bottom:22px}
+h3{font-size:14px;margin:0 0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.card p,.card li{color:#c4c9d8;font-size:14px}.card p+p{margin-top:8px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+ul{margin:6px 0 0;padding-left:18px}li{margin:3px 0}
+.hero{margin-top:0}
+.hero h1{font:800 clamp(30px,5vw,50px)/1.1 var(--disp);letter-spacing:.01em;max-width:16ch}
+.hero .lead{color:var(--mute);font-size:17px;max-width:58ch;margin:16px 0 28px}
+.stat{padding:16px 18px}.stat b{display:block;font:700 28px var(--num);color:var(--ink)}.stat span{color:var(--mute);font-size:12.5px}
+.stat.t b{color:var(--teal)}.stat.p b{color:var(--purple)}.stat.a b{color:var(--amber)}.stat.g b{color:var(--green)}
+ol.quick{margin:0;padding:0;counter-reset:q}
+.quick li{list-style:none;counter-increment:q;display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.quick li:first-child{border-top:0}
+.quick li::before{content:counter(q);flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:600 12px var(--num);background:rgba(94,234,212,.14);color:var(--teal)}
+.call{border-left:3px solid var(--amber);background:rgba(251,191,36,.07);padding:12px 16px;border-radius:0 12px 12px 0;margin-top:14px;font-size:14px;color:#e6dcc0}
+.call b{color:var(--amber)}
+.badge{font-size:11px;font-weight:600;padding:2px 10px;border-radius:99px;border:1px solid;white-space:nowrap}
+.b-v{color:var(--green);border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08)}
+.b-m{color:var(--amber);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.b-x{color:var(--purple);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.trig{display:grid;grid-template-columns:auto 1fr;gap:0 18px;align-items:baseline}
+.trig>div{padding:10px 0;border-top:1px solid var(--line);font-size:14px;color:#c4c9d8}.trig>div:nth-child(-n+2){border-top:0}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:8px}.dot.w{background:var(--amber)}
+.ex{display:grid;gap:8px;margin-top:10px}
+.bub{max-width:640px;padding:10px 14px;border-radius:14px;border:1px solid var(--line2);background:rgba(255,255,255,.04);font-size:14px;color:#c4c9d8}
+.bub small{display:block;color:var(--mute);font-size:11.5px;margin-bottom:2px}
+.bub.me{border-color:rgba(167,139,250,.45);background:rgba(167,139,250,.1)}
+.bub.bot{border-color:rgba(94,234,212,.4);background:rgba(94,234,212,.08);margin-left:28px}
+.bub.no{border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.07);margin-left:28px}
+.bub code{white-space:normal}
+.dc{display:grid;gap:10px;margin-top:10px}
+.dm{display:grid;grid-template-columns:38px 1fr;gap:12px;padding:12px 14px;border-radius:12px;background:#1b1d27;border:1px solid var(--line)}
+.dm .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--teal));display:grid;place-items:center;font:700 14px var(--ui);color:#06070b}
+.dm b{font-size:14px}.dm b small{color:var(--dim);font-weight:400;margin-left:8px;font-size:11.5px}
+.dm p{margin-top:2px;color:#d6d9e4;font-size:14px;word-break:break-word}
+.dm .img{margin-top:8px;border-radius:10px;border:1px solid var(--line2);padding:12px 14px;max-width:420px;background:linear-gradient(160deg,#10121a,#2a184e);font-size:13px;color:#c4c9d8}
+.dm .img b{color:var(--amber);display:block;font:700 13px var(--disp);margin-bottom:4px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.tools input{flex:1;min-width:200px;padding:11px 14px;border-radius:12px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:var(--ink);font:inherit}
+.chip{padding:8px 14px;border-radius:99px;border:1px solid var(--line2);background:transparent;color:var(--mute);font:500 13px var(--ui);cursor:pointer}
+.chip[aria-pressed="true"]{color:var(--ink);background:rgba(94,234,212,.14);border-color:rgba(94,234,212,.5)}
+.cmd .top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.cmd[hidden],.none[hidden]{display:none}
+.none{color:var(--mute);padding:20px;text-align:center}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.step{padding:6px 8px 4px 0;position:relative}
+.step::before{content:"";position:absolute;top:24px;left:40px;right:0;height:2px;background:linear-gradient(90deg,var(--teal),transparent)}
+.step i{position:relative;z-index:1;font:600 13px var(--num);font-style:normal;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#10131d;border:1px solid var(--teal);color:var(--teal);margin-bottom:10px}
+.step p{font-size:13.5px;color:#c4c9d8;padding-right:12px}
+.bars{display:grid;gap:8px;margin-top:12px}.bar{display:grid;grid-template-columns:64px 1fr 24px;gap:10px;align-items:center;font:13px var(--num);color:var(--mute)}
+.bar span{height:10px;border-radius:6px;display:block}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tab{padding:9px 16px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--mute);font:500 13.5px var(--ui);cursor:pointer}
+.tab[aria-selected="true"]{color:var(--ink);background:rgba(167,139,250,.16);border-color:rgba(167,139,250,.5)}
+.pane[hidden]{display:none}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.tags span{font:13px var(--num);padding:5px 12px;border-radius:10px;border:1px solid var(--line2);color:#c4c9d8;background:rgba(255,255,255,.03)}
+.file{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.file:first-child{border-top:0}
+.file div{min-width:0}.file small{display:block;color:var(--mute);font-size:12.5px;margin-top:3px}.file code{word-break:break-all}
+.copy{flex:none;padding:6px 12px;border-radius:9px;border:1px solid var(--line2);background:transparent;color:var(--mute);font:500 12px var(--ui);cursor:pointer}.copy:hover{color:var(--ink);border-color:var(--teal)}
+details{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:0 18px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600;padding:14px 0;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::after{content:"+";color:var(--teal);font:600 18px var(--num)}details[open] summary::after{content:"-"}
+details p{color:#c4c9d8;font-size:14px;padding-bottom:14px}
+@media(max-width:900px){
+ body{grid-template-columns:210px minmax(0,1fr)}
+ aside{padding:20px 12px}
+ .step::before{display:none}
+}
+@media(max-width:600px){
+ body{grid-template-columns:150px minmax(0,1fr)}
+ aside{padding:16px 8px}aside a.nv{padding:6px 8px;font-size:12.5px}.brand{font-size:14px}.grp{margin-left:6px}
+ main{padding:28px 14px 70px}
+}
+</style>
+</head>
+<body>
+<aside aria-label="Manual sections">
+  <div class="brand">GAME QUIZ</div><small>Streamer.bot script v3.3.4</small>
+  <div class="grp">GET STARTED</div>
+  <a class="nv" href="#top">Overview</a><a class="nv" href="#setup">Setup</a>
+  <div class="grp">COMMANDS</div>
+  <a class="nv" href="#commands">Command finder</a><a class="nv" href="#suggest">Suggestions</a>
+  <div class="grp">THE GAME</div>
+  <a class="nv" href="#flow">How a session runs</a><a class="nv" href="#scoring">Scoring and answers</a><a class="nv" href="#teams">Teams</a><a class="nv" href="#records">Records and champions</a>
+  <div class="grp">ADMIN</div>
+  <a class="nv" href="#dash">Dashboard</a><a class="nv" href="#discord">Discord</a>
+  <div class="grp">REFERENCE</div>
+  <a class="nv" href="#ref">Events and files</a><a class="nv" href="#trouble">Troubleshooting</a>
+</aside>
+
+<main>
+<section class="hero" id="top">
+  <h1>Game Quiz manual</h1>
+  <p class="lead">A trivia game for your Twitch chat. The bot asks a video game question, viewers answer with <code>!answer</code>, and points, teams, records and Discord posts run for you.</p>
+  <div class="grid g4">
+    <div class="card stat t"><b>10 min</b><span>Default session length</span></div>
+    <div class="card stat p"><b>30 sec</b><span>Default time per question</span></div>
+    <div class="card stat a"><b>100 pts</b><span>Score that wins early</span></div>
+    <div class="card stat g"><b>+5 +3 -1</b><span>Correct, close, wrong</span></div>
+  </div>
+  <div class="card" style="padding:8px 20px;margin-top:14px">
+    <ol class="quick">
+      <li><span>Check every trigger in <a href="#setup">Setup</a> points to the same action.</span></li>
+      <li><span>Open the dashboard and set your session length, points and number of teams.</span></li>
+      <li><span>Press Start, or type <code>!quiz</code> in chat.</span></li>
+      <li><span>Viewers answer with <code>!answer</code> and join a team with <code>!team</code>.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="setup">
+  <h2>Setup</h2>
+  <p class="sub">One C# script runs everything. It talks to the overlay and dashboard over Streamer.bot's WebSocket server and saves its data in your Documents folder.</p>
+  <div class="card trig">
+    <div><span class="dot"></span><code>!quiz</code> <code>!StartQuiz</code></div><div>Starts a session.</div>
+    <div><span class="dot"></span><code>!Answer</code></div><div>Sends a viewer's guess to the game.</div>
+    <div><span class="dot"></span><code>!StopQuiz</code></div><div>Ends the session early.</div>
+    <div><span class="dot"></span><code>!suggest</code></div><div>Tells viewers to whisper their suggestion instead.</div>
+    <div><span class="dot"></span><code>!records</code></div><div>Posts the record book in chat.</div>
+    <div><span class="dot"></span><code>!team</code></div><div>Places the viewer on a team.</div>
+    <div><span class="dot"></span>Twitch Chat: Whispers</div><div>Receives suggestions whispered to FallenOneArt (the streamer account).</div>
+    <div><span class="dot w"></span><code>!lead...</code> <code>!hint</code></div><div>In your trigger list, but this script file has no code for them.</div>
+    <div><span class="dot w"></span>Rewards: extra time, hint</div><div>In your trigger list, but this script file has no code for them.</div>
+  </div>
+  <div class="call"><b>Add two more triggers.</b> <code>!rank</code> and <code>!teamname</code> are in the script but missing from your list. Add a command trigger for each to the same action, or they will not work. Dashboard buttons reach the script through the <code>dashCmd</code> argument.</div>
+</section>
+
+<section id="commands">
+  <h2>Command finder</h2>
+  <p class="sub">Search or filter every command. Who can use a command is set by its permissions in Streamer.bot.</p>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Search commands, for example team or rank" aria-label="Search commands">
+    <button class="chip" data-f="all" aria-pressed="true">All</button>
+    <button class="chip" data-f="viewer" aria-pressed="false">Viewers</button>
+    <button class="chip" data-f="mod" aria-pressed="false">Mods</button>
+  </div>
+  <div class="grid g2" id="cmds">
+    <article class="card cmd" data-r="viewer"><div class="top"><code>!answer your guess</code><span class="badge b-v">Everyone</span></div><p>Checks the guess against the open question. The first correct answer closes it.</p></article>
+    <article class="card cmd" data-r="viewer"><div class="top"><code>!rank</code><span class="badge b-v">Everyone</span></div><p>Shows all-time place, wins, right and wrong answers, and accuracy.</p></article>
+    <article class="card cmd" data-r="viewer"><div class="top"><code>!records</code><span class="badge b-v">Everyone</span></div><p>Posts the five records in chat: top session, most wins, fastest answer, longest streak, most correct.</p></article>
+    <article class="card cmd" data-r="viewer"><div class="top"><code>!team</code><span class="badge b-v">Everyone</span></div><p>The bot picks a team and whispers it. See <a href="#teams">Teams</a>.</p></article>
+    <article class="card cmd" data-r="viewer"><div class="top"><code>/w FallenOneArt !suggest Your question? | The answer</code><span class="badge b-v">Everyone</span></div><p>Whispered question idea for you to review. See <a href="#suggest">Suggestions</a>.</p></article>
+    <article class="card cmd" data-r="viewer"><div class="top"><code>!hint</code> <code>!lead...</code><span class="badge b-x">Outside this script</span></div><p>Set up in Streamer.bot but handled elsewhere.</p></article>
+    <article class="card cmd" data-r="mod"><div class="top"><code>!quiz</code> <code>!StartQuiz</code><span class="badge b-m">Streamer</span></div><p>Starts a session: clears scores, starts the clock, asks the first question. Does nothing if a quiz is already running.</p></article>
+    <article class="card cmd" data-r="mod"><div class="top"><code>!StopQuiz</code><span class="badge b-m">Streamer</span></div><p>Stops the session, shows the podium and posts the recap.</p></article>
+    <article class="card cmd" data-r="mod"><div class="top"><code>!teamname 1 Fallen</code><span class="badge b-m">Mods</span></div><p>Renames a team by number, from 1 up to your team count. Names are 1 to 20 characters, not just a number, and cannot repeat.</p></article>
+  </div>
+  <p class="none" id="none" hidden>No command matches that search.</p>
+</section>
+
+<section id="suggest">
+  <h2>Question suggestions</h2>
+  <p class="sub">Viewers whisper ideas to FallenOneArt, the streamer account, so chat stays clean. A <code>!suggest</code> typed in public chat gets a whisper explaining how.</p>
+  <div class="call"><b>Whisper this to FallenOneArt:</b> <code>/w FallenOneArt !suggest Your question? | The answer</code></div>
+  <div class="grid g4">
+    <div class="card stat t"><b>10-200</b><span>Question characters</span></div>
+    <div class="card stat p"><b>1-80</b><span>Answer characters</span></div>
+    <div class="card stat a"><b>60 sec</b><span>Wait between suggestions</span></div>
+    <div class="card stat g"><b>3 / 100</b><span>Waiting per viewer / total</span></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h3>Example</h3>
+    <p>A viewer named Sam wants to add a question. Sam whispers FallenOneArt (not public chat), with a <code>|</code> between the question and the answer.</p>
+    <div class="ex">
+      <div class="bub me"><small>Sam whispers FallenOneArt</small><code>!suggest Which game features the Master Sword? | Zelda</code></div>
+      <div class="bub bot"><small>FallenPool_Bot whispers back</small>Thanks! Your question was sent for review.</div>
+      <div class="bub me"><small>Sam tries again right away</small><code>!suggest What is Kratos' son called? | Atreus</code></div>
+      <div class="bub no"><small>FallenPool_Bot whispers back</small>slow down a little, you can suggest again in 42s.</div>
+      <div class="bub me"><small>Sam forgets the | divider</small><code>!suggest Who is Master Chief?</code></div>
+      <div class="bub no"><small>FallenPool_Bot whispers back</small>send it like this: !suggest Your question? | The answer</div>
+    </div>
+    <p style="margin-top:12px">The first suggestion now waits on the dashboard's <b>Ideas</b> tab as: <b>Sam</b> asks "Which game features the Master Sword?" with the answer "Zelda". You can add "The Legend of Zelda" as an extra accepted answer, then press approve. The bot says in chat: "@Sam's question was approved and added to the quiz!"</p>
+  </div>
+  <div class="card" style="margin-top:14px"><p>No links, and nothing starting with <code>!</code> or <code>/</code>. Questions you already have are turned away.</p><p>Ideas wait on the dashboard's <b>Ideas</b> tab. Edit the question, answer and extra answers, then approve or reject. Approving adds it to the quiz and thanks the viewer. You can open or close the box any time, and the bot announces it.</p></div>
+</section>
+
+<section id="flow">
+  <h2>How a session runs</h2>
+  <p class="sub">It ends when the clock runs out, someone hits the target score, you press Stop, or the questions run out. Then the podium shows, records are checked and the recap posts.</p>
+  <div class="card flow">
+    <div class="step"><i>1</i><p>You press Start. The bot announces the session length.</p></div>
+    <div class="step"><i>2</i><p>A random unused question goes to chat and the overlay.</p></div>
+    <div class="step"><i>3</i><p>Viewers answer with <code>!answer</code>. Wrong guesses are allowed.</p></div>
+    <div class="step"><i>4</i><p>With 15 seconds left, a time warning shows.</p></div>
+    <div class="step"><i>5</i><p>A correct answer, time-out, skip or reveal closes it.</p></div>
+    <div class="step"><i>6</i><p>After 5 seconds the next question appears.</p></div>
+  </div>
+</section>
+
+<section id="scoring">
+  <h2>Scoring and answers</h2>
+  <div class="grid g3">
+    <div class="card stat g"><b>+5</b><span>Correct. Matches the answer or an extra accepted answer.</span></div>
+    <div class="card stat a"><b>+3</b><span>Close enough. Part of the answer (over 3 letters). Question stays open.</span></div>
+    <div class="card stat"><b style="color:var(--red)">-1</b><span>Wrong. Anything else.</span></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h3>What counts as correct</h3><ul>
+    <li>Capitals, punctuation, accents and a leading "The" are ignored.</li>
+    <li>Small typos and missing or extra spaces are forgiven. Short answers are strict, longer ones allow more.</li>
+    <li>Numbers must match, so "Resident Evil 4" is never accepted for "Resident Evil 5".</li>
+    <li>Add extra accepted answers per question (like "MGS") in the dashboard's "Also accept" box.</li></ul></div>
+</section>
+
+<section id="teams">
+  <h2>Teams</h2>
+  <p class="sub">Run 2 to 8 teams. Viewers type <code>!team</code> and do not choose.</p>
+  <div class="grid g2">
+    <div class="card"><h3>How placement works</h3><ul>
+      <li>The smallest team gets the viewer. Tied teams: one is picked at random.</li>
+      <li>The bot whispers "You were placed on (team)!".</li>
+      <li>Typing <code>!team</code> again only tells them their team. They are never moved.</li>
+      <li>With team mode off, they are told to play for themselves.</li></ul></div>
+    <div class="card"><h3>Example with 4 teams</h3>
+      <div class="bars" aria-label="Example team sizes">
+        <div class="bar">Fallen<span style="background:var(--teal);width:72%"></span>9</div>
+        <div class="bar">Chat<span style="background:var(--purple);width:64%"></span>8</div>
+        <div class="bar">Mods<span style="background:var(--amber);width:56%"></span>7</div>
+        <div class="bar">Subs<span style="background:var(--green);width:48%"></span>6</div></div>
+      <p style="margin-top:10px">The next viewer lands on Subs.</p></div>
+  </div>
+  <div class="card" style="margin-top:14px"><p>Choose the number and names in the dashboard's Teams card. Lowering the number releases players on removed teams, and they can type <code>!team</code> again. Team points are the sum of every member's points. Press <b>Clear all team members</b> before a new game. The overlay panel can show Hunters, Teams, or rotate.</p></div>
+</section>
+
+<section id="records">
+  <h2>Records and champions</h2>
+  <p class="sub">Records are saved forever and announced in chat when broken.</p>
+  <div class="grid g2">
+    <div class="card"><h3>Five records</h3><div class="tags"><span>Top session score</span><span>Most quiz wins</span><span>Fastest correct answer</span><span>Longest streak</span><span>Most correct in a session</span></div></div>
+    <div class="card"><h3>Overlay banners</h3><div class="tags"><span>First blood: first correct</span><span>Fast: under 5 sec</span><span>Streak: 3 in a row</span></div><p style="margin-top:10px">Each banner can be switched off and previewed.</p></div>
+  </div>
+  <div class="card" style="margin-top:14px"><p>Session points add to the month's total. When a month ends, the top scorer becomes monthly champion in chat and on Discord. Lifetime stats power <code>!rank</code> and the all-time top 10.</p></div>
+</section>
+
+<section id="dash">
+  <h2>Dashboard</h2>
+  <p class="sub">Everything you can control without touching chat.</p>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-p="p1">Game</button>
+    <button class="tab" role="tab" aria-selected="false" data-p="p2">Questions</button>
+    <button class="tab" role="tab" aria-selected="false" data-p="p3">Look and sound</button>
+    <button class="tab" role="tab" aria-selected="false" data-p="p4">Teams and end</button>
+    <button class="tab" role="tab" aria-selected="false" data-p="p5">Backups</button>
+  </div>
+  <div class="card pane" id="p1"><ul>
+    <li><b>Start / Stop</b>: start (saving settings first) or end a session.</li>
+    <li><b>Skip</b>: drop the question and move on. <b>Reveal</b>: show the answer and close it.</li>
+    <li><b>Settings</b>: session 30 to 7200 sec, question 10 to 180 sec, target score, next-question delay 1 to 30 sec, points for correct, close and wrong.</li>
+    <li><b>Award points</b>: give or take points by viewer name. <b>Reset scores</b>: clear this session.</li></ul></div>
+  <div class="card pane" id="p2" hidden><ul>
+    <li>Add, edit or remove questions. The same question text updates its answer.</li>
+    <li>Extra accepted answers are separated by <code>|</code>.</li>
+    <li>Upload an answer picture (PNG or JPG, up to 5 MB). It is saved under the answer's name for the overlay.</li></ul></div>
+  <div class="card pane" id="p3" hidden><ul>
+    <li>Overlay theme, timer style and timer colors (solid or gradient).</li>
+    <li>Show or hide the leaderboard panel. Pick the podium style and test it.</li>
+    <li>Sound on or off, volume 0 to 100.</li></ul></div>
+  <div class="card pane" id="p4" hidden><ul>
+    <li>Number of teams (2 to 8), team names, team mode on or off, team reset.</li>
+    <li>Leaderboard view: Hunters, Teams, or rotate.</li>
+    <li>"Thanks for playing" line (up to 120 characters), the stream-ended card and a test version.</li></ul></div>
+  <div class="card pane" id="p5" hidden><ul><li>Export settings to a named file and import one later from the list.</li></ul></div>
+</section>
+
+<section id="discord">
+  <h2>Discord posts</h2>
+  <p class="sub">Paste a webhook link into the dashboard. Turn Enabled on for automatic posts. "Send now" buttons work even when it is off.</p>
+  <div class="grid g3">
+    <div class="card"><h3>At session end</h3><p>Podium picture, recap, and a winner card with avatar, points, lifetime wins, accuracy and records held.</p></div>
+    <div class="card"><h3>On events</h3><p>New records and monthly champions.</p></div>
+    <div class="card"><h3>On demand</h3><p>All-time top 10, the month's leader, and the stream-ended card with winner, winning team and hardest question.</p></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h3>Example: what lands in your Discord channel</h3>
+    <p>After a session with automatic posting on, these messages arrive in order. Names and numbers here are made up.</p>
+    <div class="dc">
+<div class="dm"><div class="av">Q</div><div><b>Game Quiz <small>Webhook</small></b><p>🏁 Quiz finished! Final podium</p><div class="img"><b>QUIZ PODIUM</b>1st Sam 45 pts &nbsp; 2nd Alex 38 pts &nbsp; 3rd Jo 30 pts (picture with avatars)</div></div></div>
+<div class="dm"><div class="av">Q</div><div><b>Game Quiz <small>Webhook</small></b><p>📊 SESSION RECAP | Winner: @Sam (45 pts) | Accuracy: 82% (31 right, 7 wrong) | Questions: 14 | Hardest: "What is the name of the realm where players face the final boss in Bloodborne?" (nobody got it, answer: The Hunter's Dream, 3 wrong guesses)</p></div></div>
+<div class="dm"><div class="av">Q</div><div><b>Game Quiz <small>Webhook</small></b><p>🥇 Session winner: Sam</p><div class="img"><b>SESSION WINNER</b>Sam, 45 pts this session. Lifetime wins 6, correct 120, accuracy 74%. Records held: Longest streak (card picture)</div></div></div>
+<div class="dm"><div class="av">Q</div><div><b>Game Quiz <small>Webhook</small></b><p>🏆 NEW RECORD! Fastest correct answer: Sam in 1.84s</p></div></div>
+<div class="dm"><div class="av">Q</div><div><b>Game Quiz <small>Webhook</small></b><p>👑 Sam is the monthly champion for October 2026 with 212 pts!</p><div class="img"><b>MONTHLY CHAMPION</b>Sam, 212 pts, October 2026 (gold card picture)</div></div></div>
+<div class="dm"><div class="av">Q</div><div><b>Game Quiz <small>Webhook</small></b><p>🎬 STREAM ENDED | Winner: @Sam (45 pts) | Team: Fallen (120 pts) | Hardest: none, nothing was missed | Thanks for playing, see you next time!</p></div></div>
+    </div>
+    <p style="margin-top:12px">To check the connection first, press the dashboard's test button. Discord shows: "✅ Quiz Control is connected to this channel." A valid webhook link looks like <code>https://discord.com/api/webhooks/123456789/abcDEF</code> (the numbers and letters are yours).</p>
+  </div>
+</section>
+
+<section id="ref">
+  <h2>Events and files</h2>
+  <p class="sub">The script sends these messages to keep the overlay and dashboard in sync. You never trigger them yourself.</p>
+  <div class="card"><div class="tags" style="margin-top:0"><span>QuizUpdate</span><span>QuizState</span><span>LeaderboardUpdate</span><span>AnswerLog</span><span>TimeWarning</span><span>GlobalTimerStart</span><span>PlayerBanner</span><span>SoundCue</span><span>QuizWinnerEvent</span><span>StreamEndCard</span><span>SessionRecap</span><span>RecordBroken</span><span>TeamNames</span></div></div>
+  <div class="card" style="margin-top:14px">
+    <div class="file"><div><code>Documents\GameQuiz\questions.tsv</code><small>Question bank and extra answers, created after your first edit</small></div><button class="copy">Copy</button></div>
+    <div class="file"><div><code>Documents\GameQuiz\pending.tsv</code><small>Suggestions waiting for review</small></div><button class="copy">Copy</button></div>
+    <div class="file"><div><code>Documents\GameQuiz\records.json</code><small>Records, lifetime stats, monthly points, champions</small></div><button class="copy">Copy</button></div>
+    <div class="file"><div><code>Documents\GameQuiz\discord.json</code><small>Webhook link and Discord settings</small></div><button class="copy">Copy</button></div>
+    <div class="file"><div><code>Desktop\Game Quiz\Game Quiz Answer Image</code><small>Answer pictures for the overlay</small></div><button class="copy">Copy</button></div>
+    <div class="file"><div><code>Desktop\Game Quiz\Backup Config</code><small>Exported dashboard settings</small></div><button class="copy">Copy</button></div>
+  </div>
+  <p class="sub" style="margin-top:12px">Back up <code>Documents\GameQuiz</code> to keep your questions and records safe.</p>
+</section>
+
+<section id="trouble">
+  <h2>Troubleshooting</h2>
+  <details><summary>Nothing happens when viewers type !answer</summary><p>A question must be open. After a correct answer or time-out, answers are ignored until the next question appears.</p></details>
+  <details><summary>!rank, !teamname or !suggest does nothing</summary><p>Each needs its own command trigger on the same action. Suggestions also need the Whispers trigger.</p></details>
+  <details><summary>The dashboard looks empty</summary><p>Make sure the Streamer.bot WebSocket server is running, then reload. The dashboard asks for the current state when it connects.</p></details>
+  <details><summary>Teams reset to 2 after restarting Streamer.bot</summary><p>Open the dashboard. It re-sends the team count and names when it connects.</p></details>
+  <details><summary>Discord says it is not a webhook link</summary><p>Copy the full link again from Discord's channel settings. It starts with https://discord.com/api/webhooks/.</p></details>
+  <details><summary>Whispers fail</summary><p>Viewers whisper FallenOneArt, not the bot account. Twitch limits whispers, and the viewer needs a verified account.</p></details>
+</section>
+</main>
+
+<script>
+(function(){
+  var $=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+  var f='all',q=document.getElementById('q');
+  function filt(){
+    var t=q.value.trim().toLowerCase(),shown=0;
+    $('.cmd').forEach(function(c){
+      var ok=(f==='all'||c.dataset.r===f)&&(!t||c.textContent.toLowerCase().indexOf(t)>-1);
+      c.hidden=!ok;if(ok)shown++;
+    });
+    document.getElementById('none').hidden=shown>0;
+  }
+  q.addEventListener('input',filt);
+  $('.chip').forEach(function(b){b.addEventListener('click',function(){
+    f=b.dataset.f;$('.chip').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});filt();
+  })});
+  $('.tab').forEach(function(t){t.addEventListener('click',function(){
+    $('.tab').forEach(function(x){x.setAttribute('aria-selected',String(x===t))});
+    $('.pane').forEach(function(p){p.hidden=p.id!==t.dataset.p});
+  })});
+  $('.copy').forEach(function(b){b.addEventListener('click',function(){
+    var txt=b.parentNode.querySelector('code').textContent;
+    var done=function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy'},1500)};
+    if(navigator.clipboard)navigator.clipboard.writeText(txt).then(done,done);else done();
+  })});
+  var links=$('aside a.nv'),secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting){links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)})}
+    })},{rootMargin:'-20% 0px -70% 0px'});
+    secs.forEach(function(s){if(s)io.observe(s)});
+  }
+})();
+</script>
+</body>
+</html>
