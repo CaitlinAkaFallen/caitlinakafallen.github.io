@@ -24,7 +24,7 @@
     "date": "3/27/2026"
   },
   {
-    "title": "Auto Shoutout → Clips → Discord",
+    "title": "Auto Shoutout ? Clips ? Discord",
     "link": "http://localhost:3000/import-to-streamerbot.html",
     "version": "2.3",
     "notes": "AutoShout to Discord but the auto shout out clips still need to work on still",
