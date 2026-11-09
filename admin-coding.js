@@ -44,6 +44,7 @@
   const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
   const dateFmt = new Intl.DateTimeFormat('en', { dateStyle: 'medium' });
   const timeFmt = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit' });
+  const stampFmt = new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' });
 
   function relTime(ts) {
     const diff = (ts - Date.now()) / 1000;
@@ -53,6 +54,14 @@
     if (abs < 86400) return rtf.format(Math.round(diff / 3600), 'hour');
     if (abs < 86400 * 30) return rtf.format(Math.round(diff / 86400), 'day');
     return dateFmt.format(ts);
+  }
+
+  // "2 hours ago · Nov 9, 2026, 3:42 PM" (older than 30 days: just the full stamp)
+  function whenHtml(ts) {
+    const full = esc(stampFmt.format(ts));
+    const old = Math.abs(Date.now() - ts) >= 86400 * 30 * 1000;
+    const rel = old ? '' : `<time datetime="${new Date(ts).toISOString()}" data-ts="${ts}" title="${full}">${esc(relTime(ts))}</time> · `;
+    return `<span><i class="fa-regular fa-clock"></i>${rel}<span class="ann-stamp">${full}</span></span>`;
   }
 
   document.addEventListener('DOMContentLoaded', init);
@@ -294,7 +303,7 @@
         ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">${highlight(titleText, q)}</a>`
         : highlight(titleText, q);
       const when = Number.isFinite(ts)
-        ? `<span><i class="fa-regular fa-clock"></i><time datetime="${new Date(ts).toISOString()}" data-ts="${ts}" title="${esc(dateFmt.format(ts))}">${esc(relTime(ts))}</time></span>`
+        ? whenHtml(ts)
         : (i.date ? `<span><i class="fa-regular fa-clock"></i>${esc(i.date)}</span>` : '');
       const notes = i.notes
         ? `<p class="ann-notes">${highlight(i.notes, q)}</p>`
