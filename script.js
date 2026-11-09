@@ -1,39 +1,50 @@
 /* =========================================================
    Caitlin's Creative Space — shared page script
-   Loaded by index.html. Handles social login, search,
-   live status, modals, collapsible cards, and hiding
-   the site navigation until the visitor is logged in.
+   Loaded by index.html. Handles social login (Twitch, Discord,
+   YouTube/Google), subscriber check, search, live status,
+   modals, collapsible cards, and hiding the nav until logged in.
    ========================================================= */
 (() => {
   "use strict";
 
-  /* ===== REMOVE .HTML FROM URL ===== */
+  /* ===== WHICH SITE IS THIS PAGE RUNNING ON? =====
+     The same page is served from the main site and from the Render server.
+     Logins must return to the same address they started from, because
+     the saved login lives in that address's own browser storage. */
+  const ON_RENDER = location.hostname === "caitlins-announcement-api.onrender.com";
+  const SITE_ORIGIN = ON_RENDER
+    ? "https://caitlins-announcement-api.onrender.com"
+    : "https://caitlinscreativespace.xyz";
+
+  /* ===== REMOVE .HTML FROM URL =====
+     Skipped on Render, because the server only serves the .html address
+     (a refresh on the clean address would show a 404). */
   (function hideHtmlInURL() {
+    if (ON_RENDER) return;
     const pathname = window.location.pathname;
     if (pathname.endsWith(".html")) {
-      // Replace URL in browser without reloading the page
       window.history.replaceState({}, "", pathname.replace(/\.html$/, "") + window.location.search + window.location.hash);
     }
   })();
 
   /* =========================================================
      CONFIG
-     - twitchClientId is the public login client (same as the
-       Twitch Lounge and main pages), so one login works everywhere.
-     - redirectUri must exactly match an address registered in each
-       provider's developer console. main-page is registered for Twitch.
-     - The live pill uses the logged-in Twitch token, so no
-       app credentials are needed.
+     - Twitch uses the login app whose redirects are registered.
+       Main site: main-page (clean address).
+       Render: main-page.html (the server has no clean address).
+     - Discord and Google use the .html address on both sites.
+     - Every address below must be registered in that provider's
+       developer console, or the login will be refused.
      ========================================================= */
   const CONFIG = {
     channel: "fallenoneart",
-    twitchClientId: "93zm8q03ri0840ul18y8e7owbl4y01",   // login client (shared)
-    twitchScope: "user:read:email",
+    broadcasterId: "fallenoneart",
+    twitchClientId: "93zm8q03ri0840ul18y8e7owbl4y01",
+    twitchScope: "user:read:email user:read:subscriptions",
     discordClientId: "1426998908164505600",
     googleClientId: "323446283951-pqq1ic2ivpnofmfrp7flc83iklc6tjp1.apps.googleusercontent.com",
-    // Twitch returns to the clean address; Discord and Google use the .html address
-    twitchRedirectUri: "https://caitlinscreativespace.xyz/main-page",
-    standardRedirectUri: "https://caitlinscreativespace.xyz/main-page.html",
+    twitchRedirectUri: ON_RENDER ? SITE_ORIGIN + "/main-page.html" : SITE_ORIGIN + "/main-page",
+    standardRedirectUri: SITE_ORIGIN + "/main-page.html",
     liveCheckMs: 60_000
   };
 
@@ -91,7 +102,7 @@
   }
 
   /* =========================================================
-     Login (Twitch, Discord, YouTube/Google)
+     Saved login helpers
      ========================================================= */
   const load = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
 
@@ -105,7 +116,6 @@
     const logged = isLoggedIn();
     const navWrap = $(".nav-scroll");
     if (navWrap) navWrap.hidden = !logged;
-    // Keep search + Log in pinned to the right when the nav is hidden
     const actions = $(".actions");
     if (actions) actions.style.justifySelf = logged ? "" : "end";
   }
@@ -126,8 +136,12 @@
     checkLive();
   }
 
+  /* =========================================================
+     Login buttons (send the visitor to each provider)
+     ========================================================= */
   function startOAuth(provider, url) {
     sessionStorage.setItem("oauthProvider", provider);
+    sessionStorage.setItem("loginType", provider);
     location.href = url;
   }
 
@@ -138,6 +152,7 @@
       `&redirect_uri=${encodeURIComponent(CONFIG.twitchRedirectUri)}` +
       `&scope=${encodeURIComponent(CONFIG.twitchScope)}`);
   }
+
   function loginWithDiscord() {
     startOAuth("discord",
       "https://discord.com/api/oauth2/authorize?response_type=code" +
@@ -145,6 +160,7 @@
       `&redirect_uri=${encodeURIComponent(CONFIG.standardRedirectUri)}` +
       "&scope=identify%20email");
   }
+
   function loginWithGoogle() {
     startOAuth("google",
       "https://accounts.google.com/o/oauth2/v2/auth?response_type=token" +
@@ -153,23 +169,53 @@
       "&scope=profile%20email");
   }
 
-  async function finishTwitchLogin(token) {
-    const r = await fetch("https://api.twitch.tv/helix/users", {
-      headers: { "Client-ID": CONFIG.twitchClientId, "Authorization": "Bearer " + token }
-    });
-    if (!r.ok) throw new Error("Twitch " + r.status);
-    const u = (await r.json()).data?.[0];
-    if (!u) throw new Error("no Twitch user");
-    localStorage.setItem("twitchUser", JSON.stringify({
-      username: u.display_name, avatar: u.profile_image_url, id: u.id, token
-    }));
-    localStorage.setItem("twitch_access_token", token);
-    localStorage.removeItem("socialUser");
-    toast(`Logged in as ${u.display_name}`);
+  /* =========================================================
+     Twitch: profile + subscriber check
+     ========================================================= */
+  async function checkSubscriptionStatus(userId, token) {
+    try {
+      const res = await fetch(
+        `https://api.twitch.tv/helix/subscriptions/user?broadcaster_id=${CONFIG.broadcasterId}&user_id=${userId}`,
+        { headers: { "Authorization": `Bearer ${token}`, "Client-Id": CONFIG.twitchClientId } }
+      );
+      // Twitch usually refuses this check for regular viewers (403), so treat that as "unknown"
+      if (!res.ok) return null;
+      const data = await res.json();
+      return Array.isArray(data.data) && data.data.length > 0;
+    } catch (err) {
+      console.error("Subscription check error:", err);
+      return null;
+    }
   }
 
+  async function finishTwitchLogin(token) {
+    const res = await fetch("https://api.twitch.tv/helix/users", {
+      headers: { "Authorization": `Bearer ${token}`, "Client-Id": CONFIG.twitchClientId }
+    });
+    if (!res.ok) throw new Error("Twitch " + res.status);
+    const json = await res.json();
+    const user = json.data && json.data[0];
+    if (!user) throw new Error("No user data returned from Twitch");
+
+    const isSubscriber = await checkSubscriptionStatus(user.id, token);
+    const saved = {
+      username: user.display_name,
+      name: user.display_name,
+      avatar: user.profile_image_url,
+      id: user.id,
+      token,
+      isSubscriber
+    };
+    localStorage.setItem("twitchUser", JSON.stringify(saved));
+    localStorage.setItem("twitch_access_token", token);
+    localStorage.setItem("socialUser", JSON.stringify({ name: user.display_name, avatar: user.profile_image_url, id: user.id, platform: "twitch" }));
+    toast(`Logged in as ${user.display_name}`);
+  }
+
+  /* =========================================================
+     Google / YouTube
+     ========================================================= */
   async function finishGoogleLogin(token) {
-    // Try the current userinfo endpoint first, then the older one
     let d = null, lastStatus = null;
     for (const url of [
       "https://www.googleapis.com/oauth2/v3/userinfo",
@@ -186,8 +232,11 @@
     toast(`Logged in as ${name}`);
   }
 
+  /* =========================================================
+     Discord (placeholder: records a generic user; the code
+     is not exchanged for a real profile yet)
+     ========================================================= */
   function finishDiscordLogin() {
-    // Placeholder: records a generic Discord user. Replace with a real token exchange.
     localStorage.setItem("socialUser", JSON.stringify({
       name: "Discord User", avatar: "https://cdn.discordapp.com/embed/avatars/0.png", platform: "discord"
     }));
@@ -195,7 +244,7 @@
     toast("Logged in with Discord");
   }
 
-  /* Finish a login if this page was opened by a provider redirect */
+  /* Finish a login when this page was opened by a provider redirect */
   async function handleOAuthReturn() {
     const hash = new URLSearchParams(location.hash.slice(1));
     const search = new URLSearchParams(location.search);
@@ -205,7 +254,8 @@
     if (!provider || (!token && !code)) return;
 
     sessionStorage.removeItem("oauthProvider");
-    history.replaceState(null, "", location.pathname);
+    sessionStorage.removeItem("loginType");
+    history.replaceState(null, "", location.pathname + location.search.replace(/[?&]code=[^&]*/, ""));
 
     try {
       if (provider === "twitch" && token) await finishTwitchLogin(token);
@@ -228,6 +278,7 @@
       localStorage.removeItem("socialUser");
       localStorage.removeItem("twitch_access_token");
       sessionStorage.removeItem("oauthProvider");
+      sessionStorage.removeItem("loginType");
       renderProfile();
       toast("Logged out");
     });
@@ -271,8 +322,7 @@
   }
 
   /* =========================================================
-     Search palette + footer search
-     (lists nothing until logged in)
+     Search palette + footer search (lists nothing until logged in)
      ========================================================= */
   let paletteActive = 0;
   let paletteShown = [];
@@ -367,7 +417,7 @@
     items.forEach(el => { el.style.opacity = "0"; io.observe(el); });
   }
 
-  /* ---------- Section toggle (kept for older onclick="toggleSection(...)" markup) ---------- */
+  /* ---------- Section toggle (older onclick="toggleSection(...)" markup) ---------- */
   window.toggleSection = function (sectionId) {
     const section = document.getElementById(sectionId);
     if (!section) return;
