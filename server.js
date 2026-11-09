@@ -78,6 +78,18 @@ app.use(cors({
 
 app.use(bodyParser.json());
 
+// Bridge: /announcements.json always returns the live list (not a stale file)
+app.get('/announcements.json', async (req, res) => {
+    try {
+        const list = await getList();
+        res.set('Cache-Control', 'no-store');
+        res.json(list);
+    } catch (err) {
+        console.error("❌ Read Error (announcements.json):", err.message);
+        res.status(500).json({ error: "Read Error" });
+    }
+});
+
 // Serve static files from the current directory
 app.use(express.static(__dirname));
 
@@ -100,6 +112,16 @@ function writeLocal(list) {
     return new Promise((resolve, reject) => {
         fs.writeFile(DATA_FILE, JSON.stringify(list, null, 2), (err) => (err ? reject(err) : resolve()));
     });
+}
+
+// ===== Bridge: keep the local announcements.json in step with the live list =====
+// Best effort only. Failing to write the local copy never blocks a save or a load.
+async function mirrorLocal(list) {
+    try {
+        await writeLocal(list);
+    } catch (err) {
+        console.warn('⚠️ Could not mirror to local announcements.json:', err.message);
+    }
 }
 
 // ===== GitHub storage =====
@@ -150,7 +172,7 @@ async function loadList() {
     if (!USE_GITHUB) return readLocal();
     await ghEnsureBranch();
     const { list } = await ghRead();
-    if (list) return list;
+    if (list) { await mirrorLocal(list); return list; }
     console.log('ℹ️ No announcements file on the GitHub branch yet. Seeding from the local file.');
     return readLocal();
 }
@@ -177,6 +199,7 @@ function saveList(list) {
             const detail = (await res.text()).slice(0, 200);
             throw new Error(`GitHub write failed (HTTP ${res.status}) ${detail}`);
         }
+        await mirrorLocal(list);
     });
     writeQueue = job.catch(() => {});
     return job;
