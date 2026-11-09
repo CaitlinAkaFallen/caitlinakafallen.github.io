@@ -348,6 +348,25 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
+
+  /* ---------- Hide scrollbars (scrolling still works) ---------- */
+  html, body, dialog, .dlg-body {
+    scrollbar-width: none;      /* Firefox, Chrome 121+ */
+    -ms-overflow-style: none;   /* old Edge/IE */
+  }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  dialog::-webkit-scrollbar,
+  .dlg-body::-webkit-scrollbar {
+    display: none;              /* Chrome, Safari, Edge */
+    width: 0;
+    height: 0;
+  }
+  /* Only .dlg-body scrolls inside the modal; the outer dialog clips instead,
+     which removes the double scrollbar. */
+  dialog {
+    overflow: hidden;
+  }
 </style>
 </head>
 <body>
@@ -476,6 +495,15 @@
 (() => {
   "use strict";
 
+  /* ===== REMOVE .HTML FROM URL ===== */
+  (function hideHtmlInURL() {
+    const pathname = window.location.pathname;
+    if (pathname.endsWith(".html")) {
+      window.history.replaceState({}, "", pathname.replace(/\.html$/, "") + window.location.search + window.location.hash);
+    }
+  })();
+
+  
   /* =========================================================
      CONFIG — paste your Twitch credentials here.
      Tokens in public JS can be seen by anyone; rotate yours
