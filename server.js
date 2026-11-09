@@ -47,6 +47,7 @@ const allowedOrigins = [
     'https://caitlinscreativespace.xyz',
     'https://www.caitlinscreativespace.xyz',
     'https://caitlinakafallen.github.io',
+    'https://caitlins-announcement-api.onrender.com', // The API's own address (admin page is served from here)
     'http://localhost:3000/admin-programming', // Added for local testing
     'http://127.0.0.1:3000/programming'       // Added for local testing
 ];
