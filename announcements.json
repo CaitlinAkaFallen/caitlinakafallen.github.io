@@ -7,6 +7,7 @@
     "type": "normal",
     "date": "3/27/2026"
   },
+  
   {
     "title": "Game Quiz",
     "link": "http://localhost:3000/import-to-streamerbot.html",
@@ -47,5 +48,14 @@
     "notes": "NEW Overlay Twitch Q&A",
     "type": "release",
     "date": "3/27/2026"
+  },
+    {
+    "title": "New Updates to the Programming",
+    "link": "https://caitlinscreativespace.xyz/programming",
+    "version": "",
+    "notes": "I will be adding zip files for you to download stream apps for you to download for your stream but just look out for tags if it requires Streamer bot or not.",
+    "type": "normal",
+    "date": "11/08/2026"
   }
+  
 ]
