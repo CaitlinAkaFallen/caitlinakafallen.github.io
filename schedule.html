@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet"/>
 
 <style>
   :root {
@@ -401,8 +401,9 @@
 
   /* ---------- Goals ---------- */
   .goals {
+    width: 100%;
     padding: 24px;
-    margin: 0 auto 24px;
+    margin: 0;
   }
   .goals-head {
     display: flex;
@@ -442,9 +443,10 @@
     box-shadow: 0 0 14px rgba(0,168,255,.6);
     transition: width 1s var(--ease);
   }
+  /* Milestones run in a row, like the weekly schedule */
   .milestones {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px;
     margin-top: 18px;
   }
@@ -492,40 +494,52 @@
   .off-card h3 { font-family: "Orbitron", sans-serif; margin: 0 0 8px; }
   .off-card p { color: #d9f8ff; margin: 0; }
 
-  /* ---------- Sub goals (per day stack) ---------- */
-  .goals-stack { display: grid; gap: 20px; }
+  /* ---------- Sub goals (one row per stream day) ---------- */
+  .goals-stack { display: grid; gap: 20px; width: 100%; }
 
-  /* ---------- Cheer ---------- */
-  .cheer-grid {
+  /* ---------- Cheer (rows) ---------- */
+  .cheer-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 14px;
+    gap: 12px;
   }
-  .cheer-card {
+  .cheer-row {
     position: relative;
-    padding: 20px 18px;
+    display: grid;
+    grid-template-columns: minmax(120px, 170px) 1fr;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 22px;
     border-radius: 16px;
-    background: linear-gradient(160deg, rgba(145,71,255,.14), rgba(0,168,255,.06));
+    background: linear-gradient(90deg, rgba(145,71,255,.16), rgba(0,168,255,.06));
     border: 1px solid rgba(145,71,255,.35);
-    transition: transform .3s var(--ease), box-shadow .3s;
+    transition: transform .3s var(--ease), box-shadow .3s, border-color .3s;
     overflow: hidden;
   }
-  .cheer-card:hover { transform: translateY(-4px); box-shadow: 0 0 26px rgba(145,71,255,.35); }
-  .cheer-card .bits {
+  .cheer-row:hover {
+    transform: translateX(4px);
+    box-shadow: 0 0 26px rgba(145,71,255,.35);
+    border-color: rgba(74,228,233,.45);
+  }
+  .cheer-row .bits {
     display: flex;
     align-items: center;
     gap: 8px;
     font-family: "Orbitron", sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 800;
     color: #fff;
   }
-  .cheer-card .bits img { width: 22px; height: 22px; }
-  .cheer-card .rew { margin-top: 10px; color: #e6dcff; line-height: 1.4; }
-  .cheer-card .tier {
+  .cheer-row .bits img { width: 22px; height: 22px; }
+  .cheer-row .rew {
+    color: #e6dcff;
+    line-height: 1.4;
+    font-size: 1rem;
+  }
+  .cheer-row .tier {
     position: absolute;
-    right: 14px;
-    top: 14px;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 8px; height: 8px;
     border-radius: 50%;
     background: var(--aqua);
@@ -594,6 +608,9 @@
     .cover-frame { max-width: 220px; margin: 0 auto; }
     .hero { margin-top: 84px; border-radius: 18px; padding: 40px 18px 36px; }
     .tabs button { font-size: .85rem; padding: 10px 12px; }
+    .milestones { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+    .cheer-row { grid-template-columns: 1fr; gap: 8px; }
+    .cheer-row .tier { right: 14px; }
   }
   @media (max-width: 480px) {
     .nav a { width: 40px; height: 40px; font-size: .95rem; }
@@ -615,7 +632,6 @@
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2 2 6v15h5v3h3l3-3h4l5-5V2zm16 11-3 3h-5l-3 3v-3H6V4h14z" fill="currentColor"/><path d="M15 7h2v5h-2zM10 7h2v5h-2z" fill="currentColor"/></svg><span class="live-dot" id="nav-live-dot"></span>
   </a>
   <a href="youtube.html" data-social="youtube" title="YouTube" aria-label="YouTube"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9v6l5-3z" fill="#0b0b12"/></svg></a>
- 
 </nav>
 
 <!-- ========== Hero ========== -->
@@ -718,7 +734,7 @@
   <section id="cheer" class="panel" role="tabpanel">
     <h2 class="section-title">Cheer Rewards</h2>
     <p class="section-sub">Show support with bits and unlock fun moments on stream.</p>
-    <div class="cheer-grid" id="cheer-grid"></div>
+    <div class="cheer-list" id="cheer-list"></div>
   </section>
 
   <!-- ========== YouTube ========== -->
@@ -741,19 +757,28 @@
 </main>
 
 <footer>
-  <p>© FallenOneArt · Schedule times in Pacific Time</p>
+  <p>© 2025 Caitlin's Creative Space | All Rights Reserved</p>
 </footer>
 
 <script>
 (() => {
   "use strict";
 
+  /* ===== REMOVE .HTML FROM URL ===== */
+  (function hideHtmlInURL() {
+    const pathname = window.location.pathname;
+    if (pathname.endsWith(".html")) {
+      window.history.replaceState({}, "", pathname.replace(/\.html$/, "") + window.location.search + window.location.hash);
+    }
+  })();
+
+
   /* =========================================================
      CONFIG — edit here. Keep tokens OUT of public pages if you can
      (see notes). Subs are updated by hand until a sub-count
      endpoint is wired in.
      ========================================================= */
- const CONFIG = {
+  const CONFIG = {
     channel: "fallenoneart",
     twitchClientId: "gp762nuuoqcoxypju8c569th9wz7q5",
     twitchToken: "0s89vmye9hk95jiifrpion53n6cy9p",
@@ -765,21 +790,32 @@
 
   /* Weekly stream slots (Pacific Time). Keys = JS weekday (0=Sun). */
   const SCHEDULE = {
-    3: { label: "Wednesday", start: [18, 0], end: [21, 30], kind: "Creative Stream (Variety)" },
-    5: { label: "Friday",    start: [18, 0], end: [21, 30], kind: "Gaming Day / 8-Bit Friday" },
-    6: { label: "Saturday",  start: [18, 0], end: [22, 30], kind: "Lofi Stream Day (Viewer's Choice)" }
+    1: { label: "Monday",    start: [12, 0], end: [15, 0],  kind: "Coding / Game" },
+    3: { label: "Wednesday", start: [16, 0], end: [18, 0],  kind: "Coding – New Stuff for Streamer.bot" },
+    5: { label: "Friday",    start: [15, 0], end: [19, 0],  kind: "Gaming Day / 8-Bit Friday" },
+    6: { label: "Saturday",  start: [13, 0], end: [20, 0],  kind: "Lofi Stream Day (Viewer's Dealers' Choice)" }
   };
   const DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
   /* Sub goals — single source of truth. */
   const GOALS = {
+    1: { emoji: "💻", label: "Monday Goals", goals: [
+      { amount: 5,  reward: "" },
+      { amount: 10, reward: "" },
+      { amount: 20, reward: "" },
+      { amount: 30, reward: "Chat Picks the Game" },
+      { amount: 50, reward: "Live Coding Challenge" },
+      { amount: 75, reward: "Mini Game Tournament" } ]},
     3: { emoji: "🎨", label: "Wednesday Goals", goals: [
       { amount: 5, reward: "" }, { amount: 10, reward: "" }, { amount: 15, reward: "" },
       { amount: 25, reward: "" }, { amount: 35, reward: "" }, { amount: 45, reward: "" },
       { amount: 55, reward: "" }, { amount: 65, reward: "Winner Chooses Game" },
       { amount: 85, reward: "Art Stream – Chat Picks Theme" },
       { amount: 95, reward: "Viking Cosplay + Valhalla Stream" },
-      { amount: 100, reward: "Community Game Night" } ]},
+      { amount: 100, reward: "Community Game Night" },
+      { amount: 110, reward: "Coding Live Challenge" },
+      { amount: 125, reward: "Streamer.bot Build Reveal" },
+      { amount: 150, reward: "Mystery Surprise Stream" } ]},
     5: { emoji: "🕹️", label: "Friday Goals", goals: [
       { amount: 75, reward: "Community Movie Night" },
       { amount: 150, reward: "Interactive Stream Challenges" },
@@ -856,6 +892,11 @@
   if (initial && document.getElementById(initial)?.classList.contains("panel")) showTab(initial);
 
   /* ---------- Week timeline ---------- */
+  const fmtHM = ([h, m]) => {
+    const ap = h >= 12 ? "PM" : "AM";
+    const hh = ((h + 11) % 12) + 1;
+    return `${hh}:${pad(m)} ${ap}`;
+  };
   function renderWeek() {
     const todayWd = laParts(new Date()).wd;
     const order = [1,2,3,4,5,6,0];
@@ -873,14 +914,9 @@
         </div>`;
     }).join("");
   }
-  const fmtHM = ([h, m]) => {
-    const ap = h >= 12 ? "PM" : "AM";
-    const hh = ((h + 11) % 12) + 1;
-    return `${hh}:${pad(m)} ${ap}`;
-  };
 
   /* ---------- Sub goals ---------- */
-  function goalsBlock(wd, { compact = false } = {}) {
+  function goalsBlock(wd) {
     const d = GOALS[wd];
     const subs = CONFIG.currentSubs;
     const next = d.goals.find(g => g.amount > subs);
@@ -899,7 +935,7 @@
           <div class="state">${done ? "✔" : "🔒"}</div>
           <div class="amt">${g.amount}</div>
           <div class="lbl">Subs</div>
-          <div class="rew">${esc(g.reward || "Thank-You Shoutout")}</div>
+          ${g.reward ? `<div class="rew">${esc(g.reward)}</div>` : ""}
         </div>`;
     }).join("");
 
@@ -932,14 +968,14 @@
           <p>Off day — next goal day is ${esc(when)}.</p>
         </article>`;
     }
-    $("#all-goals").innerHTML = [3, 5, 6].map(wd => goalsBlock(wd)).join("");
+    $("#all-goals").innerHTML = [1, 3, 5, 6].map(wd => goalsBlock(wd)).join("");
     animateFills(document);
   }
 
-  /* ---------- Cheer ---------- */
+  /* ---------- Cheer (rows) ---------- */
   function renderCheer() {
-    $("#cheer-grid").innerHTML = CHEER.map(c => `
-      <div class="cheer-card">
+    $("#cheer-list").innerHTML = CHEER.map(c => `
+      <div class="cheer-row">
         <span class="tier"></span>
         <div class="bits"><img src="images/twitch-icon.png" alt="" onerror="this.style.display='none'" />${c.bits.toLocaleString()}</div>
         <div class="rew">${esc(c.reward)}</div>
