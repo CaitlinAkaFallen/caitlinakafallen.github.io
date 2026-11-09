@@ -16,6 +16,7 @@
 <meta name="twitter:description" content="Explore photography, digital art, code, and more" />
 <meta name="twitter:image" content="https://caitlinscreativespace.xyz/images/social-preview-welcomepage.jpg" />
 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet" />
 <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -268,7 +269,30 @@
   .top-link { margin-top: 16px; display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: .8rem; text-decoration: none; }
   .top-link:hover { color: #fff; }
   .top-link svg { width: 14px; height: 14px; transform: rotate(-90deg); }
+/* ---------- Footer link underline fix ---------- */
+footer a,
+footer a:hover,
+footer a:focus,
+footer a:visited {
+  text-decoration: none;
+  border-bottom: 0;
+}
 
+/* ---------- Footer link underline fix ---------- */
+footer a,
+footer a:hover,
+footer a:focus,
+footer a:visited,
+footer a:active {
+  text-decoration: none !important;
+  border-bottom: 0 !important;
+  background-image: none !important;
+}
+footer a::after,
+footer a::before {
+  content: none !important;
+  display: none !important;
+}
   /* ---------- Modals ---------- */
   .modal {
     position: fixed; inset: 0; z-index: 500; display: grid; place-items: center; padding: 20px;
@@ -585,13 +609,13 @@
   </div>
 
   <div class="socials" aria-label="Social links">
-    <a class="ig" href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><svg aria-hidden="true"><use href="#i-instagram"/></svg></a>
-    <a class="tw" href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener" title="Twitch" aria-label="Twitch"><svg aria-hidden="true"><use href="#i-twitch"/></svg></a>
-    <a class="yt" href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener" title="YouTube" aria-label="YouTube"><svg aria-hidden="true"><use href="#i-youtube"/></svg></a>
-    <a class="bsky" href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener" title="Bluesky" aria-label="Bluesky"><svg aria-hidden="true"><use href="#i-bluesky"/></svg></a>
-    <a class="gh" href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
-    <a class="pt" href="https://patreon.com/FallenOneArt" target="_blank" rel="noopener" title="Patreon" aria-label="Patreon"><svg aria-hidden="true"><use href="#i-patreon"/></svg></a>
-    <a class="rd" href="https://www.reddit.com/user/CaitlinAkAFallen" target="_blank" rel="noopener" title="Reddit" aria-label="Reddit"><svg aria-hidden="true"><use href="#i-reddit"/></svg></a>
+    <a class="ig" href="https://www.instagram.com/caitlinakafallen/" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+    <a class="tw" href="https://www.twitch.tv/fallenoneart" target="_blank" rel="noopener" title="Twitch" aria-label="Twitch"><i class="fa-brands fa-twitch" aria-hidden="true"></i></a>
+    <a class="yt" href="https://www.youtube.com/@caitlinakafallen" target="_blank" rel="noopener" title="YouTube" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
+    <a class="bsky" href="https://bsky.app/profile/caitlinakfallen.bsky.social" target="_blank" rel="noopener" title="Bluesky" aria-label="Bluesky"><i class="fa-brands fa-bluesky" aria-hidden="true"></i></a>
+    <a class="gh" href="https://github.com/CaitlinAkaFallen" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub"><i class="fa-brands fa-github" aria-hidden="true"></i></a>
+    <a class="pt" href="https://patreon.com/FallenOneArt" target="_blank" rel="noopener" title="Patreon" aria-label="Patreon"><i class="fa-brands fa-patreon" aria-hidden="true"></i></a>
+    <a class="rd" href="https://www.reddit.com/user/CaitlinAkAFallen" target="_blank" rel="noopener" title="Reddit" aria-label="Reddit"><i class="fa-brands fa-reddit-alien" aria-hidden="true"></i></a>
   </div>
   <a class="top-link" href="#">Back to top <svg aria-hidden="true"><use href="#i-chev"/></svg></a>
 </footer>
@@ -715,6 +739,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="script.js"></script>
+
 
 
 </body>
