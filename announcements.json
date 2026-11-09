@@ -39,14 +39,7 @@
     "type": "release",
     "date": "3/27/2026"
   },
-  {
-    "title": "Hogwarts Sorting House",
-    "link": "http://localhost:3000/import-to-streamerbot",
-    "version": "2.5",
-    "notes": "New Hogwarts Overlay for Sorting into house randomly",
-    "type": "release",
-    "date": "3/27/2026"
-  },
+
   {
     "title": "Twitch Q&A Overlay",
     "link": "http://localhost:3000/import-to-streamerbot",
