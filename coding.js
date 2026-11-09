@@ -42,6 +42,7 @@
   const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
   const dateFmt = new Intl.DateTimeFormat('en', { dateStyle: 'medium' });
   const timeFmt = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit' });
+  const stampFmt = new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' });
 
   function relTime(ts) {
     const diff = (ts - Date.now()) / 1000;
@@ -51,6 +52,14 @@
     if (abs < 86400) return rtf.format(Math.round(diff / 3600), 'hour');
     if (abs < 86400 * 30) return rtf.format(Math.round(diff / 86400), 'day');
     return dateFmt.format(ts);
+  }
+
+  // "2 hours ago · Nov 9, 2026, 3:42 PM" (older than 30 days: just the full stamp)
+  function whenHtml(ts) {
+    const full = esc(stampFmt.format(ts));
+    const old = Math.abs(Date.now() - ts) >= 86400 * 30 * 1000;
+    const rel = old ? '' : `<time datetime="${new Date(ts).toISOString()}" data-ts="${ts}" title="${full}">${esc(relTime(ts))}</time> · `;
+    return `<span><i class="fa-regular fa-clock"></i>${rel}<span class="ann-stamp">${full}</span></span>`;
   }
 
   document.addEventListener('DOMContentLoaded', init);
@@ -314,7 +323,7 @@
         ? `<a href="${esc(i.link)}" target="_blank" rel="noopener noreferrer">${highlight(i.title, q)}</a>`
         : highlight(i.title, q);
       const when = Number.isFinite(i.ts)
-        ? `<span><i class="fa-regular fa-clock"></i><time datetime="${new Date(i.ts).toISOString()}" data-ts="${i.ts}" title="${esc(dateFmt.format(i.ts))}">${esc(relTime(i.ts))}</time></span>`
+        ? whenHtml(i.ts)
         : (i.date ? `<span><i class="fa-regular fa-clock"></i>${esc(i.date)}</span>` : '');
       const notesHtml = i.notes
         ? `<p class="ann-notes clamped" id="notes-${n}">${highlight(i.notes, q)}</p>
@@ -505,6 +514,7 @@
         const item = state.items.find((i) => i.id === btn.closest('.ann')?.dataset.id);
         if (!item) return;
         const parts = [item.version ? `${item.title} (${item.version})` : item.title];
+        if (Number.isFinite(item.ts)) parts.push(stampFmt.format(item.ts));
         if (item.notes) parts.push(item.notes);
         if (item.link) parts.push(item.link);
         const ok = await copyText(parts.join('\n'));
